@@ -11,3 +11,5 @@
 *.out
 *.synctex.gz
 drafts/*.tex
+*.pdf
+!activist_directors.pdf # Include the main document
