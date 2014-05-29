@@ -1,6 +1,5 @@
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(PostgreSQL())
 
 sql <- paste("
   DROP VIEW IF EXISTS activist_director.permnos CASCADE;
@@ -22,7 +21,7 @@ sql <- paste("
 rs <- dbGetQuery(pg, sql)
 
 # Now run SQL to get the other data (word counts, word share, lexical diversity)
-sql <- paste(readLines("~/Dropbox/research/activism/activist_director/code/create_activism_events.sql"),
+sql <- paste(readLines("code/create_activism_events.sql"),
              collapse="\n")
 rs <- dbGetQuery(pg, sql)
 
