@@ -180,8 +180,6 @@ sw_ad_roa_ffe.f <- cbind(
                          vcov.=sw_ad_roa_ffe.cov)[4][2,]))
 @
 
-\addtocounter{table}{1}
-
 \begin{table}[htb]
 \caption{Operating performance}
 \label{tbl:roa}

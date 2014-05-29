@@ -379,9 +379,10 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE) {
     }
 
     table_text_before <-
-    paste("\\begin{table}[htb]", if(label) "\\label{tbl:returns}" else "",
-    "\\caption{Stock returns}
-    \\begin{minipage}[t]{\\columnwidth}
+    paste("
+    \\begin{table}[htb]
+    \\caption{Stock returns}", if(label) "\\label{tbl:returns}" else "",
+    "\\begin{minipage}[t]{\\columnwidth}
     \\begin{flushleft}
     {
      Table presents returns by category of activism. Superscripts $MKT$, $SZ$, $FFV$, $FFE$ denote
@@ -455,3 +456,4 @@ out.table(reg.data, lhs.vars, rhs="big_investment", caption)
 @
 
 \end{landscape}
+\addtocounter{table}{1}
