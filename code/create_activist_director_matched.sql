@@ -1,13 +1,18 @@
 DROP TABLE IF EXISTS activist_director.activist_director_matched;
 
 CREATE TABLE activist_director.activist_director_matched AS
-WITH matched AS (
+WITH permnos AS (
+    SELECT DISTINCT ncusip AS cusip, permno
+    FROM crsp.stocknames),
+matched AS (
     SELECT DISTINCT a.*, permno, sharkwatch50 = 'Yes' AS sharkwatch50,
         proxy_fight_went_the_distance ='Yes' AS elected
     FROM activist_director.activist_directors AS a
-    INNER JOIN activist_director.sharkwatch AS b
+    INNER JOIN factset.sharkwatch AS b
     USING (cusip_9_digit, announce_date, dissident_group)
-    WHERE b.permno IS NOT NULL),
+    INNER JOIN permnos AS c
+    ON substr(a.cusip_9_digit, 1, 8)=c.cusip
+    WHERE c.permno IS NOT NULL),
 delist AS (
     SELECT DISTINCT permno,
         CASE WHEN dlstcd > 100 THEN dlstdt END AS dlstdt
