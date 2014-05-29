@@ -6,19 +6,23 @@
 
 %\begin{landscape}
 
-<<quantreg_data_step, include=FALSE, message=FALSE, warning=FALSE>>=
+<<quantreg_libraries, cache=FALSE>>=
 library(survival)
 library(quantreg)
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+@
+<<quantreg_data_step, include=FALSE, warning=FALSE>>=
 
+pg <- dbConnect(PostgreSQL())
+library(RPostgreSQL)
 survival_data <- dbGetQuery(pg, "
     SET work_mem='5GB';
 
+    -- TODO: Does it make sense to GROUP BY announce_date? What is the effect of doing so?
+    --       Note that results hinge on this!
     WITH activist_exit AS (
-        SELECT activist_name, permno, first_date, bool_or(exit IS TRUE) AS exit
+        SELECT activist_name, permno, first_date, announce_date, bool_or(exit IS TRUE) AS exit
         FROM activist_director.activist_holdings_matched
-        GROUP BY activist_name, permno, first_date)
+        GROUP BY activist_name, permno, first_date, announce_date)
 
     SELECT DISTINCT activist_name, permno, first_date, entry_date,
         exit_date, last_date, announce_date, first_appointment_date,
@@ -26,18 +30,20 @@ survival_data <- dbGetQuery(pg, "
         category, big_investment, b.exit
     FROM activist_director.activist_holdings_matched
     INNER JOIN activist_exit AS b
-    USING (activist_name, permno, first_date)
+    USING (activist_name, permno, first_date, announce_date)
     WHERE permno IS NOT NULL AND activism AND quarter>0
         AND activist_name NOT IN (
-        'California State Teachers Retirement System',
-        'New York State Common Retirement Fund',
-        'Ontario Teachers'' Pension Plan Board',
-        'The California Public Employees Retirement System')
+            'California State Teachers Retirement System',
+            'New York State Common Retirement Fund',
+            'Ontario Teachers'' Pension Plan Board',
+            'The California Public Employees Retirement System')
     ORDER BY activist_name, permno
 ")
 
 rs <- dbDisconnect(pg)
+@
 
+<<quantreg_analysis, dependson="quantreg_data_step", include=FALSE>>=
 # data ready
 surv <- with(survival_data,
              Surv(as.numeric(exit_date - entry_date), exit, type='right'))
@@ -67,7 +73,7 @@ quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type
 
 @
 
-<<make_panels, dependson="quantreg_data_step", include=FALSE>>=
+<<make_panels, dependson="quantreg_analysis", include=FALSE>>=
 getCoefs <- function(model) {
 
     makeRow <- function(i) {
