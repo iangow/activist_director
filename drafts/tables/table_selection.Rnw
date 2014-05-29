@@ -203,7 +203,8 @@ t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
 @
 \begin{table}[htb]
-\caption{Activist target selection} \label{tbl:targeting}
+\caption{Activist target selection}
+\label{tbl:selection}
 \begin{minipage}[t]{\columnwidth}
 \begin{flushleft}
   {\small

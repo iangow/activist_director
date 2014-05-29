@@ -126,8 +126,9 @@ panel2 <- cbind(panel2, col3)
 colnames(panel2) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
 row.names(panel2) <- c("Non-board activism", "Board demand", "Activist director")
 @
-\begin{table}[htb]  \label{tbl:holdings}
+\begin{table}[htb]
   \caption{Activist holding periods}
+   \label{tbl:holdings}
   \begin{minipage}[t]{\linewidth}
   \begin{flushleft}
 \tabularnewline
