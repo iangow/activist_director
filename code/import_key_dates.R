@@ -92,13 +92,17 @@ require(RCurl)
 csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
                           "0AtCJeBFBO_EddEdMMXpRTUFUaUJzcTZHeEFLd0hrSkE",
                           "&output=csv"),
-                          verbose=FALSE)
+                   verbose=FALSE)
 
 key_dates_nsw50 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
 
 key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
 key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
 key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
+
+# TODO: Fix weird values in these two variables.
+key_dates_nsw50$governance <- key_dates_nsw50$governance=="1"
+key_dates_nsw50$no_demand <- key_dates_nsw50$no_demand=="1"
 
 for (i in names(key_dates_nsw50)) {
     if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
@@ -111,7 +115,7 @@ pg <- dbConnect(drv, dbname="crsp")
 
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_nsw50"),
                    key_dates_nsw50, overwrite=TRUE, row.names=FALSE)
-# rs <- dbGetQuery(pg, "CREATE ROLE activism")
+
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates_nsw50 OWNER TO activism")
 

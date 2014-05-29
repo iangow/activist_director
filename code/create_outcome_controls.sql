@@ -64,7 +64,7 @@ compustat_w_permno AS (
 
 -- CRSP Returns
 crsp AS (
-    SELECT permno, datadate,
+    SELECT a.permno, a.datadate,
     product(1+b.ret)-product(1+b.vwretd) AS size_return
     FROM firm_years AS a
     INNER JOIN crsp.mrets AS b

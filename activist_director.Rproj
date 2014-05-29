@@ -12,3 +12,6 @@ Encoding: UTF-8
 RnwWeave: knitr
 LaTeX: XeLaTeX
 RootDocument: drafts/activist_directors.Rnw
+
+AutoAppendNewline: Yes
+StripTrailingWhitespace: Yes
