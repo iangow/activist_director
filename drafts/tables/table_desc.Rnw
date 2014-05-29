@@ -2,7 +2,9 @@
 
 % See intro.Rnw for details on this variable.
 \Sexpr{opts_chunk$set(cache.extra=events.updated)}
-<<table_desc_data, eval=TRUE, message=FALSE, echo=FALSE, results='asis'>>=
+\Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
+
+<<table_desc_data, results='asis'>>=
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
 pg <- dbConnect(drv, dbname="crsp")
@@ -64,7 +66,7 @@ Table presents number of activism events by year.
 \end{minipage}
   \begin{tabularx}{\linewidth}{l*{8}{Y}}
   \hline
-<<table_desc_output, dependson="table_desc_data", message=FALSE, echo=FALSE, results='asis'>>=
+<<table_desc_output, dependson="table_desc_data", results='asis'>>=
 table.firms <- rbind(summ.firms,
                      c("Total", formatC(colSums(summ.firms[, -1]), format ="d", big.mark = ",")))
 
@@ -98,7 +100,7 @@ Table presents number of activist directors by year.
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{8}{Y}}
  \hline
-<<Table_1c_output, dependson="table_desc_data", message=FALSE, echo=FALSE, results='asis'>>=
+<<Table_1c_output, dependson="table_desc_data", results='asis'>>=
 
 table.dirs <- rbind(summ.dirs ,
                     c("Total", formatC(colSums(summ.dirs[, -1]), format ="d", big.mark = ",")))
