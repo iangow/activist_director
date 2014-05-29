@@ -1,0 +1,84 @@
+\documentclass[titlepage,12pt]{article} % scrartcl
+
+% for \doublespacing
+\usepackage{setspace}
+% \renewcommand\footnotemark{\ast}
+\usepackage{titlesec}
+\titleformat{\section}
+  {\normalfont\bfseries}{\thesection.}{1em}{}
+
+\titleformat{\subsection}
+  {\normalfont\itshape}{\thesubsection.}{1em}{}
+
+%\documentclass[11pt]{amsart} % Perhaps use article
+%\usepackage[backend=bibtex]{bibtex}
+\usepackage{pdflscape}
+\usepackage{array}
+\usepackage{booktabs}
+\usepackage{dcolumn}
+\usepackage{palatino}
+\usepackage{tabularx}
+%\oddsidemargin=.05in
+%\evensidemargin=.05in
+\usepackage{natbib}
+\usepackage[marginratio=1:1]{geometry}  % See geometry.pdf to learn the layout options. There are lots.
+\geometry{margin=1in}
+%\geometry{letterpaper} % ... or a4paper or a5paper or ...
+%\geometry{landscape}  % Activate for for rotated page geometry
+\usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
+%\usepackage{amsfonts}
+%\usepackage{pgf}
+\usepackage{paralist}
+\usepackage{dcolumn}
+\usepackage[hidelinks]{hyperref}
+
+\newcolumntype{Y}{>{\raggedleft\arraybackslash}X}% raggedleft column X
+\hypersetup{colorlinks=false}
+
+\mathchardef\mhyphen="2D
+
+\begin{document}
+
+\bibliographystyle{kluwer} % , chicago, kluwer
+
+<<introduction, child='intro.Rnw'>>=
+@
+
+<<lit_review, child='literature_review.Rnw'>>=
+@
+
+<<sample_desc, child='sample_desc.Rnw'>>=
+@
+
+<<results, child='results.Rnw'>>=
+@
+
+<<conclusion, child='conclusion.Rnw'>>=
+@
+\newpage
+
+\bibliography{papers}
+
+\newpage
+<<table_desc, child='tables/table_desc.Rnw'>>=
+@
+
+<<table-2, child='tables/table_dir_desc.Rnw'>>=
+@
+
+<<table-3, child='tables/table_selection.Rnw'>>=
+@
+
+<<table-4, child='tables/table_holding_period.Rnw'>>=
+@
+
+<<table-5, child='tables/table_returns.Rnw'>>=
+@
+
+<<roa, child='tables/roa_table.Rnw'>>=
+@
+
+<<table-6, child='tables/table_outcomes.Rnw'>>=
+@
+
+\end{document}

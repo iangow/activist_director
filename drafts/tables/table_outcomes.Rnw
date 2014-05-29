@@ -1,0 +1,244 @@
+\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+
+<<load_libraries, cache=FALSE, include=FALSE>>=
+# Yihui Xie recommends _not_ caching the loading of packages used
+# by several chunks.
+library(lmtest)
+library(sandwich)
+library(car)
+library(stargazer)
+library(xtable)
+library(parallel)
+library(RPostgreSQL)
+library(psych)
+@
+
+<<winsorize>>=
+# Winsorize selected variables in a data frame
+winsorizeDF <- function(data, vars) {
+    for (var in vars) {
+        data[, var] <- winsor(data[ , var], trim=0.01)
+    }
+    return(data)
+}
+
+controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
+                  "num_directors outside_percent staggered_board log_at")
+
+omits <- unlist(strsplit(controls, "\\s+"))
+@
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
+<<table_6_functions, include=FALSE>>=
+source("outcome_functions.R")
+@
+
+\addtocounter{table}{1}
+% \begin{landscape}
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
+<<div_acq_data_step, dependson="winsorize">>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+rs <- dbGetQuery(pg, "SET work_mem='5GB'")
+sql <- paste0(readLines("outcome_div_acq.sql"), collapse="\n")
+reg.data <- dbGetQuery(pg, sql)
+rs <- dbDisconnect(pg)
+
+winsor.vars <- unlist(strsplit(controls, "\\s+"))
+
+reg.data <- winsorizeDF(reg.data, winsor.vars)
+@
+
+
+\begin{table}[htb] \label{tbl:div_acq}
+    \caption{Divestitures and acquisitions}
+\begin{minipage}[t]{\columnwidth}
+\begin{flushleft}
+{\small
+Table presents regressions of outcome variables on firm-year level activism indicators.
+\textit{Acquisition} indicates the firm completed acquisitions within three years after year $t$.
+\textit{Acquired} indicates delisting within three years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs within three years of year $t$.
+% and \textit{Failures} (500, 520-599).
+Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
+\textit{Total assets}, book value of total assets;
+\textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
+\textit{Institutional},  proportion of the firm's outstanding stock held by institutions;
+\textit{Size-adj. ret}, twelve-month size-adjusted returns;
+\textit{Market value}, the value of market capitalization;
+\textit{Book-to-market}, market capitalization divided by the book value of common equity;
+\textit{Leverage}, ratio of debt to debt plus book value of common equity;
+\textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA;
+\textit{ROA}, EBITDA divided by the lagged total assets;
+\textit{Sales growth}, sales divided by lagged sales;
+\textit{Num. directors}, the number of directors on the board;
+\textit{Outside percent}, the percentage of outside directors;
+\textit{Age}, the average age of directors;
+\textit{Tenure}, the average tenure of directors;
+\textit{Staggered board}, indicator for staggered board.
+All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_6_div_and_acq, dependson=c("table_6_functions", "div_acq_data_step"), results='asis'>>=
+lhs.vars <- list("acquisition_p3", "merger_p3", "divestiture_p3")
+
+t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
+summ <- make.fTest.table(t6.pa, reg.data)
+row.labels <- c("Non-board activism", "Board demand", "Activist director")
+col.labels <-c ("Acquisition", "Acquired", "Divestiture")
+names(summ) <- col.labels
+stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
+# Free up some memory
+rm(t6.pa)
+@
+\end{tabularx}
+\end{table}
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_ceo.sql'))}
+% Panel B - CEO turnover and compensation
+<<ceo_data_step>>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+rs <- dbGetQuery(pg, "SET work_mem='5GB'")
+sql <- paste0(readLines("outcome_ceo.sql"), collapse="\n")
+reg.data <- dbGetQuery(pg, sql)
+rs <- dbDisconnect(pg)
+
+winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p3")
+reg.data <- winsorizeDF(reg.data, winsor.vars)
+@
+
+\newpage
+
+\begin{center}
+\begin{table}[htb] \label{tbl:ceo}
+\caption{CEO turnover and compensation}
+\begin{minipage}[t]{\columnwidth}
+\begin{flushleft}
+{\small
+Table presents regressions of variables on firm-year level activism categorical variables.
+\textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+3$.
+% TODO: Is it end of t or end of t+1?
+$\textit{CEO comp}_{t+3}$ is log of total CEO compensation in year $t+3$
+\textit{Perf comp} is the percentage of CEO compensation that not salary.
+Controls are as described in Table \ref{tbl:div_acq}.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{3}{Y}}
+<<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
+lhs.vars <- list("ceo_turnover", "ceo_comp", "perf_comp")
+
+t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+summ <- make.fTest.table(t6.pb, reg.data)
+col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+3)}$", "$\\textrm{CEO comp}_{t+3}$",
+                "$\\textrm{Perf comp}_{t+3}$")
+row.labels <- c("Non-board activism", "Board demand", "Activist director",
+                "$\\textrm{Dep. var.}_{t}$")
+names(summ) <- col.labels
+stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
+rm(t6.pb)
+@
+\end{tabularx}
+\end{table}
+\end{center}
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
+<<other_outcome_data_step, dependson="winsorize">>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+rs <- dbGetQuery(pg, "SET work_mem='5GB'")
+sql <- paste0(readLines("other_outcomes.sql"), collapse="\n")
+reg.data <- dbGetQuery(pg, sql)
+rs <- dbDisconnect(pg)
+
+# Winsorize changes
+lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p3")))
+
+reg.data <- winsorizeDF(reg.data, winsor.vars)
+@
+
+% Financing and investment
+\newpage
+\begin{table}[htb] \label{table:fin}
+\caption{Capital structure}
+\begin{minipage}[t]{\columnwidth}
+\begin{flushleft}
+{\small
+\textit{Cash} is calculated as the ratio of total cash and short-term
+    investments to the book value of total assets.
+\textit{Leverage} is measured as the ratio of book value of debt to the
+    sum of the book value of debt and equity.
+\textit{Payout} is measured as the ratio of total dividends and share repurchases to
+    EBITDA for the three years after year $t$.
+Controls are as described in Table \ref{tbl:div_acq}.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_6_cap_struct, dependson=c("table_6_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
+# Export tables to spreadsheet
+lhs.vars <- list("cash", "leverage", "payout")
+t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+row.labels <- c("Non-board activism", "Board demand", "Activist director",
+                "$\\textrm{Dep. var.}_{t}$")
+col.labels <- c("Cash", "Leverage", "Payout")
+summ <- make.fTest.table(t6.pd, reg.data)
+names(summ) <- col.labels
+stargazer.mod(t6.pd, col.labels, row.labels, omits, summ)
+
+rm(t6.pd)
+@
+\end{tabularx}
+\end{table}
+\newpage
+
+\newpage
+\begin{table}[htb]
+  \caption{Investment}
+    \label{tbl:invest}
+\begin{minipage}[t]{\columnwidth}
+\begin{flushleft}
+{\small
+Table presents regressions of variables on firm-year level activism categorical variables.
+% \textit{Tax rate} is measured as the ratio of total tax expense for three years after announcement of activism to the pre-tax income during the same period.
+\textit{CapEx} is measured as the ratio of capital expenditure for three years after announcement of activism to the lagged book value of total assets.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for three years after announcement of activism to the lagged book value of total assets.
+\textit{Advertising} is measured as the ratio of advertising expenditure for three years after announcement of activism to the lagged book value of total assets.
+Controls are as described in Table \ref{tbl:div_acq}.
+Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_6_investment, dependson=c("table_6_functions", "other_outcome_data_step"), results='asis'>>=
+# Export tables to spreadsheet
+lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
+t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+summ <- make.fTest.table(t6.pf, reg.data)
+row.labels <- c("Non-board activism", "Board demand", "Activist director",
+                "$\\textrm{Dep. var.}_{t}$")
+col.labels <- c("$\\textrm{CapEx}$",
+                "$\\textrm{R\\&D}$",
+                "$\\textrm{Advertising}$")
+names(summ) <- col.labels
+
+stargazer.mod(t6.pf, col.labels, row.labels, omits, summ)
+rm(t6.pf)
+@
+\end{tabularx}
+\end{table}
+
+%\end{landscape}

@@ -1,0 +1,166 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%          Activist holding periods                %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
+
+%\begin{landscape}
+
+<<quantreg_data_step, include=FALSE, message=FALSE, warning=FALSE>>=
+library(survival)
+library(quantreg)
+library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
+
+survival_data <- dbGetQuery(pg, "
+  SET work_mem='5GB';
+
+  SELECT DISTINCT activist_name, permno, first_date, entry_date, exit_date, last_date,
+    announce_date, first_appointment_date, eff_announce_date,
+	activism, activist_demand, activist_director, category, big_investment,
+	bool_or(exit IS TRUE) AS exit
+  FROM activist_director.activist_holdings_matched
+  WHERE permno IS NOT NULL AND activism AND quarter>0
+  AND activist_name NOT IN (
+    'California State Teachers Retirement System',
+    'New York State Common Retirement Fund',
+    'Ontario Teachers'' Pension Plan Board',
+    'The California Public Employees Retirement System')
+  GROUP BY
+	activist_name, permno, first_date, entry_date, exit_date, last_date,
+	announce_date, first_appointment_date, eff_announce_date,
+	activism, activist_demand, activist_director, category, big_investment
+  ORDER BY activist_name, permno
+")
+
+rs <- dbDisconnect(pg)
+
+# data ready
+surv <- with(survival_data,
+             Surv(as.numeric(exit_date - entry_date), exit, type='right'))
+
+#### Exit since Entry
+quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ category,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
+
+#### Exit since Announcement
+quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ category,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary2 <- summary.crq(quantreg2, taus=c(0.25, 0.5, 0.75))
+
+#### Exit since Appointment
+quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ 1,
+                 data=subset(survival_data, !is.na(first_appointment_date)),
+                 taus=c(0.25, 0.5, 0.75),
+                 na.action="na.omit",
+                 method="Portnoy")
+
+@
+
+<<make_panels, dependson="quantreg_data_step", include=FALSE>>=
+getCoefs <- function(model) {
+
+    makeRow <- function(i) {
+
+        # Get the coefficients and SEs, calculate p-values
+        coef <- model[[2]][["coefficients"]][i, 1]
+        se   <- model[[2]][["coefficients"]][i, 4]
+        p    <- 1-pnorm(abs(coef/se))
+
+        # Standard stars
+        stars <- ifelse(p < 0.01, "^{***}",
+                        ifelse(p < 0.05, "^{**}",
+                               ifelse(p < 0.1, "^{*}", " ")))
+
+        # Add stars to coefficients, put parentheses around SEs
+        return(rbind(coef=paste0(formatC(coef, digits = 3, format="f"), stars),
+                     se=paste0("(",formatC(se, digits=3, format="f"),")")))
+    }
+
+    # We have three coefficients we want to combine into a column and return
+    return(do.call("rbind", lapply(1:3, makeRow)))
+}
+
+# Get coefficients for each column
+col1 <- getCoefs(summary1)
+col2 <- getCoefs(summary2)
+col3 <- formatC(coefficients(quantreg3, taus=c(0.25,0.5,0.75))[[2]], format="f", digits=3)
+
+# Combine columns into a table
+panel1 <- cbind(col1, col2)
+
+# Names must be distinct, so spaces are a kluge to get this to work
+row.names(panel1) <- c("Intercept", "", "Board demand", " ", "Activist director", "  ")
+colnames(panel1) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}")
+                #  "\\textrm{Appt--exit}")
+
+# Make a second panel with statistics for estimated holding periods for
+# Activist director cases
+col1 <- rbind(summary1[[2]]$coefficients[1,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[2,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[3,1])
+col2 <- rbind(summary2[[2]]$coefficients[1,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[2,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[3,1])
+
+panel2 <- cbind(col1, col2)
+panel2 <- formatC(panel2, format="f", digits=0)
+col3 <- rbind("", "", formatC(coefficients(quantreg3, taus=c(0.25,0.5,0.75))[[2]], format="f", digits=0))
+panel2 <- cbind(panel2, col3)
+colnames(panel2) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
+row.names(panel2) <- c("Non-board activism", "Board demand", "Activist director")
+@
+\begin{table}[htb]  \label{tbl:holdings}
+  \caption{Activist holding periods}
+  \begin{minipage}[t]{\linewidth}
+  \begin{flushleft}
+\tabularnewline
+Table presents results of censored median regression analysis of holding period (days) on activism category.
+\textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
+\textit{Annc--exit} refers to the time between announcement of activism and the exit date.
+\textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
+\newline
+\end{flushleft}
+\end{minipage}
+% Following was copied from .tex output from stargazer.
+\begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} c }
+
+\multicolumn{2}{l}{Regression coefficients} \\
+\hline
+<<survival_panel1, dependson="make_panels", results='asis'>>=
+# Output the table
+library(xtable)
+print(xtable(panel1,
+             display=c("s", rep("f",(dim(panel1)[2])))),
+      include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+      size="small", type="latex", sanitize.text.function=function(x){x},
+      format.args = list(big.mark = ","))
+@
+\\
+\multicolumn{2}{l}{Implied median holding periods (days)} \\
+\hline
+\\
+<<survival_panel2, dependson="make_panels", results='asis'>>=
+# Output the table
+library(xtable)
+print(xtable(panel2,
+             display=c("s", rep("f",(dim(panel2)[2])))),
+      include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+      size="small", type="latex", sanitize.text.function=function(x){x},
+      format.args = list(big.mark = ","))
+@
+\end{tabular}
+
+\end{table}
+
+%\end{landscape}
+
+
+

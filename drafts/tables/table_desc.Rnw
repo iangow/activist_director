@@ -1,0 +1,120 @@
+\Sexpr{set_parent('activist_directors.Rnw')}
+
+% See intro.Rnw for details on this variable.
+\Sexpr{opts_chunk$set(cache.extra=events.updated)}
+<<table_desc_data, eval=TRUE, message=FALSE, echo=FALSE, results='asis'>>=
+library(RPostgreSQL)
+drv <- dbDriver("PostgreSQL")
+pg <- dbConnect(drv, dbname="crsp")
+
+require(xtable)
+
+summ.firms <- dbGetQuery(pg, "
+    WITH raw_data AS (
+        SELECT extract(year FROM eff_announce_date) AS year, *
+        FROM activist_director.activism_events)
+    SELECT year,
+        count(*) AS num_events,
+        sum((NOT activist_demand OR activist_demand IS NULL)::int) AS nba,
+        sum((activist_demand AND NOT activist_director)::int) AS board_demand,
+        sum(activist_director::int) AS activist_director
+    FROM raw_data
+    GROUP BY year
+    ORDER BY year")
+
+summ.dirs <- dbGetQuery(pg, "
+    WITH ad_years AS (
+        SELECT DISTINCT a.*, b.elected,
+            extract(year FROM eff_announce_date) AS year
+        FROM activist_director.activist_directors AS a
+        INNER JOIN activist_director.activism_events AS b
+        USING (cusip_9_digit, announce_date, dissident_group))
+
+    SELECT year,
+        COUNT(*) AS activist_director,
+        sum(activist_affiliate::int) AS affiliated,
+        sum((NOT activist_affiliate)::int) AS unaffiliated,
+        sum(elected::int) AS elected,
+        sum((NOT elected)::int) AS settled
+    FROM ad_years
+    GROUP BY year
+    ORDER BY year
+")
+
+rs <- dbDisconnect(pg)
+@
+\Sexpr{opts_chunk$set(cache.extra=NULL)}
+
+\begin{landscape}
+\begin{table}[htb]
+  \caption{Activism events}
+
+  \label{tbl:act_events}
+  \begin{minipage}[t]{\columnwidth}
+  \begin{flushleft}
+{\small
+Table presents number of activism events by year.
+\textit{Activism} refers to activism events in any of the following three mutually exclusive categories:
+\textit{Non-board activism} refers to the number of non-board related activism events.
+\textit{Board demand} refers to the number of activism events where activists demanded,
+                      but did not win, board seats.
+\textit{Activist director} refers to activism events where activists were granted one or more board seats.
+\newline}
+\end{flushleft}
+\end{minipage}
+  \begin{tabularx}{\linewidth}{l*{8}{Y}}
+  \hline
+<<table_desc_output, dependson="table_desc_data", message=FALSE, echo=FALSE, results='asis'>>=
+table.firms <- rbind(summ.firms,
+                     c("Total", formatC(colSums(summ.firms[, -1]), format ="d", big.mark = ",")))
+
+names(table.firms) <- c("Year", "Activism", "Non-board activism", "Board demand",
+                       "Activist director")
+print(xtable(subset(table.firms, Year != "Total"),
+             display=rep("d", 6)),
+             include.rownames=FALSE, only.contents=TRUE)
+print(xtable(subset(table.firms, Year == "Total"),
+             display=rep("d", 6)),
+             include.colnames=FALSE,
+             include.rownames=FALSE, only.contents=TRUE)
+@
+\end{tabularx}
+\end{table}
+
+\begin{table}[htb]
+  \caption{Activist directors}
+  \label{tbl:act_dirs}
+  \begin{minipage}[t]{\columnwidth}
+  \begin{flushleft}
+{\small
+Table presents number of activist directors by year.
+\textit{Activist directors} are directors who were appointed to the board in response to demands by activists.
+\textit{Affiliated} (\textit{Unaffiliated}) indicates activist directors who are
+  (are not) employees or principals of a member of the dissident group.
+\textit{Elected} indicates that the director was elected by shareholders through a shareholder vote.
+\textit{Settled} indicates that the director were appointed to the board without a shareholder vote.
+\newline}
+\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{8}{Y}}
+ \hline
+<<Table_1c_output, dependson="table_desc_data", message=FALSE, echo=FALSE, results='asis'>>=
+
+table.dirs <- rbind(summ.dirs ,
+                    c("Total", formatC(colSums(summ.dirs[, -1]), format ="d", big.mark = ",")))
+names(table.dirs) <- c("Year", "Activist director", "Affiliated", "Unaffiliated",
+                       "Elected", "Settled")
+require(xtable)
+print(xtable(subset(table.dirs, Year !="Total"),
+             display=rep("d", 7)),
+             include.rownames=FALSE, only.contents=TRUE)
+print(xtable(subset(table.dirs, Year =="Total"),
+             display=rep("d", 7)),
+             include.colnames=FALSE,
+             include.rownames=FALSE, only.contents=TRUE)
+@
+\end{tabularx}
+\end{table}
+
+\end{landscape}
+\newpage
