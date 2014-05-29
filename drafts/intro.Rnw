@@ -97,7 +97,9 @@ Second, what impact do activists have when they get on the board?
 Does their impact differ from that of other cases of activism?
 Finally, is there evidence of short-termism?
 
-Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2012.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contests involving another corporation.} In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board. We identify \Sexpr{dirs$all_dirs} directors whow were appointed to the board in response to activist demands
+Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2012.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contests involving another corporation.}
+In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board.
+We identify \Sexpr{dirs$all_dirs} directors whow were appointed to the board in response to activist demands
 % TODO: I think we have too many repeated firms in our sample. Should some of these events be combined?
 % (involving \Sexpr{dirs$num_act_dir_firms} distinct firms)
 where they are succesful in obtaining a board position.
