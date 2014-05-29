@@ -13,24 +13,27 @@ library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
 survival_data <- dbGetQuery(pg, "
-  SET work_mem='5GB';
+    SET work_mem='5GB';
 
-  SELECT DISTINCT activist_name, permno, first_date, entry_date, exit_date, last_date,
-    announce_date, first_appointment_date, eff_announce_date,
-	activism, activist_demand, activist_director, category, big_investment,
-	bool_or(exit IS TRUE) AS exit
-  FROM activist_director.activist_holdings_matched
-  WHERE permno IS NOT NULL AND activism AND quarter>0
-  AND activist_name NOT IN (
-    'California State Teachers Retirement System',
-    'New York State Common Retirement Fund',
-    'Ontario Teachers'' Pension Plan Board',
-    'The California Public Employees Retirement System')
-  GROUP BY
-	activist_name, permno, first_date, entry_date, exit_date, last_date,
-	announce_date, first_appointment_date, eff_announce_date,
-	activism, activist_demand, activist_director, category, big_investment
-  ORDER BY activist_name, permno
+    WITH activist_exit AS (
+        SELECT activist_name, permno, first_date, bool_or(exit IS TRUE) AS exit
+        FROM activist_director.activist_holdings_matched
+        GROUP BY activist_name, permno, first_date)
+
+    SELECT DISTINCT activist_name, permno, first_date, entry_date,
+        exit_date, last_date, announce_date, first_appointment_date,
+        eff_announce_date, activism, activist_demand, activist_director,
+        category, big_investment, b.exit
+    FROM activist_director.activist_holdings_matched
+    INNER JOIN activist_exit AS b
+    USING (activist_name, permno, first_date)
+    WHERE permno IS NOT NULL AND activism AND quarter>0
+        AND activist_name NOT IN (
+        'California State Teachers Retirement System',
+        'New York State Common Retirement Fund',
+        'Ontario Teachers'' Pension Plan Board',
+        'The California Public Employees Retirement System')
+    ORDER BY activist_name, permno
 ")
 
 rs <- dbDisconnect(pg)
