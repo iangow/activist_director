@@ -12,8 +12,7 @@ library(sandwich)
 <<ff_data_step, include=FALSE>>=
 ## PostgreSQL Connection
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv)
+pg <- dbConnect(PostgreSQL())
 
 #### Combine Fama_French Abnormal Returns with Raw, Size-Adjusted, and Market-Adjusted Returns
 

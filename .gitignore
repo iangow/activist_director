@@ -1,3 +1,14 @@
 .Rproj.user
 .Rhistory
 .RData
+
+# Ignore various outputs of knitr
+*.aux
+*.bbl
+*.bbl
+*.blg
+*.log
+*.out
+*.pdf
+*.synctex.gz
+drafts/*.tex
