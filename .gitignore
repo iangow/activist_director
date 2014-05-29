@@ -9,6 +9,5 @@
 *.blg
 *.log
 *.out
-*.pdf
 *.synctex.gz
 drafts/*.tex
