@@ -12,6 +12,7 @@
 
 %\documentclass[11pt]{amsart} % Perhaps use article
 %\usepackage[backend=bibtex]{bibtex}
+\usepackage{rotating}
 \usepackage{pdflscape}
 \usepackage{array}
 \usepackage{booktabs}
