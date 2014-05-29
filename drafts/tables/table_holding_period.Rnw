@@ -11,7 +11,6 @@ library(survival)
 library(quantreg)
 @
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-
 pg <- dbConnect(PostgreSQL())
 library(RPostgreSQL)
 survival_data <- dbGetQuery(pg, "
@@ -20,9 +19,9 @@ survival_data <- dbGetQuery(pg, "
     -- TODO: Does it make sense to GROUP BY announce_date? What is the effect of doing so?
     --       Note that results hinge on this!
     WITH activist_exit AS (
-        SELECT activist_name, permno, first_date, announce_date, bool_or(exit IS TRUE) AS exit
+        SELECT activist_name, permno, entry_date, bool_or(exit IS TRUE) AS exit
         FROM activist_director.activist_holdings_matched
-        GROUP BY activist_name, permno, first_date, announce_date)
+        GROUP BY activist_name, permno, entry_date)
 
     SELECT DISTINCT activist_name, permno, first_date, entry_date,
         exit_date, last_date, announce_date, first_appointment_date,
@@ -30,7 +29,7 @@ survival_data <- dbGetQuery(pg, "
         category, big_investment, b.exit
     FROM activist_director.activist_holdings_matched
     INNER JOIN activist_exit AS b
-    USING (activist_name, permno, first_date, announce_date)
+    USING (activist_name, permno, entry_date)
     WHERE permno IS NOT NULL AND activism AND quarter>0
         AND activist_name NOT IN (
             'California State Teachers Retirement System',
@@ -126,8 +125,9 @@ panel2 <- cbind(panel2, col3)
 colnames(panel2) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
 row.names(panel2) <- c("Non-board activism", "Board demand", "Activist director")
 @
-\begin{table}[htb]  \label{tbl:holdings}
+\begin{table}[htb]
   \caption{Activist holding periods}
+   \label{tbl:holdings}
   \begin{minipage}[t]{\linewidth}
   \begin{flushleft}
 \tabularnewline

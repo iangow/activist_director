@@ -104,44 +104,6 @@ sw_roa_ffe.f <- rbind(
     (sw_roa_ffe$coefficients[["year_p5"]] - sw_roa_ffe$coefficients[["year_p0"]]),
     linearHypothesis(sw_roa_ffe, "year_p5 - year_p0", vcov.=sw_roa_ffe.cov)[4][2,])
 
-# # Non-activist director only
-# sw_roa_nad_ffe <- plm(roa ~ year_nad_m3 + year_nad_m2 + year_nad_m1 + year_nad_p0 + year_nad_p1 + year_nad_p2 +
-#                           year_nad_p3 + year_nad_p4 + year_nad_p5 + mv + age,
-#                           data=sw, index=c("permno", "fyear"), model="within")
-# sw_roa_nad_ffe.se <- coeftest.cluster(sw, sw_roa_nad_ffe)
-# sw_roa_nad_ffe.cov <- coeftest.cluster(sw, sw_roa_nad_ffe, ret="cov")
-# sw_roa_nad_ffe.f <-
-#     rbind(
-#         (sw_roa_nad_ffe$coefficients[["year_nad_p1"]] - sw_roa_nad_ffe$coefficients[["year_nad_p0"]]),
-#         linearHypothesis(sw_roa_nad_ffe, "year_nad_p1 - year_nad_p0", vcov.=sw_roa_nad_ffe.cov)[4][2,],
-#         (sw_roa_nad_ffe$coefficients[["year_nad_p2"]] - sw_roa_nad_ffe$coefficients[["year_nad_p0"]]),
-#         linearHypothesis(sw_roa_nad_ffe, "year_nad_p2 - year_nad_p0", vcov.=sw_roa_nad_ffe.cov)[4][2,],
-#         (sw_roa_nad_ffe$coefficients[["year_nad_p3"]] - sw_roa_nad_ffe$coefficients[["year_nad_p0"]]),
-#         linearHypothesis(sw_roa_nad_ffe, "year_nad_p3 - year_nad_p0", vcov.=sw_roa_nad_ffe.cov)[4][2,],
-#         (sw_roa_nad_ffe$coefficients[["year_nad_p4"]] - sw_roa_nad_ffe$coefficients[["year_nad_p0"]]),
-#         linearHypothesis(sw_roa_nad_ffe, "year_nad_p4 - year_nad_p0", vcov.=sw_roa_nad_ffe.cov)[4][2,],
-#         (sw_roa_nad_ffe$coefficients[["year_nad_p5"]] - sw_roa_nad_ffe$coefficients[["year_nad_p0"]]),
-#         linearHypothesis(sw_roa_nad_ffe, "year_nad_p5 - year_nad_p0", vcov.=sw_roa_nad_ffe.cov)[4][2,])
-#
-# # Activist director only
-# sw_roa_ad_ffe <- plm(roa ~ year_ad_m3 + year_ad_m2 + year_ad_m1 + year_ad_p0 + year_ad_p1 + year_ad_p2 +
-#                           year_ad_p3 + year_ad_p4 + year_ad_p5 + mv + age,
-#                           data=sw, index=c("permno", "fyear"), model="within")
-# sw_roa_ad_ffe.se <- coeftest.cluster(sw, sw_roa_ad_ffe)
-# sw_roa_ad_ffe.cov <- coeftest.cluster(sw, sw_roa_ad_ffe, ret="cov")
-# sw_roa_ad_ffe.f <-
-#     rbind(
-#         (sw_roa_ad_ffe$coefficients[["year_ad_p1"]] - sw_roa_ad_ffe$coefficients[["year_ad_p0"]]),
-#         linearHypothesis(sw_roa_ad_ffe, "year_ad_p1 - year_ad_p0", vcov.=sw_roa_ad_ffe.cov)[4][2,],
-#         (sw_roa_ad_ffe$coefficients[["year_ad_p2"]] - sw_roa_ad_ffe$coefficients[["year_ad_p0"]]),
-#         linearHypothesis(sw_roa_ad_ffe, "year_ad_p2 - year_ad_p0", vcov.=sw_roa_ad_ffe.cov)[4][2,],
-#         (sw_roa_ad_ffe$coefficients[["year_ad_p3"]] - sw_roa_ad_ffe$coefficients[["year_ad_p0"]]),
-#         linearHypothesis(sw_roa_ad_ffe, "year_ad_p3 - year_ad_p0", vcov.=sw_roa_ad_ffe.cov)[4][2,],
-#         (sw_roa_ad_ffe$coefficients[["year_ad_p4"]] - sw_roa_ad_ffe$coefficients[["year_ad_p0"]]),
-#         linearHypothesis(sw_roa_ad_ffe, "year_ad_p4 - year_ad_p0", vcov.=sw_roa_ad_ffe.cov)[4][2,],
-#         (sw_roa_ad_ffe$coefficients[["year_ad_p5"]] - sw_roa_ad_ffe$coefficients[["year_ad_p0"]]),
-#         linearHypothesis(sw_roa_ad_ffe, "year_ad_p5 - year_ad_p0", vcov.=sw_roa_ad_ffe.cov)[4][2,])
-
 # Activist director incremental effect
 sw_ad_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 +
                                    year_p2 + year_p3 + year_p4 + year_p5 + year_ad_m3 +
@@ -179,8 +141,6 @@ sw_ad_roa_ffe.f <- cbind(
         linearHypothesis(sw_ad_roa_ffe, "year_ad_p5 - year_ad_p0",
                          vcov.=sw_ad_roa_ffe.cov)[4][2,]))
 @
-
-\addtocounter{table}{1}
 
 \begin{table}[htb]
 \caption{Operating performance}

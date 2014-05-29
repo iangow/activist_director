@@ -34,9 +34,6 @@ omits <- unlist(strsplit(controls, "\\s+"))
 source("outcome_functions.R")
 @
 
-\addtocounter{table}{1}
-% \begin{landscape}
-
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
 <<div_acq_data_step, dependson="winsorize">>=
 
@@ -53,8 +50,9 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 @
 
 
-\begin{table}[htb] \label{tbl:div_acq}
-    \caption{Divestitures and acquisitions}
+\begin{table}[htb]
+\caption{Divestitures and acquisitions}
+\label{tbl:div_acq}
 \begin{minipage}[t]{\columnwidth}
 \begin{flushleft}
 {\small
@@ -118,8 +116,9 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 \newpage
 
 \begin{center}
-\begin{table}[htb] \label{tbl:ceo}
+\begin{table}[htb]
 \caption{CEO turnover and compensation}
+\label{tbl:ceo}
 \begin{minipage}[t]{\columnwidth}
 \begin{flushleft}
 {\small
@@ -171,8 +170,9 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 
 % Financing and investment
 \newpage
-\begin{table}[htb] \label{table:fin}
+\begin{table}[htb]
 \caption{Capital structure}
+\label{table:fin}
 \begin{minipage}[t]{\columnwidth}
 \begin{flushleft}
 {\small
@@ -207,8 +207,8 @@ rm(t6.pd)
 
 \newpage
 \begin{table}[htb]
-  \caption{Investment}
-    \label{tbl:invest}
+\caption{Investment}
+\label{tbl:invest}
 \begin{minipage}[t]{\columnwidth}
 \begin{flushleft}
 {\small

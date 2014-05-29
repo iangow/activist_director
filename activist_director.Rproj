@@ -10,7 +10,7 @@ NumSpacesForTab: 4
 Encoding: UTF-8
 
 RnwWeave: knitr
-LaTeX: XeLaTeX
+LaTeX: pdfLaTeX
 RootDocument: drafts/activist_directors.Rnw
 
 AutoAppendNewline: Yes

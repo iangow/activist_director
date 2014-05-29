@@ -287,7 +287,7 @@ merged$merged_p3 <- merged$delisted_p3=="merged"
 <<return_functions, include=FALSE, message=FALSE>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by ols.model function below.
-out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE) {
+out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE, ff=TRUE) {
 
     lhsLabels <- function(text) {
         text <- gsub("^ret.*mkt.*$", "$R^{MKT}$", text, perl=TRUE)
@@ -325,7 +325,8 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE) {
 
     lhs.labels <- lhsLabels(lhs)
 
-    out.model <- function(data, lhs, rhs, lhs.labels, rhs.labels, cluster1=NULL, label=FALSE) {
+    out.model <- function(data, lhs, rhs, lhs.labels, rhs.labels,
+                          cluster1=NULL, label=FALSE) {
 
         getFitted <- function(list) {
             temp <- list()
@@ -379,15 +380,17 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE) {
     }
 
     table_text_before <-
-    paste("\\begin{table}[htb]", if(label) "\\label{tbl:returns}" else "",
-    "\\caption{Stock returns}
-    \\begin{minipage}[t]{\\columnwidth}
+    paste("
+    \\begin{table}[htb]
+    \\caption{Stock returns}", if(label) "\\label{tbl:returns}" else "",
+    "\\begin{minipage}[t]{\\columnwidth}
     \\begin{flushleft}
     {
-     Table presents returns by category of activism. Superscripts $MKT$, $SZ$, $FFV$, $FFE$ denote
-        market-adjusted, size-adjusted, value-weighted Fama-French three-factor adjusted,
-        and equal-weighted Fama-French three-factor adjusted returns, respectively.
-    \\newline}
+     Table presents returns by category of activism where
+    $R$, $R^{MKT}$, $R^{SZ}$ denote
+        raw, market-adjusted, and size-adjusted returns respectively.",
+     if (ff) "$R^{FFV}$ ($R^{FFE}$) denotes value-weighted (equal-weighted) Fama-French three-factor adjusted returns." else "",
+    "\\newline}
     \\end{flushleft}
     \\end{minipage}
     \\begin{tabularx}{\\linewidth}{l*{4}{Y}}
@@ -419,13 +422,13 @@ rhs <- "category"
 <<returns_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel A: Days $-20$ to $+20$ around announcement of activism."
 lhs.vars <- c("ret_d_alt_ann", "ret_d_alt_ann_mkt", "ret_d_alt_ann_sz")
-out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE)
+out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
 <<returns_panel_c, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel B: Days $-1$ to $+1$ around appointment."
 lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption)
+out.table(reg.data, lhs.vars, rhs="big_investment", caption, ff=FALSE)
 @
 
 <<returns_panel_d, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
@@ -455,3 +458,4 @@ out.table(reg.data, lhs.vars, rhs="big_investment", caption)
 @
 
 \end{landscape}
+\addtocounter{table}{1}
