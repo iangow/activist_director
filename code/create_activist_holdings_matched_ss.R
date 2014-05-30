@@ -149,6 +149,9 @@ exit_quarter_extra AS (
 ")
 })
 
+sql <- "ALTER TABLE activist_director.activist_holdings_matched OWNER TO activism;"
+rs <- dbGetQuery(pg, sql)
+
 sql <- paste("
   COMMENT ON TABLE activist_director.activist_holdings_matched IS
     'CREATED USING create_activist_holdings_matched_ss ON ", Sys.time() , "';", sep="")
