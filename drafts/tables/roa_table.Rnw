@@ -19,8 +19,7 @@ library(plm)
 
 <<table_roa_data_step>>=
 # PostgreSQL Connection
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(PostgreSQL())
 
 # Data
 rs <- dbGetQuery(pg, "SET work_mem='2GB'")
@@ -162,7 +161,7 @@ The quantities presented in the table represent estimates of the impact of activ
 \hline
  & \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activism}} &
     \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activist director}} \\
-<<table_roa_f_table, dependson=c("table_roa_data_step", "make_rows"), results='asis'>>=
+<<table_roa_f_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
 sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_ad_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
 #coeff/qnorm(p-value/2)
 for (i in 1:5) {
@@ -192,7 +191,7 @@ print(xtable(getCoefs(sw_f), digit=3,
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 \multicolumn{3}{l}{Number of observations with activism indicator equal to $1$} \\
 \hline
-<<table_roa_n_table, dependson=c("table_roa_data_step"), results='asis'>>=
+<<table_roa_n_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
 # Observations
 sw_n <- as.data.frame(
     rbind(
@@ -216,7 +215,7 @@ row.names(sw_n) <- c("$\\textrm{Year}_{t-3}$",
                              "$\\textrm{Year}_{t+4}$",
                              "$\\textrm{Year}_{t+5}$")
 print(xtable(sw_n,
-             display=c("s", rep("s",(dim(sw_n)[2])))),
+             display=c("s", rep("d",(dim(sw_n)[2])))),
       include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
       size="small", type="latex", sanitize.text.function=function(x){x},
       format.args = list(big.mark = ","))
