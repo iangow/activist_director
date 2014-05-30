@@ -1,0 +1,41 @@
+---
+title: "When do activists go active?"
+author: "Ian Gow"
+date: "5/30/2014"
+output: pdf_document
+---
+```{r, connect_to_db, include=FALSE}
+library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
+dbGetQuery(pg, "SET work_mem='10GB';")
+```
+
+Let's look at the top activists (based on number of activism cases matched to 13F data) and see
+how often they are going active with their stock holdings observed during our study period.
+
+```{r, results='hide', tidy=FALSE, cache=TRUE}
+
+the.data <- dbGetQuery(pg, "    
+    WITH stocks AS (
+        SELECT activist_name, permno, bool_or(activism) AS activism
+        FROM activist_director.activist_holdings_matched
+        WHERE period_of_report BETWEEN '2004-01-01' AND '2012-12-31'
+        GROUP BY activist_name, permno)
+    SELECT activist_name, count(*) AS num_stocks, 
+        sum(activism::int) AS num_activism_events
+    FROM stocks
+    GROUP BY activist_name
+    ORDER BY sum(activism::int) DESC")
+```
+
+```{r, disconnect, include=FALSE}
+dbDisconnect(pg)
+```
+
+Let's look at the top 20:
+
+```{r, echo=FALSE, results="asis"}
+names(the.data) <- c("Activist", "Stocks", "Num. activist")
+library(xtable)
+print(xtable(the.data[1:20,], display=c("s", "s", "d", "d")), comment=FALSE)
+```
