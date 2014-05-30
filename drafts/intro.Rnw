@@ -92,7 +92,7 @@ Hedge fund activism has become a significant phenomenon in recent years. This ki
 
 One approach used by hedge fund activists to influence companies in which they have invested, is to seek to join the board of directors of these companies.
 But this is not costless. First, there are direct costs associated with getting on the board, which \citet{Gantchev:2012wn} finds to be significant. Second, by joining the board the activists (or their nominees) stake their reputations by taking on a role in implementing their demands.
-Third, board positions also come with fiduciary responsibilities towards all shareholders. Given the additional cost and commitment required of activists that get board representation---and the tendency for such investors to take ``long-term'' positions when they do so---by studying the actions of firms with such directors, we can gain new insight into the motives and effects of hedge fund activists.
+Third, board positions also come with fiduciary responsibilities towards all shareholders. Given the additional cost and commitment required of activists that get board representation---and the tendency for such investors to take ``long-term'' positions when they do so---studying the actions of firms with such directors can provide new insight into the motives and effects of hedge fund activists.
 
 Hedge fund activism is not without its critics. Some have argued that hedge fund activism is potentially harmful due to the possibility that the activist interests are ``not necessarily aligned with the interests of long-term investors'' \citep{StrineJr:2014ur}. % TODO page no?
 Given the potentially greater influence that activists have when they get in the boardroom, by focusing on such cases, our paper aims to deepen our understanding of the effects of hedge fund activism.
@@ -120,7 +120,7 @@ Activist directors are appointed to key committees just as often as other new di
 About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed at the hedge fund activist; the rest (\Sexpr{dirs$unaffiliated}) appear to be unaffiliated directly to the hedge fund despite being sponsored by the activist for the board position.
 
 Using methods that account for censoring, we find that activists hold stock in a target firm for a median of about 2.4 years when their demands do not include board representation, and that this increases to 3 years in cases where the activists obtain board representation.
-A three-year holding period implies that these activists can be considered as ``long-term'' investors.\footnote{See Section \ref{sect:holding} for discussion of the holding periods of other kinds of investors.}
+A three-year holding period implies that these activists can be considered as ``long-term'' investors.\footnote{As discussed in Section \ref{sect:holding}, pension funds have a typical duration of 2 years and investor relation professionals consider a horizon of more than $2.8$ years to warrant the label ``long-term.''}
 
 We then examine a number of possible consequences of activist directors for the firms whose boards they join.
 Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with returns from $-20$ to $+20$ trading days around the announcement ranging from $3.9\%$ to $4.9\%$.

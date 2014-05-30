@@ -287,7 +287,8 @@ merged$merged_p3 <- merged$delisted_p3=="merged"
 <<return_functions, include=FALSE, message=FALSE>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by ols.model function below.
-out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE, ff=TRUE) {
+out.table <- function(data, lhs, rhs, caption="Some returns",
+                      label=FALSE, ff=TRUE, use.caption=TRUE) {
 
     lhsLabels <- function(text) {
         text <- gsub("^ret.*mkt.*$", "$R^{MKT}$", text, perl=TRUE)
@@ -313,11 +314,11 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE, ff=TR
                              c("Non-board activism", "Board demand",
                                "Early appointment", "Late appointment"),
                 "big_investment"=if (any(grepl("_appt", lhs)))
-                                    c("Activist director, investment $>$ \\$100m",
-                                      "Activist director, investment $<$ \\$100m") else
+                                    c("Invest. $>$ \\$100m",
+                                      "Invest. $<$ \\$100m") else
                                       c("Non-board activism", "Board demand",
-                                        "Activist director, investment $>$ \\$100m",
-                                        "Activist director, investment $<$ \\$100m"),
+                                        "Invest. $>$ \\$100m",
+                                        "Invest. $<$ \\$100m"),
                 "1"=c("Activist director"),
                 levels(reg.data[, rhs]))
 
@@ -381,8 +382,8 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE, ff=TR
 
     table_text_before <-
     paste("
-    \\begin{table}[htb]
-    \\caption{Stock returns}", if(label) "\\label{tbl:returns}" else "",
+    \\begin{table}[htb]",
+    if (use.caption) { paste("\\caption{Stock returns}", if(label) "\\label{tbl:returns}" else "",
     "\\begin{minipage}[t]{\\columnwidth}
     \\begin{flushleft}
     {
@@ -392,32 +393,24 @@ out.table <- function(data, lhs, rhs, caption="Some returns", label=FALSE, ff=TR
      if (ff) "$R^{FFV}$ ($R^{FFE}$) denotes value-weighted (equal-weighted) Fama-French three-factor adjusted returns." else "",
     "\\newline}
     \\end{flushleft}
-    \\end{minipage}
-    \\begin{tabularx}{\\linewidth}{l*{4}{Y}}
+    \\end{minipage}") } else "",
+    "\\begin{tabularx}{\\linewidth}{l*{4}{Y}}
     \\multicolumn{5}{l}{{", caption, "}} \\\\")
 
-    table_text_after <- "
+    table_text_after <- paste("
     \\end{tabularx}
-    \\end{table}
-    \\addtocounter{table}{-1}"
+    \\end{table}", if (use.caption) "\\addtocounter{table}{-1}" else "")
     cat(table_text_before)
     out.model(data, lhs, rhs, lhs.labels, rhs.labels, label=label)
     cat(table_text_after)
 }
 @
 
-\begin{landscape}
-
+%\begin{landscape}
 <<return_data_prep, cache=TRUE, dependson="ret_data_step", results='asis'>>=
 reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
 rhs <- "category"
 @
-
-% <<returns_panel_a, dependson=c("table_5_prep", "table_5_function"), cache=FALSE, results='asis'>>=
-% caption <- "Panel A: From 12 months prior prior to activism announcement (month $t-12$) to month $t-1$."
-% lhs.vars <- c("ret_m1", "ret_mkt_m1", "ret_sz_m1", "ab_vwret_m1", "ab_ewret_m1")
-% out.table(reg.data, lhs.vars, rhs=rhs, caption)
-% @
 
 <<returns_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel A: Days $-20$ to $+20$ around announcement of activism."
@@ -428,34 +421,37 @@ out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 <<returns_panel_c, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel B: Days $-1$ to $+1$ around appointment."
 lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption, ff=FALSE)
+out.table(reg.data, lhs.vars, rhs="big_investment", caption, ff=FALSE, use.caption=FALSE)
 @
 
+% \clearpage
 <<returns_panel_d, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel C: From activism announcement (month $t$) to month $t+12$."
 lhs.vars <- c("ret_p1", "ret_mkt_p1", "ret_sz_p1", "ab_vwret_p1", "ab_ewret_p1")
 out.table(reg.data, lhs.vars, rhs=rhs, caption)
 @
-
+% \clearpage
 <<returns_panel_e, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel D: From activism announcement (month $t$) to month $t+36$."
 lhs.vars <- c("ret_p3", "ret_mkt_p3", "ret_sz_p3", "ab_vwret_p3", "ab_ewret_p3")
 out.table(reg.data, lhs.vars, rhs=rhs, caption)
 @
 
+% \clearpage
 <<returns_panel_f, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel E: From activist appointment date (month $t$) to month $t+12$."
 lhs.vars <- c("ret_p1_appt", "ret_mkt_p1_appt",  "ret_sz_p1_appt", "ab_vwret_appt_p1",
               "ab_ewret_appt_p1")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption)
+out.table(reg.data, lhs.vars, rhs="big_investment", caption, use.caption=FALSE)
 @
 
+% \clearpage
 <<returns_panel_g, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel F: From activist appointment date (month $t$) to month $t+36$."
 lhs.vars <- c("ret_p3_appt", "ret_mkt_p3_appt", "ret_sz_p3_appt", "ab_vwret_appt_p3",
               "ab_ewret_appt_p3")
 out.table(reg.data, lhs.vars, rhs="big_investment", caption)
 @
-
-\end{landscape}
 \addtocounter{table}{1}
+% \clearpage
+%\end{landscape}

@@ -1,7 +1,6 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('bebchuk_sharkwatch.sql'))}
-
 <<load_libraries_roa, cache=FALSE, message=FALSE, include=FALSE>>=
 library(lmtest)
 library(sandwich)
@@ -16,7 +15,7 @@ source("http://iangow.me/code/cluster2.R")
 library(RPostgreSQL)
 library(plm)
 @
-
+%
 <<table_roa_data_step>>=
 # PostgreSQL Connection
 drv <- dbDriver("PostgreSQL")
@@ -33,7 +32,7 @@ year_inds <- paste(year_inds, gsub("_", "_ad_", year_inds), gsub("_", "_nad_", y
 year_inds <- unlist(strsplit(year_inds, " "))
 for (i in year_inds) sw[, i] <- as.integer(sw[, i])
 @
-
+%
 <<make_rows>>=
 getCoefs <- function(table) {
 
@@ -62,7 +61,7 @@ getCoefs <- function(table) {
     return(temp)
 }
 @
-
+%
 <<table_roa_est, dependson=c("table_roa_data_step")>>=
 # Winsorization
 sw$roa <- winsor(sw$roa, trim= 0.01, na.rm=TRUE)
@@ -141,12 +140,12 @@ sw_ad_roa_ffe.f <- cbind(
         linearHypothesis(sw_ad_roa_ffe, "year_ad_p5 - year_ad_p0",
                          vcov.=sw_ad_roa_ffe.cov)[4][2,]))
 @
-
+%
 \begin{table}[htb]
 \caption{Operating performance}
 \label{tbl:roa}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+% \begin{flushleft}
 {\small
 Table presents estimates of the impact of activism on return on assets over 5 years after the announcement of activism. The empirical approach follows that of \citet{Bebchuk:2013wi}.
 We regress return on assets on indicators for activism events in any of the three categories, including \textit{Board demand} and \textit{Activist director}, ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
@@ -154,7 +153,7 @@ We estimate three models. Following \citet{Bebchuk:2013wi}, all models include y
 Models (A) and (B) add industry and firm fixed effects, respectively. Model (C) also adds firm fixed effects, as well as indicators for activist director appointments in years ranging from three years prior ($\textit{Activist director}_{t-3}$) to five years subsequent ($\textit{Activist director}_{t+5}$).
 The quantities presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$. Numbers in parentheses are heteroskedasticity-robust standard errors. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 \small
 \begin{tabular}{l D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} }

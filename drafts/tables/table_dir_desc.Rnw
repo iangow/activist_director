@@ -114,12 +114,12 @@ tab <- rbind(tab.1, tab.2, tab.3, tab.4)
 
   \label{tbl:dir_chars}
   \begin{minipage}[t]{\columnwidth}
-  \begin{flushleft}
+%  \begin{flushleft}
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors. Panel A presents data on directors matched to Equilar. $N$ refers to the number of observations. \textit{Age} refers to mean age of directors in each category. Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively. Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards. Panel B presents data on all activist directors (i.e., no requirement for Equilar match). \textit{Tenure} is measured in days and is censored for directors still active on December 31, 2013.
 \newline}
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{7}{Y}}
 \multicolumn{7}{l}{Panel A: Director characteristics by activism classification}

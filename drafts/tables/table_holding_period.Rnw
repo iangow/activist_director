@@ -126,14 +126,14 @@ row.names(panel2) <- c("Non-board activism", "Board demand", "Activist director"
   \caption{Activist holding periods}
    \label{tbl:holdings}
   \begin{minipage}[t]{\linewidth}
-  \begin{flushleft}
+%  \begin{flushleft}
 \tabularnewline
 Table presents results of censored median regression analysis of holding period (days) on activism category.
 \textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
 \textit{Annc--exit} refers to the time between announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
 \newline
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 % Following was copied from .tex output from stargazer.
 \begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} c }
@@ -163,8 +163,7 @@ print(xtable(panel2,
       format.args = list(big.mark = ","))
 @
 \end{tabular}
-
 \end{table}
-
+\clearpage
 
 

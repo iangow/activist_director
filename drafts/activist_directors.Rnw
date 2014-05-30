@@ -23,7 +23,7 @@
 %\evensidemargin=.05in
 \usepackage{natbib}
 \usepackage[marginratio=1:1]{geometry}  % See geometry.pdf to learn the layout options. There are lots.
-\geometry{margin=1in}
+\geometry{margin=0.8in}
 %\geometry{letterpaper} % ... or a4paper or a5paper or ...
 %\geometry{landscape}  % Activate for for rotated page geometry
 \usepackage[parfill]{parskip}    % Activate to begin paragraphs with an empty line rather than an indent
