@@ -54,7 +54,7 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 \caption{Divestitures and acquisitions}
 \label{tbl:div_acq}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+% \begin{flushleft}
 {\small
 Table presents regressions of outcome variables on firm-year level activism indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within three years after year $t$.
@@ -80,7 +80,7 @@ Regressions include industry and year fixed effects and the following controls (
 All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<table_6_div_and_acq, dependson=c("table_6_functions", "div_acq_data_step"), results='asis'>>=
@@ -120,7 +120,7 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 \caption{CEO turnover and compensation}
 \label{tbl:ceo}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+% \begin{flushleft}
 {\small
 Table presents regressions of variables on firm-year level activism categorical variables.
 \textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+3$.
@@ -131,7 +131,7 @@ Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 <<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
@@ -174,7 +174,7 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 \caption{Capital structure}
 \label{table:fin}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+% \begin{flushleft}
 {\small
 \textit{Cash} is calculated as the ratio of total cash and short-term
     investments to the book value of total assets.
@@ -185,7 +185,7 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<table_6_cap_struct, dependson=c("table_6_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
@@ -210,7 +210,7 @@ rm(t6.pd)
 \caption{Investment}
 \label{tbl:invest}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+%\begin{flushleft}
 {\small
 Table presents regressions of variables on firm-year level activism categorical variables.
 % \textit{Tax rate} is measured as the ratio of total tax expense for three years after announcement of activism to the pre-tax income during the same period.
@@ -220,7 +220,7 @@ Table presents regressions of variables on firm-year level activism categorical 
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
-\end{flushleft}
+%\end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<table_6_investment, dependson=c("table_6_functions", "other_outcome_data_step"), results='asis'>>=

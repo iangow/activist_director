@@ -50,10 +50,9 @@ rs <- dbDisconnect(pg)
 \begin{landscape}
 \begin{table}[htb]
   \caption{Activism events}
-
   \label{tbl:act_events}
   \begin{minipage}[t]{\columnwidth}
-  \begin{flushleft}
+%  \begin{flushleft}
 {\small
 Table presents number of activism events by year.
 \textit{Activism} refers to activism events in any of the following three mutually exclusive categories:
@@ -62,7 +61,7 @@ Table presents number of activism events by year.
                       but did not win, board seats.
 \textit{Activist director} refers to activism events where activists were granted one or more board seats.
 \newline}
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
   \begin{tabularx}{\linewidth}{l*{8}{Y}}
   \hline
@@ -87,7 +86,7 @@ print(xtable(subset(table.firms, Year == "Total"),
   \caption{Activist directors}
   \label{tbl:act_dirs}
   \begin{minipage}[t]{\columnwidth}
-  \begin{flushleft}
+%  \begin{flushleft}
 {\small
 Table presents number of activist directors by year.
 \textit{Activist directors} are directors who were appointed to the board in response to demands by activists.
@@ -96,7 +95,7 @@ Table presents number of activist directors by year.
 \textit{Elected} indicates that the director was elected by shareholders through a shareholder vote.
 \textit{Settled} indicates that the director were appointed to the board without a shareholder vote.
 \newline}
-\end{flushleft}
+%\end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{8}{Y}}
  \hline
