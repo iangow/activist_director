@@ -1,8 +1,8 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 
 \title{%
-Activist directors:\\%
-Determinants and consequences%\newline%
+Activist directors:\\
+Determinants and consequences
 \\[18pt]
 \large%
 Preliminary draft: Please do not quote or cite without permission}
@@ -111,7 +111,8 @@ We describe the characteristics of activist directors and compare them with new 
 We find that activist director characteristics differ according to whether the director is affiliated with activists or not. Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 9 years younger than other new directors and much less likely to be female. Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly move into key board positions.
 About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed at the hedge fund activist; the rest (\Sexpr{dirs$unaffiliated}) appear to be unaffiliated directly to the hedge fund despite being sponsored by the activist for the board position.
 
-Using methods that account for censoring, we find that activists hold stock in a target firm for a median of about 2.4 years when their demands do not include board representation, and that this increases to 3 years in cases where the activists obtain board representation. This holding period exceeds conventional thresholds for considering investors to be ``long-term'' investors.\footnote{See Section \ref{sect:holding} for a discussion of some common thresholds.}
+Using methods that account for censoring, we find that activists hold stock in a target firm for a median of about 2.4 years when their demands do not include board representation, and that this increases to 3 years in cases where the activists obtain board representation.
+A three-year holding period implies that these activists can be considered as ``long-term'' investors.\footnote{See Section \ref{sect:holding} for discussion of the holding periods of other kinds of investors.}
 
 We then examine a number of possible consequences of activist directors for the firms whose boards they join.
 Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with returns from $-20$ to $+20$ trading days around the announcement ranging from $3.9\%$ to $4.9\%$. We find no evidence of a market reaction at the appointment of activist directors, perhaps reflecting the difficulty of identifying precisely when the market learns about activist board appointments.
@@ -126,7 +127,7 @@ However, even if given a causal interpretation, it is unclear whether all of the
 % Note: Unless there is a blank link between two lines, the lines get
 % merged into one paragraph.
 The rest of the paper proceeds as follows.
-Section \ref{sect:lit_review} describes features of shareholder activism campaigns and the prior literature.
+Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
 Section \ref{sect:desc_stats} describes our data and descriptive statistics.
 Section \ref{sect:selection} examines the circumstances in which activists seek and obtain board representation.
 Section \ref{sect:holding} examines the association with activist board representation and activist holding periods.
