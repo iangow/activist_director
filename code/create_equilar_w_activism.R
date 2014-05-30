@@ -103,6 +103,8 @@ rs <-dbGetQuery(pg, "
     WHERE a.fy_end > '2003-12-31'
     ORDER BY equilar_id, fy_end, director_id")
 
+rs <- dbGetQuery(pg, "ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")
+
 sql <- paste("
   COMMENT ON TABLE activist_director.equilar_w_activism IS
     'CREATED USING create_equilar_w_activism ON ", Sys.time() , "';", sep="")

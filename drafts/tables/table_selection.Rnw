@@ -206,7 +206,7 @@ t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
 \caption{Activist target selection}
 \label{tbl:selection}
 \begin{minipage}[t]{\columnwidth}
-\begin{flushleft}
+% \begin{flushleft}
   {\small
     All regressions in this table include the following controls measured for the prior fiscal year-end:
     \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
@@ -229,7 +229,7 @@ t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
     Values in parentheses are standard errors clustered by firm.
     *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
-  \end{flushleft}
+ % \end{flushleft}
   \end{minipage}
 \addtocounter{table}{-1}
 \end{table}
@@ -239,11 +239,11 @@ t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
   \begin{table}[htb]
     \caption{Activist target selection}
             \begin{minipage}[t]{\columnwidth}
-    \begin{flushleft}
+%    \begin{flushleft}
   {\small
 Panel A presents logit regression where the dependent variables are indicators for being targeted for activism in any category (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1), being the target of an activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3). Sample includes firm-years with and without activism.
     \newline}
-  \end{flushleft}
+%  \end{flushleft}
   \end{minipage}
 \begin{tabularx}{5in}{l*{3}{Y}}
 \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
@@ -271,11 +271,11 @@ stargazer(getFitted(t3.pa),
   \begin{table}[htb]
     \caption{Activist target selection}
         \begin{minipage}[t]{\columnwidth}
-    \begin{flushleft}
+%    \begin{flushleft}
   {\small
 Panel B presents logit regression where the dependent variables are indicators for activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 1) and activists getting board seats (\textit{Activist director}, Column 2) conditional on the firm being targeted by activists.
   \newline}
-  \end{flushleft}
+%  \end{flushleft}
   \end{minipage}
     \begin{tabularx}{6.5in}{l*{3}{Y}}
      \multicolumn{3}{l}{Panel B: Activism, board demand and activist director (activism only)} \\

@@ -4,22 +4,20 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
 
-%\begin{landscape}
-
 <<quantreg_libraries, cache=FALSE>>=
 library(survival)
 library(quantreg)
 @
+
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
 pg <- dbConnect(PostgreSQL())
 library(RPostgreSQL)
 survival_data <- dbGetQuery(pg, "
     SET work_mem='5GB';
 
-    -- TODO: Does it make sense to GROUP BY announce_date? What is the effect of doing so?
-    --       Note that results hinge on this!
     WITH activist_exit AS (
-        SELECT activist_name, permno, entry_date, bool_or(exit IS TRUE) AS exit
+        SELECT activist_name, permno, entry_date,
+            bool_or(exit IS TRUE) AS exit
         FROM activist_director.activist_holdings_matched
         GROUP BY activist_name, permno, entry_date)
 
@@ -69,7 +67,6 @@ quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type
                  taus=c(0.25, 0.5, 0.75),
                  na.action="na.omit",
                  method="Portnoy")
-
 @
 
 <<make_panels, dependson="quantreg_analysis", include=FALSE>>=
@@ -129,14 +126,14 @@ row.names(panel2) <- c("Non-board activism", "Board demand", "Activist director"
   \caption{Activist holding periods}
    \label{tbl:holdings}
   \begin{minipage}[t]{\linewidth}
-  \begin{flushleft}
+%  \begin{flushleft}
 \tabularnewline
 Table presents results of censored median regression analysis of holding period (days) on activism category.
 \textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
 \textit{Annc--exit} refers to the time between announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
 \newline
-\end{flushleft}
+% \end{flushleft}
 \end{minipage}
 % Following was copied from .tex output from stargazer.
 \begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} c }
@@ -166,10 +163,7 @@ print(xtable(panel2,
       format.args = list(big.mark = ","))
 @
 \end{tabular}
-
 \end{table}
-
-%\end{landscape}
-
+\clearpage
 
 

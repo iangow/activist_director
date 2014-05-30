@@ -3,8 +3,9 @@
 \section{Conclusion} \label{sect:conc}
 
 In recent years, the phenomenon of hedge fund managers attempting to actively intervene in the governance of firms they invest in has gained prominence. These fund managers often layout an investment thesis regarding their target firms and vigorously engage with their targets to realize their thesis.
-Instead of passively waiting for an investment hypothesis to validate itself (like most institutional fund managers do), activist hedge fund managers often demand seats on the board of their targets as a mechanism to effect change in their investee firms and thereby actively control the outcome of their investment.
-While attaining directorship is not the end goal, it is the stick that activists use to force companies to take their demands seriously. Given the importance that the demand for board positions has in the activist game plan, we examine hedge fund activism thorough the lens of activist directors, i.e., cases where candidates sponsored by the activists become directors of the target companies.
+
+Instead of passively waiting for an investment hypothesis to validate itself (like most institutional fund managers do), activist hedge fund managers often demand seats on the board of their targets as a mechanism to effect change in investee firms and thereby actively control the outcome of their investment.
+While attaining directorship might not be the end goal, it is perhaps the stick that activists use to force companies to take their demands seriously. Given the importance that the demand for board positions has in the activist game plan, we examine hedge fund activism thorough the lens of activist directors, i.e., cases where candidates sponsored by the activists become directors of the target companies.
 
 We find that activists are more likely to gain board seats at smaller firms and those with weaker stock price performance. As in prior research, we find positive announcement-period returns  of around 4--5\% when a firm is targeted by activists, including in cases where the activists ex-post gain board seats, and a 2\% increase in return on assets over the subsequent one to five years.
 When they have board seats, activists remain as shareholders long enough to be considered long-term investors by conventional standards, with holding periods averaging three years.
