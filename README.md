@@ -1,6 +1,6 @@
 # Activist directors #
 
-[Here](https://www.dropbox.com/s/6jc8lrqyq1sisth/activist_directors.pdf) is PDF of the current draft in Dropbox.
+[Here](https://www.dropbox.com/s/luhr3lvvj0sppk1/activist_directors.pdf) is PDF of the current draft in Dropbox.
 
 
 ## Quick LaTeX Guide for Suraj 
