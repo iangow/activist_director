@@ -50,7 +50,6 @@ rs <- dbDisconnect(pg)
 \begin{landscape}
 \begin{table}[htb]
   \caption{Activism events}
-
   \label{tbl:act_events}
   \begin{minipage}[t]{\columnwidth}
   \begin{flushleft}
