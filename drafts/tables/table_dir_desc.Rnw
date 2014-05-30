@@ -8,7 +8,7 @@ library(xtable)
 
 \begin{landscape}
 <<dir_desc_sample, message=FALSE, echo=FALSE, results='asis'>>=
-# PostgreSQL connection
+# PostgreSQL connection #
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
 pg <- dbConnect(drv, dbname="crsp")
