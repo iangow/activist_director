@@ -1,13 +1,17 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 
-\title{Activist directors:\\Determinants and consequences
-\newline
-\\ \large Preliminary draft: Please do not quote or cite without permission}
+\title{%
+Activist directors:\\%
+Determinants and consequences%\newline%
+\\[18pt]
+\large%
+Preliminary draft: Please do not quote or cite without permission}
 % TODO: Add names of recent batch of RAs?
 % \subtitle{Preliminary draft}
 
 \author{Ian D. Gow\thanks{All authors are at Harvard Business School.
 We thank the Division of Research at Harvard Business School for financial support and participants in the HBS Accounting and Management brown bag seminar for helpful suggestions. Stephanie Kreutz and Kristen Garner provided excellent research support} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+
 \maketitle
 % \affil{Preliminary draft}
 % This code gets the comment associated with the activist_director.activism_events

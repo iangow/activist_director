@@ -10,7 +10,7 @@ rs <- dbGetQuery(pg, "
   $$;
 
   CREATE OR REPLACE FUNCTION quarters_between(date, date)
-   RETURNS int strict immutable language sql as $$
+   RETURNS int STRICT IMMUTABLE LANGUAGE sql ASs $$
      SELECT quarters_of($1) - quarters_of($2)
   $$;")
 
@@ -130,7 +130,8 @@ holding_data <- dbGetQuery(pg, "
     ON a.permno=e.permno AND (e.dissidents && a.activist_names)
     AND eff_announce_date BETWEEN entry_date - 90 AND exit_date
     ORDER BY activist_name, permno, entry_date, announce_date, period_of_report, quarter;
-")
+
+    ALTER TABLE activist_director.activist_holdings_matched OWNER TO activism")
 })
 
 sql <- paste("
