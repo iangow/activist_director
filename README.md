@@ -1,13 +1,7 @@
 # Activist directors #
 
-This README would normally document whatever steps are necessary to get your application up and running.
+[Here](https://www.dropbox.com/s/6jc8lrqyq1sisth/activist_directors.pdf) is PDF of the current draft in Dropbox.
 
-### What is this repository for? 
-
-* Project about activist directors
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
-
-### How do I get set up? 
 
 ## Quick LaTeX Guide for Suraj 
 - Percent signs (%) mark comments. To get a percent sign, escape it by putting a backslash in front.
