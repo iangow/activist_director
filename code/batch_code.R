@@ -37,11 +37,11 @@ runSQL("code/create_view_financials.sql")
 pg_comment("activist_director.financials",
            "CREATED USING create_view_financials.sql")
 
-# This one takes a long time to run!
-source("code/create_activist_holdings_matched_ss.R", echo=TRUE)
-
 # Column 5
 source('code/create_activism_events.R', echo=TRUE)
+
+# This one takes a long time to run!
+source("code/create_activist_holdings_matched_ss.R", echo=TRUE)
 
 source('code/create_equilar_w_activism.R', echo=TRUE)
 
