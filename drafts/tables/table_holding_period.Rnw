@@ -10,8 +10,8 @@ library(quantreg)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-pg <- dbConnect(PostgreSQL())
 library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
 survival_data <- dbGetQuery(pg, "
     SET work_mem='5GB';
 
