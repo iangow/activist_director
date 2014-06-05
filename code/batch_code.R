@@ -68,3 +68,5 @@ source('code/create_equilar_w_activism.R', echo=TRUE)
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 runSQL('code/create_outcome_controls.sql')
+
+source('code/import_spinoff_divestiture_ciq.R', echo=TRUE)
