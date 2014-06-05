@@ -107,12 +107,12 @@ first_board_demand_date AS (
     GROUP BY cusip_9_digit, announce_date, dissident_group)
 
 SELECT DISTINCT a.*,
-    -- b.first_board_demand_date,
-    -- CASE WHEN activist_demand_old THEN TRUE WHEN first_board_demand_date IS NOT NULL THEN TRUE END AS activist_demand,
+    b.first_board_demand_date,
+    CASE WHEN activist_demand_old THEN TRUE WHEN first_board_demand_date IS NOT NULL THEN TRUE END AS activist_demand,
 	CASE
 	    WHEN activist_director THEN 'activist_director'
 	    WHEN activist_demand_old THEN 'activist_demand'
-        -- WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
+        WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
 	    WHEN activism THEN 'activism'
 	    ELSE '_none'
 	END AS category,
@@ -120,24 +120,25 @@ SELECT DISTINCT a.*,
         WHEN activist_director AND num_affiliate_directors > 0 THEN 'affiliated'
         WHEN activist_director AND num_affiliate_directors = 0 THEN 'non_affiliated'
         WHEN activist_demand_old THEN 'activist_demand'
-        -- WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
+        WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
         WHEN activism THEN 'activism'
         ELSE '_none' END AS affiliated,
 	CASE
 	    WHEN num_activist_directors > 1 THEN 'two_plus_directors'
 	    WHEN activist_director THEN 'one_director'
 	    WHEN activist_demand_old THEN 'activist_demand'
-        -- WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
+        WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
 	    WHEN activism THEN 'activism'
 	    ELSE '_none' END AS two_plus,
-    -- elected,
-    -- CASE WHEN activist_director THEN first_appointment_date END AS first_appointment_date,
+    --    elected,
+    --  CASE WHEN activist_director THEN first_appointment_date END AS
+    first_appointment_date,
     eff_announce_date AS event_date,
     CASE
     	WHEN first_appointment_date - eff_announce_date <= 180 THEN 'early'
     	WHEN first_appointment_date - eff_announce_date > 180 THEN 'late'
     	WHEN activist_demand_old THEN 'activist_demand'
-        -- WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
+        WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
     	WHEN a.activism THEN 'activism'
     	ELSE '_none' END AS early,
     CASE
@@ -146,7 +147,7 @@ SELECT DISTINCT a.*,
                 dissident_group_ownership_percent_at_announcement/100 > 100 THEN 'big investment director'
         WHEN activist_director THEN 'small investment director'
         WHEN activist_demand_old THEN 'activist_demand'
-        -- WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
+        WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
         WHEN activism then 'activism'
         ELSE '_none' END AS big_investment,
     CASE
@@ -168,8 +169,8 @@ SELECT DISTINCT a.*,
     -- NOT activist_director AND activist_demand AS activist_demand,
     -- NOT activist_demand AND activism AS activism
 FROM penultimate AS a
--- LEFT JOIN first_board_demand_date AS b
--- ON a.cusip_9_digit=b.cusip_9_digit AND eff_announce_date=b.announce_date AND a.dissident_group=b.dissident_group
+LEFT JOIN first_board_demand_date AS b
+ON a.cusip_9_digit=b.cusip_9_digit AND eff_announce_date=b.announce_date AND a.dissident_group=b.dissident_group
 WHERE eff_announce_date < dlstdt OR dlstdt IS NULL
 ORDER BY permno, announce_date;
 

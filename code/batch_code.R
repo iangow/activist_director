@@ -4,7 +4,9 @@ library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
 rs <- dbGetQuery(pg, "
-    CREATE SCHEMA IF NOT EXISTS activist_director")
+    CREATE SCHEMA IF NOT EXISTS activist_director;
+
+    ALTER SCHEMA activist_director OWNER TO activism;")
 
 rs <- dbGetQuery(pg, "
     DROP AGGREGATE IF EXISTS product(double precision);
@@ -44,7 +46,7 @@ runSQL("code/create_activist_director_matched.sql")
 pg_comment("activist_director.activist_director_matched",
            "CREATED USING activist_director_matched.sql")
 
-
+## Already done!!!
 runSQL("code/create_activist_holdings.sql")
 
 runSQL('code/create_equilar_directors.sql')
