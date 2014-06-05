@@ -131,8 +131,7 @@ SELECT DISTINCT a.*,
 	    WHEN activism THEN 'activism'
 	    ELSE '_none' END AS two_plus,
     --    elected,
-    --  CASE WHEN activist_director THEN first_appointment_date END AS
-    first_appointment_date,
+    --  CASE WHEN activist_director THEN first_appointment_date END AS first_appointment_date,
     eff_announce_date AS event_date,
     CASE
     	WHEN first_appointment_date - eff_announce_date <= 180 THEN 'early'
