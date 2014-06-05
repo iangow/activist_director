@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS activist_director.first_voting;
+DROP TABLE IF EXISTS activist_director.first_voting;
 
 CREATE TABLE activist_director.first_voting AS 
 

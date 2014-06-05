@@ -137,9 +137,8 @@ WITH firm_years AS (
       b.tenure_yrs, b.percent_owned, b.staggered_board,
       b.permno IS NOT NULL AS on_equilar
     FROM activism_matched AS a
-    LEFT JOIN activist_director.financials AS b
+    LEFT JOIN activist_director.outcome_controls AS b
     ON a.permno=b.permno AND a.datadate=b.datadate
-    WHERE a.datadate BETWEEN '2003-01-01' AND '2012-12-31'
 ")
 
 library(psych)

@@ -1,4 +1,4 @@
-﻿SET work_mem='10GB';
+SET work_mem='10GB';
 
 -- All Directors from Equilar (365,738 --> 409,137)
 DROP TABLE IF EXISTS activist_director.equilar_directors;

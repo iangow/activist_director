@@ -37,10 +37,11 @@ pg_comment <- function(table, comment) {
 source("code/import_activist_directors.R")
 source("code/import_activist_ciks.R")
 
+# Column 6
+source('code/import_key_dates.R', echo=TRUE)
+
 # Column 5
 source('code/create_activism_events.R', echo=TRUE)
-
-source("code/import_key_dates.R")
 
 runSQL("code/create_activist_director_matched.sql")
 pg_comment("activist_director.activist_director_matched",
@@ -48,40 +49,21 @@ pg_comment("activist_director.activist_director_matched",
 
 ## Already done!!!
 runSQL("code/create_activist_holdings.sql")
+source("code/create_activist_holdings_link.R", echo=TRUE)
+# This one takes a long time to run!
+source("code/create_activist_holdings_matched_ss.R", echo=TRUE)
 
 runSQL('code/create_equilar_directors.sql')
 pg_comment("activist_director.equilar_directors",
            "CREATED USING create_equilar_directors.sql")
 
-source('code/create_equilar_w_activism.R', echo=TRUE)
-
-
-
-
-
-runSQL("code/create_view_financials.sql")
-pg_comment("activist_director.financials",
-           "CREATED USING create_view_financials.sql")
-
-
-
-# This one takes a long time to run!
-source("code/create_activist_holdings_matched_ss.R", echo=TRUE)
-
-
-
-
-
-
 runSQL('code/create_first_voting.sql')
-
 source('code/create_activist_director_equilar.R', echo=TRUE)
-
 source('code/create_equilar_w_activism.R', echo=TRUE)
 
-# Column 6
-source('code/import_key_dates.R', echo=TRUE)
-
+# runSQL("code/create_view_financials.sql")
+# pg_comment("activist_director.financials",
+#            "CREATED USING create_view_financials.sql")
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
