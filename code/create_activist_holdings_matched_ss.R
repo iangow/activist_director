@@ -10,7 +10,7 @@ rs <- dbGetQuery(pg, "
   $$;
 
   CREATE OR REPLACE FUNCTION quarters_between(date, date)
-   RETURNS int STRICT IMMUTABLE LANGUAGE sql ASs $$
+   RETURNS int STRICT IMMUTABLE LANGUAGE sql AS $$
      SELECT quarters_of($1) - quarters_of($2)
   $$;")
 

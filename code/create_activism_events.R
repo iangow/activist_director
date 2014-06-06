@@ -26,8 +26,10 @@ sql <- paste(readLines("code/create_activism_events.sql"),
 rs <- dbGetQuery(pg, sql)
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.activism_events IS
-    'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
+    ALTER TABLE activist_director.activism_events OWNER TO activism;
+
+    COMMENT ON TABLE activist_director.activism_events IS
+        'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
 
 rs <- dbGetQuery(pg, sql)
 
@@ -54,7 +56,7 @@ table(targeted_firms_mod$board_related, targeted_firms_mod$proxy_fight)
 
 # Update relevant table ----
 
-# IDG: Sean, we are implicitly using PERMNO and first_date as the key here
+# TODO: Sean, we are implicitly using PERMNO and first_date as the key here
 #      I guess we should make sure that there are no cases where there
 #      are multiple dissident groups launching activism against a single firm
 #      on the same date.
