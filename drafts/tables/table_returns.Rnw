@@ -268,10 +268,9 @@ ret.data.d <- getEventReturns(events$permno, events$eff_announce_date,
                               end.event.date=events$first_appointment_date)
 names(ret.data.d) <- c("permno", "eff_announce_date", "first_appointment_date", "ret_ann_appt",
                        "ret_mkt_ann_appt", "ret_sz_ann_appt")
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date",
-                                           "first_appointment_date"),
+merged <- merge(merged, ret.data.d,
+                by = c("permno", "eff_announce_date", "first_appointment_date"),
                 all = TRUE)
-
 
 merged$category <- as.factor(merged$category)
 merged$affiliated <- as.factor(merged$affiliated)

@@ -67,3 +67,5 @@ source('code/import_key_dates.R', echo=TRUE)
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 runSQL('code/create_outcome_controls.sql')
+pg_comment("activist_director.outcome_controls",
+           "CREATED USING create_outcome_controls.sql")
