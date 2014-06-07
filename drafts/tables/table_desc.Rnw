@@ -6,8 +6,7 @@
 
 <<table_desc_data, results='asis'>>=
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(PostgreSQL())
 
 require(xtable)
 
@@ -39,6 +38,7 @@ summ.dirs <- dbGetQuery(pg, "
         sum(elected::int) AS elected,
         sum((NOT elected)::int) AS settled
     FROM ad_years
+    WHERE elected IS NOT NULL
     GROUP BY year
     ORDER BY year
 ")
