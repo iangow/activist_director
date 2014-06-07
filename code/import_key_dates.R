@@ -163,8 +163,6 @@ rs <- dbGetQuery(pg, sql)
 
 
 
-
-
 # # first_board_demand_date
 # temp <- dbGetQuery(pg, "
 # WITH first_board_demand_date AS (
@@ -179,10 +177,7 @@ rs <- dbGetQuery(pg, sql)
 # ON a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date AND a.dissident_group=b.dissident_group
 # ORDER BY permno, announce_date, dissident_group
 # ")
-
-
-
-
+#
 # #### Classifications ####
 # # Board Representation
 # sw50_data$nominate <- grepl('(?:nomin(?:ee|at))', sw50_data$event_texts)

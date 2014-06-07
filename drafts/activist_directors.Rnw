@@ -101,7 +101,6 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 @
 \Sexpr{opts_chunk$set(cache.extra=NULL)}
 
-
 <<introduction, child='intro.Rnw'>>=
 @
 

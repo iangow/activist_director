@@ -13,6 +13,17 @@ data.path <- "~/Dropbox/research/activism/activist_director/data/"
 # rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.dsedist")
 # rs <- dbWriteTable(pg, c("activist_director", "dsedist"), dsedist, row.names=FALSE)
 
+# Spinoff Data from CRSP
+# Add Spin-Off Data to PostgreSQL
+spinoff <- read.csv("~/Dropbox/research/activism/activist_director/data/spinoff.csv")
+spinoff$dclrdt <- as.Date(spinoff$dclrdt, "%d%b%Y")
+spinoff$exdt <- as.Date(spinoff$exdt, "%d%b%Y")
+spinoff$rcrddt <- as.Date(spinoff$rcrddt, "%d%b%Y")
+spinoff$paydt <- as.Date(spinoff$paydt, "%d%b%Y")
+rs <- dbWriteTable(pg, c("activist_director", "spinoff"), spinoff,
+                   row.names=FALSE, overwrite=TRUE)
+rs <- dbGetQuery(pg, "ALTER TABLE activist_director.spinoff OWNER TO activism")
+
 # Spinoff Data from Capital IQ - Transactions (Spinoff)
 spinoff_ciq <- read.csv(file.path(data.path, "spinoff_ciq.csv"),
                              stringsAsFactors=FALSE)
