@@ -101,10 +101,10 @@ penultimate AS (
     --  AND (num_activist_directors!= 9 OR num_activist_directors IS NULL))
 
 first_board_demand_date AS (
-SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
-FROM activist_director.key_dates_all
-WHERE board_demand
-GROUP BY cusip_9_digit, announce_date, dissident_group)
+    SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
+    FROM activist_director.key_dates_all
+    WHERE board_demand
+    GROUP BY cusip_9_digit, announce_date, dissident_group)
 
 SELECT DISTINCT a.*,
     b.first_board_demand_date,
@@ -130,8 +130,8 @@ SELECT DISTINCT a.*,
         WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
 	    WHEN activism THEN 'activism'
 	    ELSE '_none' END AS two_plus,
-    -- elected,
-    -- CASE WHEN activist_director THEN first_appointment_date END AS first_appointment_date,
+    --    elected,
+    --  CASE WHEN activist_director THEN first_appointment_date END AS first_appointment_date,
     eff_announce_date AS event_date,
     CASE
     	WHEN first_appointment_date - eff_announce_date <= 180 THEN 'early'

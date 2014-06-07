@@ -163,26 +163,21 @@ rs <- dbGetQuery(pg, sql)
 
 
 
-
-
-# first_board_demand_date
-temp <- dbGetQuery(pg, "
-WITH first_board_demand_date AS (
-SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
-FROM activist_director.key_dates_all
-WHERE board_demand
-GROUP BY cusip_9_digit, announce_date, dissident_group)
-
-SELECT DISTINCT a.*, b.first_board_demand_date, b.first_board_demand_date IS NOT NULL AS board_demand
-FROM activist_director.activism_events AS a
-LEFT JOIN first_board_demand_date AS b
-ON a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date AND a.dissident_group=b.dissident_group
-ORDER BY permno, announce_date, dissident_group
-")
-
-
-
-
+# # first_board_demand_date
+# temp <- dbGetQuery(pg, "
+# WITH first_board_demand_date AS (
+# SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
+# FROM activist_director.key_dates_all
+# WHERE board_demand
+# GROUP BY cusip_9_digit, announce_date, dissident_group)
+#
+# SELECT DISTINCT a.*, b.first_board_demand_date, b.first_board_demand_date IS NOT NULL AS board_demand
+# FROM activist_director.activism_events AS a
+# LEFT JOIN first_board_demand_date AS b
+# ON a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date AND a.dissident_group=b.dissident_group
+# ORDER BY permno, announce_date, dissident_group
+# ")
+#
 # #### Classifications ####
 # # Board Representation
 # sw50_data$nominate <- grepl('(?:nomin(?:ee|at))', sw50_data$event_texts)

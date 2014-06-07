@@ -102,44 +102,43 @@ WITH firm_years AS (
       GROUP BY dissident_group),
 
     activism_events AS (
-      SELECT DISTINCT a.permno, a.announce_date, demanding_activist,
-        category, activism, activist_demand, activist_director, dissident_group_ownership_percent,
-        holder_type='Hedge Fund Company' AS hedge_fund,
-        inv_value >= 100 AS big_investment
-      FROM activist_director.activism_events AS a
-      LEFT JOIN dissident_names AS b
-      ON a.dissident_group=b.dissident_group),
+        SELECT DISTINCT a.permno, a.announce_date, demanding_activist,
+            category, activism, activist_demand, activist_director, dissident_group_ownership_percent,
+            holder_type='Hedge Fund Company' AS hedge_fund,
+            inv_value >= 100 AS big_investment
+        FROM activist_director.activism_events AS a
+        LEFT JOIN dissident_names AS b
+        ON a.dissident_group=b.dissident_group),
 
     -- Matched with activism events (datadate BETWEEN announce_date - 1 year AND announce_date)
     activism_matched AS (
-    SELECT DISTINCT a.permno, a.datadate, a.fyear, b.announce_date,
-      demanding_activist, category, activism, activist_demand, activist_director,
-      dissident_group_ownership_percent, hedge_fund, big_investment
-    FROM firm_years AS a
-    LEFT JOIN activism_events AS b
-    ON a.permno=b.permno AND a.datadate
-      BETWEEN b.announce_date - INTERVAL '1 Year' AND b.announce_date
-    ORDER by permno, datadate)
+        SELECT DISTINCT a.permno, a.datadate, a.fyear, b.announce_date,
+            demanding_activist, category, activism, activist_demand, activist_director,
+            dissident_group_ownership_percent, hedge_fund, big_investment
+        FROM firm_years AS a
+        LEFT JOIN activism_events AS b
+        ON a.permno=b.permno AND a.datadate
+        BETWEEN b.announce_date - INTERVAL '1 Year' AND b.announce_date
+        ORDER by permno, datadate)
 
     SELECT DISTINCT a.permno, a.datadate, a.fyear,
-      COALESCE(category, '_none') AS category,
-      COALESCE(activism, FALSE) AS activism,
-      COALESCE(activist_demand, FALSE) AS activist_demand,
-      COALESCE(activist_director, FALSE) AS activist_director,
-      dissident_group_ownership_percent,
-      demanding_activist, hedge_fund, big_investment,
-      b.size_return, b.size_return_m1, b.BV, b.MV, b.BTM, b.leverage,
-      b.capex, b.dividend, b.roa, b.sale_growth,
-      b.insider_percent, b.insider_diluted_percent, b.inst_percent, b.top_10_percent,
-      b.majority, b.dual_class,
-      COALESCE(b.analyst, 0) AS analyst, COALESCE(b.inst,0) AS inst,
-      b.num_directors, b.outside_percent, b.age,
-      b.tenure_yrs, b.percent_owned, b.staggered_board,
-      b.permno IS NOT NULL AS on_equilar
+        COALESCE(a.category, '_none') AS category,
+        COALESCE(a.activism, FALSE) AS activism,
+        COALESCE(a.activist_demand, FALSE) AS activist_demand,
+        COALESCE(a.activist_director, FALSE) AS activist_director,
+        dissident_group_ownership_percent,
+        demanding_activist, hedge_fund, b.big_investment,
+        b.size_return, b.size_return_m1, b.BV, b.MV, b.BTM, b.leverage,
+        b.capex, b.dividend, b.roa, b.sale_growth,
+        b.insider_percent, b.insider_diluted_percent, b.inst_percent, b.top_10_percent,
+        b.majority, b.dual_class,
+        COALESCE(b.analyst, 0) AS analyst, COALESCE(b.inst,0) AS inst,
+        b.num_directors, b.outside_percent, b.age,
+        b.tenure_yrs, b.percent_owned, b.staggered_board,
+        b.permno IS NOT NULL AS on_equilar
     FROM activism_matched AS a
-    LEFT JOIN activist_director.financials AS b
+    LEFT JOIN activist_director.outcome_controls AS b
     ON a.permno=b.permno AND a.datadate=b.datadate
-    WHERE a.datadate BETWEEN '2003-01-01' AND '2012-12-31'
 ")
 
 library(psych)
@@ -178,29 +177,9 @@ fit.model <- function(data, lhs, rhs, cluster1) {
     return(list(fitted, fitted.cluster, pseudoR2))
 }
 
-# Panel A
-rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-            num_directors outside_percent age tenure_yrs staggered_board"
-reg.data <- subset(prob_activist_director, on_equilar)
-t3.pa <- list()
-t3.pa[[1]] <- fit.model(data=reg.data,
-                  lhs="activism", rhs=rhs.1, cluster1="permno")
-t3.pa[[2]] <- fit.model(data=subset(reg.data, category!='activism'),
-                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
-t3.pa[[3]] <- fit.model(data=subset(reg.data, category!='activism'),
-                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
 
-# Panel B
-# Add demanding activst to RHS (for columns 2 & 3)
-rhs.2 <- paste(rhs.1, "big_investment")
 
-# Subset on activism
-reg.data <- subset(prob_activist_director, on_equilar & !is.na(category))
-t3.pb <- list()
-t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
-                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
-t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
-                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
+
 @
 \begin{table}[htb]
 \caption{Activist target selection}
@@ -248,6 +227,18 @@ Panel A presents logit regression where the dependent variables are indicators f
 \begin{tabularx}{5in}{l*{3}{Y}}
 \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
 <<Table_3_panelA, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
+# Panel A
+rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure_yrs staggered_board"
+reg.data <- subset(prob_activist_director, on_equilar)
+t3.pa <- list()
+t3.pa[[1]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.1, cluster1="permno")
+t3.pa[[2]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
+t3.pa[[3]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
+
 stargazer(getFitted(t3.pa),
         dep.var.labels = c("Activism",
                             "Board demand",
@@ -261,6 +252,7 @@ stargazer(getFitted(t3.pa),
        keep.stat=c("n"), no.space=TRUE,
        add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
 
+rm(t3.pa)
 @
 \end{tabularx}
 \addtocounter{table}{-1}
@@ -280,6 +272,17 @@ Panel B presents logit regression where the dependent variables are indicators f
     \begin{tabularx}{6.5in}{l*{3}{Y}}
      \multicolumn{3}{l}{Panel B: Activism, board demand and activist director (activism only)} \\
 <<Table_3_panelA2, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
+# Panel B
+# Add demanding activst to RHS (for columns 2 & 3)
+rhs.2 <- paste(rhs.1, "big_investment")
+
+# Subset on activism
+reg.data <- subset(prob_activist_director, on_equilar & !is.na(category))
+t3.pb <- list()
+t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
+t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
 stargazer(getFitted(t3.pb),
         dep.var.labels = c("Board demand",
                            "Activist director"),
@@ -295,6 +298,7 @@ stargazer(getFitted(t3.pb),
                         "\\textrm{Activism}"),
                       c("Pseudo-$R^2$", getPseudoR2s(t3.pb))))
 
+rm(t3.pb)
 @
 \end{tabularx}
 \end{table}
