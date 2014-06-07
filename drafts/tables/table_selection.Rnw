@@ -52,93 +52,80 @@ getPseudoR2s <- function(a.list) {
 <<table_3_prob_target_data, cache=TRUE, results='asis'>>=
 # PostgreSQL Connection
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv)
+pg <- dbConnect(PostgreSQL())
 
 ## Data table
 prob_activist_director <- dbGetQuery(pg, "
--- Compustat with Permno
-SET work_mem='3GB';
+    -- Compustat with Permno
+    SET work_mem='3GB';
 
-WITH firm_years AS (
-    SELECT DISTINCT b.lpermno AS permno, a.gvkey, a.datadate, a.fyear
-    FROM comp.funda AS a
-    INNER JOIN crsp.ccmxpf_linktable AS b
-    ON a.gvkey=b.gvkey
-    AND a.datadate >= b.linkdt
-    AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
-    AND b.USEDFLAG='1'
-    AND linkprim IN ('C', 'P')
-    WHERE datadate > '2000-12-31'
-    ORDER BY permno, datadate),
-
-    dissidents AS (
+    WITH dissidents AS (
       SELECT dissident_group, unnest(dissidents) AS dissident
       FROM activist_director.activism_events),
 
     big_dissidents AS (
-      SELECT DISTINCT dissident,
-          sum(activism::INT)::INT AS activism,
-          sum(activist_demand::INT)::INT AS activist_demand,
-          sum(activist_director::INT) AS activist_director,
-          CASE WHEN sum(activism::INT) > 0 THEN sum(activist_demand::INT)*1.0/sum(activism::INT) ELSE 0
-          END AS activist_demand_over_activism,
-          sum(activism::INT) > 2 AND sum(activist_demand::INT)*1.0/sum(activism::INT) > 0.50
-            AS demanding_activist
-          -- CASE WHEN sum(activism::INT) > 13
-          -- THEN b.dissident ELSE NULL END AS dissident
-          -- CASE WHEN sum(market_capitalization_at_time_of_campaign) > 10000
-          -- AND sum(activism::INT) > 7 THEN b.dissident ELSE NULL END AS dissident
+        SELECT DISTINCT dissident,
+            sum(activism::INT)::INT AS activism,
+            sum(activist_demand::INT)::INT AS activist_demand,
+            sum(activist_director::INT) AS activist_director,
+            CASE WHEN sum(activism::INT) > 0
+            THEN sum(activist_demand::INT)*1.0/sum(activism::INT) ELSE 0
+            END AS activist_demand_over_activism,
+            sum(activism::INT) > 2 AND sum(activist_demand::INT)*1.0/sum(activism::INT) > 0.50
+                AS demanding_activist
+            -- CASE WHEN sum(activism::INT) > 13
+            -- THEN b.dissident ELSE NULL END AS dissident
+            -- CASE WHEN sum(market_capitalization_at_time_of_campaign) > 10000
+            -- AND sum(activism::INT) > 7 THEN b.dissident ELSE NULL END AS dissident
       FROM activist_director.activism_events AS a
       INNER JOIN dissidents AS b
       USING (dissident_group)
       GROUP BY dissident),
 
     dissident_names AS (
-      SELECT DISTINCT a.dissident_group, bool_or(demanding_activist) AS demanding_activist
-      FROM dissidents AS a
-      INNER JOIN big_dissidents AS b
-      ON a.dissident=b.dissident
-      GROUP BY dissident_group),
+        SELECT DISTINCT a.dissident_group,
+            bool_or(demanding_activist) AS demanding_activist
+        FROM dissidents AS a
+        INNER JOIN big_dissidents AS b
+        ON a.dissident=b.dissident
+        GROUP BY dissident_group),
 
     activism_events AS (
-        SELECT DISTINCT a.permno, a.announce_date, demanding_activist,
-            category, activism, activist_demand, activist_director, dissident_group_ownership_percent,
+        SELECT DISTINCT a.permno, a.announce_date, a.eff_announce_date,
+            demanding_activist,
+            category, activism, activist_demand, activist_director,
+            dissident_group_ownership_percent,
             holder_type='Hedge Fund Company' AS hedge_fund,
             inv_value >= 100 AS big_investment
         FROM activist_director.activism_events AS a
         LEFT JOIN dissident_names AS b
         ON a.dissident_group=b.dissident_group),
 
-    -- Matched with activism events (datadate BETWEEN announce_date - 1 year AND announce_date)
-    activism_matched AS (
-        SELECT DISTINCT a.permno, a.datadate, a.fyear, b.announce_date,
-            demanding_activist, category, activism, activist_demand, activist_director,
-            dissident_group_ownership_percent, hedge_fund, big_investment
-        FROM firm_years AS a
-        LEFT JOIN activism_events AS b
-        ON a.permno=b.permno AND a.datadate
-        BETWEEN b.announce_date - INTERVAL '1 Year' AND b.announce_date
-        ORDER by permno, datadate)
+    min_date AS (
+        SELECT min(eff_announce_date) AS min_date
+        FROM activism_events)
 
+    -- Matched with activism events (datadate BETWEEN announce_date - 1 year AND announce_date)
     SELECT DISTINCT a.permno, a.datadate, a.fyear,
-        COALESCE(a.category, '_none') AS category,
-        COALESCE(a.activism, FALSE) AS activism,
-        COALESCE(a.activist_demand, FALSE) AS activist_demand,
-        COALESCE(a.activist_director, FALSE) AS activist_director,
+        COALESCE(b.category, '_none') AS category,
+        COALESCE(b.activism, FALSE) AS activism,
+        COALESCE(b.activist_demand, FALSE) AS activist_demand,
+        COALESCE(b.activist_director, FALSE) AS activist_director,
         dissident_group_ownership_percent,
         demanding_activist, hedge_fund, b.big_investment,
-        b.size_return, b.size_return_m1, b.BV, b.MV, b.BTM, b.leverage,
-        b.capex, b.dividend, b.roa, b.sale_growth,
-        b.insider_percent, b.insider_diluted_percent, b.inst_percent, b.top_10_percent,
-        b.majority, b.dual_class,
-        COALESCE(b.analyst, 0) AS analyst, COALESCE(b.inst,0) AS inst,
-        b.num_directors, b.outside_percent, b.age,
-        b.tenure_yrs, b.percent_owned, b.staggered_board,
-        b.permno IS NOT NULL AS on_equilar
-    FROM activism_matched AS a
-    LEFT JOIN activist_director.outcome_controls AS b
-    ON a.permno=b.permno AND a.datadate=b.datadate
+        a.size_return, a.size_return_m1, a.BV, a.MV, a.BTM, a.leverage,
+        a.capex, a.dividend, a.roa, a.sale_growth,
+        a.insider_percent, a.insider_diluted_percent, a.inst_percent, a.top_10_percent,
+        a.majority, a.dual_class,
+        COALESCE(a.analyst, 0) AS analyst, COALESCE(a.inst,0) AS inst,
+        a.num_directors, a.outside_percent, a.age,
+        a.tenure_yrs, a.percent_owned, a.staggered_board,
+        a.permno IS NOT NULL AS on_equilar
+    FROM min_date, activist_director.outcome_controls AS a
+    LEFT JOIN activism_events AS b
+    ON a.permno=b.permno AND a.datadate
+    BETWEEN b.announce_date - interval '1 year' AND b.announce_date
+    WHERE a.datadate >= min_date - interval '1 year'
 ")
 
 library(psych)
@@ -287,9 +274,9 @@ stargazer(getFitted(t3.pb),
         dep.var.labels = c("Board demand",
                            "Activist director"),
                            # "Activist director"),
-        covariate.labels = c("Analyst", "Inst","Size-adj. ret","Market value","Book-to-market",
-                             "Leverage","Payout","ROA","Sales growth",
-                             "Num. directors", "Outside percent","Age","Tenure","Staggered board"),
+        covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
+                             "Leverage", "Payout", "ROA", "Sales growth", "Num. directors",
+                             "Outside percent", "Age", "Tenure", "Staggered board"),
         se= getSEs(t3.pb),
         p=getPs(t3.pb),
        float=FALSE, align=TRUE, font.size="small",
