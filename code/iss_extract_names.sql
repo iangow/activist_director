@@ -102,6 +102,8 @@ $CODE$
             last_name => $last_name, suffix => $suffix, prefix => $prefix };
 $CODE$ LANGUAGE plperl;
 
+ALTER FUNCTION issvoting.extract_name(text) OWNER TO activism;
+
 SET work_mem='3GB';
 
 DROP TABLE IF EXISTS issvoting.auto_names;
@@ -121,10 +123,9 @@ FROM issvoting.manual_names
 UNION 
 SELECT itemdesc, (name).prefix, (name).first_name, (name).middle_initial,
     (name).last_name, (name).suffix
-FROM issvoting.auto_names;
-
-
-ALTER TABLE issvoting.director_names OWNER TO activism;
+FROM issvoting.auto_names
 WHERE trim(itemdesc) NOT IN (SELECT itemdesc FROM issvoting.manual_names);
 
-ALTER FUNCTION issvoting.extract_name(text) OWNER TO activism;
+ALTER TABLE issvoting.director_names OWNER TO activism;
+
+
