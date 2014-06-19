@@ -25,6 +25,9 @@ $CODE$
     if (defined($_[0])) {
 
         $temp = $_[0];
+        $temp =~ s/\b(irector|Dirctor|Directror|Driector|Directo)\b/Director/;
+        $temp =~ s/\bTurstee/Trustee/;
+
         $temp	=~ s/\*//g;			# Remove asterisks
         $temp =~ s/\s{2,}/ /g;		# Remove any multiple spaces
         $temp =~ s/by (majority|plurality) vote$//i;	# Delete certain phrases
@@ -41,10 +44,18 @@ $CODE$
         $temp =~ s/Require Majority Vote to Elect Directors in an Uncontested Election//i;
         $temp =~ s/Elect Director ohn\s+/Elect Director John /;
 
+        # Change alternative forms
+        $temp =~  s/Elect\s+(.*)\sas Director/Elect Director \1/;
+
+        if (($temp =~ /^Elect(?! Director)/) && 
+          !($temp =~ /\b(Auditors|Trust|Director|Company|Members|Inc\.|of|as|to)\b/)) {
+          $temp =~ s/Elect (.*)/Elect Director \1/; 
+        }
+
         # Pull out text after "Elect director";
         # if the word "and" appears, delete the observation
         # as there are multiple names.
-        if(!($temp  =~ /\sand\s/i) && $temp =~ /(?:Elect.*Directors?)\s+(.+)$/i) {
+        if(!($temp  =~ /\sand\s/i) && $temp =~ /(?:Elect\s+Directors?)\s+(.+)$/i) {
             $name = $1;
 
             # Remove leading spaces
