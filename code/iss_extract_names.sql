@@ -24,10 +24,13 @@ $CODE$
 
     if (defined($_[0])) {
 
+        # Fix misspellings
         $temp = $_[0];
-        $temp =~ s/\b(irector|Dirctor|Directror|Driector|Directo)\b/Director/;
+        $misspellings = 'irector|Dirctor|Director Director|Directror|Driector|Directo';
+        $temp =~ s/\b($misspellings)\b/Director/;
         $temp =~ s/\bTurstee/Trustee/;
 
+        # Fix other errors
         $temp	=~ s/\*//g;			# Remove asterisks
         $temp =~ s/\s{2,}/ /g;		# Remove any multiple spaces
         $temp =~ s/by (majority|plurality) vote$//i;	# Delete certain phrases
@@ -35,7 +38,6 @@ $CODE$
         $temp =~ s/ (as|by Holders of) (Class (A|B) )?(Common )?Stock//i;
         $temp =~ s/ \(Don't Advance\)//i;
         $temp =~ s/ \(DO NOT ADVANCE\)//i;
-        $temp =~ s/Director Director/Director/;
         $temp =~ s/Philip R, Roth/Philip R. Roth/;
         $temp =~ s/The Duke Of/Duke/i;
         $temp =~ s/Keith A, Meister/Keith A. Meister/;
@@ -47,6 +49,7 @@ $CODE$
         # Change alternative forms
         $temp =~  s/Elect\s+(.*)\sas Director/Elect Director \1/;
 
+        # Look for forms like "Elect Ian D. Gow" (i.e., no words other than "elect" and the name
         if (($temp =~ /^Elect(?! Director)/) && 
           !($temp =~ /\b(Auditors|Trust|Director|Company|Members|Inc\.|of|as|to)\b/)) {
           $temp =~ s/Elect (.*)/Elect Director \1/; 
