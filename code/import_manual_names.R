@@ -16,5 +16,10 @@ rs <- dbWriteTable(pg, name=c("issvoting", "manual_names"), manual_names,
 
 rs <- dbGetQuery(pg, "ALTER TABLE issvoting.manual_names OWNER TO activism")
 
+
+sql <- paste("
+  COMMENT ON TABLE issvoting.manual_names IS
+    'CREATED USING import_manual_names ON ", Sys.time() , "';", sep="")
+rs <- dbGetQuery(pg, sql)
 dbDisconnect(pg)
 

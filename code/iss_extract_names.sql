@@ -142,4 +142,7 @@ WHERE trim(itemdesc) NOT IN (SELECT itemdesc FROM issvoting.manual_names);
 
 ALTER TABLE issvoting.director_names OWNER TO activism;
 
+COMMENT ON TABLE issvoting.director_names IS
+    'CREATED USING iss_extract_names.sql';
 
+DROP TABLE IF EXISTS issvoting.auto_names;
