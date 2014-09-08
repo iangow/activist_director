@@ -75,7 +75,8 @@ dirs <- dbGetQuery(pg, "
         sum((NOT activist_affiliate)::int) AS unaffiliated
     FROM activist_director.activist_directors AS a
     INNER JOIN activist_director.activism_events
-    USING (announce_date, cusip_9_digit, dissident_group)")
+    USING (announce_date, cusip_9_digit, dissident_group)
+    WHERE elected IS NOT NULL")
 
 num_events <- formatC(nrow(events), big.mark = ",")
 num_uniq_events <- formatC(nrow(unique(events)), big.mark = ",")
