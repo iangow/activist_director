@@ -68,17 +68,22 @@ sw50_data <- dbGetQuery(pg, "
         bool_or(board_representation) AS board_demand,
         bool_or(dividend_repurchase) AS payout,
         bool_or(focus_spin_off) AS divest,
-        bool_or(sell_company OR take_control_private) AS sell_company,
-        bool_or(strategic_alternatives OR growth_strategy OR against_deal_acquirer OR against_deal_target) AS strategic_alternatives,
-        bool_or(operational_efficiency OR capital_restructure) AS operational_efficiency,
+        bool_or(sell_company
+                OR take_control_private) AS sell_company,
+        bool_or(strategic_alternatives
+                OR growth_strategy
+                OR against_deal_acquirer
+                OR against_deal_target) AS strategic_alternatives,
+        bool_or(operational_efficiency
+                OR capital_restructure) AS operational_efficiency,
         bool_or(compensation) AS ceo_comp,
-        bool_or(governance_general OR
-                poison_pill OR
-                oust_ceo_director OR
-                withhold_votes OR
-                board_restructuring OR
-                more_disclosure OR
-                separate_chairman_ceo) AS governance
+        bool_or(governance_general
+                OR poison_pill
+                OR oust_ceo_director
+                OR withhold_votes
+                OR board_restructuring
+                OR more_disclosure
+                OR separate_chairman_ceo) AS governance
     FROM activist_director.key_dates_sw50
     WHERE event_date IS NOT NULL
     GROUP BY cusip_9_digit, announce_date, dissident_group, event_date
