@@ -44,11 +44,32 @@ for (i in names(key_dates_2012)) {
 key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
 rm(key_dates_2012)
 
+#### Non-Sharkwatch 50 ####
+# Import Dataset from Google Drive ----
+csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
+                          "0AtCJeBFBO_EddEdMMXpRTUFUaUJzcTZHeEFLd0hrSkE",
+                          "&output=csv"),
+                   verbose=FALSE)
+
+key_dates_nsw50 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
+
+key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
+key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
+key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
+
+# TODO: Fix weird values in these two variables.
+key_dates_nsw50$governance <- key_dates_nsw50$governance=="1"
+key_dates_nsw50$no_demand <- key_dates_nsw50$no_demand=="1"
+
+for (i in names(key_dates_nsw50)) {
+    if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
+}
+
+
 # Export dataset to PostgreSQL (activist_director.activist_directors) ----
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
 
+pg <- dbConnect(PostgreSQL())
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_sw50"),
                    key_dates_sw50, overwrite=TRUE, row.names=FALSE)
 # rs <- dbGetQuery(pg, "CREATE ROLE activism")
@@ -89,35 +110,6 @@ sw50_data <- dbGetQuery(pg, "
     GROUP BY cusip_9_digit, announce_date, dissident_group, event_date
     ")
 
-
-#### Non-Sharkwatch 50 ####
-# Import Dataset from Google Drive ----
-require(RCurl)
-
-csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
-                          "0AtCJeBFBO_EddEdMMXpRTUFUaUJzcTZHeEFLd0hrSkE",
-                          "&output=csv"),
-                   verbose=FALSE)
-
-key_dates_nsw50 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
-
-key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
-key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
-key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
-
-# TODO: Fix weird values in these two variables.
-key_dates_nsw50$governance <- key_dates_nsw50$governance=="1"
-key_dates_nsw50$no_demand <- key_dates_nsw50$no_demand=="1"
-
-for (i in names(key_dates_nsw50)) {
-    if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
-}
-
-# Export da taset to PostgreSQL (activist_director.activist_directors) ----
-library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
-
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_nsw50"),
                    key_dates_nsw50, overwrite=TRUE, row.names=FALSE)
 
@@ -145,7 +137,10 @@ nsw50_data <- dbGetQuery(pg, "
     FROM activist_director.key_dates_nsw50
     WHERE event_date IS NOT NULL
     GROUP BY cusip_9_digit, announce_date, dissident_group, event_date
-    ")
+")
+
+key_dates <- rbind(nsw50_data, sw50_data)
+# Export dataset to PostgreSQL (activist_director.activist_directors) ----
 
 #### Aggregation ----
 agg_data <- rbind(sw50_data, nsw50_data)
@@ -153,66 +148,43 @@ agg_data <- rbind(sw50_data, nsw50_data)
 agg_data$announce_date <- as.Date(agg_data$announce_date)
 agg_data$event_date <- as.Date(agg_data$event_date)
 
-rs <- dbWriteTable(pg, c("activist_director", "key_dates_all"),
+rs <- dbWriteTable(pg, c("activist_director", "key_dates"),
                    agg_data, overwrite=TRUE, row.names=FALSE)
 # rs <- dbGetQuery(pg, "CREATE ROLE activism")
 rs <- dbGetQuery(pg, "
-    ALTER TABLE activist_director.key_dates_all OWNER TO activism")
+    ALTER TABLE activist_director.key_dates OWNER TO activism")
 
-rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates_all")
+rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates")
+
+rs <- dbGetQuery(pg, "
+    DROP TABLE activist_director.key_dates_nsw50;
+
+    DROP TABLE activist_director.key_dates_sw50;")
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.key_dates_all IS
+  COMMENT ON TABLE activist_director.key_dates IS
     'CREATED USING import_key_dates.R ON ", Sys.time() , "';", sep="")
 rs <- dbGetQuery(pg, sql)
 
+rs <- dbDisconnect(pg)
 
+# first_board_demand_date
+pg <- dbConnect(PostgreSQL())
+temp <- dbGetQuery(pg, "
+    WITH first_board_demand_date AS (
+        SELECT DISTINCT cusip_9_digit, announce_date, dissident_group,
+            min(event_date) AS first_board_demand_date
+        FROM activist_director.key_dates
+        WHERE board_demand
+        GROUP BY cusip_9_digit, announce_date, dissident_group)
 
-# # first_board_demand_date
-# temp <- dbGetQuery(pg, "
-# WITH first_board_demand_date AS (
-# SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
-# FROM activist_director.key_dates_all
-# WHERE board_demand
-# GROUP BY cusip_9_digit, announce_date, dissident_group)
-#
-# SELECT DISTINCT a.*, b.first_board_demand_date, b.first_board_demand_date IS NOT NULL AS board_demand
-# FROM activist_director.activism_events AS a
-# LEFT JOIN first_board_demand_date AS b
-# ON a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date AND a.dissident_group=b.dissident_group
-# ORDER BY permno, announce_date, dissident_group
-# ")
-#
-# #### Classifications ####
-# # Board Representation
-# sw50_data$nominate <- grepl('(?:nomin(?:ee|at))', sw50_data$event_texts)
-# sw50_data$candidate <- grepl('(?:represent*|candidate)', sw50_data$event_texts)
-# with(sw50_data, table(candidate | nominate, board_demand))
-# subset(sw50_data, candidate & nominate & !board_demand)[1:20,]
-#
-# # Payouts
-# sw50_data$repurchase <- grepl('(repurch|buy-?back)', sw50_data$event_texts)
-# sw50_data$dividend <- grepl('(dividend|return.{1,15}cash)', sw50_data$event_texts)
-# with(sw50_data, table(repurchase | dividend, payout))
-#
-# # Sale/Divestiture
-# sw50_data$divest <- grepl('(sale|sell|divest|spin)', sw50_data$event_texts)
-# with(sw50_data, table(divest, divest_demand))
-#
-# # Strategic Alternatives
-# sw50_data$strategy <- grepl('(strateg)', sw50_data$event_texts)
-# with(sw50_data, table(strategy, strategic_alternatives))
-#
-# # Operational Efficiency
-# sw50_data$oper <- grepl('(operat|improv)', sw50_data$event_texts)
-# with(sw50_data, table(oper, operational_efficiency))
-#
-# # Governance
-# sw50_data$govern <- grepl('(governance)', sw50_data$event_texts)
-# with(sw50_data, table(govern, governance))
-#
-# # CEO Compensation
-# sw50_data$comp <- grepl('(compensat)', sw50_data$event_texts)
-# with(sw50_data, table(comp, compensation))
-#
-# #"(nomin(ee|at)|candida)";"(sale|sell|divest|spin)";"(repurch|buy-?back|dividend|return.{1,15}cash)";"(merge|acqui[rs])";"(compensat)";"(strateg)";"(operat|improv)";"(governan)";"(13D)"
+    SELECT DISTINCT cusip_9_digit, announce_date, dissident_group,
+        b.first_board_demand_date, a.category,
+        b.first_board_demand_date IS NOT NULL AS board_demand
+    FROM activist_director.activism_events AS a
+    LEFT JOIN first_board_demand_date AS b
+    USING (cusip_9_digit, announce_date, dissident_group)
+    ORDER BY cusip_9_digit, announce_date, dissident_group
+")
+rs <- dbDisconnect(pg)
+
