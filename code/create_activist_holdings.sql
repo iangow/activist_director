@@ -1,4 +1,4 @@
-﻿SET work_mem='10GB';
+SET work_mem='10GB';
 SET enable_seqscan=FALSE;
 
 DROP TABLE IF EXISTS activist_director.activist_holdings;
@@ -11,10 +11,10 @@ WITH activist_filers AS (
   ON b.filer_id=c.filer_id
   INNER JOIN activist_director.activist_ciks AS e
   ON c.cik=e.cik),
-  
+
 activist_stocks AS (
   SELECT DISTINCT b.cik, b.period_of_report, b.filed_as_of_date,
-    CASE 
+    CASE
       WHEN alt_cusip != ' ' THEN substr(alt_cusip,1,8)
       WHEN alt_cusip = ' ' THEN substr(cusip_number,1,8)
       WHEN alt_cusip IS NULL THEN substr(cusip_number,1,8)
@@ -23,11 +23,11 @@ activist_stocks AS (
   FROM activist_filers AS b
   INNER JOIN whalewisdom.filing_stock_records AS a
   ON a.filing_id=b.filing_id
-  WHERE substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) IS NOT NULL 
+  WHERE substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) IS NOT NULL
     OR substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) != ' '),
 
 latest_filings AS (
-  SELECT DISTINCT cik, cusip, period_of_report, 
+  SELECT DISTINCT cik, cusip, period_of_report,
     max(filed_as_of_date) AS filed_as_of_date
   FROM activist_stocks
   GROUP BY cik, cusip, period_of_report),
@@ -43,23 +43,17 @@ final AS (
 
 activist_names AS (
     SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
-    FROM activist_director.activist_ciks 
+    FROM activist_director.activist_ciks
     GROUP BY cik)
-        
-SELECT activist_names, cusip, period_of_report, 
+
+SELECT activist_names, cusip, period_of_report,
     sum(market_value) AS market_value, sum(shares) AS shares
 FROM final AS a
 INNER JOIN activist_names AS b
 ON a.cik=b.cik
 GROUP BY activist_names, cusip, period_of_report
 ORDER BY activist_names, cusip, period_of_report;
---  LIMIT 100
 
--- SELECT char_length(alt_cusip), char_length(cusip_number), count(*)
--- FROM activist_director.activist_holdings
--- GROUP BY char_length(cusip_number), char_length(alt_cusip)
--- ORDER BY  char_length(alt_cusip)
--- LIMIT 100;
 
 CREATE INDEX ON activist_director.activist_holdings (activist_names);
 
@@ -67,12 +61,3 @@ ALTER TABLE activist_director.activist_holdings
   OWNER TO activism;
 
 SET enable_seqscan=TRUE;
--- ALTER TABLE activist_holdings SET SCHEMA activist_director;
--- 
--- SELECT *
--- FROM whalewisdom.filing_stock_records
--- WHERE filing_id=234238 AND cusip_number='084670108'
-
--- SET maintenance_work_mem='10GB';
--- 
--- CREATE INDEX ON whalewisdom.filing_stock_records (filing_id);
