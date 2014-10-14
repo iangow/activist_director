@@ -4,7 +4,7 @@ pg <- dbConnect(PostgreSQL())
 temp <- dbGetQuery(pg, "
     WITH sharkwatch_permno AS (
         SELECT DISTINCT a.*, b.permno
-        FROM factset.sharkwatch AS a
+        FROM factset.sharkwatch_new AS a
         INNER JOIN crsp.stocknames AS b
         ON substr(a.cusip_9_digit, 1, 8)=b.ncusip),
 
