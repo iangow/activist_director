@@ -1,7 +1,6 @@
 .Rproj.user
 .Rhistory
 .RData
-
 # Ignore various outputs of knitr
 *.aux
 *.bbl
@@ -13,3 +12,4 @@
 drafts/*.tex
 *.pdf
 # !activist_directors.pdf # Include the main document
+*.csv
