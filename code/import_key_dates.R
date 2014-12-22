@@ -6,16 +6,24 @@ fixCUSIPs <- function(cusips) {
   return(cusips)
 }
 
+# Function to retrieve a Google Sheets document
+getSheetData = function(key, gid=NULL) {
+    library(RCurl)
+    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
+                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
+                  "&single=true")
+    csv_file <- getURL(url, verbose=FALSE)
+    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
+    return( the_data )
+}
+
+
+# Get PERMNO-CIK data
+key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
+
 #### Sharkwatch 50 ####
 # Import Dataset from Google Drive ----
-require(RCurl)
-csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
-                          "0AtCJeBFBO_EddHNGTEdra29BX0YxZHdIRVN0SFE0TWc",
-                          "&single=true&gid=0&output=csv"),
-                   verbose=FALSE)
-
-key_dates_sw50 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
-
+key_dates_sw50 <- getSheetData(key, gid=1862254343)
 key_dates_sw50$event_date <- as.Date(key_dates_sw50$event_date)
 key_dates_sw50$announce_date <- as.Date(key_dates_sw50$announce_date)
 key_dates_sw50$cusip_9_digit <- fixCUSIPs(key_dates_sw50$cusip_9_digit)
@@ -24,13 +32,8 @@ for (i in names(key_dates_sw50)) {
     if (is.numeric(key_dates_sw50[,i])) key_dates_sw50[,i] <- !is.na(key_dates_sw50[,i])
 }
 
-# Import Dataset from Google Drive ----
 # SHARKWATCH50 2012
-require(RCurl)
-csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
-                          "0AtCJeBFBO_EddFJ6YVQtWlVOcTItYzlmUklOU1N2OFE",
-                          "&output=csv"),
-                   verbose=FALSE)
+key_dates_2012 <- getSheetData(key, gid=1226808791)
 key_dates_2012 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
 
 key_dates_2012$event_date <- as.Date(key_dates_2012$event_date)
@@ -44,15 +47,21 @@ for (i in names(key_dates_2012)) {
 key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
 rm(key_dates_2012)
 
+key_dates_2013 <- getSheetData(key, gid=1841891641)
+key_dates_2013 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
+
+key_dates_2013$event_date <- as.Date(key_dates_2013$event_date)
+key_dates_2013$announce_date <- as.Date(key_dates_2013$announce_date)
+key_dates_2013$cusip_9_digit <- fixCUSIPs(key_dates_2013$cusip_9_digit)
+
+for (i in names(key_dates_2013)) {
+    if (is.numeric(key_dates_2013[,i])) key_dates_2013[,i] <- !is.na(key_dates_2013[,i])
+}
+
+key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2013)
+rm(key_dates_2013)
+
 #### Non-Sharkwatch 50 ####
-# Import Dataset from Google Drive ----
-csv_file <- getURL(paste0("https://docs.google.com/spreadsheet/pub?key=",
-                          "0AtCJeBFBO_EddEdMMXpRTUFUaUJzcTZHeEFLd0hrSkE",
-                          "&output=csv"),
-                   verbose=FALSE)
-
-key_dates_nsw50 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
-
 key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
 key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
 key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
