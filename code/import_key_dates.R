@@ -27,6 +27,7 @@ key_dates_sw50 <- getSheetData(key, gid=1862254343)
 key_dates_sw50$event_date <- as.Date(key_dates_sw50$event_date)
 key_dates_sw50$announce_date <- as.Date(key_dates_sw50$announce_date)
 key_dates_sw50$cusip_9_digit <- fixCUSIPs(key_dates_sw50$cusip_9_digit)
+key_dates_sw50$etc <- NULL
 
 for (i in names(key_dates_sw50)) {
     if (is.numeric(key_dates_sw50[,i])) key_dates_sw50[,i] <- !is.na(key_dates_sw50[,i])
@@ -34,7 +35,6 @@ for (i in names(key_dates_sw50)) {
 
 # SHARKWATCH50 2012
 key_dates_2012 <- getSheetData(key, gid=1226808791)
-key_dates_2012 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
 
 key_dates_2012$event_date <- as.Date(key_dates_2012$event_date)
 key_dates_2012$announce_date <- as.Date(key_dates_2012$announce_date)
@@ -48,7 +48,6 @@ key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
 rm(key_dates_2012)
 
 key_dates_2013 <- getSheetData(key, gid=1841891641)
-key_dates_2013 <- read.csv(textConnection(csv_file), stringsAsFactors=FALSE)
 
 key_dates_2013$event_date <- as.Date(key_dates_2013$event_date)
 key_dates_2013$announce_date <- as.Date(key_dates_2013$announce_date)
@@ -62,6 +61,7 @@ key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2013)
 rm(key_dates_2013)
 
 #### Non-Sharkwatch 50 ####
+key_dates_nsw50 <- getSheetData(key, gid=1796687034)
 key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
 key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
 key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
@@ -157,9 +157,20 @@ agg_data <- rbind(sw50_data, nsw50_data)
 agg_data$announce_date <- as.Date(agg_data$announce_date)
 agg_data$event_date <- as.Date(agg_data$event_date)
 
-rs <- dbWriteTable(pg, c("activist_director", "key_dates"),
+rs <- dbWriteTable(pg, c("activist_director", "key_dates_temp"),
                    agg_data, overwrite=TRUE, row.names=FALSE)
-# rs <- dbGetQuery(pg, "CREATE ROLE activism")
+
+rs <- dbGetQuery(pg, "
+    DROP TABLE IF EXISTS activist_director.key_dates;
+
+    CREATE TABLE activist_director.key_dates AS
+    SELECT b.campaign_id, a.*
+    FROM activist_director.key_dates_temp AS a
+    LEFT JOIN factset.campaign_ids AS b
+	USING (cusip_9_digit, dissident_group, announce_date)")
+
+dbGetQuery(pg, "DROP TABLE activist_director.key_dates_temp")
+
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates OWNER TO activism")
 

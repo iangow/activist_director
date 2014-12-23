@@ -3,25 +3,34 @@
 # This file imports the following data from Google Drive:
 #   - sw50_ciks
 #   - sw50_names (short names for each of the members of
-#     SharkWatch50
+#     SharkWatch50)
 #
 ###############################################################
 
 # Program to read in CIKs of activists.
-require(RCurl)
-csv_file <- getURL(paste("https://docs.google.com/spreadsheet/pub?",
-						 "key=0AvP4wvS7Nk-QdGVoTS1SakxaTF9PU2JzWmFaWXRFRmc&",
-						 "single=true&gid=0&output=csv", sep=""),
-                   verbose=FALSE)
-activist_ciks <- read.csv(textConnection(csv_file), as.is=TRUE)
 
-library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv)
+# Function to retrieve a Google Sheets document
+getSheetData = function(key, gid=NULL) {
+    library(RCurl)
+    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
+                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
+                  "&single=true")
+    csv_file <- getURL(url, verbose=FALSE)
+    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
+    return( the_data )
+}
+
+key <- "1TZi_Mp3RUIwjuFoUcXnmOOCJUcnMZgk4bnO51TUGYgk"
+activist_ciks <- getSheetData(key, gid="1889075352")
+# "968776406")
 
 activist_ciks$non_activist <- !is.na(activist_ciks$non_activist)
 activist_ciks$cik <- as.integer(activist_ciks$cik)
-# activist_ciks <- activist_ciks[, c("activist_name", "cik")]
+
+library(RPostgreSQL)
+
+pg <- dbConnect(PostgreSQL())
+
 rs <- dbWriteTable(pg, c("activist_director", "activist_ciks_temp"),
                    activist_ciks, overwrite=TRUE, row.names=FALSE)
 
