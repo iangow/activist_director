@@ -8,7 +8,9 @@ getSheetData = function(key, gid=NULL) {
     the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
     return( the_data )
 }
-activist_directors <- getSheetData(key="1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI", gid="271850810")
+
+key <- "1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI"
+activist_directors <- getSheetData(key, gid="271850810")
 
 # Fix variable names
 names(activist_directors) <- gsub("\\.+", "_", tolower(names(activist_directors)))

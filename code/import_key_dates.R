@@ -10,13 +10,13 @@ fixCUSIPs <- function(cusips) {
 getSheetData = function(key, gid=NULL) {
     library(RCurl)
     url <- paste0("https://docs.google.com/spreadsheets/d/", key,
-                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
+                  "/export?format=csv&id=", key,
+                  if (is.null(gid)) "" else paste0("&gid=", gid),
                   "&single=true")
     csv_file <- getURL(url, verbose=FALSE)
     the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
     return( the_data )
 }
-
 
 # Get PERMNO-CIK data
 key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
