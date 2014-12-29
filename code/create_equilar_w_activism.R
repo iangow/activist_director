@@ -1,6 +1,5 @@
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(drv, PostgreSQL())
 
 rs <-dbGetQuery(pg, "
   SET work_mem='10GB';

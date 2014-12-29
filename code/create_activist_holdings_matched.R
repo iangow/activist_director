@@ -1,6 +1,5 @@
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(PostgreSQL())
 
 # Data step ----
 rs <- dbGetQuery(pg, "
@@ -15,7 +14,7 @@ rs <- dbGetQuery(pg, "
   $$;")
 
 system.time({
-# Takes ~11 minutes (15 minutes on MBP)
+# Takes ~19 minutes
 holding_data <- dbGetQuery(pg, "
     SET work_mem='10GB';
 
@@ -75,8 +74,53 @@ holding_data <- dbGetQuery(pg, "
         INNER JOIN activist_dates
         USING (activist_names)),
 
-    exit_quarter_extra AS (
+    cstat_fyears AS (
+      SELECT DISTINCT a.gvkey, a.datadate, b.lpermno AS permno
+      FROM comp.funda AS a
+      INNER JOIN crsp.ccmxpf_linktable AS b
+      ON a.gvkey=b.gvkey
+          AND a.datadate >= b.linkdt
+          AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
+          AND b.USEDFLAG='1'
+          AND linkprim IN ('C', 'P')
+      WHERE indfmt='INDL' AND consol='C' AND popsrc='D' AND datafmt='STD'),
 
+  cusips  AS (
+      SELECT DISTINCT cusip, period_of_report, gvkey
+      FROM activist_director.activist_holdings AS a
+      INNER JOIN activist_director.permnos AS b
+      ON a.cusip=b.ncusip
+      INNER JOIN crsp.ccmxpf_linktable AS c
+      ON b.permno=c.lpermno
+          AND a.period_of_report >= c.linkdt
+          AND (a.period_of_report <= c.linkenddt OR c.linkenddt IS NULL)
+          AND c.USEDFLAG='1'
+          AND c.linkprim IN ('C', 'P')
+  ),
+
+  holdings_cstat_link AS (
+      SELECT DISTINCT cusip, period_of_report, a.gvkey,
+          max(b.datadate) AS datadate
+      FROM cusips AS a
+      INNER JOIN cstat_fyears AS b
+      ON a.gvkey=b.gvkey
+      WHERE a.period_of_report >= b.datadate
+      GROUP BY cusip, period_of_report, a.gvkey),
+
+  final AS (
+      SELECT DISTINCT *, lead(period_of_report) OVER w AS next_report_period
+	  FROM holdings_cstat_link
+	  WINDOW w AS (PARTITION BY cusip, gvkey ORDER BY period_of_report)),
+
+  activist_holdings_link AS (
+    SELECT DISTINCT lpermno AS permno, a.*
+    FROM final AS a
+    INNER JOIN crsp.ccmxpf_linktable AS b
+    ON a.gvkey=b.gvkey
+      AND a.datadate >= b.linkdt AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
+      AND b.USEDFLAG='1' AND linkprim IN ('C','P')),
+
+  exit_quarter_extra AS (
         SELECT DISTINCT a.activist_names, a.cusip,
             COALESCE(b.permno,c.permno) AS permno, datadate,
             a.entry_date, a.exit_date,
@@ -85,7 +129,7 @@ holding_data <- dbGetQuery(pg, "
             FALSE as EXIT,
             quarters_between(a.period_of_report, entry_date) AS quarter
         FROM activist_holdings_merged AS a
-        LEFT JOIN activist_director.activist_holdings_link AS b
+        LEFT JOIN activist_holdings_link AS b
         ON a.cusip=b.cusip AND a.period_of_report=b.period_of_report
         LEFT JOIN activist_director.permnos AS c
         ON a.cusip=c.ncusip
@@ -100,9 +144,9 @@ holding_data <- dbGetQuery(pg, "
               TRUE as EXIT,
               quarters_between(a.period_of_report, entry_date) + 1 AS quarter
           FROM activist_holdings_merged AS a
-          LEFT JOIN activist_director.activist_holdings_link AS b
+          LEFT JOIN activist_holdings_link AS b
           ON a.cusip=b.cusip AND a.period_of_report=b.period_of_report
-          LEFT JOIN activist_director.activist_holdings_link AS c
+          LEFT JOIN activist_holdings_link AS c
           ON a.cusip=c.cusip AND eomonth((a.period_of_report + INTERVAL '3 months')::DATE)=c.period_of_report
           WHERE a.period_of_report = exit_date AND exit_date < last_date)
 
@@ -124,7 +168,7 @@ holding_data <- dbGetQuery(pg, "
             BETWEEN a.period_of_report + interval '1 day'
             AND next_report_period, FALSE) AS appt_quarter
     FROM exit_quarter_extra AS a
-    LEFT JOIN activist_director.activist_holdings_link AS b
+    LEFT JOIN activist_holdings_link AS b
     ON a.permno=b.permno AND a.period_of_report=b.period_of_report
     LEFT JOIN activist_director.activism_events AS e
     ON a.permno=e.permno AND (e.dissidents && a.activist_names)
@@ -139,7 +183,7 @@ rs <- dbGetQuery(pg, sql)
 
 sql <- paste("
   COMMENT ON TABLE activist_director.activist_holdings_matched IS
-    'CREATED USING create_activist_holdings_matched_ss ON ", Sys.time() , "';", sep="")
+    'CREATED USING create_activist_holdings_matched ON ", Sys.time() , "';", sep="")
 rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
 
 dbDisconnect(pg)

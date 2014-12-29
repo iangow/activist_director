@@ -1,8 +1,8 @@
-DROP TABLE IF EXISTS activist_director.activism_events CASCADE;
+﻿DROP TABLE IF EXISTS activist_director.activism_events CASCADE;
 
 CREATE TABLE activist_director.activism_events AS
 WITH sharkwatch AS (
-    SELECT DISTINCT permno, cusip_9_digit, announce_date,
+    SELECT DISTINCT campaign_id, permno, cusip_9_digit, announce_date,
         least(announce_date, date_original_13d_filed) AS eff_announce_date,
         dissident_group,
         company_name, country, state_of_headquarters,
@@ -49,7 +49,7 @@ WITH sharkwatch AS (
         campaign_resulted_in_board_seats_for_activist='Yes' OR
         dissident_board_seats_wongranted_date IS NOT NULL AS activist_demand_old,
         TRUE AS activism
-    FROM factset.sharkwatch AS a
+    FROM factset.sharkwatch_new AS a
     INNER JOIN activist_director.permnos AS b
     ON substr(a.cusip_9_digit,1,8) = b.ncusip
     WHERE country='United States'
@@ -65,24 +65,23 @@ WITH sharkwatch AS (
     ORDER BY permno, first_date),
 
 activist_director AS (
-    SELECT permno, announce_date, dissident_group,
+    SELECT campaign_id,
         min(appointment_date) AS first_appointment_date,
         count(appointment_date) AS num_activist_directors,
         sum(activist_affiliate::INT) AS num_affiliate_directors,
         sum(activist_affiliate IS FALSE::INT) AS num_unaffiliate_directors
-    FROM activist_director.activist_director_matched
-    GROUP BY permno, announce_date, dissident_group),
+    FROM activist_director.activist_directors
+    GROUP BY campaign_id),
 
 matched AS (
     SELECT DISTINCT a.*, first_appointment_date,
         num_activist_directors, num_affiliate_directors, num_unaffiliate_directors,
-        b.permno IS NOT NULL AS activist_director,
-        CASE WHEN b.permno IS NOT NULL THEN
+        b.campaign_id IS NOT NULL AS activist_director,
+        CASE WHEN b.campaign_id IS NOT NULL THEN
         proxy_fight_went_the_distance ='Yes' END AS elected
     FROM sharkwatch AS a
     LEFT JOIN activist_director AS b
-    ON a.permno=b.permno AND a.announce_date=b.announce_date
-    AND a.dissident_group=b.dissident_group),
+    USING (campaign_id)),
 
 delist AS (
     SELECT DISTINCT permno,
@@ -101,10 +100,10 @@ penultimate AS (
     --  AND (num_activist_directors!= 9 OR num_activist_directors IS NULL))
 
 first_board_demand_date AS (
-    SELECT DISTINCT cusip_9_digit, announce_date, dissident_group, min(event_date) AS first_board_demand_date
-    FROM activist_director.key_dates_all
+    SELECT DISTINCT campaign_id, min(event_date) AS first_board_demand_date
+    FROM activist_director.key_dates
     WHERE board_demand
-    GROUP BY cusip_9_digit, announce_date, dissident_group)
+    GROUP BY campaign_id)
 
 SELECT DISTINCT a.*,
     b.first_board_demand_date,
@@ -169,7 +168,7 @@ SELECT DISTINCT a.*,
     -- NOT activist_demand AND activism AS activism
 FROM penultimate AS a
 LEFT JOIN first_board_demand_date AS b
-ON a.cusip_9_digit=b.cusip_9_digit AND eff_announce_date=b.announce_date AND a.dissident_group=b.dissident_group
+USING (campaign_id)
 WHERE eff_announce_date < dlstdt OR dlstdt IS NULL
 ORDER BY permno, announce_date;
 

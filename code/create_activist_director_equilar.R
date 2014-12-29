@@ -10,24 +10,52 @@ rs <-dbGetQuery(pg, "
 
   CREATE TABLE activist_director.activist_director_equilar AS
   WITH
-  activist_directors AS (
-      SELECT DISTINCT a.*, b.permco
-      FROM activist_director.activist_director_matched AS a
-      INNER JOIN crsp.stocknames AS b
-      ON a.permno=b.permno),
+    permnos AS (
+        SELECT DISTINCT ncusip AS cusip, permno, permco
+        FROM crsp.stocknames),
+
+    matched AS (
+        SELECT DISTINCT a.*, permno, permco, sharkwatch50 = 'Yes' AS sharkwatch50,
+            proxy_fight_went_the_distance ='Yes' AS elected
+        FROM activist_director.activist_directors AS a
+        INNER JOIN factset.sharkwatch_new AS b
+        USING (campaign_id)
+        INNER JOIN permnos AS c
+        ON substr(a.cusip_9_digit, 1, 8)=c.cusip
+        WHERE c.permno IS NOT NULL),
+
+    delist AS (
+        SELECT DISTINCT permno,
+            CASE WHEN dlstcd > 100 THEN dlstdt END AS dlstdt
+        FROM crsp.msedelist),
+
+    activist_directors AS (
+        SELECT DISTINCT a.*, dlstdt,
+            CASE WHEN dlstdt <= appointment_date THEN 'UNLISTED'
+                WHEN (retirement_date IS NOT NULL AND dlstdt IS NULL)
+                    OR (dlstdt > retirement_date) THEN 'RESIGNED'
+                WHEN dlstdt IS NULL THEN 'ACTIVE'
+                WHEN dlstdt IS NOT NULL THEN 'DELISTED'
+                ELSE 'OTHER'
+            END AS status
+        FROM matched AS a
+        INNER JOIN delist AS c
+        USING (permno)
+        WHERE (dlstdt IS NULL OR dlstdt>appointment_date)),
+
   co_fin AS (
       SELECT DISTINCT equilar_id(company_id) AS equilar_id, fy_end,
-            substr(cusip,1,8) AS cusip 
+            substr(cusip,1,8) AS cusip
       FROM director.co_fin),
+
   equilar AS (
       SELECT equilar_id(a.director_id) AS equilar_id,
         director_id(a.director_id) AS equilar_director_id,
-        director, last_name, first_name, a.fy_end, cusip
+        director, (director.parse_name(director)).*, a.fy_end, cusip
       FROM director.director AS a
-      INNER JOIN director.director_names AS b
-      USING (director)
       INNER JOIN co_fin AS c
       ON equilar_id(a.director_id)=c.equilar_id AND a.fy_end=c.fy_end),
+
   equilar_w_permnos AS (
       SELECT a.*, b.permno, c.permco
       FROM equilar AS a
@@ -35,29 +63,31 @@ rs <-dbGetQuery(pg, "
       ON a.cusip=b.ncusip
       INNER JOIN crsp.stocknames AS c
       ON b.permno=c.permno),
+
   equilar_first_years AS (
       SELECT permco, equilar_id, equilar_director_id, director,
-          last_name AS equilar_last, first_name AS equilar_first, 
+          last_name AS equilar_last, first_name AS equilar_first,
           min(fy_end) AS fy_end
       FROM equilar_w_permnos
       GROUP BY permco, equilar_id, equilar_director_id, director, last_name, first_name),
+
   match_permno AS (
       SELECT a.*, b.permco IS NOT NULL AS permco_on_equilar
       FROM activist_directors AS a
       LEFT JOIN equilar_w_permnos AS b
       ON a.permco=b.permco),
 
-	final AS (
-	  SELECT DISTINCT a.*, 
+  final AS (
+	  SELECT DISTINCT a.*,
 	  COALESCE(b.equilar_id, c.equilar_id, d.equilar_id, e.equilar_id) AS equilar_id,
-	  COALESCE(b.equilar_director_id, c.equilar_director_id, d.equilar_director_id, e.equilar_director_id) AS equilar_director_id, 
+	  COALESCE(b.equilar_director_id, c.equilar_director_id, d.equilar_director_id, e.equilar_director_id) AS equilar_director_id,
 	  COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
-	  COALESCE(b.equilar_first, c.equilar_first, d.equilar_first, e.equilar_first) AS equilar_first, 
+	  COALESCE(b.equilar_first, c.equilar_first, d.equilar_first, e.equilar_first) AS equilar_first,
 	  COALESCE(b.equilar_last, c.equilar_last, d.equilar_last, e.equilar_last) AS equilar_last,
 	  CASE WHEN dlstdt IS NOT NULL AND retirement_date IS NULL THEN dlstdt
-	  WHEN dlstdt IS NOT NULL AND retirement_date IS NOT NULL 
-	  THEN least(dlstdt, retirement_date) 
-	  WHEN retirement_date IS NOT NULL THEN retirement_date 
+	  WHEN dlstdt IS NOT NULL AND retirement_date IS NOT NULL
+	  THEN least(dlstdt, retirement_date)
+	  WHEN retirement_date IS NOT NULL THEN retirement_date
 	  END AS last_observed_date,
 	  appointment_date < announce_date AS prior_director
 	  FROM match_permno AS a
@@ -74,12 +104,12 @@ rs <-dbGetQuery(pg, "
 	  AND NOT (last_name='Maura' AND first_name='David' AND COALESCE(b.equilar_id, c.equilar_id, d.equilar_id, e.equilar_id) = 4431)
 	  AND NOT (last_name='Roger' AND first_name='Robin' AND COALESCE(b.equilar_id, c.equilar_id, d.equilar_id, e.equilar_id) = 4431)
 	  AND NOT (last_name='McKenzie' AND first_name='Craig' AND COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end)='2011-12-31')),
-  
-	final2 AS (    
-	  SELECT DISTINCT a.*, COALESCE(b.permno, c.permno, d.permno, e.permno) AS permno_real, 
-	  COALESCE(b.age, c.age, d.age, e.age) AS age, 
+
+	final2 AS (
+	  SELECT DISTINCT a.*, COALESCE(b.permno, c.permno, d.permno, e.permno) AS permno_real,
+	  COALESCE(b.age, c.age, d.age, e.age) AS age,
 	  COALESCE(b.audit_committee_financial_expert, c.audit_committee_financial_expert, d.audit_committee_financial_expert, e.audit_committee_financial_expert) AS audit_committee_financial_expert,
-	  COALESCE(b.comp_committee, c.comp_committee, d.comp_committee, e.comp_committee) AS comp_committee, 
+	  COALESCE(b.comp_committee, c.comp_committee, d.comp_committee, e.comp_committee) AS comp_committee,
 	  COALESCE(b.audit_committee, c.audit_committee, d.audit_committee, e.audit_committee) AS audit_committee,
 	  f.market_capitalization_at_time_of_campaign
 	  FROM final AS a
@@ -94,9 +124,9 @@ rs <-dbGetQuery(pg, "
 	  INNER JOIN activist_director.activism_events AS f
 	  ON a.permno=f.permno AND a.cusip_9_digit=f.cusip_9_digit AND a.announce_date=f.announce_date)
 
-  SELECT DISTINCT a.*, 
+  SELECT DISTINCT a.*,
     COALESCE(b.first_meetingdate, c.first_meetingdate, d.first_meetingdate, e.first_meetingdate) AS first_meetingdate,
-    COALESCE(b.vote_pct, c.vote_pct, d.vote_pct, e.vote_pct) AS vote_pct, 
+    COALESCE(b.vote_pct, c.vote_pct, d.vote_pct, e.vote_pct) AS vote_pct,
     COALESCE(b.issrec, c.issrec, d.issrec, e.issrec) AS issrec
   FROM final2 AS a
   LEFT JOIN activist_director.first_voting AS b
@@ -108,7 +138,7 @@ rs <-dbGetQuery(pg, "
   LEFT JOIN activist_director.first_voting AS e
   ON a.permno_real=e.permno AND e.first_meetingdate BETWEEN a.appointment_date - INTERVAL '1 month' AND a.appointment_date + INTERVAL '11 months' AND a.last_name ilike e.last_name
   ORDER BY permno, last_name;
-  
+
   ALTER TABLE activist_director.activist_director_equilar OWNER TO activism;
 
   CREATE INDEX ON activist_director.activist_director_equilar (permno);

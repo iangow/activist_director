@@ -1,6 +1,17 @@
 library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
+# Function to retrieve a Google Sheets document
+getSheetData = function(key, gid=NULL) {
+    library(RCurl)
+    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
+                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
+                  "&single=true")
+    csv_file <- getURL(url, verbose=FALSE)
+    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
+    return( the_data )
+}
+
 sql <- paste("
   DROP VIEW IF EXISTS activist_director.permnos CASCADE;
 
@@ -35,17 +46,23 @@ rs <- dbGetQuery(pg, sql)
 
 # Get corrected data on board-related activism from Google Sheets document ----
 require(RCurl)
-csv_file <- getURL(paste("https://docs.google.com/spreadsheet/pub?",
-                         "key=0AtCJeBFBO_EddEdiYzZVVEI0d01nTTBkVWtqZ19QOFE",
-                         "&single=true&gid=1&output=csv",
-                         sep=""),
-                   verbose=FALSE)
-event_fix <- read.csv(textConnection(csv_file), as.is=TRUE)
+key <- "16Hmw7B1kzL5eIa3k7Jw5j-9RTsfspEB18r-wNfTRiYM"
+event_fix <- getSheetData(key)
 event_fix$announce_date <- as.Date(event_fix$announce_date)
+
 # Put data into PostgreSQL ----
 
 rs <- dbWriteTable(pg, name=c("activist_director", "event_fix"), event_fix,
-             overwrite=TRUE, row.names=FALSE)
+                   overwrite=TRUE, row.names=FALSE)
+sql <- paste("
+    ALTER TABLE activist_director.event_fix OWNER TO activism;
+
+    COMMENT ON TABLE activist_director.event_fix IS
+        'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
+
+rs <- dbGetQuery(pg, sql)
+
+
 
 cat("Original data:")
 targeted_firms_mod <- dbGetQuery(pg, "

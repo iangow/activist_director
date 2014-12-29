@@ -1,17 +1,17 @@
 SET work_mem='10GB';
 
--- All Directors from Equilar (365,738 --> 409,137)
+-- All directors from Equilar
 DROP TABLE IF EXISTS activist_director.equilar_directors;
 
 CREATE TABLE activist_director.equilar_directors AS
 
 WITH equilar AS (
-      SELECT DISTINCT equilar_id(a.director_id) AS equilar_id, 
-				director_id(director_id) AS director_id, director, 
+      SELECT DISTINCT equilar_id(a.director_id) AS equilar_id,
+				director_id(director_id) AS director_id, director,
         last_name, first_name, a.fy_end, start_date, substr(cusip,1,8) AS cusip,
-        gender='M' AS male, age, (a.fy_end - start_date)/365 AS tenure, 
-        committees ilike '%comp%' AS comp_committee, 
-        committees ilike '%audit%' AS audit_committee, 
+        gender='M' AS male, age, (a.fy_end - start_date)/365 AS tenure,
+        committees ilike '%comp%' AS comp_committee,
+        committees ilike '%audit%' AS audit_committee,
         audit_committee_financial_expert
       FROM director.director AS a
       INNER JOIN director.director_names AS b
