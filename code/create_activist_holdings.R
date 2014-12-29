@@ -16,7 +16,7 @@ rs <- dbGetQuery(pg, "
 system.time({
 # Takes ~23 minutes
 holding_data <- dbGetQuery(pg, "
-    SET work_mem='10GB';
+    SET work_mem='20GB';
 
     DROP TABLE IF EXISTS activist_director.activist_holdings;
 
@@ -27,9 +27,9 @@ holding_data <- dbGetQuery(pg, "
         SELECT DISTINCT b.filing_id, c.cik, b.period_of_report, b.filed_as_of_date
         FROM whalewisdom.filings AS b
         INNER JOIN whalewisdom.filers AS c
-        ON b.filer_id=c.filer_id
+        USING (filer_id)
         INNER JOIN activist_director.activist_ciks AS e
-        ON c.cik=e.cik),
+        USING (cik)),
 
     activist_stocks AS (
         SELECT DISTINCT b.cik, b.period_of_report, b.filed_as_of_date,
@@ -41,9 +41,9 @@ holding_data <- dbGetQuery(pg, "
         END AS cusip, market_value, shares
         FROM activist_filers AS b
         INNER JOIN whalewisdom.filing_stock_records AS a
-        ON a.filing_id=b.filing_id
+        USING (filing_id)
         WHERE substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) IS NOT NULL
-        OR substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) != ' '),
+            OR substr(COALESCE(a.alt_cusip, a.cusip_number),1,8) != ' '),
 
     latest_filings AS (
         SELECT DISTINCT cik, cusip, period_of_report,
@@ -60,18 +60,23 @@ holding_data <- dbGetQuery(pg, "
         GROUP BY a.cik, a.cusip, a.period_of_report
         ORDER BY cik, cusip, period_of_report),
 
-    activist_names AS (
+    by_cik AS (
         SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
         FROM activist_director.activist_ciks
         GROUP BY cik),
 
+    activist_names AS (
+        SELECT activist_names, array_agg(DISTINCT cik) AS ciks
+        FROM by_cik
+        GROUP BY activist_names),
+
     activist_holdings AS (
-            SELECT activist_names, cusip, period_of_report,
-                sum(market_value) AS market_value, sum(shares) AS shares
-            FROM final_ah AS a
-            INNER JOIN activist_names AS b
-            ON a.cik=b.cik
-            GROUP BY activist_names, cusip, period_of_report),
+        SELECT activist_names, cusip, period_of_report,
+            sum(market_value) AS market_value, sum(shares) AS shares
+        FROM final_ah AS a
+        INNER JOIN activist_names AS b
+        USING (cik)
+        GROUP BY activist_names, cusip, period_of_report),
 
     partitions AS (
         SELECT activist_names, cusip,
@@ -121,17 +126,17 @@ holding_data <- dbGetQuery(pg, "
         USING (activist_names)),
 
     cstat_fyears AS (
-      SELECT DISTINCT a.gvkey, a.datadate, b.lpermno AS permno
-      FROM comp.funda AS a
-      INNER JOIN crsp.ccmxpf_linktable AS b
-      ON a.gvkey=b.gvkey
-          AND a.datadate >= b.linkdt
-          AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
-          AND b.USEDFLAG='1'
-          AND linkprim IN ('C', 'P')
-      WHERE indfmt='INDL' AND consol='C' AND popsrc='D' AND datafmt='STD'),
+        SELECT DISTINCT a.gvkey, a.datadate, b.lpermno AS permno
+        FROM comp.funda AS a
+        INNER JOIN crsp.ccmxpf_linktable AS b
+        ON a.gvkey=b.gvkey
+            AND a.datadate >= b.linkdt
+            AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
+            AND b.USEDFLAG='1'
+            AND linkprim IN ('C', 'P')
+        WHERE indfmt='INDL' AND consol='C' AND popsrc='D' AND datafmt='STD'),
 
-  cusips  AS (
+  cusips AS (
       SELECT DISTINCT cusip, period_of_report, gvkey
       FROM activist_director.activist_holdings AS a
       INNER JOIN activist_director.permnos AS b
@@ -141,8 +146,7 @@ holding_data <- dbGetQuery(pg, "
           AND a.period_of_report >= c.linkdt
           AND (a.period_of_report <= c.linkenddt OR c.linkenddt IS NULL)
           AND c.USEDFLAG='1'
-          AND c.linkprim IN ('C', 'P')
-  ),
+          AND c.linkprim IN ('C', 'P')),
 
   holdings_cstat_link AS (
       SELECT DISTINCT cusip, period_of_report, a.gvkey,
