@@ -62,8 +62,6 @@ sql <- paste("
 
 rs <- dbGetQuery(pg, sql)
 
-
-
 cat("Original data:")
 targeted_firms_mod <- dbGetQuery(pg, "
     SELECT *
@@ -88,14 +86,12 @@ rs <- dbGetQuery(pg, "
     UPDATE activist_director.activism_events AS a
     SET board_related=b.board_related
     FROM activist_director.event_fix AS b
-    WHERE a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date
-                 AND a.dissident_group=b.dissident_group;
+    WHERE a.campaign_id=b.campaign_id;
 
     UPDATE activist_director.activism_events AS a
     SET proxy_fight=b.proxy_fight
     FROM activist_director.event_fix AS b
-    WHERE a.cusip_9_digit=b.cusip_9_digit AND a.announce_date=b.announce_date
-                 AND a.dissident_group=b.dissident_group;
+    WHERE a.campaign_id=b.campaign_id;;
 
     DROP TABLE activist_director.event_fix;")
 

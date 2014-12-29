@@ -29,7 +29,7 @@ summ.dirs <- dbGetQuery(pg, "
             extract(year FROM eff_announce_date) AS year
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
-        USING (cusip_9_digit, announce_date, dissident_group))
+        USING (campaign_id))
 
     SELECT year,
         COUNT(*) AS activist_director,

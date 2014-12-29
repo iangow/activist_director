@@ -1,4 +1,4 @@
-﻿DROP TABLE IF EXISTS activist_director.activism_events CASCADE;
+DROP TABLE IF EXISTS activist_director.activism_events CASCADE;
 
 CREATE TABLE activist_director.activism_events AS
 WITH sharkwatch AS (
@@ -55,8 +55,8 @@ WITH sharkwatch AS (
     WHERE country='United States'
         AND state_of_incorporation != 'Non-U.S.'
         AND factset_industry != 'Investment Trusts/Mutual Funds'
-        AND (s13d_filer='Yes' OR proxy_fight='Yes' OR
-        holder_type IN ('Hedge Fund Company', 'Investment Adviser'))
+        AND (s13d_filer='Yes' OR proxy_fight='Yes'
+             OR holder_type IN ('Hedge Fund Company', 'Investment Adviser'))
         AND holder_type NOT IN ('Corporation')
         AND campaign_status='Closed'
         AND least(announce_date, date_original_13d_filed) >= '2004-01-01'
@@ -161,11 +161,7 @@ SELECT DISTINCT a.*,
         WHEN dlstcd BETWEEN 400 AND 599 AND dlstdt <= eff_announce_date + interval '3 years' THEN 'dropped'
         ELSE 'active' END AS delisted_p3,
     market_capitalization_at_time_of_campaign *
-        dissident_group_ownership_percent_at_announcement/100 AS inv_value --,
-    -- CASE WHEN activist_director IS TRUE THEN TRUE ELSE FALSE END AS
-    -- activist_director --,
-    -- NOT activist_director AND activist_demand AS activist_demand,
-    -- NOT activist_demand AND activism AS activism
+        dissident_group_ownership_percent_at_announcement/100 AS inv_value
 FROM penultimate AS a
 LEFT JOIN first_board_demand_date AS b
 USING (campaign_id)

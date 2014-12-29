@@ -75,7 +75,7 @@ dirs <- dbGetQuery(pg, "
         sum((NOT activist_affiliate)::int) AS unaffiliated
     FROM activist_director.activist_directors AS a
     INNER JOIN activist_director.activism_events
-    USING (announce_date, cusip_9_digit, dissident_group)
+    USING (campaign_id)
     WHERE elected IS NOT NULL")
 
 num_events <- formatC(nrow(events), big.mark = ",")
@@ -88,12 +88,12 @@ percent_aff <- formatC(100*dirs$affiliated/dirs$all_dirs, format="f", digits=0)
 # Stats on 13F filers
 filers <- dbGetQuery(pg, "
     WITH events_w_cik AS (
-        SELECT cusip_9_digit, announce_date, dissident_group,
+        SELECT campaign_id,
             bool_or(b.cik IS NOT NULL) AS has_cik
         FROM activist_director.activism_events AS a
         LEFT JOIN activist_director.activist_ciks AS b
         ON b.activist_name = any(a.dissidents)
-        GROUP BY cusip_9_digit, announce_date, dissident_group)
+        GROUP BY campaign_id)
     SELECT SUM(has_cik::int) AS num_13f,
         avg(has_cik::int) AS perc_13f
     FROM events_w_cik")
