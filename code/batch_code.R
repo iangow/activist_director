@@ -44,9 +44,8 @@ source('code/import_key_dates.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
 
 ## Already done!!!
-runSQL("code/create_activist_holdings.sql")
-# This one takes a long time to run!
-source("code/create_activist_holdings_matched.R", echo=TRUE)
+# This one takes a long time to run (~23 minutes)
+source("code/create_activist_holdings.R", echo=TRUE)
 
 runSQL('code/create_equilar_directors.sql')
 pg_comment("activist_director.equilar_directors",

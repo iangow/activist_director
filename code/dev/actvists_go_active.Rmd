@@ -18,7 +18,7 @@ how often they are going active with their stock holdings observed during our st
 the.data <- dbGetQuery(pg, "    
     WITH stocks AS (
         SELECT activist_name, permno, bool_or(activism) AS activism
-        FROM activist_director.activist_holdings_matched
+        FROM activist_director.activist_holdings
         WHERE period_of_report BETWEEN '2004-01-01' AND '2012-12-31'
         GROUP BY activist_name, permno)
     SELECT activist_name, count(*) AS num_stocks, 
