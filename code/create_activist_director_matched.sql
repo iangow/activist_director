@@ -8,8 +8,8 @@ matched AS (
     SELECT DISTINCT a.*, permno, sharkwatch50 = 'Yes' AS sharkwatch50,
         proxy_fight_went_the_distance ='Yes' AS elected
     FROM activist_director.activist_directors AS a
-    INNER JOIN factset.sharkwatch AS b
-    USING (cusip_9_digit, announce_date, dissident_group)
+    INNER JOIN factset.sharkwatch_new AS b
+    USING (campaign_id)
     INNER JOIN permnos AS c
     ON substr(a.cusip_9_digit, 1, 8)=c.cusip
     WHERE c.permno IS NOT NULL),
@@ -29,12 +29,25 @@ FROM matched AS a
 INNER JOIN delist AS c
 USING (permno)
 WHERE (dlstdt IS NULL OR dlstdt>appointment_date)
+
+-- What is wrong with this one?
 --OR NOT (last_name='Fox' AND first_name='Bernard A.' AND fy_end='2010-12-31')
-AND NOT (last_name='Goldfarb' AND first_name='Matthew' AND appointment_date = '2012-05-09')
-AND NOT (last_name='Lynch' AND first_name='James' AND appointment_date = '2009-02-11')
-AND NOT (last_name='Mitarotonda' AND first_name='James' AND appointment_date = '2007-11-16')
-AND NOT (last_name='Hussein' AND first_name='Ahmed' AND appointment_date = '2008-09-04')
-AND NOT (last_name='Hussein' AND first_name='Ahmed' AND appointment_date = '2012-08-16')
+
+-- Seems to be a mistake in original spreadsheet. Corrected there!
+-- AND NOT (last_name='Goldfarb' AND first_name='Matthew' AND appointment_date = '2012-05-09')
+
+-- Seems to be a valid re-appointment after leaving the board.
+-- Seems that there was a second campaign.
+-- AND NOT (last_name='Lynch' AND first_name='James' AND appointment_date = '2009-02-11')
+
+-- Seems to be a mistake in original spreadsheet. Corrected there!
+-- AND NOT (last_name='Mitarotonda' AND first_name='James' AND appointment_date = '2007-11-16')
+
+-- Duplicate entries in original spreadsheet. Corrected there.
+-- Seems that none of the cases there are correct.
+-- Hussein has been director since 1999!
+-- AND NOT (last_name='Hussein' AND first_name='Ahmed' AND appointment_date = '2008-09-04')
+-- AND NOT (last_name='Hussein' AND first_name='Ahmed' AND appointment_date = '2012-08-16')
 
 ORDER BY permno, announce_date;
 
