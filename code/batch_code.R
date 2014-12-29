@@ -43,15 +43,10 @@ source('code/import_key_dates.R', echo=TRUE)
 # Column 5
 source('code/create_activism_events.R', echo=TRUE)
 
-runSQL("code/create_activist_director_matched.sql")
-pg_comment("activist_director.activist_director_matched",
-           "CREATED USING activist_director_matched.sql")
-
 ## Already done!!!
 runSQL("code/create_activist_holdings.sql")
-source("code/create_activist_holdings_link.R", echo=TRUE)
 # This one takes a long time to run!
-source("code/create_activist_holdings_matched_ss.R", echo=TRUE)
+source("code/create_activist_holdings_matched.R", echo=TRUE)
 
 runSQL('code/create_equilar_directors.sql')
 pg_comment("activist_director.equilar_directors",
