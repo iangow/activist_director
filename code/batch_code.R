@@ -47,11 +47,7 @@ source('code/create_activism_events.R', echo=TRUE)
 # This one takes a long time to run (~23 minutes)
 source("code/create_activist_holdings.R", echo=TRUE)
 
-runSQL('code/create_equilar_directors.sql')
-pg_comment("activist_director.equilar_directors",
-           "CREATED USING create_equilar_directors.sql")
-
-runSQL('code/create_first_voting.sql')
+# runSQL('code/create_first_voting.sql')
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 

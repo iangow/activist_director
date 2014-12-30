@@ -17,7 +17,7 @@ rs <-dbGetQuery(pg, "
             gender ='F' AS female, gender='M' AS male, age,
             (a.fy_end - start_date)/365 AS tenure,
              (director.parse_name(director)).*, director,
-            start_date,
+            start_date, insider_outsider_related='Outsider' AS outsider,
             num_committees > 0 AS any_committee,
             committees ~ 'Comp' AS comp_committee,
             committees ~ 'Audit' AS audit_committee,
