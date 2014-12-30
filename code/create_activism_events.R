@@ -1,5 +1,4 @@
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+
 
 # Function to retrieve a Google Sheets document
 getSheetData = function(key, gid=NULL) {
@@ -11,6 +10,9 @@ getSheetData = function(key, gid=NULL) {
     the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
     return( the_data )
 }
+
+library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
 
 sql <- paste("
   DROP VIEW IF EXISTS activist_director.permnos CASCADE;
@@ -86,12 +88,12 @@ rs <- dbGetQuery(pg, "
     UPDATE activist_director.activism_events AS a
     SET board_related=b.board_related
     FROM activist_director.event_fix AS b
-    WHERE a.campaign_id=b.campaign_id;
+    WHERE b.campaign_id=ANY(a.campaign_ids);
 
     UPDATE activist_director.activism_events AS a
     SET proxy_fight=b.proxy_fight
     FROM activist_director.event_fix AS b
-    WHERE a.campaign_id=b.campaign_id;;
+    WHERE b.campaign_id=ANY(a.campaign_ids);
 
     DROP TABLE activist_director.event_fix;")
 
