@@ -10,8 +10,7 @@ library(xtable)
 <<dir_desc_sample, message=FALSE, echo=FALSE, results='asis'>>=
 # PostgreSQL connection #
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname="crsp")
+pg <- dbConnect(PostgreSQL())
 
 # All Director Sample
 
@@ -22,9 +21,9 @@ activist_directors <- dbGetQuery(pg, "
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
             COALESCE(retirement_date, '2013-12-31')-appointment_date AS tenure_censored
-       FROM activist_director.activist_directors
-       INNER JOIN activist_director.activism_events
-       USING (cusip_9_digit, announce_date, dissident_group))
+       FROM activist_director.activist_directors AS a
+       INNER JOIN activist_director.activism_events AS b
+       ON a.campaign_id=ANY(b.campaign_ids))
     SELECT activist_affiliate,
         count(*) AS num_all,
         sum(left_board) AS num_left_board,
@@ -46,7 +45,7 @@ all.dir.data <- dbGetQuery(pg, "
         age, female, any_committee, comp_committee, audit_committee,
         audit_committee_financial_expert
     FROM activist_director.equilar_w_activism
-    WHERE fy_end > '2003-12-31' AND age IS NOT NULL")
+    WHERE age IS NOT NULL")
 
 act.dir.data <- dbGetQuery(pg, "
     SELECT 'Activist directors'::text AS activist_director,
@@ -56,14 +55,13 @@ act.dir.data <- dbGetQuery(pg, "
       comp_committee, audit_committee,
       audit_committee_financial_expert
     FROM activist_director.equilar_w_activism
-    WHERE fy_end > '2003-12-31' AND age IS NOT NULL AND activist_director")
+    WHERE age IS NOT NULL AND activist_director")
 
 # New Director Sample
 new.dir.data <- dbGetQuery(pg, "
   SELECT *
   FROM activist_director.equilar_w_activism
-  WHERE fy_end > '2003-12-31' AND start_date > fy_end - interval ' 1 year'
-    AND age IS NOT NULL and director_first_year")
+  WHERE age IS NOT NULL AND director_first_year")
 
 new.dir.data$category <- as.factor(new.dir.data$category)
 levels(new.dir.data$category) <- c("New directors: No activism",
