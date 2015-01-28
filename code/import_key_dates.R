@@ -1,4 +1,4 @@
-#### Functions ####
+# Functions ----
 # Fix Cusips
 fixCUSIPs <- function(cusips) {
   to.fix <- nchar(cusips) < 9 & nchar(cusips) > 0
@@ -18,6 +18,7 @@ getSheetData = function(key, gid=NULL) {
     return( the_data )
 }
 
+# Get data from Google Sheets ----
 # Get PERMNO-CIK data
 key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
 
@@ -74,8 +75,7 @@ for (i in names(key_dates_nsw50)) {
     if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
 }
 
-
-# Export dataset to PostgreSQL (activist_director.activist_directors) ----
+# Use PostgreSQL to reshape the data ----
 library(RPostgreSQL)
 
 pg <- dbConnect(PostgreSQL())
@@ -149,37 +149,47 @@ nsw50_data <- dbGetQuery(pg, "
 ")
 
 key_dates <- rbind(nsw50_data, sw50_data)
-# Export dataset to PostgreSQL (activist_director.activist_directors) ----
 
-#### Aggregation ----
-agg_data <- rbind(sw50_data, nsw50_data)
+key_dates_long <- melt(key_dates,
+                       id.vars=c("cusip_9_digit", "announce_date",
+                           "dissident_group", "event_date"),
+                       variable="demand_type")
 
-agg_data$announce_date <- as.Date(agg_data$announce_date)
-agg_data$event_date <- as.Date(agg_data$event_date)
+key_dates_long <- subset(key_dates_long, value, select=-value)
+key_dates_long$demand_type <- gsub("_demand$", "", key_dates_long$demand_type)
+key_dates_long$announce_date <- as.Date(key_dates_long$announce_date)
+key_dates_long$event_date <- as.Date(key_dates_long$event_date)
 
-rs <- dbWriteTable(pg, c("activist_director", "key_dates_temp"),
-                   agg_data, overwrite=TRUE, row.names=FALSE)
+# Export dataset to PostgreSQL (activist_director.key_dates) ----
+rs <- dbWriteTable(pg, c("activist_director", "key_dates_long"),
+                   key_dates_long, overwrite=TRUE, row.names=FALSE)
 
 rs <- dbGetQuery(pg, "
     DROP TABLE IF EXISTS activist_director.key_dates;
 
     CREATE TABLE activist_director.key_dates AS
-    SELECT b.campaign_id, a.*
-    FROM activist_director.key_dates_temp AS a
+    WITH key_dates AS (
+        SELECT cusip_9_digit, announce_date, dissident_group,
+            event_date AS demand_date,
+            array_agg(demand_type) AS demand_types
+        FROM activist_director.key_dates_long
+        GROUP BY cusip_9_digit, announce_date, dissident_group, event_date)
+    SELECT b.campaign_id, a.demand_date, a.demand_types
+    FROM key_dates AS a
     LEFT JOIN factset.campaign_ids AS b
-	USING (cusip_9_digit, dissident_group, announce_date)")
+	USING (cusip_9_digit, dissident_group, announce_date)
+    ORDER BY cusip_9_digit, announce_date, dissident_group, demand_date")
 
-dbGetQuery(pg, "DROP TABLE activist_director.key_dates_temp")
+# Delete temporary tables
+dbGetQuery(pg, "
+    DROP TABLE activist_director.key_dates_long;
+    DROP TABLE activist_director.key_dates_nsw50;
+    DROP TABLE activist_director.key_dates_sw50;")
 
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates OWNER TO activism")
 
 rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates")
-
-rs <- dbGetQuery(pg, "
-    DROP TABLE activist_director.key_dates_nsw50;
-
-    DROP TABLE activist_director.key_dates_sw50;")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.key_dates IS
@@ -187,24 +197,3 @@ sql <- paste("
 rs <- dbGetQuery(pg, sql)
 
 rs <- dbDisconnect(pg)
-
-# first_board_demand_date
-pg <- dbConnect(PostgreSQL())
-temp <- dbGetQuery(pg, "
-    WITH first_board_demand_date AS (
-        SELECT DISTINCT cusip_9_digit, announce_date, dissident_group,
-            min(event_date) AS first_board_demand_date
-        FROM activist_director.key_dates
-        WHERE board_demand
-        GROUP BY cusip_9_digit, announce_date, dissident_group)
-
-    SELECT DISTINCT cusip_9_digit, announce_date, dissident_group,
-        b.first_board_demand_date, a.category,
-        b.first_board_demand_date IS NOT NULL AS board_demand
-    FROM activist_director.activism_events AS a
-    LEFT JOIN first_board_demand_date AS b
-    USING (cusip_9_digit, announce_date, dissident_group)
-    ORDER BY cusip_9_digit, announce_date, dissident_group
-")
-rs <- dbDisconnect(pg)
-

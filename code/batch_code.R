@@ -51,9 +51,9 @@ source("code/create_activist_holdings.R", echo=TRUE)
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 
-# runSQL("code/create_view_financials.sql")
-# pg_comment("activist_director.financials",
-#            "CREATED USING create_view_financials.sql")
+runSQL("code/create_view_financials.sql")
+pg_comment("activist_director.financials",
+           "CREATED USING create_view_financials.sql")
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned

@@ -46,7 +46,8 @@ rs <-dbGetQuery(pg, "
     activist_directors AS (
         SELECT DISTINCT a.campaign_id, a.first_name, a.last_name,
             a.activist_affiliate, a.appointment_date,
-            a.appointment_date < c.first_date AS prior_director,
+            a.appointment_date < c.eff_announce_date AS prior_director,
+            c.eff_announce_date, c.first_date,
             a.retirement_date,
             b.permno, b.permco,
             c.campaign_ids IS NOT NULL AS on_activism_events
