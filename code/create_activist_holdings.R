@@ -75,7 +75,7 @@ holding_data <- dbGetQuery(pg, "
             sum(market_value) AS market_value, sum(shares) AS shares
         FROM final_ah AS a
         INNER JOIN activist_names AS b
-        USING (cik)
+        ON a.cik=ANY(b.ciks)
         GROUP BY activist_names, cusip, period_of_report),
 
     partitions AS (
@@ -138,7 +138,7 @@ holding_data <- dbGetQuery(pg, "
 
   cusips AS (
       SELECT DISTINCT cusip, period_of_report, gvkey
-      FROM activist_director.activist_holdings AS a
+      FROM activist_holdings AS a
       INNER JOIN activist_director.permnos AS b
       ON a.cusip=b.ncusip
       INNER JOIN crsp.ccmxpf_linktable AS c
@@ -204,14 +204,14 @@ holding_data <- dbGetQuery(pg, "
         a.entry_date, a.exit_date, a.first_date, a.last_date,
         a.market_value, a.shares, a.period_of_report, a.exit, a.quarter,
         b.next_report_period,
-        e.announce_date, e.first_appointment_date,
+        e.first_appointment_date,
         e.eff_announce_date,
-        e.announce_date IS NOT NULL AS activism, e.category, e.big_investment,
+        e.eff_announce_date IS NOT NULL AS activism, e.category, e.big_investment,
         COALESCE(e.activist_demand, FALSE) AS activist_demand,
         COALESCE(e.activist_director, FALSE) AS activist_director,
-        COALESCE(a.period_of_report >= e.announce_date, FALSE) AS activism_announced,
+        COALESCE(a.period_of_report >= e.eff_announce_date, FALSE) AS activism_announced,
         COALESCE(a.period_of_report >= e.first_appointment_date, FALSE) AS director_appt,
-        COALESCE(e.announce_date
+        COALESCE(e.eff_announce_date
             BETWEEN a.period_of_report + interval '1 day'
             AND next_report_period, FALSE) AS activism_quarter,
         COALESCE(e.first_appointment_date
@@ -223,7 +223,8 @@ holding_data <- dbGetQuery(pg, "
     LEFT JOIN activist_director.activism_events AS e
     ON a.permno=e.permno AND (e.dissidents && a.activist_names)
     AND eff_announce_date BETWEEN entry_date - 90 AND exit_date
-    ORDER BY activist_name, permno, entry_date, announce_date, period_of_report, quarter;
+    ORDER BY activist_name, permno, entry_date, eff_announce_date,
+        period_of_report, quarter;
 
     ALTER TABLE activist_director.activist_holdings OWNER TO activism")
 })

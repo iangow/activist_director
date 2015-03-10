@@ -105,3 +105,4 @@ targeted_firms_mod <- dbGetQuery(pg, "
 
 table(targeted_firms_mod$board_related, targeted_firms_mod$proxy_fight)
 
+rs <-dbDisconnect(pg)

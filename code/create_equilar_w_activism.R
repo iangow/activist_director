@@ -86,19 +86,19 @@ rs <-dbGetQuery(pg, "
         d.prior_director IS TRUE AS prior_director
     FROM equilar AS a
     LEFT JOIN company_first_years AS b
-    ON a.equilar_id=b.equilar_id
-        AND a.fy_end=b.fy_end
+    ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end
     LEFT JOIN equilar_activism_match AS c
     ON a.equilar_id=c.equilar_id
         AND a.equilar_director_id=c.equilar_director_id
         AND a.fy_end=c.fy_end
     LEFT JOIN activist_director.activist_director_equilar AS d
-    ON c.equilar_id=d.equilar_id
-        AND c.equilar_director_id=d.equilar_director_id
-        AND c.fy_end=d.fy_end
+    ON a.equilar_id=d.equilar_id
+        AND a.equilar_director_id=d.equilar_director_id
+        AND a.fy_end=d.fy_end
     ORDER BY equilar_id, fy_end, director_id")
 
-rs <- dbGetQuery(pg, "ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")
+rs <- dbGetQuery(pg, "
+    ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.equilar_w_activism IS

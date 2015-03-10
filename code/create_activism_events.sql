@@ -145,7 +145,7 @@ delist AS (
 penultimate AS (
     SELECT DISTINCT a.*, dlstdt, dlstcd
     FROM matched AS a
-    INNER JOIN delist AS c
+    LEFT JOIN delist AS c
     USING (permno)
     --  WHERE dlstdt IS NULL OR first_appointment_date < dlstdt
     WHERE (first_date < dlstdt OR dlstdt IS NULL)),
