@@ -150,7 +150,7 @@ nsw50_data <- dbGetQuery(pg, "
 
 key_dates <- rbind(nsw50_data, sw50_data)
 
-key_dates_long <- melt(key_dates,
+key_dates_long <- reshape2::melt(key_dates,
                        id.vars=c("cusip_9_digit", "announce_date",
                            "dissident_group", "event_date"),
                        variable="demand_type")
