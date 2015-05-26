@@ -150,9 +150,7 @@ nsw50_data <- dbGetQuery(pg, "
 
 key_dates <- rbind(nsw50_data, sw50_data)
 
-library("reshape2")
-
-key_dates_long <- melt(key_dates,
+key_dates_long <- reshape2::melt(key_dates,
                        id.vars=c("cusip_9_digit", "announce_date",
                            "dissident_group", "event_date"),
                        variable="demand_type")
@@ -176,11 +174,13 @@ rs <- dbGetQuery(pg, "
             array_agg(demand_type) AS demand_types
         FROM activist_director.key_dates_long
         GROUP BY cusip_9_digit, announce_date, dissident_group, event_date)
-    SELECT b.campaign_id, a.demand_date, a.demand_types
+    SELECT c.campaign_ids[1] AS campaign_id, a.demand_date, a.demand_types
     FROM key_dates AS a
     LEFT JOIN factset.campaign_ids AS b
 	USING (cusip_9_digit, dissident_group, announce_date)
-    ORDER BY cusip_9_digit, announce_date, dissident_group, demand_date")
+    INNER JOIN activist_director.activism_events AS c
+    ON b.campaign_id=ANY(c.campaign_ids)
+    ORDER BY a.cusip_9_digit, a.announce_date, a.dissident_group, demand_date")
 
 # Delete temporary tables
 dbGetQuery(pg, "

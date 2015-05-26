@@ -153,11 +153,11 @@ penultimate AS (
     --  AND (num_activist_directors!= 9 OR num_activist_directors IS NULL))
 
 first_board_demand_date AS (
-    SELECT DISTINCT campaign_ids, min(event_date) AS first_board_demand_date
+    SELECT DISTINCT campaign_ids, min(demand_date) AS first_board_demand_date
     FROM sharkwatch_agg AS a
     INNER JOIN activist_director.key_dates AS b
     ON b.campaign_id=ANY(a.campaign_ids)
-    WHERE board_demand
+    WHERE 'board' = ANY(demand_types)
     GROUP BY a.campaign_ids)
 
 SELECT DISTINCT a.campaign_ids[1] AS campaign_id, a.*,
