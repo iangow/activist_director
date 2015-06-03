@@ -24,7 +24,9 @@ key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
 
 #### Sharkwatch 50 ####
 # Import Dataset from Google Drive ----
-key_dates_sw50 <- getSheetData(key, gid=1862254343)
+gid <- 1862254343
+key_dates_sw50 <- getSheetData(key, gid=gid)
+
 key_dates_sw50$event_date <- as.Date(key_dates_sw50$event_date)
 key_dates_sw50$announce_date <- as.Date(key_dates_sw50$announce_date)
 key_dates_sw50$cusip_9_digit <- fixCUSIPs(key_dates_sw50$cusip_9_digit)
@@ -33,9 +35,12 @@ key_dates_sw50$etc <- NULL
 for (i in names(key_dates_sw50)) {
     if (is.numeric(key_dates_sw50[,i])) key_dates_sw50[,i] <- !is.na(key_dates_sw50[,i])
 }
+key_dates_sw50$gid <- gid
 
 # SHARKWATCH50 2012
-key_dates_2012 <- getSheetData(key, gid=1226808791)
+gid <- 1226808791
+key_dates_2012 <- getSheetData(key, gid=gid)
+
 
 key_dates_2012$event_date <- as.Date(key_dates_2012$event_date)
 key_dates_2012$announce_date <- as.Date(key_dates_2012$announce_date)
@@ -44,11 +49,14 @@ key_dates_2012$cusip_9_digit <- fixCUSIPs(key_dates_2012$cusip_9_digit)
 for (i in names(key_dates_2012)) {
     if (is.numeric(key_dates_2012[,i])) key_dates_2012[,i] <- !is.na(key_dates_2012[,i])
 }
+key_dates_2012$gid <- gid
 
 key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
 rm(key_dates_2012)
 
-key_dates_2013 <- getSheetData(key, gid=1841891641)
+gid <- 1841891641
+key_dates_2013 <- getSheetData(key, gid=gid)
+
 
 key_dates_2013$event_date <- as.Date(key_dates_2013$event_date)
 key_dates_2013$announce_date <- as.Date(key_dates_2013$announce_date)
@@ -57,12 +65,16 @@ key_dates_2013$cusip_9_digit <- fixCUSIPs(key_dates_2013$cusip_9_digit)
 for (i in names(key_dates_2013)) {
     if (is.numeric(key_dates_2013[,i])) key_dates_2013[,i] <- !is.na(key_dates_2013[,i])
 }
+key_dates_2013$gid <- gid
 
 key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2013)
 rm(key_dates_2013)
 
 #### Non-Sharkwatch 50 ####
-key_dates_nsw50 <- getSheetData(key, gid=1796687034)
+gid <- 1796687034
+key_dates_nsw50 <- getSheetData(key, gid=gid)
+
+
 key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
 key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
 key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
@@ -74,6 +86,7 @@ key_dates_nsw50$no_demand <- key_dates_nsw50$no_demand=="1"
 for (i in names(key_dates_nsw50)) {
     if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
 }
+key_dates_nsw50$gid <- gid
 
 # Use PostgreSQL to reshape the data ----
 library(RPostgreSQL)
@@ -94,7 +107,7 @@ rs <- dbGetQuery(pg, sql)
 
 # Demand aggregation ----
 sw50_data <- dbGetQuery(pg, "
-    SELECT cusip_9_digit, announce_date, dissident_group, event_date,
+    SELECT cusip_9_digit, announce_date, dissident_group, event_date, gid,
         bool_or(board_representation) AS board_demand,
         bool_or(dividend_repurchase) AS payout,
         bool_or(focus_spin_off) AS divest,
@@ -116,8 +129,7 @@ sw50_data <- dbGetQuery(pg, "
                 OR separate_chairman_ceo) AS governance
     FROM activist_director.key_dates_sw50
     WHERE event_date IS NOT NULL
-    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date
-    ")
+    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date, gid")
 
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_nsw50"),
                    key_dates_nsw50, overwrite=TRUE, row.names=FALSE)
@@ -134,7 +146,7 @@ rs <- dbGetQuery(pg, sql)
 
 # Demand aggregation ----
 nsw50_data <- dbGetQuery(pg, "
-    SELECT cusip_9_digit, announce_date, dissident_group, event_date,
+    SELECT cusip_9_digit, announce_date, dissident_group, event_date, gid,
         bool_or(board_rep) AS board_demand,
         bool_or(payout) AS payout,
         bool_or(divest) AS divest,
@@ -145,14 +157,14 @@ nsw50_data <- dbGetQuery(pg, "
         bool_or(governance) AS governance
     FROM activist_director.key_dates_nsw50
     WHERE event_date IS NOT NULL
-    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date
+    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date, gid
 ")
 
 key_dates <- rbind(nsw50_data, sw50_data)
 
 key_dates_long <- reshape2::melt(key_dates,
                        id.vars=c("cusip_9_digit", "announce_date",
-                           "dissident_group", "event_date"),
+                           "dissident_group", "event_date", "gid"),
                        variable="demand_type")
 
 key_dates_long <- subset(key_dates_long, value, select=-value)
@@ -171,10 +183,13 @@ rs <- dbGetQuery(pg, "
     WITH key_dates AS (
         SELECT cusip_9_digit, announce_date, dissident_group,
             event_date AS demand_date,
-            array_agg(demand_type) AS demand_types
+            array_agg(DISTINCT gid) AS gids,
+            array_agg(DISTINCT demand_type) AS demand_types
         FROM activist_director.key_dates_long
-        GROUP BY cusip_9_digit, announce_date, dissident_group, event_date)
-    SELECT c.campaign_ids[1] AS campaign_id, a.demand_date, a.demand_types
+        GROUP BY cusip_9_digit, announce_date,
+            dissident_group, event_date, gid)
+    SELECT c.campaign_id, a.demand_date,
+        a.demand_types, a.gids
     FROM key_dates AS a
     LEFT JOIN factset.campaign_ids AS b
 	USING (cusip_9_digit, dissident_group, announce_date)
