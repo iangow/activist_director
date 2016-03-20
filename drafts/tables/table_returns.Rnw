@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, message=FALSE, cache=TRUE)}
 
 <<load_packages, include=FALSE, cache=FALSE>>=
@@ -197,8 +197,10 @@ rs <- dbDisconnect(pg)
 @
 
 <<ret_data_step, include=FALSE, dependson="ff_data_step">>==
-source("http://iangow.me/code/getEventReturnsDaily.R")
-source("http://iangow.me/code/getEventReturnsMonthly.R")
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/getEventReturnsDaily.R"))
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/getEventReturnsMonthly.R"))
 
 # -12 to -1 months (activism)
 ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
