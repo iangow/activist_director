@@ -131,11 +131,11 @@ equilar AS (
 		sum(outsider::INTEGER)::INTEGER/count(outsider)::INTEGER AS outside_percent,
 	    avg(age) AS age,
 		avg(tenure_yrs) AS tenure_yrs,
-	    sum(percent_shares_owned) AS percent_owned,
+	    -- sum(percent_shares_owned) AS percent_owned,
 	    BOOL_OR(staggered_board) AS staggered_board
     FROM equilar_directors AS a
-    LEFT JOIN director.percent_owned AS b
-    ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end AND a.director_id=b.director_id
+    -- LEFT JOIN director.percent_owned AS b
+    -- ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end AND a.director_id=b.director_id
     LEFT JOIN staggered_board AS c
     ON a.equilar_id=c.equilar_id AND a.fy_end=c.fy_end
     GROUP BY a.equilar_id, a.fy_end, year),
@@ -143,7 +143,8 @@ equilar AS (
 equilar_w_permno AS (
     SELECT DISTINCT c.permno, a.fy_end, a.year,
 		a.outside_percent, a.age, a.tenure_yrs,
-        a.percent_owned, a.staggered_board
+        -- a.percent_owned,
+        a.staggered_board
     FROM equilar AS a
     LEFT JOIN director.co_fin AS b
     ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
@@ -178,7 +179,8 @@ SELECT DISTINCT a.*,
     e.insider_percent, e.insider_diluted_percent, e.inst_percent, e.top_10_percent,
     e.majority, e.dual_class,
 	COALESCE(f.analyst, 0) AS analyst, COALESCE(g.inst,0) AS inst,
-	i.outside_percent, i.age, i.tenure_yrs, i.percent_owned, i.staggered_board, j.num_directors,
+	i.outside_percent, i.age, i.tenure_yrs, -- i.percent_owned,
+	i.staggered_board, j.num_directors,
     i.permno IS NOT NULL AS on_equilar
 FROM firm_years AS a
 LEFT JOIN crsp AS c
