@@ -116,9 +116,7 @@ equilar_directors AS (
         a.fy_end, extract(year from a.fy_end) AS year,
         a.insider_outsider_related = 'Outsider' AS outsider,
         age, (a.fy_end-start_date)/365.25 AS tenure_yrs
-    FROM director.director AS a
-    INNER JOIN director.director_names AS b
-    ON a.director=b.director),
+    FROM director.director AS a),
 
 staggered_board AS (
     SELECT DISTINCT equilar_id(company_id), fy_end, staggered_board='Y' AS staggered_board
