@@ -162,12 +162,7 @@ nsw50_data <- dbGetQuery(pg, "
 
 key_dates <- rbind(nsw50_data, sw50_data)
 
-<<<<<<< HEAD
-library(reshape)
-key_dates_long <- melt(key_dates,
-=======
 key_dates_long <- reshape2::melt(key_dates,
->>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
                        id.vars=c("cusip_9_digit", "announce_date",
                            "dissident_group", "event_date", "gid"),
                        variable="demand_type")

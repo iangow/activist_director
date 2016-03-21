@@ -40,20 +40,20 @@ source("code/import_activist_ciks.R")
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
 
-# Column 5
-source('code/create_activism_events.R', echo=TRUE)
-
 ## Already done!!!
 # This one takes a long time to run (~23 minutes)
 source("code/create_activist_holdings.R", echo=TRUE)
+
+# Column 5
+source('code/create_activism_events.R', echo=TRUE)
 
 # runSQL('code/create_first_voting.sql')
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 
-runSQL("code/create_view_financials.sql")
-pg_comment("activist_director.financials",
-           "CREATED USING create_view_financials.sql")
+# runSQL("code/create_view_financials.sql")
+# pg_comment("activist_director.financials",
+#            "CREATED USING create_view_financials.sql")
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
