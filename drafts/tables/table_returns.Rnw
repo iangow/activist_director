@@ -21,7 +21,8 @@ events <- dbGetQuery(pg, "
      SET work_mem='10GB';
 
     WITH sharkwatch AS (
-       SELECT DISTINCT permno, announce_date, eff_announce_date,
+       SELECT DISTINCT permno, --announce_date,
+            eff_announce_date,
             dissident_group, end_date,
             date_original_13d_filed, big_investment,
             num_activist_directors, num_affiliate_directors,
@@ -173,7 +174,8 @@ events <- dbGetQuery(pg, "
             AND extract(month FROM a.eff_announce_date) = extract(month FROM b.date)),
 
     ff_appt AS (
-        SELECT DISTINCT a.permno, a.announce_date, a.dissident_group,
+        SELECT DISTINCT a.permno, a.eff_announce_date,
+            a.dissident_group,
             b.ab_vwret_p1, b.ab_ewret_p1,
             b.ab_vwret_p3, b.ab_ewret_p3
         FROM sharkwatch AS a
@@ -189,7 +191,7 @@ events <- dbGetQuery(pg, "
         b.ab_ewret_p3 AS ab_ewret_appt_p3
     FROM ff_ann AS a
     LEFT JOIN ff_appt AS b
-    ON a.permno=b.permno AND a.announce_date=b.announce_date
+    ON a.permno=b.permno AND a.eff_announce_date=b.eff_announce_date
         AND a.dissident_group=b.dissident_group
 ")
 
@@ -197,8 +199,8 @@ rs <- dbDisconnect(pg)
 @
 
 <<ret_data_step, include=FALSE, dependson="ff_data_step">>==
-source("http://iangow.me/code/getEventReturnsDaily.R")
-source("http://iangow.me/code/getEventReturnsMonthly.R")
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsDaily.R")
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsMonthly.R")
 
 # -12 to -1 months (activism)
 ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,

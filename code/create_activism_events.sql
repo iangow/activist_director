@@ -1,6 +1,7 @@
 DROP TABLE IF EXISTS activist_director.activism_events CASCADE;
 
 CREATE TABLE activist_director.activism_events AS
+
 WITH sharkwatch_raw AS (
     SELECT DISTINCT campaign_id, cusip_9_digit, announce_date,
         least(announce_date, date_original_13d_filed) AS eff_announce_date,
@@ -61,7 +62,7 @@ WITH sharkwatch_raw AS (
         AND holder_type NOT IN ('Corporation')
         AND campaign_status='Closed'
         AND least(announce_date, date_original_13d_filed) >= '2004-01-01'
-        AND least(announce_date, date_original_13d_filed) <= '2012-12-31'
+        AND least(announce_date, date_original_13d_filed) <= '2015-12-31'
         AND activism_type != '13D Filer - No Publicly Disclosed Activism'),
 
 sharkwatch_agg AS (
@@ -153,11 +154,11 @@ penultimate AS (
     --  AND (num_activist_directors!= 9 OR num_activist_directors IS NULL))
 
 first_board_demand_date AS (
-    SELECT DISTINCT campaign_ids, min(event_date) AS first_board_demand_date
+    SELECT DISTINCT campaign_ids, min(demand_date) AS first_board_demand_date
     FROM sharkwatch_agg AS a
     INNER JOIN activist_director.key_dates AS b
     ON b.campaign_id=ANY(a.campaign_ids)
-    WHERE board_demand
+    WHERE 'board' = ANY(demand_types)
     GROUP BY a.campaign_ids)
 
 SELECT DISTINCT a.campaign_ids[1] AS campaign_id, a.*,

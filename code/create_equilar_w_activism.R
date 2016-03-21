@@ -11,13 +11,16 @@ rs <-dbGetQuery(pg, "
   WITH
       -- Pull together director characteristics
     equilar AS (
-        SELECT DISTINCT equilar_id(director_id) AS equilar_id,
-            director_id(director_id) AS equilar_director_id,
-            director_id, a.fy_end,
-            gender ='F' AS female, gender='M' AS male, age,
-            (a.fy_end - start_date)/365 AS tenure,
-             (director.parse_name(director)).*, director,
-            start_date, insider_outsider_related='Outsider' AS outsider,
+        SELECT DISTINCT equilar_id(director_id) AS firm_id,
+	    a.fy_end,
+            director_id(director_id) AS director_id,
+            director_id AS original_director_id,
+            (director.parse_name(director)).*, director,
+	    start_date,
+	    age, (a.fy_end - start_date)/365.25 AS tenure,
+	    gender ='F' AS female, gender='M' AS male,
+	    insider_outsider_related='Outsider' AS outsider,
+	    insider_outsider_related='Insider' AS insider,
             num_committees > 0 AS any_committee,
             committees ~ 'Comp' AS comp_committee,
             committees ~ 'Audit' AS audit_committee,
@@ -29,7 +32,7 @@ rs <-dbGetQuery(pg, "
 
     -- Match Equilar to PERMCOs
     equilar_permnos AS (
-        SELECT DISTINCT c.permco, b.permno, equilar_id(company_id) AS equilar_id, fy_end
+        SELECT DISTINCT c.permco, b.permno, equilar_id(company_id) AS firm_id, fy_end
         FROM director.co_fin AS a
         LEFT JOIN activist_director.permnos AS b
         ON substr(a.cusip, 1, 8)=b.ncusip
@@ -38,38 +41,42 @@ rs <-dbGetQuery(pg, "
 
     -- Identify companies' first years
     company_first_years AS (
-       SELECT equilar_id(company_id) AS equilar_id,
-            min(fy_end) AS fy_end
+        SELECT equilar_id(company_id) AS firm_id, min(fy_end) AS fy_end
         FROM director.co_fin AS a
-        GROUP BY equilar_id(company_id)),
+        GROUP BY equilar_id(company_id)
+        ORDER BY firm_id),
 
     -- Identify directors' first years
     director_first_years AS (
-       SELECT equilar_id(director_id) AS equilar_id,
-            director_id(director_id) AS equilar_director_id,
-						min(a.start_date) AS start_date, min(a.fy_end) AS fy_end
+        SELECT equilar_id(director_id) AS firm_id,
+            director_id(director_id) AS director_id,
+	    min(a.start_date) AS start_date,
+	    min(a.fy_end) AS fy_end
         FROM director.director AS a
-        GROUP BY equilar_id(director_id), director_id(director_id)),
+        GROUP BY equilar_id(director_id), director_id(director_id)
+        ORDER BY firm_id, director_id),
 
     -- Classify directors' first years on Equilar based on whether
     -- they were appointed during an activism event or shortly thereafter
     equilar_activism_match AS (
-        SELECT DISTINCT b.permno, equilar_id, equilar_director_id, fy_end,
+        SELECT DISTINCT b.permno, firm_id, director_id, fy_end,
             bool_or(sharkwatch50) AS sharkwatch50,
             bool_or(activism) AS activism_firm,
-						bool_or(activist_demand) AS activist_demand_firm,
+	    bool_or(activist_demand) AS activist_demand_firm,
             bool_or(activist_director) AS activist_director_firm
         FROM director_first_years AS a
         INNER JOIN equilar_permnos AS b
-        USING (equilar_id, fy_end)
+        USING (firm_id, fy_end)
         LEFT JOIN activist_director.activism_events AS c
         ON b.permco=c.permco AND
             a.start_date BETWEEN c.first_date AND c.end_date + interval '128 days'
-        GROUP BY b.permno, equilar_id, equilar_director_id, fy_end)
+        GROUP BY b.permno, firm_id, director_id, fy_end
+        ORDER BY permno, firm_id, director_id)
 
     -- Now pull all directors from Equilar and add data on activism from above
-    SELECT DISTINCT a.*, b.fy_end IS NOT NULL AS co_first_year,
-		c.fy_end IS NOT NULL AS director_first_year,
+    SELECT DISTINCT a.*,
+	b.fy_end IS NOT NULL AS firm_first_year,
+	c.fy_end IS NOT NULL AS director_first_year,
         COALESCE(c.sharkwatch50, FALSE) AS sharkwatch50,
         COALESCE(c.activism_firm, FALSE) AS activism_firm,
         COALESCE(c.activist_demand_firm, FALSE) AS activist_demand_firm,
@@ -78,24 +85,24 @@ rs <-dbGetQuery(pg, "
             WHEN activist_director_firm THEN 'activist_director_firm'
             WHEN activist_demand_firm THEN 'activist_demand_firm'
             WHEN activism_firm THEN 'activism_firm'
-            ELSE '_none'
-        END AS category,
-        d.equilar_director_id IS NOT NULL AND NOT d.prior_director
-            AS activist_director,
+		ELSE '_none' END AS category,
+        d.equilar_director_id IS NOT NULL AND NOT d.prior_director AS activist_director,
         d.activist_affiliate IS TRUE AS affiliated_director,
         d.prior_director IS TRUE AS prior_director
     FROM equilar AS a
     LEFT JOIN company_first_years AS b
-    ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end
+    ON a.firm_id=b.firm_id AND a.fy_end=b.fy_end
     LEFT JOIN equilar_activism_match AS c
-    ON a.equilar_id=c.equilar_id
-        AND a.equilar_director_id=c.equilar_director_id
+    ON a.firm_id=c.firm_id
+        AND a.director_id=c.director_id
         AND a.fy_end=c.fy_end
     LEFT JOIN activist_director.activist_director_equilar AS d
-    ON a.equilar_id=d.equilar_id
-        AND a.equilar_director_id=d.equilar_director_id
+    ON a.firm_id=d.equilar_id --firm_id
+        AND a.director_id=d.equilar_director_id --director_id
         AND a.fy_end=d.fy_end
-    ORDER BY equilar_id, fy_end, director_id")
+    ORDER BY firm_id, fy_end, director_id;
+
+--Query returned in 108940ms")
 
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")

@@ -10,7 +10,7 @@ require(stargazer)
 # constructed by fit.model function below.
 
 # source("~/Dropbox/research/activism/targeted/code/cluster2.R")
-source("http://iangow.me/code/cluster2.R")
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 
 getFitted <- function(list) {
     temp <- list()
@@ -91,11 +91,11 @@ prob_activist_director <- dbGetQuery(pg, "
         GROUP BY dissident_group),
 
     activism_events AS (
-        SELECT DISTINCT a.permno, a.announce_date, a.eff_announce_date,
+        SELECT DISTINCT a.permno, a.eff_announce_date,
             demanding_activist,
             category, activism, activist_demand, activist_director,
             dissident_group_ownership_percent,
-            holder_type='Hedge Fund Company' AS hedge_fund,
+            'Hedge Fund Company' = ANY(holder_types) AS hedge_fund,
             inv_value >= 100 AS big_investment
         FROM activist_director.activism_events AS a
         LEFT JOIN dissident_names AS b
@@ -105,7 +105,7 @@ prob_activist_director <- dbGetQuery(pg, "
         SELECT min(eff_announce_date) AS min_date
         FROM activism_events)
 
-    -- Matched with activism events (datadate BETWEEN announce_date - 1 year AND announce_date)
+    -- Matched with activism events (datadate BETWEEN eff_announce_date - 1 year AND eff_announce_date)
     SELECT DISTINCT a.permno, a.datadate, a.fyear,
         COALESCE(b.category, '_none') AS category,
         COALESCE(b.activism, FALSE) AS activism,
@@ -119,12 +119,12 @@ prob_activist_director <- dbGetQuery(pg, "
         a.majority, a.dual_class,
         COALESCE(a.analyst, 0) AS analyst, COALESCE(a.inst,0) AS inst,
         a.num_directors, a.outside_percent, a.age,
-        a.tenure_yrs, a.percent_owned, a.staggered_board,
-        a.permno IS NOT NULL AS on_equilar
+        a.tenure, a.staggered_board,
+        a.permno IS NOT NULL AS on_boardex
     FROM min_date, activist_director.outcome_controls AS a
     LEFT JOIN activism_events AS b
     ON a.permno=b.permno AND a.datadate
-    BETWEEN b.announce_date - interval '1 year' AND b.announce_date
+    BETWEEN b.eff_announce_date - interval '1 year' AND b.eff_announce_date
     WHERE a.datadate >= min_date - interval '1 year'
 ")
 
@@ -216,8 +216,8 @@ Panel A presents logit regression where the dependent variables are indicators f
 <<Table_3_panelA, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
 # Panel A
 rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-            num_directors outside_percent age tenure_yrs staggered_board"
-reg.data <- subset(prob_activist_director, on_equilar)
+            num_directors outside_percent age tenure staggered_board"
+reg.data <- subset(prob_activist_director, on_boardex)
 t3.pa <- list()
 t3.pa[[1]] <- fit.model(data=reg.data,
                   lhs="activism", rhs=rhs.1, cluster1="permno")
@@ -264,7 +264,7 @@ Panel B presents logit regression where the dependent variables are indicators f
 rhs.2 <- paste(rhs.1, "big_investment")
 
 # Subset on activism
-reg.data <- subset(prob_activist_director, on_equilar & !is.na(category))
+reg.data <- subset(prob_activist_director, on_boardex & !is.na(category))
 t3.pb <- list()
 t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")

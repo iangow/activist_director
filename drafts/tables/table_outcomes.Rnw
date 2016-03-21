@@ -40,13 +40,14 @@ source("outcome_functions.R")
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
 rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("outcome_div_acq.sql"), collapse="\n")
+sql <- paste0(readLines("~/activist_director/drafts/tables/outcome_div_acq.sql"), collapse="\n")
 reg.data <- dbGetQuery(pg, sql)
 rs <- dbDisconnect(pg)
 
 winsor.vars <- unlist(strsplit(controls, "\\s+"))
 
 reg.data <- winsorizeDF(reg.data, winsor.vars)
+reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
 @
 
 
@@ -105,7 +106,7 @@ rm(t6.pa)
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
 rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("outcome_ceo.sql"), collapse="\n")
+sql <- paste0(readLines("~/activist_director/drafts/tables/outcome_ceo.sql"), collapse="\n")
 reg.data <- dbGetQuery(pg, sql)
 rs <- dbDisconnect(pg)
 
@@ -157,7 +158,7 @@ rm(t6.pb)
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
 rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("other_outcomes.sql"), collapse="\n")
+sql <- paste0(readLines("~/activist_director/drafts/tables/other_outcomes.sql"), collapse="\n")
 reg.data <- dbGetQuery(pg, sql)
 rs <- dbDisconnect(pg)
 
@@ -166,6 +167,7 @@ lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
 winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p3")))
 
 reg.data <- winsorizeDF(reg.data, winsor.vars)
+reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
 @
 
 % Financing and investment

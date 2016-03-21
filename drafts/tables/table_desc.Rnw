@@ -14,6 +14,7 @@ summ.firms <- dbGetQuery(pg, "
     WITH raw_data AS (
         SELECT extract(year FROM eff_announce_date) AS year, *
         FROM activist_director.activism_events)
+
     SELECT year,
         count(*) AS num_events,
         sum((NOT activist_demand OR activist_demand IS NULL)::int) AS nba,

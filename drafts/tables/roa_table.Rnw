@@ -11,7 +11,7 @@ library(parallel)
 library(texreg)
 library(base)
 library(psych)
-source("http://iangow.me/code/cluster2.R")
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 library(RPostgreSQL)
 library(plm)
 @
