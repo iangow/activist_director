@@ -1,5 +1,6 @@
 
-source("http://iangow.me/code/cluster2.R")
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/cluster2.R"))
 # Simple regressions ----
 getFitted <- function(list) {
   temp <- list()

@@ -4,6 +4,7 @@ CREATE TABLE activist_director.activism_events AS
 
 WITH sharkwatch_raw AS (
     SELECT DISTINCT campaign_id, cusip_9_digit, announce_date,
+        synopsis_text,
         least(announce_date, date_original_13d_filed) AS eff_announce_date,
         dissident_group,
         classified_board='Yes' AS classified_board,
@@ -68,6 +69,7 @@ WITH sharkwatch_raw AS (
 sharkwatch_agg AS (
     SELECT cusip_9_digit, eff_announce_date, dissident_group, dissidents,
         array_agg(campaign_id) AS campaign_ids,
+        string_agg(synopsis_text, ' ') AS synopsis_text,
         bool_or(activist_demand_old) AS activist_demand_old,
         bool_or(board_related) AS board_related,
         bool_or(proxy_fight) AS proxy_fight,

@@ -23,7 +23,7 @@ sql <- paste("
   WHERE ncusip IS NOT NULL
   UNION
   SELECT DISTINCT permno, cusip AS ncusip
-  FROM activism.missing_permnos
+  FROM activist_director.missing_permnos
   WHERE permno IS NOT NULL;
 
   ALTER VIEW activist_director.permnos OWNER TO activism;

@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<table_3_libraries, cache=FALSE, include=FALSE>>=
@@ -8,9 +8,14 @@ require(stargazer)
 <<table_3_functions>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
+<<<<<<< HEAD
 
 # source("~/Dropbox/research/activism/targeted/code/cluster2.R")
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
+=======
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/cluster2.R"))
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
 
 getFitted <- function(list) {
     temp <- list()
@@ -105,7 +110,12 @@ prob_activist_director <- dbGetQuery(pg, "
         SELECT min(eff_announce_date) AS min_date
         FROM activism_events)
 
+<<<<<<< HEAD
     -- Matched with activism events (datadate BETWEEN eff_announce_date - 1 year AND eff_announce_date)
+=======
+    -- Matched with activism events
+    -- (datadate BETWEEN eff_announce_date - 1 year AND eff_announce_date)
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     SELECT DISTINCT a.permno, a.datadate, a.fyear,
         COALESCE(b.category, '_none') AS category,
         COALESCE(b.activism, FALSE) AS activism,
@@ -119,8 +129,14 @@ prob_activist_director <- dbGetQuery(pg, "
         a.majority, a.dual_class,
         COALESCE(a.analyst, 0) AS analyst, COALESCE(a.inst,0) AS inst,
         a.num_directors, a.outside_percent, a.age,
+<<<<<<< HEAD
         a.tenure, a.staggered_board,
         a.permno IS NOT NULL AS on_boardex
+=======
+        a.tenure, -- a.percent_owned,
+        a.staggered_board,
+        a.permno IS NOT NULL AS on_equilar
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     FROM min_date, activist_director.outcome_controls AS a
     LEFT JOIN activism_events AS b
     ON a.permno=b.permno AND a.datadate
@@ -217,7 +233,11 @@ Panel A presents logit regression where the dependent variables are indicators f
 # Panel A
 rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
             num_directors outside_percent age tenure staggered_board"
+<<<<<<< HEAD
 reg.data <- subset(prob_activist_director, on_boardex)
+=======
+reg.data <- subset(prob_activist_director, on_equilar)
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
 t3.pa <- list()
 t3.pa[[1]] <- fit.model(data=reg.data,
                   lhs="activism", rhs=rhs.1, cluster1="permno")

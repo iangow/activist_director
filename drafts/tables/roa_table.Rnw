@@ -11,7 +11,12 @@ library(parallel)
 library(texreg)
 library(base)
 library(psych)
+<<<<<<< HEAD
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
+=======
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/cluster2.R"))
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
 library(RPostgreSQL)
 library(plm)
 @

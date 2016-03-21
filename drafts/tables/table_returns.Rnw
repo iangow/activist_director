@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, message=FALSE, cache=TRUE)}
 
 <<load_packages, include=FALSE, cache=FALSE>>=
@@ -21,8 +21,12 @@ events <- dbGetQuery(pg, "
      SET work_mem='10GB';
 
     WITH sharkwatch AS (
+<<<<<<< HEAD
        SELECT DISTINCT permno, --announce_date,
             eff_announce_date,
+=======
+       SELECT DISTINCT permno, eff_announce_date,
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
             dissident_group, end_date,
             date_original_13d_filed, big_investment,
             num_activist_directors, num_affiliate_directors,
@@ -174,8 +178,12 @@ events <- dbGetQuery(pg, "
             AND extract(month FROM a.eff_announce_date) = extract(month FROM b.date)),
 
     ff_appt AS (
+<<<<<<< HEAD
         SELECT DISTINCT a.permno, a.eff_announce_date,
             a.dissident_group,
+=======
+        SELECT DISTINCT a.permno, a.eff_announce_date, a.dissident_group,
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
             b.ab_vwret_p1, b.ab_ewret_p1,
             b.ab_vwret_p3, b.ab_ewret_p3
         FROM sharkwatch AS a
@@ -199,8 +207,15 @@ rs <- dbDisconnect(pg)
 @
 
 <<ret_data_step, include=FALSE, dependson="ff_data_step">>==
+<<<<<<< HEAD
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsDaily.R")
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsMonthly.R")
+=======
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/getEventReturnsDaily.R"))
+devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
+                            "acct_data/master/code/getEventReturnsMonthly.R"))
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
 
 # -12 to -1 months (activism)
 ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,

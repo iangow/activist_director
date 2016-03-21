@@ -22,7 +22,11 @@ survival_data <- dbGetQuery(pg, "
         GROUP BY activist_name, permno, entry_date)
 
     SELECT DISTINCT activist_name, permno, first_date, entry_date,
+<<<<<<< HEAD
         exit_date, last_date, eff_announce_date, first_appointment_date,
+=======
+        exit_date, last_date, first_appointment_date,
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
         eff_announce_date, activism, activist_demand, activist_director,
         category, big_investment, b.exit
     FROM activist_director.activist_holdings

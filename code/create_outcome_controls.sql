@@ -120,17 +120,65 @@ ibes AS (
     ORDER BY permno, fy_end),
 
 -- board characteristics at firm-level
+<<<<<<< HEAD
 boardex_w_permno AS (
     SELECT DISTINCT c.permno, a.*
     FROM activist_director.boardex_board_profiles AS a
     LEFT JOIN boardex.company_profile_stocks AS b
     ON a.boardid=b.boardid
+=======
+equilar AS (
+    SELECT DISTINCT a.equilar_id, a.fy_end,
+		sum(outsider::int)::float8/count(outsider) AS outside_percent,
+	    avg(age) AS age,
+		avg(tenure) AS tenure,
+	    -- sum(percent_shares_owned) AS percent_owned,
+	    BOOL_OR(staggered_board) AS staggered_board
+    FROM equilar_directors AS a
+    -- LEFT JOIN director.percent_owned AS b
+    -- ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end
+    --     AND a.equilar_director_id=b.director_id
+    LEFT JOIN staggered_board AS c
+    ON a.equilar_id=c.equilar_id AND a.fy_end=c.fy_end
+    GROUP BY a.equilar_id, a.fy_end),
+
+equilar_w_permno AS (
+    SELECT DISTINCT c.permno, a.fy_end,
+		a.outside_percent, a.age, a.tenure,
+        -- a.percent_owned,
+        a.staggered_board
+    FROM equilar AS a
+    LEFT JOIN director.co_fin AS b
+    ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
+    INNER JOIN activist_director.permnos AS c
+    ON substr(b.cusip,1,8)=c.ncusip
+    -- IDG: What is this about?
+    WHERE
+        a.equilar_id NOT IN ('2583', '8598', '2907', '7506')
+        AND NOT (equilar_id = '4431' AND a.fy_end ='2010-09-30')
+        AND NOT (equilar_id = '46588' AND a.fy_end = '2012-12-31')),
+
+count_directors AS (
+    SELECT DISTINCT equilar_id(director_id) AS equilar_id, fy_end,
+        count(director_id(director_id)) AS num_directors
+    FROM director.director
+    WHERE equilar_id(director_id) NOT IN ('2583', '8598', '2907', '7506')
+        AND NOT (equilar_id(director_id) = '4431' AND fy_end ='2010-09-30')
+    GROUP BY equilar_id(director_id), fy_end),
+
+num_directors AS (
+    SELECT DISTINCT c.permno, a.fy_end, a.num_directors
+    FROM count_directors AS a
+    LEFT JOIN director.co_fin AS b
+    ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     INNER JOIN activist_director.permnos AS c
     ON CASE WHEN substr(b.isin,1,2)='US' THEN substr(b.isin,3,8) END = c.ncusip
     ORDER BY permno, annual_report_date),
 
 controls AS (
     SELECT DISTINCT a.*,
+<<<<<<< HEAD
         c.size_return,
         h.size_return_m1,
         e.insider_percent,
@@ -148,6 +196,15 @@ controls AS (
     	i.number_directors AS num_directors,
     	i.outside_percent,
     	i.permno IS NOT NULL AS on_boardex
+=======
+        c.size_return, h.size_return_m1,
+        e.insider_percent, e.insider_diluted_percent, e.inst_percent, e.top_10_percent,
+        e.majority, e.dual_class,
+    	COALESCE(f.analyst, 0) AS analyst, COALESCE(g.inst,0) AS inst,
+    	i.outside_percent, i.age, i.tenure, -- i.percent_owned,
+    	i.staggered_board, j.num_directors,
+        i.permno IS NOT NULL AS on_equilar
+>>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     FROM compustat_w_permno AS a
     LEFT JOIN crsp AS c
     ON a.permno=c.permno AND a.datadate=c.datadate

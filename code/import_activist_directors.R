@@ -1,16 +1,11 @@
 # Import Dataset from Google Drive ----
-getSheetData = function(key, gid=NULL) {
-    library(RCurl)
-    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
-                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
-                  "&single=true")
-    csv_file <- getURL(url, verbose=FALSE)
-    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
-    return( the_data )
-}
+library(googlesheets)
 
-key <- "1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI"
-activist_directors <- getSheetData(key, gid="271850810")
+# As a one-time thing per user and machine, you will need to run gs_auth()
+# to authorize googlesheets to access your Google Sheets.
+gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
+
+activist_directors <- as.data.frame(gs_read(gs, ws = "activist_directors"))
 
 # Fix variable names
 names(activist_directors) <- gsub("\\.+", "_", tolower(names(activist_directors)))
