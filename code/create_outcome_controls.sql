@@ -119,66 +119,47 @@ ibes AS (
     WHERE measure='EPS' AND fiscalp='ANN' AND fpi='1'
     ORDER BY permno, fy_end),
 
+director_age AS (
+    SELECT DISTINCT a.boardid, a.directorid, a.annual_report_date, b.age
+    FROM boardex.director_characteristics AS a
+    LEFT JOIN activist_director.director_ages AS b
+    ON a.directorid=b.directorid AND a.annual_report_date=b.annual_report_date
+    WHERE a.annual_report_date IS NOT NULL
+    ORDER BY boardid, directorid, annual_report_date),
+
+board_age AS (
+    SELECT DISTINCT boardid, annual_report_date, avg(age) AS age
+    FROM director_age
+    GROUP BY boardid, annual_report_date
+    ORDER BY boardid, annual_report_date),
+
+boardex_board_profiles AS (
+    SELECT DISTINCT a.boardid, a.annual_report_date,
+		a.time_retirement, a.time_role, a.time_brd, a.time_inco, a.avg_time_oth_co,
+		a.tot_nolstd_brd, a.tot_noun_lstd_brd, a.tot_curr_nolstd_brd, a.tot_curr_noun_lstd_brd,
+		a.no_quals, a.gender_ratio, a.nationality_mix,
+		a.number_directors, b.number_directors::DOUBLE PRECISION/a.number_directors::DOUBLE PRECISION AS outside_percent, c.age
+    FROM boardex.board_characteristics AS a
+    LEFT JOIN boardex.board_characteristics AS b
+    ON a.boardid=b.boardid AND a.annual_report_date=b.annual_report_date
+    LEFT JOIN board_age AS c
+    ON a.boardid=c.boardid AND a.annual_report_date=c.annual_report_date
+    WHERE a.row_type='Overall Board Characteristics'
+    AND b.row_type='ED Board Characteristics'
+    ORDER BY boardid, annual_report_date),
+
 -- board characteristics at firm-level
-<<<<<<< HEAD
 boardex_w_permno AS (
     SELECT DISTINCT c.permno, a.*
-    FROM activist_director.boardex_board_profiles AS a
+    FROM boardex_board_profiles AS a
     LEFT JOIN boardex.company_profile_stocks AS b
     ON a.boardid=b.boardid
-=======
-equilar AS (
-    SELECT DISTINCT a.equilar_id, a.fy_end,
-		sum(outsider::int)::float8/count(outsider) AS outside_percent,
-	    avg(age) AS age,
-		avg(tenure) AS tenure,
-	    -- sum(percent_shares_owned) AS percent_owned,
-	    BOOL_OR(staggered_board) AS staggered_board
-    FROM equilar_directors AS a
-    -- LEFT JOIN director.percent_owned AS b
-    -- ON a.equilar_id=b.equilar_id AND a.fy_end=b.fy_end
-    --     AND a.equilar_director_id=b.director_id
-    LEFT JOIN staggered_board AS c
-    ON a.equilar_id=c.equilar_id AND a.fy_end=c.fy_end
-    GROUP BY a.equilar_id, a.fy_end),
-
-equilar_w_permno AS (
-    SELECT DISTINCT c.permno, a.fy_end,
-		a.outside_percent, a.age, a.tenure,
-        -- a.percent_owned,
-        a.staggered_board
-    FROM equilar AS a
-    LEFT JOIN director.co_fin AS b
-    ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
-    ON substr(b.cusip,1,8)=c.ncusip
-    -- IDG: What is this about?
-    WHERE
-        a.equilar_id NOT IN ('2583', '8598', '2907', '7506')
-        AND NOT (equilar_id = '4431' AND a.fy_end ='2010-09-30')
-        AND NOT (equilar_id = '46588' AND a.fy_end = '2012-12-31')),
-
-count_directors AS (
-    SELECT DISTINCT equilar_id(director_id) AS equilar_id, fy_end,
-        count(director_id(director_id)) AS num_directors
-    FROM director.director
-    WHERE equilar_id(director_id) NOT IN ('2583', '8598', '2907', '7506')
-        AND NOT (equilar_id(director_id) = '4431' AND fy_end ='2010-09-30')
-    GROUP BY equilar_id(director_id), fy_end),
-
-num_directors AS (
-    SELECT DISTINCT c.permno, a.fy_end, a.num_directors
-    FROM count_directors AS a
-    LEFT JOIN director.co_fin AS b
-    ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
->>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     INNER JOIN activist_director.permnos AS c
     ON CASE WHEN substr(b.isin,1,2)='US' THEN substr(b.isin,3,8) END = c.ncusip
     ORDER BY permno, annual_report_date),
 
 controls AS (
     SELECT DISTINCT a.*,
-<<<<<<< HEAD
         c.size_return,
         h.size_return_m1,
         e.insider_percent,
@@ -196,15 +177,6 @@ controls AS (
     	i.number_directors AS num_directors,
     	i.outside_percent,
     	i.permno IS NOT NULL AS on_boardex
-=======
-        c.size_return, h.size_return_m1,
-        e.insider_percent, e.insider_diluted_percent, e.inst_percent, e.top_10_percent,
-        e.majority, e.dual_class,
-    	COALESCE(f.analyst, 0) AS analyst, COALESCE(g.inst,0) AS inst,
-    	i.outside_percent, i.age, i.tenure, -- i.percent_owned,
-    	i.staggered_board, j.num_directors,
-        i.permno IS NOT NULL AS on_equilar
->>>>>>> 03440684fc2b1cc2258280c1e57e44ae0a309d61
     FROM compustat_w_permno AS a
     LEFT JOIN crsp AS c
     ON a.permno=c.permno AND a.datadate=c.datadate
@@ -219,7 +191,7 @@ controls AS (
     LEFT JOIN crsp_m1 AS h
     ON a.permno=h.permno AND a.datadate=h.datadate
     INNER JOIN boardex_w_permno AS i
-    ON a.permno=i.permno AND i.annual_report_date BETWEEN a.datadate - interval '1 year - 1 day' AND a.datadate
+    ON a.permno=i.permno AND i.annual_report_date BETWEEN a.datadate - interval '1 year - 2 days' AND a.datadate
     ORDER BY a.permno, a.datadate),
 
 activism_dates AS (
