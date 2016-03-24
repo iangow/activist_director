@@ -145,7 +145,7 @@ boardex_board_profiles AS (
     LEFT JOIN board_age AS c
     ON a.boardid=c.boardid AND a.annual_report_date=c.annual_report_date
     WHERE a.row_type='Overall Board Characteristics'
-    AND b.row_type='ED Board Characteristics'
+    AND b.row_type='SD Board Characteristics'
     ORDER BY boardid, annual_report_date),
 
 -- board characteristics at firm-level

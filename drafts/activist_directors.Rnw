@@ -70,11 +70,11 @@ events <- dbGetQuery(pg, "
 
 dirs <- dbGetQuery(pg, "
     SELECT count(*) AS all_dirs,
-        count(DISTINCT permno) AS num_act_dir_firms,
+        count(DISTINCT a.permno) AS num_act_dir_firms,
         sum(activist_affiliate::int) AS affiliated,
         sum((NOT activist_affiliate)::int) AS unaffiliated
     FROM activist_director.activist_directors AS a
-    INNER JOIN activist_director.activism_events
+    INNER JOIN activist_director.activism_events AS b
     USING (campaign_id)
     WHERE elected IS NOT NULL")
 
