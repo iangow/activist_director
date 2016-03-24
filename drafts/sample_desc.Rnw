@@ -4,7 +4,7 @@
 
 \subsection{Activism events}
 
-Our data on activism events come from FactSet's SharkWatch database, which contains information on shareholder activism events, primarily in the United States and generally involving hedge fund activists. From SharkWatch, we collect information on all publicly disclosed activism events that commenced between January 1, 2004 and December 31, 2012 where the target firm is matched to CRSP, is incorporated in the United States, and is not an investment trust or mutual fund, and where the event is not a control contest involving another corporation.
+Our data on activism events come from FactSet's SharkWatch database, which contains information on shareholder activism events, primarily in the United States and generally involving hedge fund activists. From SharkWatch, we collect information on all publicly disclosed activism events that commenced between January 1, 2004 and December 31, 2015 where the target firm is matched to CRSP, is incorporated in the United States, and is not an investment trust or mutual fund, and where the event is not a control contest involving another corporation.
 This provides us with \Sexpr{num_events} activism events. Note that our sample does not include activism consisting only of shareholder proposals submitted under Rule 14a-8.
 %\footnote{We have \Sexpr{num_uniq_events} unique activism events when we remove concurrent activism events in the same year.}
 % TODO Why so many duplicate firm-years? This is a concern.

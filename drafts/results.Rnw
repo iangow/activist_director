@@ -5,7 +5,7 @@ Prior research suggests that hedge fund activists typically target smaller firms
 
 %What type of firms do activists go after? When do activists demand board representation? When do they actually get a board seat? We next examine the likelihood of being targeted for activism as well as the likelihood of granting a board seat to activists.
 
-We first examine the circumstances in which firms find themselves as the targets of activists. Panel A of Table \ref{tbl:selection} reports the results of logistic regressions where the dependent variables are indicators for activism and the sample is the universe of firm-years meeting our sample requirements for the years 2004 to 2012.
+We first examine the circumstances in which firms find themselves as the targets of activists. Panel A of Table \ref{tbl:selection} reports the results of logistic regressions where the dependent variables are indicators for activism and the sample is the universe of firm-years meeting our sample requirements for the years 2004 to 2015.
 % TODO: Is this 2003 to 2011?
 The first column looks at the probability of being targeted for any kind of activism event, the second column examines the determinants of an activist making demands for board representation, and the third column examines the determinants of an activist getting representation on a firm's board.\footnote{Note that, in contrast to our other analyses, for the purpose of this table, our activism indicators are \emph{not} mutually exclusive. That is, \textit{Activism} includes cases in any of the categories \textit{Non-board activism}, \textit{Board demand}, and \textit{Activist director}, while
 \textit{Board demand} includes cases of \textit{Activist director} as well as cases where the board demands are not successful}
