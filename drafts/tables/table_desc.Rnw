@@ -27,10 +27,15 @@ summ.firms <- dbGetQuery(pg, "
 summ.dirs <- dbGetQuery(pg, "
     WITH ad_years AS (
         SELECT DISTINCT a.*, b.elected,
+            (retirement_date IS NULL)::int AS still_active,
+            (retirement_date IS NOT NULL)::int AS left_board,
+            (retirement_date-appointment_date)::float8 AS tenure,
+            COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored,
             extract(year FROM eff_announce_date) AS year
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
-        USING (campaign_id))
+        ON a.campaign_id=ANY(b.campaign_ids)
+        WHERE appointment_date IS NOT NULL AND a.permno IS NOT NULL)
 
     SELECT year,
         COUNT(*) AS activist_director,
@@ -39,7 +44,7 @@ summ.dirs <- dbGetQuery(pg, "
         sum(elected::int) AS elected,
         sum((NOT elected)::int) AS settled
     FROM ad_years
-    WHERE elected IS NOT NULL
+    --WHERE elected IS NOT NULL
     GROUP BY year
     ORDER BY year
 ")

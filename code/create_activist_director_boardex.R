@@ -16,6 +16,7 @@ activist_directors <- read.csv(textConnection(csv_file), as.is=TRUE)
 activist_directors$announce_date <- as.Date(activist_directors$announce_date, "%Y-%m-%d")
 activist_directors$dissident_board_seats_wongranted_date <- as.Date(activist_directors$dissident_board_seats_wongranted_date, "%Y-%m-%d")
 activist_directors$appointment_date <- as.Date(activist_directors$appointment_date, "%Y-%m-%d")
+activist_directors$retirement_date <- as.Date(activist_directors$retirement_date, "%Y-%m-%d")
 
 rs <- dbWriteTable(pg, c("activist_director", "activist_directors_1315"), activist_directors,
                    overwrite=TRUE, row.names=FALSE)
@@ -31,6 +32,7 @@ activist_directors <- read.csv(textConnection(csv_file), as.is=TRUE, na.strings 
 activist_directors$announce_date <- as.Date(activist_directors$announce_date, "%Y-%m-%d")
 activist_directors$dissident_board_seats_wongranted_date <- as.Date(activist_directors$dissident_board_seats_wongranted_date, "%Y-%m-%d")
 activist_directors$appointment_date <- as.Date(activist_directors$appointment_date, "%Y-%m-%d")
+activist_directors$retirement_date <- as.Date(activist_directors$retirement_date, "%Y-%m-%d")
 
 rs <- dbWriteTable(pg, c("activist_director", "activist_directors_0412"), activist_directors,
                    overwrite=TRUE, row.names=FALSE)
@@ -90,10 +92,10 @@ activist_directors_equilar <- dbGetQuery(pg, "
     equilar AS (
       SELECT DISTINCT equilar_firm_id(a.director_id) AS firm_id,
           equilar_director_id(director_id) AS director_id, director,
-          (equilar.parse_name(director)).*, a.fy_end, start_date,
+          (director.parse_name(director)).*, a.fy_end, start_date,
           substr(cusip,1,8) AS cusip
-      FROM equilar.director AS a
-      LEFT JOIN equilar.co_fin AS b
+      FROM director.director AS a
+      LEFT JOIN director.co_fin AS b
       ON equilar_firm_id(a.director_id)=equilar_firm_id(b.company_id)
       AND a.fy_end=b.fy_end),
 
@@ -177,12 +179,12 @@ activist_directors_boardex <- dbGetQuery(pg, "
   ON a.director_name=b.directorname
   INNER JOIN boardex.board_characteristics AS c
   ON a.boardid=c.boardid
-  AND CASE WHEN a.annual_report_date = 'Current' THEN NULL ELSE eomonth(to_date(a.annual_report_date::text,'Mon YYYY')) END=eomonth(c.annual_report_date)
+  AND a.annual_report_date=c.annual_report_date
   INNER JOIN boardex.company_profile_stocks AS d
   ON a.boardid=d.boardid
   --INNER JOIN crsp.stocknames AS e
   --ON CASE WHEN substr(d.isin,1,2)='US' THEN substr(d.isin,3,8) END=e.ncusip
-  WHERE a.row_type='Board Member' AND a.annual_report_date!='Current'
+  WHERE a.row_type='Board Member' AND a.annual_report_date IS NOT NULL
   --WHERE a.boardid='12212'
   ORDER BY cusip, annual_report_date, last_name, first_name),
 

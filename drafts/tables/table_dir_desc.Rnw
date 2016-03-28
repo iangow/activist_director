@@ -15,14 +15,16 @@ pg <- dbConnect(PostgreSQL())
 # All Director Sample
 activist_directors <- dbGetQuery(pg, "
     WITH raw_data AS (
-        SELECT activist_affiliate,
+        SELECT DISTINCT a.*,  --activist_affiliate,
             (retirement_date IS NULL)::int AS still_active,
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
             COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored
        FROM activist_director.activist_directors AS a
        INNER JOIN activist_director.activism_events AS b
-       ON a.campaign_id=ANY(b.campaign_ids))
+       ON a.campaign_id=ANY(b.campaign_ids)
+       WHERE appointment_date IS NOT NULL AND a.permno IS NOT NULL)
+
     SELECT activist_affiliate,
         count(*) AS num_all,
         sum(left_board) AS num_left_board,
@@ -31,9 +33,10 @@ activist_directors <- dbGetQuery(pg, "
         sum(tenure_censored*still_active)/sum(still_active)::int AS active_tenure
     FROM raw_data
     GROUP BY activist_affiliate")
+
 names(activist_directors) <- c("Category", "N", "Left board", "Tenure",
                  "Still active", "Tenure")
-activist_directors[,1] <- c("NA","Unaffiliated directors","Affiliated directors")
+activist_directors[,1] <- c("NA","Affiliated directors","Unaffiliated directors")
 
 all.dir.data <- dbGetQuery(pg, "
     SELECT 'All directors'::text AS all_directors,
