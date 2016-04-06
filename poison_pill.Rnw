@@ -1,0 +1,385 @@
+\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+
+<<table_3_libraries, cache=FALSE, include=FALSE>>=
+require(stargazer)
+@
+
+<<table_3_functions>>=
+# Functions to extract fitted models, etc. from list of lists
+# constructed by fit.model function below.
+
+# source("~/Dropbox/research/activism/targeted/code/cluster2.R")
+source("http://iangow.me/code/cluster2.R")
+
+getFitted <- function(list) {
+    temp <- list()
+    for (i in 1:length(list)) {
+        temp[[i]] <- list[[i]][[1]]
+    }
+    return(temp)
+}
+
+# Get standard errors
+getSEs <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,2]
+    }
+    return(temp)
+}
+
+# Get p-values
+getPs <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,4]
+    }
+    return(temp)
+}
+
+# Get pseudo-R2s
+getPseudoR2s <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- formatC(a.list[[i]][[3]], digits = 3, format = "f")
+    }
+    return(unlist(temp))
+}
+
+@
+
+<<table_3_prob_target_data, cache=TRUE, results='asis'>>=
+# PostgreSQL Connection
+library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
+
+## Data table
+prob_activist_director <- dbGetQuery(pg, "
+    -- Compustat with Permno
+    SET work_mem='3GB';
+
+    WITH dissidents AS (
+      SELECT dissident_group, unnest(dissidents) AS dissident
+      FROM activist_director.activism_events),
+
+    big_dissidents AS (
+        SELECT DISTINCT dissident,
+            sum(activism::INT)::INT AS activism,
+            sum(activist_demand::INT)::INT AS activist_demand,
+            sum(activist_director::INT) AS activist_director,
+            CASE WHEN sum(activism::INT) > 0
+            THEN sum(activist_demand::INT)*1.0/sum(activism::INT) ELSE 0
+            END AS activist_demand_over_activism,
+            sum(activism::INT) > 2 AND sum(activist_demand::INT)*1.0/sum(activism::INT) > 0.50
+                AS demanding_activist
+            -- CASE WHEN sum(activism::INT) > 13
+            -- THEN b.dissident ELSE NULL END AS dissident
+            -- CASE WHEN sum(market_capitalization_at_time_of_campaign) > 10000
+            -- AND sum(activism::INT) > 7 THEN b.dissident ELSE NULL END AS dissident
+      FROM activist_director.activism_events AS a
+      INNER JOIN dissidents AS b
+      USING (dissident_group)
+      GROUP BY dissident),
+
+    dissident_names AS (
+        SELECT DISTINCT a.dissident_group,
+            bool_or(demanding_activist) AS demanding_activist
+        FROM dissidents AS a
+        INNER JOIN big_dissidents AS b
+        ON a.dissident=b.dissident
+        GROUP BY dissident_group),
+
+    activism_events AS (
+        SELECT DISTINCT a.permno, a.eff_announce_date,
+            demanding_activist, sharkwatch50,
+            category, activism, activist_demand, activist_director,
+            dissident_group_ownership_percent,
+            inv_value >= 100 AS big_investment
+        FROM activist_director.activism_events AS a
+        LEFT JOIN dissident_names AS b
+        ON a.dissident_group=b.dissident_group),
+
+    min_date AS (
+        SELECT min(eff_announce_date) AS min_date
+        FROM activism_events),
+
+    dual_class AS (
+        SELECT DISTINCT b.permno, a.*
+        FROM activist_director.dual_class AS a
+        LEFT JOIN activist_director.permnos AS b
+        ON substr(a.cusip_9_digit,1,8)=b.ncusip
+        ORDER BY permno),
+
+    special_meeting AS (
+        SELECT DISTINCT b.permno, a.*
+        FROM activist_director.special_meeting AS a
+        LEFT JOIN activist_director.permnos AS b
+        ON substr(a.cusip_9_digit,1,8)=b.ncusip
+        ORDER BY permno),
+
+    written_consent AS (
+        SELECT DISTINCT b.permno, a.*
+        FROM activist_director.written_consent AS a
+        LEFT JOIN activist_director.permnos AS b
+        ON substr(a.cusip_9_digit,1,8)=b.ncusip
+        ORDER BY permno),
+
+    poison_pill AS (
+        SELECT DISTINCT b.permno, a.*
+        FROM activist_director.poison_pill AS a
+        LEFT JOIN activist_director.permnos AS b
+        ON substr(a.cusip_9_digit,1,8)=b.ncusip
+        ORDER BY permno)
+
+    -- Matched with activism events (datadate BETWEEN announce_date - 1 year AND announce_date)
+    SELECT DISTINCT a.permno, a.datadate, a.fyear,
+        COALESCE(b.category, '_none') AS category,
+        COALESCE(b.sharkwatch50, FALSE) AS sharkwatch50,
+        COALESCE(b.activism, FALSE) AS activism,
+        COALESCE(b.activist_demand, FALSE) AS activist_demand,
+        COALESCE(b.activist_director, FALSE) AS activist_director,
+        dissident_group_ownership_percent,
+        demanding_activist, b.big_investment,
+        a.size_return, a.size_return_m1, a.BV, a.MV, a.BTM, a.leverage,
+        a.capex, a.dividend, a.roa, a.sale_growth,
+        a.insider_percent, a.insider_diluted_percent, a.inst_percent, a.top_10_percent,
+        a.majority,
+        COALESCE(a.analyst, 0) AS analyst, COALESCE(a.inst,0) AS inst,
+        a.num_directors, a.outside_percent, a.age,
+        a.tenure, --a.percent_owned,
+        a.staggered_board,
+        a.permno IS NOT NULL AS on_equilar,
+        c.dual_class, d.special_meeting, e.written_consent,
+        CASE WHEN f.pill_beg_date IS NOT NULL THEN TRUE WHEN f.pill_beg_date IS NULL THEN FALSE END AS poison_pill
+    FROM min_date, activist_director.outcome_controls AS a
+    LEFT JOIN activism_events AS b
+    ON a.permno=b.permno AND a.datadate BETWEEN b.eff_announce_date - interval '1 year' AND b.eff_announce_date
+    LEFT JOIN dual_class AS c
+    ON a.permno=c.permno AND a.datadate BETWEEN c.beg_date AND c.end_date
+    LEFT JOIN special_meeting AS d
+    ON a.permno=d.permno AND a.datadate BETWEEN d.beg_date AND d.end_date
+    LEFT JOIN written_consent AS e
+    ON a.permno=e.permno AND a.datadate BETWEEN e.beg_date AND e.end_date
+    LEFT JOIN poison_pill AS f
+    ON a.permno=f.permno AND a.datadate BETWEEN f.pill_beg_date AND f.pill_end_date
+    WHERE a.datadate >= min_date - interval '1 year'
+")
+
+library(psych)
+
+quartile <- function(reg.data, size_return) {
+      temp <- ifelse(reg.data$size_return < quantile(reg.data$size_return, probs = seq(0, 1, 0.25), na.rm = TRUE)[2],"q1",
+                          ifelse(reg.data$size_return < quantile(reg.data$size_return, probs = seq(0, 1, 0.25), na.rm = TRUE)[3], "q2",
+                                 ifelse(reg.data$size_return < quantile(reg.data$size_return, probs = seq(0, 1, 0.25), na.rm = TRUE)[4], "q3",
+                                        ifelse(reg.data$size_return < quantile(reg.data$size_return, probs = seq(0, 1, 0.25), na.rm = TRUE)[5], "q4", NA))))
+      return(temp)
+}
+
+prob_activist_director$size_return_q <- quartile(prob_activist_director, size_return)
+prob_activist_director$bv_q <- quartile(prob_activist_director, bv)
+prob_activist_director$mv_q <- quartile(prob_activist_director, mv)
+prob_activist_director$btm_q <- quartile(prob_activist_director, btm)
+prob_activist_director$leverage_q <- quartile(prob_activist_director, leverage)
+prob_activist_director$capex_q <- quartile(prob_activist_director, capex)
+prob_activist_director$dividend_q <- quartile(prob_activist_director, dividend)
+prob_activist_director$roa_q <- quartile(prob_activist_director, roa)
+prob_activist_director$sale_growth_q <- quartile(prob_activist_director, sale_growth)
+prob_activist_director$inst_q <- quartile(prob_activist_director, inst)
+prob_activist_director$analyst_q <- quartile(prob_activist_director, analyst)
+
+# Update Data - Winsorization
+prob_activist_director <- within(prob_activist_director, {
+  # Winsorize variables
+  size_return <- winsor(size_return, trim=0.01)
+  size_return_m1 <- winsor(size_return_m1, trim=0.01)
+  bv <- winsor(bv, trim=0.01)
+  mv <- winsor(mv, trim=0.01)
+  btm <- winsor(btm, trim=0.01)
+  leverage <- winsor(leverage, trim=0.01)
+  capex <- winsor(capex, trim=0.01)
+  dividend <- winsor(dividend, trim=0.01)
+  roa <- winsor(roa, trim=0.01)
+  sale_growth <- winsor(sale_growth, trim=0.01)
+  analyst <- winsor(analyst, trim=0.01)
+  inst <- winsor(inst, trim=0.01)
+
+  })
+
+rs <- dbDisconnect(pg)
+@
+
+<<prob_target_analyses, dependson='table_3_prob_target_data', results='asis'>>=
+combineVars <- function(vars) {
+    paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
+}
+
+fit.model <- function(data, lhs, rhs, cluster1) {
+    model <- paste0(lhs, " ~ ", combineVars(rhs))
+    fitted <- glm(model, data=data, na.action="na.exclude", family="binomial")
+    fitted_constant <- glm(paste(lhs, "~ 1"), data=reg.data, na.action="na.exclude", family="binomial")
+    pseudoR2 <- 1- logLik(fitted)[[1]]/logLik(fitted_constant)[[1]]
+    fitted.cluster <- coeftest.cluster(data, fitted, cluster1=cluster1)
+    return(list(fitted, fitted.cluster, pseudoR2))
+}
+@
+\begin{table}[htb]
+\caption{Activist target selection}
+\label{tbl:selection}
+\begin{minipage}[t]{\columnwidth}
+% \begin{flushleft}
+  {\small
+    All regressions in this table include the following controls measured for the prior fiscal year-end:
+    \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
+    \textit{Institutional}, the proportion of the firms outstanding stock held by institutions;
+    \textit{Size-adj. ret}, twelve-month size-adjusted returns calculated as raw
+            return over a year minus return for the size-matched decile provided by CRSP;
+    \textit{Market value}, the value of market capitalization;
+    \textit{Book-to-market}, market capitalization divided by the book value of common equity;
+    \textit{Leverage}, sum of long-term debt and current liabilities divided by sum of
+            long-term debt, current liabilities and the book value of common equity;
+    \textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA);
+    \textit{ROA}, EBITDA divided by the lagged total assets;
+    \textit{Sales growth}, Sales divided by lagged sales;
+    \textit{Num. directors}, the number of directors on the board;
+    \textit{Outside percent}, the percentage of outside directors;
+    \textit{Age}, the average age of directors on the board;
+    \textit{Tenure}, the average years of directorship on the board;
+    \textit{Staggered board}, indicator for staggered board.
+    All controls are winsorized at the $1\%$ and $99\%$ levels.
+    Values in parentheses are standard errors clustered by firm.
+    *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+ % \end{flushleft}
+  \end{minipage}
+\addtocounter{table}{-1}
+\end{table}
+
+\newpage
+
+  \begin{table}[htb]
+    \caption{Activist target selection}
+            \begin{minipage}[t]{\columnwidth}
+%    \begin{flushleft}
+  {\small
+Panel A presents logit regression where the dependent variables are indicators for being targeted for activism in any category (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1), being the target of an activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3). Sample includes firm-years with and without activism.
+    \newline}
+%  \end{flushleft}
+  \end{minipage}
+\begin{tabularx}{5in}{l*{3}{Y}}
+\multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
+<<Table_3_panelA, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
+# Panel A
+rhs.1 <- "analyst inst size_return btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure staggered_board factor(fyear)"
+rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure poison_pill factor(fyear)"
+rhs.3 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure dual_class factor(fyear)"
+rhs.4 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure special_meeting factor(fyear)"
+rhs.5 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure written_consent factor(fyear)"
+rhs.6 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure
+            staggered_board poison_pill dual_class special_meeting written_consent factor(fyear)"
+
+reg.data <- subset(prob_activist_director, on_equilar & fyear <= 2007)
+t3.pa <- list()
+t3.pa[[1]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.1, cluster1="permno")
+t3.pa[[2]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.2, cluster1="permno")
+t3.pa[[3]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.3, cluster1="permno")
+t3.pa[[4]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.4, cluster1="permno")
+t3.pa[[5]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.5, cluster1="permno")
+t3.pa[[6]] <- fit.model(data=reg.data,
+                  lhs="activism", rhs=rhs.6, cluster1="permno")
+t3.pa
+
+# Descriptive Statistics
+library(Hmisc)
+complete.data <- na.omit(reg.data[c("analyst","inst","size_return","mv","btm","leverage","dividend","roa","sale_growth",
+                                    "num_directors","outside_percent","age","tenure",
+                                    "staggered_board","poison_pill","special_meeting","written_consent",
+                                    "activism")])
+rcorr(as.matrix(complete.data))
+M <- cor(complete.data)
+corrplot(M, method = "number")
+
+
+library(doBy)
+desc.stat.size_return <- summaryBy(size_return ~ poison_pill + activism,
+                        data=subset(reg.data, !is.na(size_return)),
+                         FUN=function(x) { c( mean = mean(x), median = median(x), sd = sd(x), N = length(x)) })
+desc.stat.size_return
+
+desc.stat.btm <- summaryBy(btm ~ poison_pill + activism,
+                        data=subset(reg.data, !is.na(btm)),
+                         FUN=function(x) { c( mean = mean(x), median = median(x), sd = sd(x), N = length(x)) })
+desc.stat.btm
+
+desc.stat.mv <- summaryBy(mv ~ poison_pill + activism,
+                        data=subset(reg.data, !is.na(mv)),
+                         FUN=function(x) { c( mean = mean(x), median = median(x), sd = sd(x), N = length(x)) })
+desc.stat.mv
+
+desc.stat.pp <- summaryBy(size_return + roa + mv + btm ~ poison_pill + activism,
+                        data=subset(reg.data, !is.na(size_return) & !is.na(roa) & !is.na(mv) & !is.na(btm)),
+                         FUN=function(x) { c( mean = mean(x), median = median(x), sd = sd(x), N = length(x)) })
+desc.stat.pp
+
+desc.stat.sb <- summaryBy(size_return + roa + mv + btm ~ staggered_board + activism,
+                        data=subset(reg.data, !is.na(size_return) & !is.na(roa) & !is.na(mv) & !is.na(btm)),
+                         FUN=function(x) { c( mean = mean(x), median = median(x), sd = sd(x), N = length(x)) })
+desc.stat.sb
+
+
+t3.pb <- list()
+t3.pb[[1]] <- fit.model(data=subset(reg.data, sharkwatch50 | activism==FALSE),
+                  lhs="activism", rhs=rhs.1, cluster1="permno")
+t3.pb[[2]] <- fit.model(data=subset(reg.data, sharkwatch50 | activism==FALSE),
+                  lhs="activism", rhs=rhs.2, cluster1="permno")
+t3.pb[[3]] <- fit.model(data=subset(reg.data, sharkwatch50 | activism==FALSE),
+                  lhs="activism", rhs=rhs.3, cluster1="permno")
+t3.pb[[4]] <- fit.model(data=subset(reg.data, sharkwatch50 | activism==FALSE),
+                  lhs="activism", rhs=rhs.4, cluster1="permno")
+t3.pb[[5]] <- fit.model(data=subset(reg.data, sharkwatch50 | activism==FALSE),
+                  lhs="activism", rhs=rhs.5, cluster1="permno")
+t3.pb
+
+t3.pc <- list()
+t3.pc[[1]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
+t3.pc[[2]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.2, cluster1="permno")
+t3.pc[[3]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.3, cluster1="permno")
+t3.pc[[4]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.4, cluster1="permno")
+t3.pc[[5]] <- fit.model(data=subset(reg.data, category!='activism'),
+                  lhs="activist_director", rhs=rhs.5, cluster1="permno")
+t3.pc
+
+
+
+stargazer(getFitted(t3.pa),
+        dep.var.labels = c("Activism", "Activism", "Activism", "Activism", "Activism"),
+        covariate.labels = c("Analyst", "Inst","Size-adj. ret","Market value","Book-to-market",
+                              "Leverage","Payout","ROA","Sales growth",
+                              "Num. directors", "Outside percent","Age","Tenure",
+                              "Staggered board","Poison Pill","Dual Class","Special Meeting"),
+        se= getSEs(t3.pa),
+        p= getPs(t3.pa),
+       float=FALSE, align=TRUE, font.size="small",
+       keep.stat=c("n"), no.space=TRUE,
+       add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
+
+rm(t3.pa)
+@
+\end{tabularx}
+\addtocounter{table}{-1}
+\end{table}

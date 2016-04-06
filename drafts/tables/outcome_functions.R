@@ -141,3 +141,30 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
   ols.model(data=data, lhs=lhs, rhs=rhs)
 }
+
+get.model.2 <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.controls=FALSE) {
+
+    data <- within(data, {
+        year <- as.factor(year)
+        category <- as.factor(category)
+        sic2 <- as.factor(sic2)
+    })
+
+    rhs <- trim(paste(rhs.t6.1, if(include.lag) "lagged.var", if(use.controls) controls))
+
+    if(include.lag) {
+        data$lagged.var <- data[, the.var]
+
+        # Exclude lagged LHS from RHS if already there.
+        rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
+    }
+    if (include.lag) {
+        lhs <- paste0(the.var,"_p2")
+    } else if (changes) {
+        lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
+    } else {
+        lhs <- the.var
+    }
+
+    ols.model(data=data, lhs=lhs, rhs=rhs)
+}

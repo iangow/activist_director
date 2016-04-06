@@ -85,9 +85,9 @@ Values in parentheses are standard errors clustered by firm.
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<table_6_div_and_acq, dependson=c("table_6_functions", "div_acq_data_step"), results='asis'>>=
-lhs.vars <- list("acquisition_p3", "merger_p3", "divestiture_p3")
+lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
-t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
+t6.pa <- lapply(lhs.vars, get.model.2, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
 row.labels <- c("Non-board activism", "Board demand", "Activist director")
 col.labels <-c ("Acquisition", "Acquired", "Divestiture")
@@ -110,7 +110,7 @@ sql <- paste0(readLines("~/activist_director/drafts/tables/outcome_ceo.sql"), co
 reg.data <- dbGetQuery(pg, sql)
 rs <- dbDisconnect(pg)
 
-winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p3")
+winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
 reg.data <- winsorizeDF(reg.data, winsor.vars)
 @
 
@@ -138,10 +138,10 @@ Values in parentheses are standard errors clustered by firm.
 <<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp", "perf_comp")
 
-t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+t6.pb <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
-col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+3)}$", "$\\textrm{CEO comp}_{t+3}$",
-                "$\\textrm{Perf comp}_{t+3}$")
+col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$",
+                "$\\textrm{Perf comp}_{t+2}$")
 row.labels <- c("Non-board activism", "Board demand", "Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
 names(summ) <- col.labels
@@ -164,7 +164,7 @@ rs <- dbDisconnect(pg)
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
-winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p3")))
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p2"), paste0(lhs.vars, "_p3")))
 
 reg.data <- winsorizeDF(reg.data, winsor.vars)
 reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
@@ -193,7 +193,7 @@ Values in parentheses are standard errors clustered by firm.
 <<table_6_cap_struct, dependson=c("table_6_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
-t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+t6.pd <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 row.labels <- c("Non-board activism", "Board demand", "Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("Cash", "Leverage", "Payout")
@@ -228,7 +228,7 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 <<table_6_investment, dependson=c("table_6_functions", "other_outcome_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
-t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+t6.pf <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
 row.labels <- c("Non-board activism", "Board demand", "Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
