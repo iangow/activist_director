@@ -1,7 +1,10 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
+
+<<set_var, include=FALSE>>=
+if(exists("events.updated")) opts_chunk$set(cache.extra=events.updated)
+@
 
 % See intro.Rnw for details on this variable.
-\Sexpr{opts_chunk$set(cache.extra=events.updated)}
 \Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
 
 <<table_desc_data, results='asis'>>=
