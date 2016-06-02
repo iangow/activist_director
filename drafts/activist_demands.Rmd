@@ -1,0 +1,51 @@
+---
+title: "Analyzing activist demands"
+author: "Ian Gow"
+date: "May 23, 2015"
+output: pdf_document
+---
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r, include=FALSE}
+library(dplyr)
+
+pg <- src_postgres()
+
+key_dates <- tbl(pg, sql("
+    SELECT campaign_id, demand_date, UNNEST(demand_types) AS demand_type
+    FROM activist_director.key_dates"))
+
+activism_events <- tbl(pg, sql("SELECT * FROM activist_director.activism_events"))
+```
+
+You can also embed plots, for example:
+
+```{r, echo=FALSE}
+key_dates %>%
+    filter(demand_type=="board") %>%
+    group_by(campaign_id) %>%
+    summarize(first_board_demand = min(demand_date)) ->
+    first_board_demands
+
+key_dates %>%
+    group_by(campaign_id) %>%
+    summarize(first_demand_date = min(demand_date)) %>%
+    left_join(first_board_demands) %>%
+    mutate(board_demand = !is.na(first_board_demand)) ->
+    first_demands
+
+activism_events %>%
+    select(campaign_id, event_date, date_original_13d_filed, category) %>%
+    left_join(first_demands) %>%
+    mutate(any_demand = !is.na(first_demand_date)) -> 
+    event_tbl
+```
+
+```{r}
+library(tidyr)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
