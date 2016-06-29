@@ -2,25 +2,16 @@
 #
 # This file imports the following data from Google Drive:
 #   - sw50_ciks
-#   - sw50_names (short names for each of the members of
-#     SharkWatch50)
 #
 ###############################################################
 
-# Program to read in CIKs of activists.
-
-# Function to retrieve a Google Sheets document
-getSheetData = function(key, gid=NULL) {
-    library(RCurl)
-    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
-                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
-                  "&single=true")
-    csv_file <- getURL(url, verbose=FALSE)
-    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
-    return( the_data )
-}
+library(googlesheets)
 
 key <- "1TZi_Mp3RUIwjuFoUcXnmOOCJUcnMZgk4bnO51TUGYgk"
+gs <- gs_key(key)
+
+activist_ciks <- gs_read(gs, ws = "sw50_cik")
+
 activist_ciks <- getSheetData(key, gid="1889075352")
 # "968776406")
 
@@ -39,21 +30,21 @@ rs <- dbGetQuery(pg, "
 
     CREATE TABLE activist_director.activist_ciks AS
     WITH names AS (
-      SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
-      FROM activist_director.activist_ciks_temp
-      WHERE NOT non_activist
-      GROUP BY cik),
+        SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
+        FROM activist_director.activist_ciks_temp
+        WHERE NOT non_activist
+        GROUP BY cik),
 
     ciks AS (
-      SELECT activist_name, array_agg(cik) AS ciks
-      FROM activist_director.activist_ciks_temp
-      GROUP BY activist_name),
+        SELECT activist_name, array_agg(cik) AS ciks
+        FROM activist_director.activist_ciks_temp
+        GROUP BY activist_name),
 
     processed AS (
-      SELECT DISTINCT unnest(activist_names) AS activist_name, ciks
-      FROM names AS a
-      INNER JOIN ciks AS b
-      ON a.cik = ANY(b.ciks))
+        SELECT DISTINCT unnest(activist_names) AS activist_name, ciks
+        FROM names AS a
+        INNER JOIN ciks AS b
+        ON a.cik = ANY(b.ciks))
 
     SELECT DISTINCT activist_name, unnest(ciks) AS cik
     FROM processed;
