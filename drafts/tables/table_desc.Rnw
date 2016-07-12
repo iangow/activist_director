@@ -38,7 +38,7 @@ summ.dirs <- dbGetQuery(pg, "
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
         ON a.campaign_id=ANY(b.campaign_ids)
-        WHERE appointment_date IS NOT NULL AND a.permno IS NOT NULL)
+        WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
 
     SELECT year,
         COUNT(*) AS activist_director,
