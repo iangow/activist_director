@@ -36,7 +36,7 @@ activist_directors <- dbGetQuery(pg, "
 
 names(activist_directors) <- c("Category", "N", "Left board", "Tenure",
                  "Still active", "Tenure")
-activist_directors[,1] <- c("NA","Affiliated directors","Unaffiliated directors")
+activist_directors[,1] <- c("Unffiliated directors","Affiliated directors")
 
 all.dir.data <- dbGetQuery(pg, "
     SELECT 'All directors'::text AS all_directors,
@@ -45,7 +45,8 @@ all.dir.data <- dbGetQuery(pg, "
         time_retirement, time_role, time_brd, time_inco,
         tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
         female, no_quals, age
-    FROM activist_director.boardex_w_activism")
+    FROM activist_director.boardex_w_activism
+    WHERE annual_report_date > '2003-12-31'")
 
 act.dir.data <- dbGetQuery(pg, "
     SELECT 'Activist directors'::text AS activist_director,
@@ -56,13 +57,15 @@ act.dir.data <- dbGetQuery(pg, "
         tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
         female, no_quals, age
     FROM activist_director.boardex_w_activism
-    WHERE activist_director")
+    WHERE activist_director
+    AND annual_report_date > '2003-12-31'")
 
 # New Director Sample
 new.dir.data <- dbGetQuery(pg, "
-  SELECT *
+  SELECT 'New directors'::text AS new_directors, *
   FROM activist_director.boardex_w_activism
-  WHERE director_first_year")
+  WHERE annual_report_date > '2003-12-31'
+  AND director_first_year AND NOT firm_first_year")
 
 new.dir.data$category <- as.factor(new.dir.data$category)
 levels(new.dir.data$category) <- c("New directors: No activism",
@@ -103,7 +106,8 @@ getTab <- function(cat, df) {
 
 tab.1 <- getTab("all_directors", all.dir.data)
 # New director sample - table
-tab.2 <- getTab("category", new.dir.data)
+# tab.2 <- getTab("category", new.dir.data)
+tab.2 <- getTab("new_directors", new.dir.data)
 tab.3 <- getTab("activist_director", act.dir.data)
 tab.4 <- getTab("affiliated_director", act.dir.data)
 tab <- rbind(tab.1, tab.2, tab.3, tab.4)

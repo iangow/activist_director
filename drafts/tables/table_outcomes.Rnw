@@ -58,9 +58,9 @@ reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
 % \begin{flushleft}
 {\small
 Table presents regressions of outcome variables on firm-year level activism indicators.
-\textit{Acquisition} indicates the firm completed acquisitions within three years after year $t$.
-\textit{Acquired} indicates delisting within three years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
-\textit{Divestiture} indicates the firm completed divestitures and spinoffs within three years of year $t$.
+\textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
+\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
 % and \textit{Failures} (500, 520-599).
 Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
 \textit{Total assets}, book value of total assets;
@@ -124,9 +124,9 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 % \begin{flushleft}
 {\small
 Table presents regressions of variables on firm-year level activism categorical variables.
-\textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+3$.
+\textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
 % TODO: Is it end of t or end of t+1?
-$\textit{CEO comp}_{t+3}$ is log of total CEO compensation in year $t+3$
+$\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$
 \textit{Perf comp} is the percentage of CEO compensation that not salary.
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
@@ -183,7 +183,7 @@ reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
 \textit{Leverage} is measured as the ratio of book value of debt to the
     sum of the book value of debt and equity.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to
-    EBITDA for the three years after year $t$.
+    EBITDA for the two years after year $t$.
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
@@ -215,10 +215,10 @@ rm(t6.pd)
 %\begin{flushleft}
 {\small
 Table presents regressions of variables on firm-year level activism categorical variables.
-% \textit{Tax rate} is measured as the ratio of total tax expense for three years after announcement of activism to the pre-tax income during the same period.
-\textit{CapEx} is measured as the ratio of capital expenditure for three years after announcement of activism to the lagged book value of total assets.
-\textit{R\&D} is measured as the ratio of total R\&D expenditure for three years after announcement of activism to the lagged book value of total assets.
-\textit{Advertising} is measured as the ratio of advertising expenditure for three years after announcement of activism to the lagged book value of total assets.
+% \textit{Tax rate} is measured as the ratio of total tax expense for two years after announcement of activism to the pre-tax income during the same period.
+\textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
+\textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
