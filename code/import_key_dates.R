@@ -6,26 +6,14 @@ fixCUSIPs <- function(cusips) {
   return(cusips)
 }
 
-# Function to retrieve a Google Sheets document
-getSheetData = function(key, gid=NULL) {
-    library(RCurl)
-    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
-                  "/export?format=csv&id=", key,
-                  if (is.null(gid)) "" else paste0("&gid=", gid),
-                  "&single=true")
-    csv_file <- getURL(url, verbose=FALSE)
-    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
-    return( the_data )
-}
-
 # Get data from Google Sheets ----
 # Get PERMNO-CIK data
 key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
+gs <- gs_key(key)
 
 #### Sharkwatch 50 ####
 # Import Dataset from Google Drive ----
-gid <- 1862254343
-key_dates_sw50 <- getSheetData(key, gid=gid)
+key_dates_sw50 <- gs %>% gs_read_csv(ws = "sw50_2004_2012")
 
 key_dates_sw50$event_date <- as.Date(key_dates_sw50$event_date)
 key_dates_sw50$announce_date <- as.Date(key_dates_sw50$announce_date)
@@ -38,10 +26,8 @@ for (i in names(key_dates_sw50)) {
 key_dates_sw50$gid <- gid
 
 # SHARKWATCH50 2012
-gid <- 1226808791
-key_dates_2012 <- getSheetData(key, gid=gid)
 
-
+key_dates_2012 <- gs %>% gs_read_csv(ws = "sw_2012")
 key_dates_2012$event_date <- as.Date(key_dates_2012$event_date)
 key_dates_2012$announce_date <- as.Date(key_dates_2012$announce_date)
 key_dates_2012$cusip_9_digit <- fixCUSIPs(key_dates_2012$cusip_9_digit)
@@ -54,10 +40,7 @@ key_dates_2012$gid <- gid
 key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
 rm(key_dates_2012)
 
-gid <- 1841891641
-key_dates_2013 <- getSheetData(key, gid=gid)
-
-
+key_dates_2013 <- gs %>% gs_read_csv(ws = "sw_2013")
 key_dates_2013$event_date <- as.Date(key_dates_2013$event_date)
 key_dates_2013$announce_date <- as.Date(key_dates_2013$announce_date)
 key_dates_2013$cusip_9_digit <- fixCUSIPs(key_dates_2013$cusip_9_digit)
@@ -71,9 +54,7 @@ key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2013)
 rm(key_dates_2013)
 
 #### Non-Sharkwatch 50 ####
-gid <- 1796687034
-key_dates_nsw50 <- getSheetData(key, gid=gid)
-
+key_dates_nsw50 <- gs %>% gs_read_csv(ws = "non_sw50")
 
 key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
 key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
@@ -93,7 +74,7 @@ library(RPostgreSQL)
 
 pg <- dbConnect(PostgreSQL())
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_sw50"),
-                   key_dates_sw50, overwrite=TRUE, row.names=FALSE)
+                   as.data.frame(key_dates_sw50), overwrite=TRUE, row.names=FALSE)
 # rs <- dbGetQuery(pg, "CREATE ROLE activism")
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates_sw50 OWNER TO activism")
@@ -132,7 +113,7 @@ sw50_data <- dbGetQuery(pg, "
     GROUP BY cusip_9_digit, announce_date, dissident_group, event_date, gid")
 
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_nsw50"),
-                   key_dates_nsw50, overwrite=TRUE, row.names=FALSE)
+                   as.data.frame(key_dates_nsw50), overwrite=TRUE, row.names=FALSE)
 
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates_nsw50 OWNER TO activism")
