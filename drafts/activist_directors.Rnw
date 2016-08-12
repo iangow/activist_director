@@ -135,7 +135,7 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_desc, child='tables/table_desc.Rnw'>>=
 @
 
-<<table-2, child='tables/table_dir_desc.Rnw'>>=
+<<table-2, child='tables/table_dir_desc_equilar.Rnw'>>=
 @
 
 <<table-3, child='tables/table_selection.Rnw'>>=
