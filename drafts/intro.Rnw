@@ -58,7 +58,7 @@ With regard to performance, we find evidence that board representation is demand
 
 We describe the characteristics of activist directors and compare them with new directors appointed at other firms.\footnote{\citet*{Gow:2014vf} show that activism is often associated with departure of incumbent directors.}
 We find that activist director characteristics differ according to whether the director is affiliated with activists or not.
-Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 9 years younger than other new directors and much less frequently female.
+Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 12 years younger than other new directors and much less frequently female.
 % TODO "Less likely" sounds like we have a p-value, which we don't. Perhaps we should to do this.
 Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly move into key board positions.
 About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed at the hedge fund activist; the rest (\Sexpr{dirs$unaffiliated}) appear to be unaffiliated directly to the hedge fund despite being sponsored by the activist for the board position.
@@ -67,9 +67,9 @@ Using methods that account for censoring, we find that activists hold stock in a
 Greater than a three-year holding period implies that these activists can be considered as ``long-term'' investors.\footnote{As discussed in Section \ref{sect:holding}, pension funds have a typical duration of 2 years and investor relation professionals consider a horizon of more than $2.8$ years to warrant the label ``long-term.''}
 
 We then examine a number of possible consequences of activist directors for the firms whose boards they join.
-Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-20$ to $+20$ trading days around the announcement ranging from $5\%$ to $14\%$.
+Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-20$ to $+20$ trading days around the announcement ranging from $4\%$ to $5\%$.
 We find no evidence of a market reaction at the appointment of activist directors, perhaps reflecting the difficulty of identifying precisely when the market learns about activist board appointments.
-Looking beyond positive announcement-period returns, operating performance seems to improve, with return on assets increasing by more than $1-2\%$ over the five years after activism.
+Looking beyond positive announcement-period returns, operating performance seems to improve, with return on assets increasing by more than $1\%$ over the five years after activism.
 In terms of underlying actions, we find evidence of increased divestiture, decreased acquisition activity, higher probability of being acquired, lower cash balances, higher payout, greater leverage, higher CEO turnover, lower CEO compensation, and lower capital expenditure, research and development.
 With the exception of the probability of being acquired, the estimated effects are generally greater when activists obtain board representation (though not always statistically so), consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
 

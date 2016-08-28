@@ -22,7 +22,7 @@ activist_directors <- dbGetQuery(pg, "
             COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored
        FROM activist_director.activist_directors AS a
        INNER JOIN activist_director.activism_events AS b
-       ON a.campaign_id=ANY(b.campaign_ids)
+       ON a.permno=b.permno AND a.eff_announce_date=b.eff_announce_date AND a.dissident_group=b.dissident_group
        WHERE activist_affiliate IS NOT NULL)
     SELECT activist_affiliate,
         count(*) AS num_all,

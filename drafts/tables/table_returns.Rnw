@@ -180,7 +180,8 @@ events <- dbGetQuery(pg, "
         INNER JOIN compounded AS b
         ON a.permno=b.permno
             AND extract(year FROM a.first_appointment_date) = extract(year FROM b.date)
-            AND extract(month FROM a.first_appointment_date) = extract(month FROM b.date))
+            AND extract(month FROM a.first_appointment_date) = extract(month FROM b.date)
+        WHERE category='activist_director')
 
     SELECT DISTINCT a.*,
         b.ab_vwret_p1 AS ab_vwret_appt_p1,
@@ -191,6 +192,7 @@ events <- dbGetQuery(pg, "
     LEFT JOIN ff_appt AS b
     ON a.permno=b.permno AND a.eff_announce_date=b.eff_announce_date
         AND a.dissident_group=b.dissident_group
+    ORDER BY permno, dissident_group, eff_announce_date
 ")
 
 rs <- dbDisconnect(pg)

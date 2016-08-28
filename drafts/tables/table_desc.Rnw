@@ -16,13 +16,14 @@ require(xtable)
 summ.firms <- dbGetQuery(pg, "
     WITH raw_data AS (
         SELECT extract(year FROM eff_announce_date) AS year, *
-        FROM activist_director.activism_events)
+        FROM activist_director.activism_events
+        WHERE permno IS NOT NULL)
 
     SELECT year,
         count(*) AS num_events,
-        sum((NOT activist_demand OR activist_demand IS NULL)::int) AS nba,
-        sum((activist_demand AND NOT activist_director)::int) AS board_demand,
-        sum(activist_director::int) AS activist_director
+        sum((category='activism')::int) AS nba,
+        sum((category='activist_demand')::int) AS board_demand,
+        sum((category='activist_director')::int) AS activist_director
     FROM raw_data
     GROUP BY year
     ORDER BY year")
@@ -34,10 +35,10 @@ summ.dirs <- dbGetQuery(pg, "
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
             COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored,
-            extract(year FROM eff_announce_date) AS year
+            extract(year FROM a.eff_announce_date) AS year
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
-        ON a.campaign_id=ANY(b.campaign_ids)
+        ON a.permno=b.permno AND a.dissident_group=b.dissident_group AND a.eff_announce_date=b.eff_announce_date
         WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
 
     SELECT year,

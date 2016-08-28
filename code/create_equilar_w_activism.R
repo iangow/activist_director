@@ -79,7 +79,7 @@ rs <-dbGetQuery(pg, "
     INNER JOIN equilar_permnos AS b
     USING (firm_id, fy_end)
     LEFT JOIN activist_director.activism_events AS c
-    ON b.permco=c.permco AND
+    ON b.permno=c.permno AND
     a.date_start BETWEEN c.first_date AND c.end_date + interval '128 days'
     GROUP BY b.permno, firm_id, director_id, fy_end
     ORDER BY permno, firm_id, director_id)

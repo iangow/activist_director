@@ -44,18 +44,18 @@ rs <-dbGetQuery(pg, "
     ORDER BY firm_id, director_id, fy_end),
 
     activist_directors AS (
-    SELECT DISTINCT a.campaign_id, a.first_name, a.last_name,
+    SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
+    a.first_name, a.last_name,
     a.activist_affiliate, a.appointment_date,
     a.appointment_date < c.eff_announce_date AS prior_director,
-    c.eff_announce_date, c.first_date,
+    c.first_date,
     a.retirement_date,
-    b.permno, b.permco,
     c.campaign_ids IS NOT NULL AS on_activism_events
     FROM activist_director.activist_directors AS a
     LEFT JOIN permnos AS b
-    ON substr(a.cusip_9_digit, 1, 8)=b.cusip
+    ON a.permno=b.permno
     LEFT JOIN activist_director.activism_events AS c
-    ON a.campaign_id=ANY(c.campaign_ids)),
+    ON a.permno=c.permno AND a.dissident_group=c.dissident_group AND a.eff_announce_date=c.eff_announce_date),
 
     activist_director_equilar AS (
     SELECT DISTINCT a.*,
