@@ -1,16 +1,3 @@
-
-
-# Function to retrieve a Google Sheets document
-getSheetData = function(key, gid=NULL) {
-    library(RCurl)
-    url <- paste0("https://docs.google.com/spreadsheets/d/", key,
-                  "/export?format=csv&id=", key, if (is.null(gid)) "" else paste0("&gid=", gid),
-                  "&single=true")
-    csv_file <- getURL(url, verbose=FALSE)
-    the_data <- read.csv(textConnection(csv_file), as.is=TRUE)
-    return( the_data )
-}
-
 library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
@@ -47,10 +34,13 @@ sql <- paste("
 rs <- dbGetQuery(pg, sql)
 
 # Get corrected data on board-related activism from Google Sheets document ----
-require(RCurl)
-key <- "16Hmw7B1kzL5eIa3k7Jw5j-9RTsfspEB18r-wNfTRiYM"
-event_fix <- getSheetData(key)
-event_fix$announce_date <- as.Date(event_fix$announce_date)
+library(googlesheets)
+
+# As a one-time thing per user and machine, you will need to run gs_auth()
+# to authorize googlesheets to access your Google Sheets.
+gs <- gs_key("16Hmw7B1kzL5eIa3k7Jw5j-9RTsfspEB18r-wNfTRiYM")
+
+event_fix <- gs_read(gs)
 
 # Put data into PostgreSQL ----
 
