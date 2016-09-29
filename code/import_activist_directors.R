@@ -15,11 +15,13 @@ activist_directors_2 <-
     mutate(retirement_date=ifelse(grepl("[A-Za-z]", retirement_date),
                                   NA, retirement_date)) %>%
     mutate(retirement_date=as.Date(retirement_date)) %>%
-    mutate(appointment_date=as.Date(appointment_date))
+    mutate(appointment_date=as.Date(appointment_date)) %>%
+    mutate(sheet_no=2L)
 
 activist_directors_3 <-
     gs_read(gs, ws = "Extra2") %>%
-    mutate(appointment_date=as.Date(appointment_date))
+    mutate(appointment_date=as.Date(appointment_date)) %>%
+    mutate(sheet_no=3L)
 
 cols_to_keep <- intersect(colnames(activist_directors_2),
                           colnames(activist_directors_3))
@@ -30,7 +32,8 @@ activist_directors_1 <-
                                   NA, retirement_date)) %>%
     mutate(retirement_date=as.Date(retirement_date)) %>%
     mutate(appointment_date=as.Date(appointment_date)) %>%
-    left_join(factset.campaign_ids) %>%
+    left_join(factset.campaign_ids %>% filter(campaign_id != 388232980L)) %>%
+    mutate(sheet_no=1L) %>%
     select(one_of(cols_to_keep))
 
 # activist_affiliate
@@ -60,3 +63,4 @@ sql <- paste0("
     'CREATED USING import_activist_directors.R ON ", Sys.time() , "';")
 
 rs <- dbGetQuery(pg, sql)
+rs <- dbDisconnect(pg)
