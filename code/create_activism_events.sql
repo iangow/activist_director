@@ -136,11 +136,17 @@ activist_director AS (
 matched AS (
     SELECT DISTINCT a.*, first_appointment_date,
         num_activist_directors, num_affiliate_directors, num_unaffiliate_directors,
-        (dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) AS activist_director,
-        CASE WHEN (dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) THEN proxy_fight_went_the_distance ='Yes' END AS elected
+        (dissident_board_seats_wongranted_date IS NOT NULL
+            OR dissident_board_seats_won > 0
+            OR campaign_resulted_in_board_seats_for_activist) AS activist_director,
+        CASE WHEN (dissident_board_seats_wongranted_date IS NOT NULL
+            OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist)
+        THEN proxy_fight_went_the_distance ='Yes' END AS elected
     FROM sharkwatch_agg AS a
     LEFT JOIN activist_director AS b
-    ON a.permno=b.permno AND a.eff_announce_date=b.eff_announce_date AND a.dissident_group=b.dissident_group
+    ON a.permno=b.permno
+        AND a.eff_announce_date=b.eff_announce_date
+        AND a.dissident_group=b.dissident_group
     WHERE a.permno IS NOT NULL),
 
 delist AS (
