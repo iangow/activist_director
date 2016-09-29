@@ -25,11 +25,11 @@ sql <- paste(readLines("code/create_activism_events.sql"),
              collapse="\n")
 rs <- dbGetQuery(pg, sql)
 
-sql <- paste("
+sql <- paste0("
     ALTER TABLE activist_director.activism_events OWNER TO activism;
 
     COMMENT ON TABLE activist_director.activism_events IS
-        'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
+        'CREATED USING create_activism_events.R ON ", Sys.time() , "';")
 
 rs <- dbGetQuery(pg, sql)
 
@@ -46,11 +46,11 @@ event_fix <- gs_read(gs)
 
 rs <- dbWriteTable(pg, name=c("activist_director", "event_fix"), event_fix,
                    overwrite=TRUE, row.names=FALSE)
-sql <- paste("
+sql <- paste0("
     ALTER TABLE activist_director.event_fix OWNER TO activism;
 
     COMMENT ON TABLE activist_director.event_fix IS
-        'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
+        'CREATED USING create_activism_events.R ON ", Sys.time() , "';")
 
 rs <- dbGetQuery(pg, sql)
 
