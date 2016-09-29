@@ -2,9 +2,9 @@ library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
 sql <- paste("
-  DROP VIEW IF EXISTS activist_director.permnos CASCADE;
+  DROP TABLE IF EXISTS activist_director.permnos CASCADE;
 
-  CREATE VIEW activist_director.permnos AS
+  CREATE TABLE activist_director.permnos AS
   SELECT DISTINCT permno, ncusip
   FROM crsp.stocknames
   WHERE ncusip IS NOT NULL
@@ -13,9 +13,9 @@ sql <- paste("
   FROM activist_director.missing_permnos
   WHERE permno IS NOT NULL;
 
-  ALTER VIEW activist_director.permnos OWNER TO activism;
+  ALTER TABLE activist_director.permnos OWNER TO activism;
 
-  COMMENT ON VIEW activist_director.permnos IS
+  COMMENT ON TABLE activist_director.permnos IS
     'CREATED USING create_activism_events.R ON ", Sys.time() , "';", sep="")
 
 rs <- dbGetQuery(pg, sql)
