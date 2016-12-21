@@ -19,13 +19,13 @@ activist_directors <- dbGetQuery(pg, "
             (retirement_date IS NULL)::int AS still_active,
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
-            COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored
+            COALESCE(retirement_date, '2016-09-30')-appointment_date AS tenure_censored
        FROM activist_director.activist_directors AS a
        INNER JOIN activist_director.activism_events AS b
-       ON a.campaign_id=ANY(b.campaign_ids)
-       WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
+       USING (permno, dissident_group, eff_announce_date)
+       WHERE appointment_date IS NOT NULL AND permno IS NOT NULL)
 
-    SELECT activist_affiliate,
+    SELECT independent=0 AS activist_affiliate,
         count(*) AS num_all,
         sum(left_board) AS num_left_board,
         sum(tenure_censored*left_board)/sum(left_board)::int AS left_tenure,
