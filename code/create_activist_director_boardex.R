@@ -1,83 +1,5 @@
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, host='iangow.me', port='5432', dbname='crsp')
-
-# Import Activist Director Datasets from Google Drive ----
-require(RCurl)
-
-# 2013-2015
-csv_file <- getURL(paste("https://docs.google.com/spreadsheets/d/",
-                         "13TRLvEequPmsgZNSrqelm3aDnTtMN5N34TNUa7mk3Eo/",
-                         "pub?gid=1314945913&single=true&output=csv", sep=""),
-                   verbose=FALSE)
-
-activist_directors <- read.csv(textConnection(csv_file), as.is=TRUE)
-
-activist_directors$announce_date <- as.Date(activist_directors$announce_date, "%Y-%m-%d")
-activist_directors$dissident_board_seats_wongranted_date <- as.Date(activist_directors$dissident_board_seats_wongranted_date, "%Y-%m-%d")
-activist_directors$appointment_date <- as.Date(activist_directors$appointment_date, "%Y-%m-%d")
-activist_directors$retirement_date <- as.Date(activist_directors$retirement_date, "%Y-%m-%d")
-
-rs <- dbWriteTable(pg, c("activist_director", "activist_directors_1315"), activist_directors,
-                   overwrite=TRUE, row.names=FALSE)
-
-# 2004-2012
-csv_file <- getURL(paste("https://docs.google.com/spreadsheets/d/",
-                         "13TRLvEequPmsgZNSrqelm3aDnTtMN5N34TNUa7mk3Eo/",
-                         "pub?gid=8&single=true&output=csv", sep=""),
-                   verbose=FALSE)
-
-activist_directors <- read.csv(textConnection(csv_file), as.is=TRUE, na.strings = "")
-
-activist_directors$announce_date <- as.Date(activist_directors$announce_date, "%Y-%m-%d")
-activist_directors$dissident_board_seats_wongranted_date <- as.Date(activist_directors$dissident_board_seats_wongranted_date, "%Y-%m-%d")
-activist_directors$appointment_date <- as.Date(activist_directors$appointment_date, "%Y-%m-%d")
-activist_directors$retirement_date <- as.Date(activist_directors$retirement_date, "%Y-%m-%d")
-
-rs <- dbWriteTable(pg, c("activist_director", "activist_directors_0412"), activist_directors,
-                   overwrite=TRUE, row.names=FALSE)
-
-# Activist Director Spreadsheet Combined ----
-activist_directors <- dbGetQuery(pg, "
-    WITH activism_events AS (
-        SELECT DISTINCT b.permno, a.*
-        FROM factset.sharkwatch_new AS a
-        INNER JOIN crsp.stocknames AS b
-        ON substr(a.cusip_9_digit,1,8) = b.ncusip
-        WHERE (dissident_board_seats_wongranted_date IS NOT NULL
-              OR dissident_board_seats_won > 0
-              OR campaign_resulted_in_board_seats_for_activist = 'Yes')
-              AND announce_date BETWEEN '2004-01-01' AND '2015-12-31'
-              AND country='United States'
-              AND state_of_incorporation != 'Non-U.S.'
-              AND factset_industry != 'Investment Trusts/Mutual Funds'
-              AND (s13d_filer='Yes' OR proxy_fight='Yes' OR holder_type IN ('Hedge Fund Company', 'Investment Adviser'))
-              AND holder_type NOT IN ('Corporation')
-              AND campaign_status='Closed'
-              AND activism_type != '13D Filer - No Publicly Disclosed Activism'
-        ORDER BY permno, announce_date, dissident_group)
-
-    SELECT DISTINCT b.campaign_id, a.permno, a.cusip_9_digit, a.announce_date, b.dissident_group,
-            a.last_name, a.first_name, a.appointment_date, a.retirement_date,
-            CASE WHEN a.independent=1 THEN FALSE WHEN a.independent=0 THEN TRUE END AS activist_affiliate
-    FROM activist_director.activist_directors_0412 AS a
-    INNER JOIN activism_events AS b
-    ON a.permno=b.permno AND a.announce_date=b.announce_date
-    WHERE a.activism_type != '13D Filer - No Publicly Disclosed Activism' AND a.permno IS NOT NULL
-
-    UNION
-
-    SELECT DISTINCT campaign_id, permno, cusip_9_digit, announce_date, dissident_group,
-            last_name, first_name, appointment_date, retirement_date,
-            CASE WHEN a.independent=1 THEN FALSE WHEN a.independent=0 THEN TRUE END AS activist_affiliate
-    FROM activist_director.activist_directors_1315 AS a
-    WHERE a.activism_type != '13D Filer - No Publicly Disclosed Activism' AND a.permno IS NOT NULL
-    ORDER BY permno, announce_date, last_name, first_name
-")
-
-rs <- dbWriteTable(pg, c("activist_director", "activist_directors"), activist_directors,
-                   overwrite=TRUE, row.names=FALSE)
-
+pg <- dbConnect(PostgreSQL(), host='iangow.me', port='5432', dbname='crsp')
 
 # Match with Equilar - create_activist_director_equilar ----
 
@@ -90,14 +12,12 @@ activist_directors_equilar <- dbGetQuery(pg, "
       USING (permno)),
 
     equilar AS (
-      SELECT DISTINCT equilar_firm_id(a.director_id) AS firm_id,
-          equilar_director_id(director_id) AS director_id, director,
-          (director.parse_name(director)).*, a.fy_end, start_date,
+      SELECT DISTINCT company_id AS firm_id, director_id, director_name AS director,
+          (director.parse_name(director_name)).*, a.fy_end, date_start AS start_date,
           substr(cusip,1,8) AS cusip
       FROM director.director AS a
       LEFT JOIN director.co_fin AS b
-      ON equilar_firm_id(a.director_id)=equilar_firm_id(b.company_id)
-      AND a.fy_end=b.fy_end),
+      USING (company_id, fy_end)),
 
     equilar_w_permnos AS (
       SELECT *

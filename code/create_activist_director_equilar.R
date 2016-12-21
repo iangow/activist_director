@@ -10,71 +10,70 @@ rs <-dbGetQuery(pg, "
     CREATE TABLE activist_director.activist_director_equilar AS
 
     WITH permnos AS (
-    SELECT DISTINCT cusip, permno, permco
-    FROM activist_director.permnos
-    INNER JOIN crsp.stocknames
-    USING (permno)),
+        SELECT DISTINCT cusip, permno, permco
+        FROM activist_director.permnos
+        INNER JOIN crsp.stocknames
+        USING (permno)),
 
     equilar AS (
-    SELECT DISTINCT a.company_id AS firm_id, director_id, director_name,
-    (director_old.parse_name(director_name)).*, a.fy_end, date_start,
-    substr(cusip,1,8) AS cusip
-    FROM director.director AS a
-    LEFT JOIN director.co_fin AS b
-    ON a.company_id=b.company_id AND a.fy_end=b.fy_end),
+        SELECT DISTINCT a.company_id AS firm_id, director_id, director_name,
+            (director.parse_name(director_name)).*, a.fy_end, date_start,
+            substr(cusip,1,8) AS cusip
+        FROM director.director AS a
+        LEFT JOIN director.co_fin AS b
+        ON a.company_id=b.company_id AND a.fy_end=b.fy_end),
 
     equilar_w_permnos AS (
-    SELECT *
-    FROM equilar AS a
-    INNER JOIN permnos AS b
-    USING (cusip)),
+        SELECT *
+        FROM equilar AS a
+        INNER JOIN permnos AS b
+        USING (cusip)),
 
     first_name_years AS (
-    SELECT firm_id, director_id,
-    min(fy_end) AS fy_end
-    FROM equilar_w_permnos
-    GROUP BY firm_id, director_id),
+        SELECT firm_id, director_id, min(fy_end) AS fy_end
+        FROM equilar_w_permnos
+        GROUP BY firm_id, director_id),
 
     equilar_final AS (
-    SELECT firm_id, director_id, fy_end,
-    b.director_name, b.first_name, b.last_name, b.permno, b.permco
-    FROM first_name_years AS a
-    INNER JOIN equilar_w_permnos AS b
-    USING (firm_id, director_id, fy_end)
-    ORDER BY firm_id, director_id, fy_end),
+        SELECT firm_id, director_id, fy_end,
+            b.director_name, b.first_name, b.last_name, b.permno, b.permco
+        FROM first_name_years AS a
+        INNER JOIN equilar_w_permnos AS b
+        USING (firm_id, director_id, fy_end)
+        ORDER BY firm_id, director_id, fy_end),
 
     activist_directors AS (
-    SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
-    a.first_name, a.last_name,
-    a.activist_affiliate, a.appointment_date,
-    a.appointment_date < c.eff_announce_date AS prior_director,
-    c.first_date,
-    a.retirement_date,
-    c.campaign_ids IS NOT NULL AS on_activism_events
-    FROM activist_director.activist_directors AS a
-    LEFT JOIN permnos AS b
-    ON a.permno=b.permno
-    LEFT JOIN activist_director.activism_events AS c
-    ON a.permno=c.permno AND a.dissident_group=c.dissident_group AND a.eff_announce_date=c.eff_announce_date),
+        SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
+            a.first_name, a.last_name,
+            a.activist_affiliate, a.appointment_date,
+            a.appointment_date < c.eff_announce_date AS prior_director,
+            c.first_date,
+            a.retirement_date,
+            c.campaign_ids IS NOT NULL AS on_activism_events
+        FROM activist_director.activist_directors AS a
+        LEFT JOIN permnos AS b
+        ON a.permno=b.permno
+        LEFT JOIN activist_director.activism_events AS c
+        ON a.permno=c.permno AND a.dissident_group=c.dissident_group AND a.eff_announce_date=c.eff_announce_date),
 
     activist_director_equilar AS (
     SELECT DISTINCT a.*,
-    COALESCE(b.firm_id, c.firm_id, d.firm_id, e.firm_id) AS firm_id,
-    COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
-    COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
-    COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
-    COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
-    f.permco IS NOT NULL AS permco_on_equilar
+        COALESCE(b.firm_id, c.firm_id, d.firm_id, e.firm_id) AS firm_id,
+        COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
+        COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
+        COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
+        COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
+        f.permco IS NOT NULL AS permco_on_equilar
     FROM activist_directors AS a
     LEFT JOIN equilar_final AS b
     ON a.permco=b.permco AND lower(a.last_name)=lower(b.last_name)
-    AND lower(a.first_name)=lower(b.first_name)
+        AND lower(a.first_name)=lower(b.first_name)
     LEFT JOIN equilar_final AS c
     ON a.permco=c.permco AND lower(a.last_name)=lower(c.last_name)
-    AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
+        AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
     LEFT JOIN equilar_final AS d
     ON a.permco=d.permco AND lower(a.last_name)=lower(d.last_name)
-    AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
+        AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
     LEFT JOIN equilar_final AS e
     ON a.permco=e.permco AND lower(a.last_name)=lower(e.last_name)
     LEFT JOIN equilar_final AS f
