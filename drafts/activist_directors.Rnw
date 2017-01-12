@@ -74,16 +74,16 @@ dirs <- dbGetQuery(pg, "
             (retirement_date IS NULL)::int AS still_active,
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
-            COALESCE(retirement_date, '2016-2-29')-appointment_date AS tenure_censored,
+            COALESCE(retirement_date, '2016-09-30')-appointment_date AS tenure_censored,
             extract(year FROM eff_announce_date) AS year
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
-        ON a.campaign_id=ANY(b.campaign_ids)
+        USING (permno, dissident_group, eff_announce_date)
         WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
 
     SELECT COUNT(*) AS all_dirs,
-        sum(activist_affiliate::int) AS affiliated,
-        sum((NOT activist_affiliate)::int) AS unaffiliated,
+        sum((independent=0)::int) AS affiliated,
+        sum((independent=1)::int) AS unaffiliated,
         sum(elected::int) AS elected,
         sum((NOT elected)::int) AS settled
     FROM ad_years

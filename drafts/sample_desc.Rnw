@@ -34,7 +34,7 @@ However, affiliated directors (i.e., employees or principals of members of the a
 
 % Numbers changed below...
 Panel B of Table \ref{tbl:dir_chars} presents data on the tenure of activist directors.
-About $52\%$ of both affiliated and unaffiliated activist directors remain on their respective boards at the time of our data collection (February 2016). Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for 803 (746) days on average (i.e., they remained on the board for about two years). In many cases, their departure was associated with the company being acquired, going private, or going bankrupt. Affiliated and unaffiliated activist directors who are still on their respective boards in February 2016 have an average tenure of about three or more years. There is no apparent difference between affiliated and unaffiliated directors in these tenure statistics.
+About $52\%$ of both affiliated and unaffiliated activist directors remain on their respective boards at the time of our data collection (September 2016). Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for 895 (820) days on average (i.e., they remained on the board for more than two years). In many cases, their departure was associated with the company being acquired, going private, or going bankrupt. Affiliated and unaffiliated activist directors who are still on their respective boards in September 2016 have an average tenure of about three or more years. There is no apparent difference between affiliated and unaffiliated directors in these tenure statistics.
 % TODO: I think we need to develop this a little more.
 
 \subsection{Other data}
