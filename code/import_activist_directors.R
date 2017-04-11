@@ -133,7 +133,7 @@ rs <- dbGetQuery(pg, "
                  ON a.cusip_9_digit=b.cusip_9_digit AND a.dissident_group=b.dissident_group AND a.announce_date=b.announce_date
                  LEFT JOIN factset.sharkwatch_new AS c
                  ON b.campaign_id=c.campaign_id
-                 INNER JOIN activist_director.permnos AS d
+                 INNER JOIN factset.permnos AS d
                  ON substr(c.cusip_9_digit,1,8)=d.ncusip
                  ORDER BY d.permno, dissident_group, eff_announce_date),
                  --944 813

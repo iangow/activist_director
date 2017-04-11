@@ -50,7 +50,7 @@ director_votes AS (
   FROM compvote AS a
   INNER JOIN votes_cast AS b
   USING (companyid, meetingid, ballotitemnumber)
-  LEFT JOIN activist_director.permnos AS c
+  LEFT JOIN factset.permnos AS c
   ON substr(a.cusip, 1, 8)=c.ncusip
   ORDER BY a.companyid, a.meetingid, a.ballotitemnumber),
 

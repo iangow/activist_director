@@ -97,7 +97,7 @@ sharkrepellent AS (
     	bool_or(vote_requirement_to_elect_directors='Majority') AS majority,
     	bool_or(unequal_voting='Yes') AS dual_class
     FROM factset.sharkrepellent AS a
-    INNER JOIN activist_director.permnos AS b
+    INNER JOIN factset.permnos AS b
     ON substr(a.cusip_9_digit,1,8) = b.ncusip
     GROUP BY permno
     ORDER BY permno),
@@ -105,7 +105,7 @@ sharkrepellent AS (
 staggered_board AS (
     SELECT DISTINCT permno, beg_date, end_date, staggered_board
     FROM activist_director.staggered_board AS a
-    INNER JOIN activist_director.permnos AS b
+    INNER JOIN factset.permnos AS b
     ON substr(a.cusip_9_digit,1,8)=b.ncusip
     ORDER BY permno, beg_date),
 
@@ -113,7 +113,7 @@ staggered_board AS (
 ibes AS (
     SELECT DISTINCT permno, eomonth(statpers) AS fy_end, numest AS analyst
     FROM ibes.statsum_epsus AS a
-    INNER JOIN activist_director.permnos AS b
+    INNER JOIN factset.permnos AS b
     ON a.cusip=b.ncusip
     WHERE measure='EPS' AND fiscalp='ANN' AND fpi='1'
     ORDER BY permno, fy_end),
@@ -137,7 +137,7 @@ equilar_w_permno AS (
     FROM equilar AS a
     LEFT JOIN director.co_fin AS b
     ON a.firm_id=b.company_id AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip
     -- IDG: What is this about?
     WHERE a.firm_id NOT IN ('2583', '8598', '2907', '7506')
@@ -159,7 +159,7 @@ num_directors AS (
     FROM count_directors AS a
     LEFT JOIN director.co_fin AS b
     ON a.firm_id=b.company_id AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON b.cusip = c.ncusip
     ORDER BY permno, fy_end),
 

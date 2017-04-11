@@ -16,7 +16,7 @@ WITH boardex AS (
     FROM boardex.director_characteristics AS a
     INNER JOIN boardex.company_profile_stocks AS b
     ON a.boardid=b.boardid
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON CASE WHEN substr(b.isin,1,2)='US' THEN substr(b.isin,3,8) END=c.ncusip
     INNER JOIN activist_director.director_names AS d
     ON a.director_name=d.directorname
@@ -35,7 +35,7 @@ equilar AS (
     FROM director.director AS a
     INNER JOIN director.co_fin AS b
     ON equilar_id(a.director_id)=equilar_id(b.company_id)
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip
     LEFT JOIN director.director_names AS d
     ON a.director=d.original_name

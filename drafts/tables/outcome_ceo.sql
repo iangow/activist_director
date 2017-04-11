@@ -13,7 +13,7 @@ ceo_turnover_prep AS (
     FROM activist_director.ceo_turnover AS a
     LEFT JOIN board.co_fin AS b
     ON a.equilar_id=director_old.equilar_id(b.company_id)
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON b.cusip=c.ncusip),
 
 ceo_turnover AS (
@@ -67,7 +67,7 @@ ceo_comp_w_permno AS (
     FROM combined_data AS a
     LEFT JOIN director.co_fin AS b
     ON director_old.equilar_id(a.executive_id)=b.company_id AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip),
 
 ceo_comp_prep AS (

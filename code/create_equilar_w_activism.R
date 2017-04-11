@@ -46,7 +46,7 @@ rs <-dbGetQuery(pg, "
     equilar_permnos AS (
         SELECT DISTINCT c.permco, b.permno, company_id AS firm_id, fy_end
         FROM director.co_fin AS a
-        LEFT JOIN activist_director.permnos AS b
+        LEFT JOIN factset.permnos AS b
         ON substr(a.cusip, 1, 8)=b.ncusip
         INNER JOIN crsp.stocknames AS c
         ON b.permno=c.permno),

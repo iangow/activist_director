@@ -70,7 +70,7 @@ WITH sharkwatch_raw AS (
 
     permnos AS (
     SELECT DISTINCT cusip, permno, permco
-    FROM activist_director.permnos AS a
+    FROM factset.permnos AS a
     INNER JOIN crsp.stocknames AS b
     USING (permno)),
 
@@ -79,7 +79,7 @@ WITH sharkwatch_raw AS (
     FROM sharkwatch_raw AS a
     LEFT JOIN permnos AS b
     ON substr(a.cusip_9_digit,1,8)=b.cusip
-    LEFT JOIN activist_director.permnos AS c
+    LEFT JOIN factset.permnos AS c
     ON substr(a.cusip_9_digit,1,8)=c.ncusip),
 
     sharkwatch_agg AS (

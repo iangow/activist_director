@@ -30,7 +30,7 @@ shares AS (
 shares_w_permno AS (
   SELECT b.permno, a.*
   FROM shares AS a
-  INNER JOIN activist_director.permnos AS b
+  INNER JOIN factset.permnos AS b
   ON substr(a.cusip_number, 1, 8)=b.ncusip),
 
 shares2 AS (

@@ -11,7 +11,7 @@ rs <-dbGetQuery(pg, "
 
     WITH permnos AS (
         SELECT DISTINCT cusip, permno, permco
-        FROM activist_director.permnos
+        FROM factset.permnos
         INNER JOIN crsp.stocknames
         USING (permno)),
 

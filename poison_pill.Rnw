@@ -107,28 +107,28 @@ prob_activist_director <- dbGetQuery(pg, "
     dual_class AS (
         SELECT DISTINCT b.permno, a.*
         FROM activist_director.dual_class AS a
-        LEFT JOIN activist_director.permnos AS b
+        LEFT JOIN factset.permnos AS b
         ON substr(a.cusip_9_digit,1,8)=b.ncusip
         ORDER BY permno),
 
     special_meeting AS (
         SELECT DISTINCT b.permno, a.*
         FROM activist_director.special_meeting AS a
-        LEFT JOIN activist_director.permnos AS b
+        LEFT JOIN factset.permnos AS b
         ON substr(a.cusip_9_digit,1,8)=b.ncusip
         ORDER BY permno),
 
     written_consent AS (
         SELECT DISTINCT b.permno, a.*
         FROM activist_director.written_consent AS a
-        LEFT JOIN activist_director.permnos AS b
+        LEFT JOIN factset.permnos AS b
         ON substr(a.cusip_9_digit,1,8)=b.ncusip
         ORDER BY permno),
 
     poison_pill AS (
         SELECT DISTINCT b.permno, a.*
         FROM activist_director.poison_pill AS a
-        LEFT JOIN activist_director.permnos AS b
+        LEFT JOIN factset.permnos AS b
         ON substr(a.cusip_9_digit,1,8)=b.ncusip
         ORDER BY permno)
 

@@ -91,7 +91,7 @@ sharkrepellent_data AS (
     	bool_or(vote_requirement_to_elect_directors='Majority') AS majority,
     	bool_or(unequal_voting='Yes') AS dual_class
     FROM factset.sharkrepellent AS a
-    INNER JOIN activist_director.permnos AS b
+    INNER JOIN factset.permnos AS b
     ON substr(a.cusip_9_digit,1,8) = b.ncusip
     WHERE unequal_voting IS NOT NULL
     GROUP BY permno),
@@ -106,7 +106,7 @@ sharkrepellent AS (
 ibes AS (
     SELECT permno, eomonth(statpers) AS fy_end, numest AS analyst
     FROM ibes.statsum_epsus AS a
-    INNER JOIN activist_director.permnos AS b
+    INNER JOIN factset.permnos AS b
     ON a.cusip=b.ncusip
     WHERE measure='EPS' AND fiscalp='ANN' AND fpi='1'),
 
@@ -146,7 +146,7 @@ equilar_w_permno AS (
     FROM equilar AS a
     LEFT JOIN director.co_fin AS b
     ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip
     -- IDG: What is this about?
     WHERE
@@ -167,7 +167,7 @@ num_directors AS (
     FROM count_directors AS a
     LEFT JOIN director.co_fin AS b
     ON a.equilar_id=equilar_id(b.company_id) AND a.fy_end=b.fy_end
-    INNER JOIN activist_director.permnos AS c
+    INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip)
 
 SELECT DISTINCT a.*,

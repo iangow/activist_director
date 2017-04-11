@@ -54,7 +54,7 @@ WITH committees AS (
   boardex_permnos AS (
   SELECT DISTINCT *
   FROM boardex AS a
-  INNER JOIN activist_director.permnos AS b
+  INNER JOIN factset.permnos AS b
   ON a.cusip=b.ncusip),
 
     -- Identify companies' first years
