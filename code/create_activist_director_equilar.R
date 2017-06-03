@@ -54,7 +54,7 @@ rs <-dbGetQuery(pg, "
         LEFT JOIN permnos AS b
         ON a.permno=b.permno
         LEFT JOIN activist_director.activism_events AS c
-        ON a.permno=c.permno AND a.dissident_group=c.dissident_group AND a.eff_announce_date=c.eff_announce_date),
+        ON a.campaign_id=c.campaign_id),
 
     activist_director_equilar AS (
     SELECT DISTINCT a.*,
