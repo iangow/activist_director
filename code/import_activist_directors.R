@@ -1,4 +1,5 @@
 # Import Dataset from Google Drive ----
+library(dplyr)
 library(googlesheets)
 library(dplyr, warn.conflicts = FALSE)
 library(RPostgreSQL)
