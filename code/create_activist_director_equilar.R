@@ -57,27 +57,27 @@ rs <-dbGetQuery(pg, "
         ON a.campaign_id=c.campaign_id),
 
     activist_director_equilar AS (
-    SELECT DISTINCT a.*,
-        COALESCE(b.company_id, c.company_id, d.company_id, e.company_id) AS company_id,
-        COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
-        COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
-        COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
-        COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
-        f.permco IS NOT NULL AS permco_on_equilar
-    FROM activist_directors AS a
-    LEFT JOIN equilar_final AS b
-    ON a.permco=b.permco AND lower(a.last_name)=lower(b.last_name)
-        AND lower(a.first_name)=lower(b.first_name)
-    LEFT JOIN equilar_final AS c
-    ON a.permco=c.permco AND lower(a.last_name)=lower(c.last_name)
-        AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
-    LEFT JOIN equilar_final AS d
-    ON a.permco=d.permco AND lower(a.last_name)=lower(d.last_name)
-        AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
-    LEFT JOIN equilar_final AS e
-    ON a.permco=e.permco AND lower(a.last_name)=lower(e.last_name)
-    LEFT JOIN equilar_final AS f
-    ON a.permco=f.permco)
+        SELECT DISTINCT a.*,
+            COALESCE(b.firm_id, c.firm_id, d.firm_id, e.firm_id) AS firm_id,
+            COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
+            COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
+            COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
+            COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
+            f.permco IS NOT NULL AS permco_on_equilar
+        FROM activist_directors AS a
+        LEFT JOIN equilar_final AS b
+        ON a.permco=b.permco AND lower(a.last_name)=lower(b.last_name)
+            AND lower(a.first_name)=lower(b.first_name)
+        LEFT JOIN equilar_final AS c
+        ON a.permco=c.permco AND lower(a.last_name)=lower(c.last_name)
+            AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
+        LEFT JOIN equilar_final AS d
+        ON a.permco=d.permco AND lower(a.last_name)=lower(d.last_name)
+            AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
+        LEFT JOIN equilar_final AS e
+        ON a.permco=e.permco AND lower(a.last_name)=lower(e.last_name)
+        LEFT JOIN equilar_final AS f
+        ON a.permco=f.permco)
 
     SELECT *, equilar_last_name IS NOT NULL AS matched_to_equilar
     FROM activist_director_equilar;
