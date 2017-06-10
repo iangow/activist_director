@@ -104,7 +104,7 @@ sharkrepellent AS (
 
 staggered_board AS (
     SELECT DISTINCT permno, beg_date, end_date, staggered_board
-    FROM activist_director.staggered_board AS a
+    FROM factset.staggered_board AS a
     INNER JOIN factset.permnos AS b
     ON substr(a.cusip_9_digit,1,8)=b.ncusip
     ORDER BY permno, beg_date),
