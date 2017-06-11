@@ -54,6 +54,7 @@ activist_directors <-
     ad_1 %>%
     union(ad_2) %>%
     union(ad_3) %>%
+    mutate(independent = as.logical(independent)) %>%
     left_join(activism_events)
 
 rs <- dbWriteTable(pg$con, c("activist_director", "activist_directors"),
@@ -69,3 +70,4 @@ sql <- paste0("
               'CREATED USING import_activist_directors.R ON ", Sys.time() , "';")
 
 rs <- dbGetQuery(pg$con, sql)
+
