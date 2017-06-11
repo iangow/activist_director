@@ -24,7 +24,7 @@ rs <-dbGetQuery(pg, "
         cmtes,
         is_chair,
         is_vice_chair,
-        is_lead,1
+        is_lead,
         is_audit_cmte_spec,
         gender='F' AS female,
         gender='M' AS male,
