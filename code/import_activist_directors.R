@@ -32,30 +32,32 @@ campaign_ids <-
 activism_events <-
     tbl(pg, sql("SELECT * FROM activist_director.activism_events")) %>%
     select(campaign_id, permno, dissident_group, eff_announce_date) %>%
+    rename(permno_alt = permno) %>%
     collect()
 
 ad_1 <-
     activist_directors_1 %>%
     left_join(campaign_ids) %>%
-    select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent, source)
+    select(campaign_id, first_name, last_name, appointment_date, permno,
+           retirement_date, independent, source, bio)
 
 ad_2 <-
     activist_directors_2 %>%
-    select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent, source)
+    select(campaign_id, first_name, last_name, appointment_date, permno,
+           retirement_date, independent, source, bio)
 
 ad_3 <-
     activist_directors_3 %>%
-    select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent, source)
+    select(campaign_id, first_name, last_name, appointment_date, permno,
+           retirement_date, independent, source, bio)
 
 activist_directors <-
     ad_1 %>%
     union(ad_2) %>%
     union(ad_3) %>%
     mutate(independent = as.logical(independent)) %>%
-    left_join(activism_events)
+    left_join(activism_events) %>%
+    mutate(permno = coalesce(permno, permno_alt))
 
 rs <- dbWriteTable(pg$con, c("activist_director", "activist_directors"),
                    activist_directors,
