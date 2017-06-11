@@ -8,24 +8,18 @@ gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
 activist_directors_1 <-
     gs_read(gs, ws = "activist_directors") %>%
     filter(!is.na(appointment_date)) %>%
-    select(cusip_9_digit, announce_date, dissident_group, first_name,
-           last_name, appointment_date, retirement_date, independent) %>%
     mutate(source = 1L)
 
 #### Sheet 2 ####
 activist_directors_2 <-
     gs_read(gs, ws = "2013-2015 + Extra") %>%
     filter(!is.na(appointment_date)) %>%
-    select(cusip_9_digit, announce_date, dissident_group,
-           first_name, last_name, appointment_date, retirement_date, independent) %>%
     mutate(source = 2L)
 
 #### Sheet 3 ####
 activist_directors_3 <-
     gs_read(gs, ws = "Extra2") %>%
     filter(!is.na(appointment_date)) %>%
-    select(campaign_id, first_name,
-           last_name, appointment_date, retirement_date, independent) %>%
     mutate(source = 3L)
 
 Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
@@ -44,18 +38,17 @@ ad_1 <-
     activist_directors_1 %>%
     left_join(campaign_ids) %>%
     select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent)
+           retirement_date, independent, source)
 
 ad_2 <-
     activist_directors_2 %>%
-    left_join(campaign_ids) %>%
     select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent)
+           retirement_date, independent, source)
 
 ad_3 <-
     activist_directors_3 %>%
     select(campaign_id, first_name, last_name, appointment_date,
-           retirement_date, independent)
+           retirement_date, independent, source)
 
 activist_directors <-
     ad_1 %>%
