@@ -24,7 +24,7 @@ WITH boardex AS (
     ORDER BY permno, directorid, year),
 
 equilar AS (
-    SELECT DISTINCT permno, equilar_id(a.director_id) AS firm_id, a.fy_end, extract(year from a.fy_end) AS year,
+    SELECT DISTINCT permno, equilar_id(a.director_id) AS company_id, a.fy_end, extract(year from a.fy_end) AS year,
         director_id(a.director_id) AS directorid,
         lower(d.last_name) AS last_name,
         lower(d.first_name) AS first_name,

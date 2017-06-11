@@ -119,46 +119,46 @@ ibes AS (
     ORDER BY permno, fy_end),
 
 -- equilar_directors AS (
---     SELECT * -- firm_id, fy_end, director_id, etc.
+--     SELECT * -- company_id, fy_end, director_id, etc.
 --     FROM activist_director.equilar_w_activism),
 
 -- board characteristics at firm-level
 equilar AS (
-    SELECT DISTINCT a.firm_id, a.fy_end,
+    SELECT DISTINCT a.company_id, a.fy_end,
 		sum(outsider::int)::float8/count(outsider) AS outside_percent,
 		avg(age) AS age,
 		avg(tenure) AS tenure
     FROM activist_director.equilar_w_activism AS a
-    GROUP BY a.firm_id, a.fy_end
-    ORDER BY firm_id, fy_end),
+    GROUP BY a.company_id, a.fy_end
+    ORDER BY company_id, fy_end),
 
 equilar_w_permno AS (
     SELECT DISTINCT c.permno, a.fy_end, a.outside_percent, a.age, a.tenure
     FROM equilar AS a
     LEFT JOIN director.co_fin AS b
-    ON a.firm_id=b.company_id AND a.fy_end=b.fy_end
+    ON a.company_id=b.company_id AND a.fy_end=b.fy_end
     INNER JOIN factset.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip
     -- IDG: What is this about?
-    WHERE a.firm_id NOT IN ('2583', '8598', '2907', '7506')
-        AND NOT (firm_id = '4431' AND a.fy_end ='2010-09-30')
-        AND NOT (firm_id = '46588' AND a.fy_end = '2012-12-31')
+    WHERE a.company_id NOT IN ('2583', '8598', '2907', '7506')
+        AND NOT (company_id = '4431' AND a.fy_end ='2010-09-30')
+        AND NOT (company_id = '46588' AND a.fy_end = '2012-12-31')
     ORDER BY permno, fy_end),
 
 count_directors AS (
-    SELECT DISTINCT company_id AS firm_id, fy_end, count(director_id) AS num_directors
+    SELECT DISTINCT company_id AS company_id, fy_end, count(director_id) AS num_directors
     FROM director.director
     WHERE company_id NOT IN ('2583', '8598', '2907', '7506')
         AND NOT (company_id = '4431' AND fy_end ='2010-09-30')
         AND NOT (company_id = '46588' AND fy_end = '2012-12-31')
     GROUP BY company_id, fy_end
-    ORDER BY firm_id, fy_end),
+    ORDER BY company_id, fy_end),
 
 num_directors AS (
     SELECT DISTINCT c.permno, a.fy_end, a.num_directors
     FROM count_directors AS a
     LEFT JOIN director.co_fin AS b
-    ON a.firm_id=b.company_id AND a.fy_end=b.fy_end
+    ON a.company_id=b.company_id AND a.fy_end=b.fy_end
     INNER JOIN factset.permnos AS c
     ON b.cusip = c.ncusip
     ORDER BY permno, fy_end),

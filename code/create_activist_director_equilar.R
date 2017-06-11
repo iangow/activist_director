@@ -16,7 +16,7 @@ rs <-dbGetQuery(pg, "
         USING (permno)),
 
     equilar AS (
-        SELECT DISTINCT a.company_id AS firm_id, director_id, director_name,
+        SELECT DISTINCT a.company_id, director_id, director_name,
             (director.parse_name(director_name)).*, a.fy_end, date_start,
             substr(cusip,1,8) AS cusip
         FROM director.director AS a
@@ -30,17 +30,17 @@ rs <-dbGetQuery(pg, "
         USING (cusip)),
 
     first_name_years AS (
-        SELECT firm_id, director_id, min(fy_end) AS fy_end
+        SELECT company_id, director_id, min(fy_end) AS fy_end
         FROM equilar_w_permnos
-        GROUP BY firm_id, director_id),
+        GROUP BY company_id, director_id),
 
     equilar_final AS (
-        SELECT firm_id, director_id, fy_end,
+        SELECT company_id, director_id, fy_end,
             b.director_name, b.first_name, b.last_name, b.permno, b.permco
         FROM first_name_years AS a
         INNER JOIN equilar_w_permnos AS b
-        USING (firm_id, director_id, fy_end)
-        ORDER BY firm_id, director_id, fy_end),
+        USING (company_id, director_id, fy_end)
+        ORDER BY company_id, director_id, fy_end),
 
     activist_directors AS (
         SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
@@ -58,7 +58,7 @@ rs <-dbGetQuery(pg, "
 
     activist_director_equilar AS (
     SELECT DISTINCT a.*,
-        COALESCE(b.firm_id, c.firm_id, d.firm_id, e.firm_id) AS firm_id,
+        COALESCE(b.company_id, c.company_id, d.company_id, e.company_id) AS company_id,
         COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
         COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
         COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
