@@ -1,5 +1,8 @@
 # Import Dataset from Google Drive ----
 library(googlesheets)
+library(dplyr, warn.conflicts = FALSE)
+library(RPostgreSQL)
+
 # As a one-time thing per user and machine, you will need to run gs_auth()
 # to authorize googlesheets to access your Google Sheets.
 gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
@@ -39,17 +42,17 @@ ad_1 <-
     activist_directors_1 %>%
     left_join(campaign_ids) %>%
     select(campaign_id, first_name, last_name, appointment_date, permno,
-           retirement_date, independent, source, bio)
+           retirement_date, independent, source, bio, issuer_cik)
 
 ad_2 <-
     activist_directors_2 %>%
     select(campaign_id, first_name, last_name, appointment_date, permno,
-           retirement_date, independent, source, bio)
+           retirement_date, independent, source, bio, issuer_cik)
 
 ad_3 <-
     activist_directors_3 %>%
     select(campaign_id, first_name, last_name, appointment_date, permno,
-           retirement_date, independent, source, bio)
+           retirement_date, independent, source, bio, issuer_cik)
 
 activist_directors <-
     ad_1 %>%
