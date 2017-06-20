@@ -11,10 +11,10 @@ rs <-dbGetQuery(pg, "
     WITH
     -- Pull together director characteristics
     equilar AS (
-    SELECT DISTINCT a.company_id AS company_id,
+    SELECT DISTINCT a.company_id,
         a.fy_end,
         director_id,
-            (director.parse_name(director_name)).*,
+        (director.parse_name(director_name)).*,
         director_name AS director,
         date_start,
         age,
@@ -98,7 +98,8 @@ rs <-dbGetQuery(pg, "
         WHEN activism_firm THEN 'activism_firm'
         ELSE '_none' END AS category,
         d.equilar_director_id IS NOT NULL AND NOT d.prior_director AS activist_director,
-        d.activist_affiliate IS TRUE AS affiliated_director,
+        d.independent IS FALSE AS affiliated_director,
+        d.independent IS TRUE AS independent,
         d.prior_director IS TRUE AS prior_director
     FROM equilar AS a
     LEFT JOIN company_first_years AS b
