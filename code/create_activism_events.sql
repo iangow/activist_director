@@ -8,8 +8,8 @@ WITH activist_director AS (
     SELECT DISTINCT permno, dissident_group, eff_announce_date,
         min(appointment_date) AS first_appointment_date,
         count(appointment_date) AS num_activist_directors,
-        sum((independent=0)::integer) AS num_affiliate_directors,
-        sum((independent=1)::integer) AS num_unaffiliate_directors
+        sum((independent IS FALSE)::integer) AS num_affiliate_directors,
+        sum((independent IS TRUE)::integer) AS num_unaffiliate_directors
     FROM activist_director.activist_directors
     GROUP BY permno, dissident_group, eff_announce_date
     ORDER BY permno, dissident_group, eff_announce_date),
