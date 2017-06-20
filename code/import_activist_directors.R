@@ -34,7 +34,7 @@ campaign_ids <-
     collect()
 
 activism_events <-
-    tbl(pg, sql("SELECT * FROM activist_director.activism_events")) %>%
+    tbl(pg, sql("SELECT * FROM activist_director.activism_sample")) %>%
     select(campaign_id, permno, dissident_group, eff_announce_date) %>%
     rename(permno_alt = permno) %>%
     collect()
