@@ -56,7 +56,7 @@ WITH sharkwatch_raw AS (
     campaign_resulted_in_board_seats_for_activist='Yes' OR
     dissident_board_seats_wongranted_date IS NOT NULL AS activist_demand_old
 
-    FROM factset.sharkwatch_new AS a
+    FROM factset.sharkwatch AS a
     WHERE country='United States'
     AND state_of_incorporation != 'Non-U.S.'
     AND factset_industry != 'Investment Trusts/Mutual Funds'
