@@ -43,8 +43,8 @@ summ.dirs <- dbGetQuery(pg, "
 
     SELECT year,
         COUNT(*) AS activist_director,
-        sum((independent=0)::int) AS affiliated,
-        sum((independent=1)::int) AS unaffiliated,
+        sum((independent IS FALSE)::int) AS affiliated,
+        sum((independent IS TRUE)::int) AS unaffiliated,
         sum(elected::int) AS elected,
         sum((NOT elected)::int) AS settled
     FROM ad_years

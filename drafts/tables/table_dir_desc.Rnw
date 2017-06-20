@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
@@ -25,7 +25,7 @@ activist_directors <- dbGetQuery(pg, "
        USING (permno, dissident_group, eff_announce_date)
        WHERE appointment_date IS NOT NULL AND permno IS NOT NULL)
 
-    SELECT independent=0 AS activist_affiliate,
+    SELECT independent IS FALSE AS activist_affiliate,
         count(*) AS num_all,
         sum(left_board) AS num_left_board,
         sum(tenure_censored*left_board)/sum(left_board)::int AS left_tenure,

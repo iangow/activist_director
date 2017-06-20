@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('bebchuk_sharkwatch.sql'))}
 <<load_libraries_roa, cache=FALSE, message=FALSE, include=FALSE>>=
