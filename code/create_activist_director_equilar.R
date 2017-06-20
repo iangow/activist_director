@@ -45,7 +45,7 @@ rs <-dbGetQuery(pg, "
     activist_directors AS (
         SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
             a.first_name, a.last_name,
-            a.activist_affiliate, a.appointment_date,
+            a.independent, a.appointment_date,
             a.appointment_date < c.eff_announce_date AS prior_director,
             c.first_date,
             a.retirement_date,
@@ -58,7 +58,7 @@ rs <-dbGetQuery(pg, "
 
     activist_director_equilar AS (
         SELECT DISTINCT a.*,
-            COALESCE(b.firm_id, c.firm_id, d.firm_id, e.firm_id) AS firm_id,
+            COALESCE(b.company_id, c.company_id, d.company_id, e.company_id) AS company_id,
             COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
             COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
             COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
