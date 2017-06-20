@@ -3,7 +3,7 @@ pg <- dbConnect(PostgreSQL())
 
 rs <-dbGetQuery(pg, "
 
-    SET work_mem='10GB';
+  SET work_mem='10GB';
 
     DROP TABLE IF EXISTS activist_director.activist_director_equilar;
 
@@ -16,7 +16,7 @@ rs <-dbGetQuery(pg, "
         USING (permno)),
 
     equilar AS (
-        SELECT DISTINCT a.company_id AS firm_id, director_id, director_name,
+        SELECT DISTINCT a.company_id, director_id, director_name,
             (director.parse_name(director_name)).*, a.fy_end, date_start,
             substr(cusip,1,8) AS cusip
         FROM director.director AS a
@@ -30,22 +30,22 @@ rs <-dbGetQuery(pg, "
         USING (cusip)),
 
     first_name_years AS (
-        SELECT firm_id, director_id, min(fy_end) AS fy_end
+        SELECT company_id, director_id, min(fy_end) AS fy_end
         FROM equilar_w_permnos
-        GROUP BY firm_id, director_id),
+        GROUP BY company_id, director_id),
 
     equilar_final AS (
-        SELECT firm_id, director_id, fy_end,
+        SELECT company_id, director_id, fy_end,
             b.director_name, b.first_name, b.last_name, b.permno, b.permco
         FROM first_name_years AS a
         INNER JOIN equilar_w_permnos AS b
-        USING (firm_id, director_id, fy_end)
-        ORDER BY firm_id, director_id, fy_end),
+        USING (company_id, director_id, fy_end)
+        ORDER BY company_id, director_id, fy_end),
 
     activist_directors AS (
         SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
             a.first_name, a.last_name,
-            a.independent, a.appointment_date,
+            a.activist_affiliate, a.appointment_date,
             a.appointment_date < c.eff_announce_date AS prior_director,
             c.first_date,
             a.retirement_date,
@@ -90,7 +90,6 @@ rs <-dbGetQuery(pg, "
 sql <- paste("
   COMMENT ON TABLE activist_director.activist_director_equilar IS
     'CREATED USING create_activism_director_equilar ON ", Sys.time() , "';", sep="")
-
 rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
 
 matched_data <- dbGetQuery(pg, "SELECT *
