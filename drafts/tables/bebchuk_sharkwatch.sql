@@ -27,11 +27,18 @@ compustat AS (
         AND fyear >= (SELECT min(fyear)-3 FROM activism_events)
     WINDOW w AS (PARTITION BY a.gvkey ORDER BY datadate)),
 
-industry_median AS (
+industry_median_roa AS (
     SELECT fyear, sic2,
-        median(roa) AS roa_median,
+        median(roa) AS roa_median
+    FROM compustat
+    WHERE roa IS NOT NULL
+    GROUP BY fyear, sic2),
+
+industry_median_tobins_q AS (
+    SELECT fyear, sic2,
         median(tobins_q) AS tobins_q_median
     FROM compustat
+    WHERE tobins_q IS NOT NULL
     GROUP BY fyear, sic2),
 
 industry_adjusted AS (
@@ -42,8 +49,10 @@ industry_adjusted AS (
         roa - roa_median AS roa_ind_adj,
         tobins_q - tobins_q_median AS tobins_q_ind_adj
     FROM compustat AS a
-    LEFT JOIN industry_median AS b
-    ON a.fyear=b.fyear AND a.sic2=b.sic2),
+    LEFT JOIN industry_median_roa AS b
+    ON a.fyear=b.fyear AND a.sic2=b.sic2
+    LEFT JOIN industry_median_tobins_q AS c
+    ON a.fyear=c.fyear AND a.sic2=c.sic2),
     -- WHERE fyear_len > 270
 
 permnos AS (

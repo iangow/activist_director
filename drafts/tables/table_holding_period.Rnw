@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%          Activist holding periods                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
 
 <<quantreg_libraries, cache=FALSE>>=

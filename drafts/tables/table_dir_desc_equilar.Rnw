@@ -1,4 +1,4 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
@@ -15,7 +15,7 @@ pg <- dbConnect(PostgreSQL())
 # All Director Sample
 activist_directors <- dbGetQuery(pg, "
     WITH raw_data AS (
-        SELECT DISTINCT independent=0 AS activist_affiliate,
+        SELECT DISTINCT independent IS FALSE AS activist_affiliate,
             (retirement_date IS NULL)::int AS still_active,
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
