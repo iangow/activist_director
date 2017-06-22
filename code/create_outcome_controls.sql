@@ -210,8 +210,7 @@ SELECT DISTINCT a.*, extract(year FROM datadate) AS year,
     COALESCE(two_plus,'_none') AS two_plus,
     CASE WHEN activist_director THEN 'activist_director'
     WHEN activism THEN 'non_activist_director'
-    ELSE '_none' END AS activist_director,
-    d.ad_on_board
+    ELSE '_none' END AS activist_director
 FROM controls AS a
 LEFT JOIN activism_dates AS c
 ON a.datadate BETWEEN c.first_date AND c.last_date
@@ -219,8 +218,6 @@ LEFT JOIN activist_director.activism_events AS b
 ON a.permno=b.permno
     AND b.eff_announce_date
         BETWEEN a.datadate AND a.datadate + interval '1 year - 1 day'
-LEFT JOIN activist_director.activist_director_on_board AS d
-ON a.permno=d.permno AND a.datadate=d.datadate
 ORDER BY permno, year;
 
 COMMENT ON TABLE activist_director.outcome_controls IS
