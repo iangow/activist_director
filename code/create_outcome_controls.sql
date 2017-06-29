@@ -141,8 +141,8 @@ equilar_w_permno AS (
     ON substr(b.cusip,1,8)=c.ncusip
     -- IDG: What is this about?
     WHERE a.company_id NOT IN ('2583', '8598', '2907', '7506')
-        AND NOT (company_id = '4431' AND a.fy_end ='2010-09-30')
-        AND NOT (company_id = '46588' AND a.fy_end = '2012-12-31')
+        AND NOT (a.company_id = '4431' AND a.fy_end ='2010-09-30')
+        AND NOT (a.company_id = '46588' AND a.fy_end = '2012-12-31')
     ORDER BY permno, fy_end),
 
 count_directors AS (

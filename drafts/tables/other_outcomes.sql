@@ -104,9 +104,13 @@ outcomes AS (
         CASE WHEN at > 0 THEN (capx_cum_p3)/at END AS capex_cum_p3
     FROM compustat_w_lags)
 
-SELECT DISTINCT *
+SELECT DISTINCT a.*, rnd_cum, adv_cum, capex_cum,
+		cash_p2, payout_p2, leverage_p2, rnd_cum_p2, adv_cum_p2, capex_cum_p2,
+		b.ad_on_board
 FROM activist_director.outcome_controls AS a
 INNER JOIN outcomes AS h
 USING (gvkey, datadate)
+INNER JOIN activist_director.activist_director_years AS b
+ON a.permno=b.permno AND a.datadate=b.datadate
 WHERE firm_exists_p2
 ORDER BY gvkey, datadate;
