@@ -111,7 +111,7 @@ rs <- dbDisconnect(pg)
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
-winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p2"), paste0(lhs.vars, "_p3")))
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"), paste0(lhs.vars, "_p3")))
 
 reg.data <- winsorizeDF(reg.data, winsor.vars)
 reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
