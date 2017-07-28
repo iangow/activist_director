@@ -32,6 +32,8 @@ WITH sharkwatch_raw AS (
     proxy_fight='Yes' AS proxy_fight,
     proxy_fight_went_definitive='Yes' AS proxy_fight_went_definitive,
     proxy_fight_went_the_distance='Yes' AS proxy_fight_went_the_distance,
+    governance_demands_followthroughsuccess,
+    value_demands_followthroughsuccess,
     outcome,
     COALESCE(activism_type='Proxy Fight'
              OR dissident_board_seats_sought > 0
@@ -54,7 +56,11 @@ WITH sharkwatch_raw AS (
     dissident_board_seats_sought > 0 OR
     dissident_board_seats_won > 0 OR
     campaign_resulted_in_board_seats_for_activist='Yes' OR
-    dissident_board_seats_wongranted_date IS NOT NULL AS activist_demand_old
+    dissident_board_seats_wongranted_date IS NOT NULL AS activist_demand_old,
+    (governance_demands_followthroughsuccess ilike '%Yes%'
+        OR value_demands_followthroughsuccess ilike '%Yes%'
+        OR settlement_agreement_special_exhibit_included='Yes'
+        OR standstill_agreement_special_exhibit_included='Yes') AS concession_made
 
     FROM factset.sharkwatch AS a
     WHERE country='United States'
@@ -91,8 +97,10 @@ WITH sharkwatch_raw AS (
     bool_or(proxy_fight) AS proxy_fight,
     bool_or(proxy_fight_went_definitive) AS proxy_fight_went_definitive,
     bool_or(proxy_fight_went_the_distance) AS proxy_fight_went_the_distance,
-    bool_or(campaign_resulted_in_board_seats_for_activist)
-    AS campaign_resulted_in_board_seats_for_activist,
+    bool_or(campaign_resulted_in_board_seats_for_activist) AS campaign_resulted_in_board_seats_for_activist,
+    bool_or(concession_made) AS concession_made,
+    array_agg(DISTINCT governance_demands_followthroughsuccess) AS governance_demands,
+    array_agg(DISTINCT value_demands_followthroughsuccess) AS value_demands,
     bool_or(sharkwatch50) AS sharkwatch50,
     bool_or(s13d_filer) AS s13d_filer,
     min(first_date) AS first_date,
@@ -108,8 +116,7 @@ WITH sharkwatch_raw AS (
     array_agg(DISTINCT activism_type) AS activism_types,
     max(DISTINCT dissident_board_seats_won) AS dissident_board_seats_won,
     max(dissident_board_seats_sought) AS dissident_board_seats_sought,
-    max(market_capitalization_at_time_of_campaign)
-    AS market_capitalization_at_time_of_campaign,
+    max(market_capitalization_at_time_of_campaign) AS market_capitalization_at_time_of_campaign,
     array_agg(DISTINCT campaign_status) AS campaign_status,
     array_remove(array_cat(array_agg(primary_campaign_type),
     array_agg(secondary_campaign_type)), NULL) AS campaign_types,
