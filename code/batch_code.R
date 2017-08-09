@@ -45,6 +45,7 @@ source('code/import_key_dates.R', echo=TRUE)
 source("code/create_activist_holdings.R", echo=TRUE)
 
 # Column 5
+runSQL('code/create_activism_sample.sql')
 source('code/create_activism_events.R', echo=TRUE)
 
 # runSQL('code/create_first_voting.sql')

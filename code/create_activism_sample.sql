@@ -99,6 +99,7 @@ WITH sharkwatch_raw AS (
     bool_or(proxy_fight_went_definitive) AS proxy_fight_went_definitive,
     bool_or(proxy_fight_went_the_distance) AS proxy_fight_went_the_distance,
     bool_or(campaign_resulted_in_board_seats_for_activist) AS campaign_resulted_in_board_seats_for_activist,
+    bool_or(settled) AS settled,
     bool_or(concession_made) AS concession_made,
     array_agg(DISTINCT governance_demands_followthroughsuccess) AS governance_demands,
     array_agg(DISTINCT value_demands_followthroughsuccess) AS value_demands,
