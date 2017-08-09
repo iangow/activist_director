@@ -60,8 +60,9 @@ WITH sharkwatch_raw AS (
     (governance_demands_followthroughsuccess ilike '%Yes%'
         OR value_demands_followthroughsuccess ilike '%Yes%'
         OR settlement_agreement_special_exhibit_included='Yes'
-        OR standstill_agreement_special_exhibit_included='Yes') AS concession_made
-
+        OR standstill_agreement_special_exhibit_included='Yes') AS concession_made,
+    (settlement_agreement_special_exhibit_included='Yes'
+        OR standstill_agreement_special_exhibit_included='Yes') AS settled
     FROM factset.sharkwatch AS a
     WHERE country='United States'
     AND state_of_incorporation != 'Non-U.S.'

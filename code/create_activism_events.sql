@@ -69,12 +69,19 @@ SELECT DISTINCT *,
 			WHEN proxy_fight_went_the_distance AND activist_director IS FALSE THEN 'proxy_fight_failed'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director THEN 'settled_ad'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE
+				AND settled THEN 'settled_no_ad'
+			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE AND settled IS FALSE THEN 'failed_activism'
+		END AS new_category,
+	CASE WHEN proxy_fight_went_the_distance AND activist_director THEN 'elected_ad'
+			WHEN proxy_fight_went_the_distance AND activist_director IS FALSE THEN 'proxy_fight_failed'
+			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director THEN 'settled_ad'
+			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE
 				AND concession_made THEN 'settled_no_ad'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE AND concession_made IS FALSE
 				AND (governance_demands != '{""}' OR value_demands != '{""}') THEN 'failed_activism'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE AND concession_made IS FALSE
 				AND (governance_demands = '{""}' AND governance_demands = '{""}') THEN NULL
-		END AS new_category
+		END AS new_category2
 FROM matched
 ORDER BY permno, dissident_group, eff_announce_date;
 
