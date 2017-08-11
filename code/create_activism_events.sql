@@ -18,6 +18,10 @@ matched AS (
     SELECT DISTINCT a.*, first_appointment_date,
         num_activist_directors, num_affiliate_directors, num_unaffiliate_directors,
         COALESCE((dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist), FALSE) AS activist_director,
+        COALESCE((dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) AND num_affiliate_directors > 0, FALSE) AS affiliated_director,
+        COALESCE((dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) AND num_unaffiliate_directors > 0, FALSE) AS unaffiliated_director,
+        COALESCE((dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) AND num_activist_directors = 1, FALSE) AS one_director,
+        COALESCE((dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) AND num_activist_directors > 1, FALSE) AS two_plus_director,
         COALESCE(CASE WHEN (dissident_board_seats_wongranted_date IS NOT NULL OR dissident_board_seats_won > 0 OR campaign_resulted_in_board_seats_for_activist) THEN proxy_fight_went_the_distance ='Yes' END, FALSE) AS elected
     FROM activist_director.activism_sample AS a
     LEFT JOIN activist_director AS b
@@ -41,21 +45,21 @@ SELECT DISTINCT *,
             WHEN activist_demand_old THEN 'activist_demand'
             WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
             WHEN activism THEN 'activism'
-            ELSE '_none' END AS affiliated,
+            ELSE '_none' END AS category_affiliated,
 	CASE
 	    WHEN num_activist_directors > 1 THEN 'two_plus_directors'
 	    WHEN activist_director THEN 'one_director'
 	    WHEN activist_demand_old THEN 'activist_demand'
             WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
 	    WHEN activism THEN 'activism'
-	    ELSE '_none' END AS two_plus,
+	    ELSE '_none' END AS category_two_plus,
 	CASE
     	    WHEN first_appointment_date - eff_announce_date <= 180 THEN 'early'
     	    WHEN first_appointment_date - eff_announce_date > 180 THEN 'late'
     	    WHEN activist_demand_old THEN 'activist_demand'
             WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
     	    WHEN activism THEN 'activism'
-    	    ELSE '_none' END AS early,
+    	    ELSE '_none' END AS category_early,
 	CASE
             WHEN activist_director AND
                 market_capitalization_at_time_of_campaign*
@@ -65,14 +69,16 @@ SELECT DISTINCT *,
             WHEN first_board_demand_date IS NOT NULL THEN 'activist_demand'
             WHEN activism then 'activism'
             ELSE '_none' END AS big_investment,
-    CASE WHEN proxy_fight_went_the_distance AND activist_director THEN 'elected_ad'
+    CASE
+            WHEN proxy_fight_went_the_distance AND activist_director THEN 'elected_ad'
 			WHEN proxy_fight_went_the_distance AND activist_director IS FALSE THEN 'proxy_fight_failed'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director THEN 'settled_ad'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE
 				AND settled THEN 'settled_no_ad'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE AND settled IS FALSE THEN 'failed_activism'
 		END AS new_category,
-	CASE WHEN proxy_fight_went_the_distance AND activist_director THEN 'elected_ad'
+	CASE
+	        WHEN proxy_fight_went_the_distance AND activist_director THEN 'elected_ad'
 			WHEN proxy_fight_went_the_distance AND activist_director IS FALSE THEN 'proxy_fight_failed'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director THEN 'settled_ad'
 			WHEN proxy_fight_went_the_distance IS FALSE AND activist_director IS FALSE

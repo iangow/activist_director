@@ -205,13 +205,20 @@ SELECT DISTINCT a.*, extract(year FROM datadate) AS year,
     proxy_fight, proxy_fight_went_definitive, proxy_fight_went_the_distance,
     COALESCE(category,'_none') AS category,
     COALESCE(new_category,'_none') AS new_category,
-    COALESCE(affiliated,'_none') AS affiliated,
-    COALESCE(early,'_none') AS early,
+    COALESCE(new_category2,'_none') AS new_category2,
+    COALESCE(category_affiliated,'_none') AS category_affiliated,
+    COALESCE(category_two_plus,'_none') AS category_two_plus,
+    COALESCE(category_early,'_none') AS category_early,
     COALESCE(big_investment,'_none') AS big_investment,
-    COALESCE(two_plus,'_none') AS two_plus,
     CASE WHEN activist_director THEN 'activist_director'
-    WHEN activism THEN 'non_activist_director'
-    ELSE '_none' END AS activist_director
+        WHEN activism THEN 'non_activist_director'
+            ELSE '_none' END AS category_activist_director,
+    COALESCE(activist_director, FALSE) AS activist_director,
+    COALESCE(settled, FALSE) AS settled,
+    COALESCE(affiliated_director, FALSE) AS affiliated_director,
+    COALESCE(unaffiliated_director, FALSE) AS unaffiliated_director,
+    COALESCE(one_director, FALSE) AS one_director,
+    COALESCE(two_plus_director, FALSE) AS two_plus_director
 FROM controls AS a
 LEFT JOIN activism_dates AS c
 ON a.datadate BETWEEN c.first_date AND c.last_date
