@@ -4,7 +4,7 @@ library(tidyr)
 library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
-demand_data <- dbGetQuery(pg, "WITH demand_outcome AS (
+demands_data <- dbGetQuery(pg, "WITH demand_outcome AS (
     SELECT DISTINCT campaign_id,
     CASE WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(No)%' THEN TRUE
