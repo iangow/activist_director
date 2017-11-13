@@ -35,7 +35,7 @@ spinoff_crsp AS (
     SELECT DISTINCT COALESCE(a.permno, b.permno) AS permno,
         COALESCE(a.acperm) AS new_permno,
         COALESCE(GREATEST(a.dclrdt, a.exdt, a.rcrddt, a.paydt), b.announcedate) AS date
-    FROM activist_director.spinoff AS a
+    FROM crsp.dsedist AS a
     FULL JOIN spinoff AS b
     ON a.permno=b.permno AND extract(year from a.rcrddt)=extract(year from b.announcedate)),
 
@@ -49,7 +49,7 @@ divestiture AS (
 	    AND b.USEDFLAG='1'
 	    AND linkprim IN ('C', 'P')
     WHERE a.gvkey IS NOT NULL
-    AND keydeveventtypeid=81
+    AND keydeveventtypeid = 81
     AND keydevtoobjectroletypeid = 4
     --AND announcedate >= '2004-01-01'
     ORDER BY permno, announcedate),
@@ -64,7 +64,7 @@ acquisition AS (
 	    AND b.USEDFLAG='1'
 	    AND linkprim IN ('C', 'P')
     WHERE a.gvkey IS NOT NULL
-    AND keydeveventtypeid=81
+    AND keydeveventtypeid = 81
     AND keydevtoobjectroletypeid = 3
     --AND announcedate >= '2004-01-01'
     ORDER BY permno, announcedate),
@@ -74,7 +74,7 @@ controls AS (
         COALESCE(count(b.permno), sum(default_num_p2)) AS num_divestiture_p2,
         COALESCE(count(b.permno) > 0, bool_or(default_p2)) AS divestiture_p2,
         COALESCE(count(d.permno), sum(default_num_p2)) AS num_acquisition_p2,
-        COALESCE(count(d.permno)>0, bool_or(default_p2)) AS acquisition_p2,
+        COALESCE(count(d.permno) > 0, bool_or(default_p2)) AS acquisition_p2,
         COALESCE(count(f.permno), sum(default_num_p2)) AS num_spinoff_p2,
         COALESCE(bool_or(h.delist), bool_or(default_p2)) AS delist_p2,
         COALESCE(bool_or(h.merger), bool_or(default_p2)) AS merger_p2,
@@ -83,7 +83,7 @@ controls AS (
         COALESCE(count(c.permno), sum(default_num_p3)) AS num_divestiture_p3,
         COALESCE(count(c.permno) > 0, bool_or(default_p3)) AS divestiture_p3,
         COALESCE(count(e.permno), sum(default_num_p3)) AS num_acquisition_p3,
-        COALESCE(count(e.permno)>0, bool_or(default_p3)) AS acquisition_p3,
+        COALESCE(count(e.permno) > 0, bool_or(default_p3)) AS acquisition_p3,
         COALESCE(count(g.permno), sum(default_num_p3)) AS num_spinoff_p3,
         COALESCE(bool_or(j.delist), bool_or(default_p3)) AS delist_p3,
         COALESCE(bool_or(j.merger), bool_or(default_p3)) AS merger_p3,
