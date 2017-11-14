@@ -27,12 +27,6 @@ firm_years <-
     distinct() %>%
     arrange(gvkey, datadate)
 
-activist_director AS (
-    SELECT DISTINCT campaign_id, permno, MIN(appointment_date) AS appointment_date, MAX(COALESCE(retirement_date, '2016-12-31')) AS retirement_date
-    FROM activist_director.activist_directors
-    GROUP BY campaign_id, permno
-    ORDER BY permno, appointment_date),
-
 activist_director_on_board AS (
     SELECT DISTINCT a.permno, a.datadate, b.permno IS NOT NULL AS on_board
     FROM activist_director.outcome_controls AS a
@@ -48,3 +42,10 @@ ORDER BY permno, datadate;
 #'CREATED USING create_activist_director_years.sql';
 
 # ALTER TABLE activist_director.activist_director_years OWNER TO activism;
+activist_director <-
+    activist_directors %>%
+    group_by(campaign_id, permno) %>%
+    summarize(appointment_date = min(appointment_date),
+              retirement_date = max(coalesce(retirement_date, '2016-12-31'))) %>%
+    arrange(permno, appointment_date)
+
