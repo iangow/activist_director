@@ -1,174 +1,226 @@
 library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL()) # host='iangow.me', port='5432', dbname='crsp')
+library(dplyr, warn.conflicts = FALSE)
 
-# Match with Equilar - create_activist_director_equilar ----
+pg <- dbConnect(PostgreSQL())
 
-activist_directors_equilar <- dbGetQuery(pg, "
+rs <- dbGetQuery(pg, "SET work_mem='8GB'")
+rs <- dbGetQuery(pg, "SET search_path='activist_director'")
 
-    WITH permnos AS (
-      SELECT DISTINCT cusip, permno, permco
-      FROM factset.permnos
-      INNER JOIN crsp.stocknames
-      USING (permno)),
+crsp.stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
+factset.permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+director.co_fin <- tbl(pg, sql("SELECT * FROM director.co_fin"))
+director.director <- tbl(pg, sql("SELECT * FROM director.director"))
+activist_director.activist_directors <-
+    tbl(pg, sql("SELECT * FROM activist_directors"))
+activist_director.activism_events <-
+    tbl(pg, sql("SELECT * FROM activism_events"))
+activist_director_equilar <-
+    tbl(pg, sql("SELECT * FROM activist_director_equilar"))
+activist_director.director_names <-
+    tbl(pg, sql("SELECT * FROM activist_director.director_names"))
 
-    equilar AS (
-      SELECT DISTINCT company_id, director_id, director_name AS director,
-          (director.parse_name(director_name)).*, a.fy_end, date_start AS start_date,
-          substr(cusip,1,8) AS cusip
-      FROM director.director AS a
-      LEFT JOIN director.co_fin AS b
-      USING (company_id, fy_end)),
+boardex.director_characteristics <-
+    tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
+boardex.board_characteristics <-
+    tbl(pg, sql("SELECT * FROM boardex.board_characteristics"))
+boardex.company_profile_stocks <-
+    tbl(pg, sql("SELECT * FROM boardex.company_profile_stocks"))
 
-    equilar_w_permnos AS (
-      SELECT *
-      FROM equilar AS a
-      INNER JOIN permnos AS b
-      USING (cusip)),
+# Create Equilar link table ----
+permcos <-
+    crsp.stocknames %>%
+    select(permno, permco) %>%
+    distinct() %>%
+    compute()
 
-    first_name_years AS (
-      SELECT company_id, director_id, min(fy_end) AS fy_end
-      FROM equilar_w_permnos
-      GROUP BY company_id, director_id),
+permnos <-
+    crsp.stocknames %>%
+    select(permno, permco, ncusip) %>%
+    rename(cusip = ncusip) %>%
+    distinct() %>%
+    compute()
 
-    equilar_final AS (
-      SELECT company_id, director_id, fy_end,
-          b.director, b.first_name, b.last_name, b.permno, b.permco
-      FROM first_name_years AS a
-      INNER JOIN equilar_w_permnos AS b
-      USING (company_id, director_id, fy_end)
-      ORDER BY company_id, director_id, fy_end),
+equilar <-
+    director.director %>%
+    left_join(director.co_fin, by=c("company_id", "fy_end")) %>%
+    mutate(ncusip = substr(cusip, 1L, 8L)) %>%
+    rename(start_date = date_start) %>%
+    mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
+           last_name = sql("(director.parse_name(director_name)).last_name")) %>%
+    select(company_id, director_id, director_name, fy_end,
+           first_name, last_name, start_date, cusip) %>%
+    rename(director = director_name) %>%
+    compute()
 
-    activist_directors AS (
-      SELECT DISTINCT a.campaign_id, a.first_name, a.last_name,
-          a.activist_affiliate, a.appointment_date,
-          -- a.appointment_date < c.eff_announce_date AS prior_director,
-          -- c.eff_announce_date, c.first_date,
-          a.retirement_date,
-          b.permno, b.permco
-          -- c.campaign_ids IS NOT NULL AS on_activism_events
-      FROM activist_director.activist_directors AS a
-      LEFT JOIN permnos AS b
-      ON substr(a.cusip_9_digit, 1, 8)=b.cusip
-      --LEFT JOIN activist_director.activism_events AS c
-      --ON a.campaign_id=ANY(c.campaign_ids)
-      ),
+equilar_w_permnos <-
+    equilar %>%
+    rename(ncusip = cusip) %>%
+    inner_join(factset.permnos) %>%
+    inner_join(permcos)
 
-    activist_director_equilar AS (
-      SELECT DISTINCT a.*,
-          COALESCE(b.company_id, c.company_id, d.company_id, e.company_id) AS company_id,
-          COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
-          COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
-          COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
-          COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
-          f.permco IS NOT NULL AS permco_on_equilar
-      FROM activist_directors AS a
-      LEFT JOIN equilar_final AS b
-      ON a.permco=b.permco AND lower(a.last_name)=lower(b.last_name)
-                           AND lower(a.first_name)=lower(b.first_name)
-      LEFT JOIN equilar_final AS c
-      ON a.permco=c.permco AND lower(a.last_name)=lower(c.last_name)
-                           AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
-      LEFT JOIN equilar_final AS d
-      ON a.permco=d.permco AND lower(a.last_name)=lower(d.last_name)
-                           AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
-      LEFT JOIN equilar_final AS e
-      ON a.permco=e.permco AND lower(a.last_name)=lower(e.last_name)
-      LEFT JOIN equilar_final AS f
-      ON a.permco=f.permco)
+first_name_years <-
+    equilar %>%
+    group_by(company_id, director_id) %>%
+    summarize(fy_end = min(fy_end)) %>%
+    compute()
 
-    SELECT *, equilar_last_name IS NOT NULL AS matched_to_equilar
-    FROM activist_director_equilar;
-")
+equilar_final <-
+    first_name_years %>%
+    inner_join(equilar_w_permnos,
+               by = c("company_id", "director_id", "fy_end")) %>%
+    select(company_id, director_id, fy_end,
+           director, first_name, last_name, permno, permco) %>%
+    mutate(first_name_l = lower(first_name),
+           last_name_l = lower(last_name)) %>%
+    mutate(first1 = substr(first_name_l, 1L, 1L),
+           first2 = substr(first_name_l, 1L, 2L)) %>%
+    select(-first_name, -last_name) %>%
+    distinct() %>%
+    compute()
 
-rs <- dbWriteTable(pg, c("activist_director", "activist_director_equilar"), activist_directors_equilar,
-                   overwrite=TRUE, row.names=FALSE)
+activist_directors <-
+    activist_director.activist_directors %>%
+    select(campaign_id, first_name, last_name,
+           independent, appointment_date, retirement_date,
+           permno) %>%
+    mutate(first_name_l = lower(first_name),
+           last_name_l = lower(last_name)) %>%
+    mutate(first1 = substr(first_name_l, 1L, 1L),
+           first2 = substr(first_name_l, 1L, 2L)) %>%
+    inner_join(permcos) %>%
+    compute()
 
+match_1 <-
+    activist_directors %>%
+    inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
+    select(campaign_id, first_name, last_name, company_id, director_id) %>%
+    compute()
 
-# Match with BoardEx - create_activist_director_boardex ----
-activist_directors_boardex <- dbGetQuery(pg, "
-  WITH permnos AS (
-  SELECT DISTINCT cusip, permno, permco
-  FROM crsp.stocknames),
+match_2 <-
+    activist_directors %>%
+    inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
+    select(campaign_id, first_name, last_name, company_id, director_id)
 
-  boardex AS (
-  SELECT DISTINCT CASE WHEN substr(d.isin,1,2)='US' THEN substr(d.isin,3,8) END AS cusip,
-  c.annual_report_date, a.boardid, a.directorid,
-  b.last_name, b.first_name
-  FROM boardex.director_characteristics AS a
-  INNER JOIN activist_director.director_names AS b
-  ON a.director_name=b.directorname
-  INNER JOIN boardex.board_characteristics AS c
-  ON a.boardid=c.boardid
-  AND a.annual_report_date=c.annual_report_date
-  INNER JOIN boardex.company_profile_stocks AS d
-  ON a.boardid=d.boardid
-  --INNER JOIN crsp.stocknames AS e
-  --ON CASE WHEN substr(d.isin,1,2)='US' THEN substr(d.isin,3,8) END=e.ncusip
-  WHERE a.row_type='Board Member' AND a.annual_report_date IS NOT NULL
-  --WHERE a.boardid='12212'
-  ORDER BY cusip, annual_report_date, last_name, first_name),
+match_3 <-
+    activist_directors %>%
+    inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
+    select(campaign_id, first_name, last_name, company_id, director_id)
 
-  boardex_w_permnos AS (
-  SELECT *
-  FROM boardex AS a
-  INNER JOIN permnos AS b
-  USING (cusip)),
+match_4 <-
+    activist_directors %>%
+    inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
+    select(campaign_id, first_name, last_name, company_id, director_id)
 
-  first_name_years AS (
-  SELECT boardid, directorid, min(annual_report_date) AS annual_report_date
-  FROM boardex_w_permnos
-  GROUP BY boardid, directorid),
+match_a <-
+    match_1 %>%
+    union(match_2 %>% anti_join(match_1, by=c("campaign_id", "first_name",
+                                           "last_name")))
+match_b <-
+    match_a %>%
+    union(match_3 %>% anti_join(match_a, by=c("campaign_id", "first_name",
+                                           "last_name"))) %>%
+    compute()
 
-  boardex_final AS (
-  SELECT boardid, directorid, annual_report_date,
-  b.last_name, b.first_name, b.permno, b.permco
-  FROM first_name_years AS a
-  INNER JOIN boardex_w_permnos AS b
-  USING (boardid, directorid, annual_report_date)
-  ORDER BY boardid, directorid, annual_report_date),
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar_new")
 
-  activist_directors AS (
-  SELECT DISTINCT a.campaign_id, a.first_name, a.last_name,
-  a.activist_affiliate, a.appointment_date,
-  -- a.appointment_date < c.eff_announce_date AS prior_director,
-  -- c.eff_announce_date, c.first_date,
-  a.retirement_date,
-  b.permno, b.permco
-  -- c.campaign_ids IS NOT NULL AS on_activism_events
-  FROM activist_director.activist_directors AS a
-  LEFT JOIN permnos AS b
-  ON substr(a.cusip_9_digit, 1, 8)=b.cusip
-  --LEFT JOIN activist_director.activism_events AS c
-  --ON a.campaign_id=ANY(c.campaign_ids)
-  ),
+activist_director_equilar <-
+    match_a %>%
+    union(match_4 %>% anti_join(match_a, by=c("campaign_id", "first_name",
+                                           "last_name"))) %>%
+    compute(name = "activist_director_equilar_new", temporary=FALSE)
 
-  activist_director_boardex AS (
-  SELECT DISTINCT a.*,
-  COALESCE(b.boardid, c.boardid, d.boardid, e.boardid) AS boardid,
-  COALESCE(b.directorid, c.directorid, d.directorid, e.directorid) AS directorid,
-  COALESCE(b.annual_report_date, c.annual_report_date, d.annual_report_date, e.annual_report_date) AS annual_report_date,
-  COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS boardex_first_name,
-  COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS boardex_last_name,
-  f.permco IS NOT NULL AS permco_on_boardex
-  FROM activist_directors AS a
-  LEFT JOIN boardex_final AS b
-  ON a.permco=b.permco AND lower(a.last_name)=lower(b.last_name)
-  AND lower(a.first_name)=lower(b.first_name)
-  LEFT JOIN boardex_final AS c
-  ON a.permco=c.permco AND lower(a.last_name)=lower(c.last_name)
-  AND substr(lower(a.first_name),1,2)=substr(lower(c.first_name),1,2)
-  LEFT JOIN boardex_final AS d
-  ON a.permco=d.permco AND lower(a.last_name)=lower(d.last_name)
-  AND substr(lower(a.first_name),1,1)=substr(lower(c.first_name),1,1)
-  LEFT JOIN boardex_final AS e
-  ON a.permco=e.permco AND lower(a.last_name)=lower(e.last_name)
-  LEFT JOIN boardex_final AS f
-  ON a.permco=f.permco)
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar_new IS
+                'CREATED USING activist_director_boardex_dplyr.R'")
 
-  SELECT *, boardex_last_name IS NOT NULL AS matched_to_boardex
-  FROM activist_director_boardex;
-  ")
+dbGetQuery(pg, "ALTER TABLE activist_director_equilar_new OWNER TO activism")
 
-rs <- dbWriteTable(pg, c("activist_director", "activist_director_boardex"), activist_directors_boardex,
-                   overwrite=TRUE, row.names=FALSE)
+# Create BoardEx link table ----
 
+be_cusips <-
+    boardex.company_profile_stocks %>%
+    # We end up inner_joining on CUSIP, so filter eliminates observations
+    # that wont match in any case.
+    filter(substr(isin, 1L, 2L)=='US') %>%
+    mutate(cusip = substr(isin, 3L, 10L)) %>%
+    select(boardid, cusip) %>%
+    distinct() %>%
+    compute()
+
+be_directors <-
+    boardex.director_characteristics %>%
+    filter(row_type=='Board Member', !is.na(annual_report_date)) %>%
+    select(boardid, annual_report_date, directorid, director_name) %>%
+    rename(directorname = director_name) %>%
+    inner_join(activist_director.director_names) %>%
+    select(-prefix, -suffix)
+
+boardex <-
+    be_directors %>%
+    inner_join(be_cusips, by = "boardid") %>%
+    inner_join(permnos, by = "cusip")
+
+first_name_years <-
+    boardex %>%
+    group_by(boardid, directorid) %>%
+    summarize(annual_report_date = min(annual_report_date))
+
+boardex_final <-
+    first_name_years %>%
+    inner_join(boardex, by = c("boardid", "directorid", "annual_report_date")) %>%
+    select(boardid, directorid, annual_report_date,
+           last_name, first_name, permno, permco) %>%
+    mutate(first_name_l = lower(first_name),
+           last_name_l = lower(last_name)) %>%
+    mutate(first1 = substr(first_name_l, 1L, 1L),
+           first2 = substr(first_name_l, 1L, 2L)) %>%
+    select(-first_name, -last_name) %>%
+    distinct() %>%
+    compute()
+
+match_1 <-
+    activist_directors %>%
+    inner_join(boardex_final, by=c("permco", "last_name_l", "first_name_l")) %>%
+    select(campaign_id, first_name, last_name, boardid, directorid) %>%
+    compute()
+
+match_2 <-
+    activist_directors %>%
+    inner_join(boardex_final, by=c("permco", "last_name_l", "first2")) %>%
+    select(campaign_id, first_name, last_name, boardid, directorid)
+
+match_3 <-
+    activist_directors %>%
+    inner_join(boardex_final, by=c("permco", "last_name_l", "first1")) %>%
+    select(campaign_id, first_name, last_name, boardid, directorid)
+
+match_4 <-
+    activist_directors %>%
+    inner_join(boardex_final, by=c("permco", "last_name_l")) %>%
+    select(campaign_id, first_name, last_name, boardid, directorid)
+
+match_a <-
+    match_1 %>%
+    union(match_2 %>%
+              anti_join(match_1,
+                        by=c("campaign_id", "first_name", "last_name")))
+match_b <-
+    match_a %>%
+    union(match_3 %>%
+              anti_join(match_a,
+                        by=c("campaign_id", "first_name", "last_name"))) %>%
+    compute()
+
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex_new")
+
+activist_director_equilar <-
+    match_a %>%
+    union(match_4 %>%
+              anti_join(match_a,
+                        by=c("campaign_id", "first_name", "last_name"))) %>%
+    compute(name = "activist_director_boardex_new", temporary=FALSE)
+
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex_new IS
+                'CREATED USING activist_director_boardex_dplyr.R'")
+
+dbGetQuery(pg, "ALTER TABLE activist_director_boardex_new OWNER TO activism")
+# boardex.board_characteristics isn't doing anything
