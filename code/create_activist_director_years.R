@@ -25,14 +25,12 @@ firm_years <-
     rename(permno = lpermno) %>%
     select(gvkey, datadate, permno) %>%
     distinct() %>%
-    arrange(gvkey, datadate)
 
 activist_director <-
     activist_directors %>%
     group_by(campaign_id, permno) %>%
     summarize(appointment_date = min(appointment_date),
-              retirement_date = max(coalesce(retirement_date, '2016-12-31'))) %>%
-    arrange(permno, appointment_date)
+              retirement_date = max(coalesce(retirement_date, '2016-12-31')))
 
 activist_director_on_board <-
     outcome_controls %>%
