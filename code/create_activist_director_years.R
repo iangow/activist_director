@@ -16,17 +16,16 @@ outcome_controls <- tbl(pg, sql("SELECT * FROM outcome_controls")
 # CREATE TABLE activist_director.activist_director_years AS
 
 # Compustat with PERMNO
-WITH firm_years AS (
-    SELECT DISTINCT a.gvkey, a.datadate, b.lpermno AS permno
-    FROM comp.funda AS a
-    INNER JOIN crsp.ccmxpf_linktable AS b
-    ON a.gvkey=b.gvkey
-        AND a.datadate >= b.linkdt
-        AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
-        AND b.USEDFLAG='1'
-        AND linkprim IN ('C', 'P')
-    WHERE fyear > 2000
-    ORDER BY gvkey, datadate),
+firm_years <-
+    comp.funda %>%
+    filter(fyear > 2000) %>%
+    inner_join(crsp.ccmxpf_linktable) %>%
+    filter(usedflag=='1',
+           linkprim %in% c('C', 'P')) %>%
+    rename(permno = lpermno) %>%
+    select(gvkey, datadate, permno) %>%
+    distinct() %>%
+    arrange(gvkey, datadate)
 
 activist_director AS (
     SELECT DISTINCT campaign_id, permno, MIN(appointment_date) AS appointment_date, MAX(COALESCE(retirement_date, '2016-12-31')) AS retirement_date
