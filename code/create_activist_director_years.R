@@ -10,7 +10,7 @@ dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_years_new")
 comp.funda <- tbl(pg, sql("SELECT * FROM comp.funda"))
 crsp.ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
 activist_directors <- tbl(pg, sql("SELECT * FROM activist_directors"))
-outcome_controls <- tbl(pg, sql("SELECT * FROM outcome_controls")
+outcome_controls <- tbl(pg, sql("SELECT * FROM outcome_controls"))
 # DROP TABLE IF EXISTS activist_director.activist_director_years;
 
 # CREATE TABLE activist_director.activist_director_years AS
