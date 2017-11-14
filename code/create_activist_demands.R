@@ -1,4 +1,4 @@
-Sys.setenv(PGHOST="iangow.me", PGDATABASE="crsp")
+# Sys.setenv(PGHOST="iangow.me", PGDATABASE="crsp")
 library(dplyr, warn.conflicts = FALSE)
 library(tidyr)
 library(RPostgreSQL)

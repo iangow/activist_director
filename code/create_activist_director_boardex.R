@@ -1,5 +1,5 @@
 library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL(), host='iangow.me', port='5432', dbname='crsp')
+pg <- dbConnect(PostgreSQL()) # host='iangow.me', port='5432', dbname='crsp')
 
 # Match with Equilar - create_activist_director_equilar ----
 

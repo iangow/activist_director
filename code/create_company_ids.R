@@ -1,4 +1,4 @@
-Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
+# Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
 pg <- src_postgres()
 
 activist_directors <- tbl(pg, sql("SELECT * FROM activist_director.activist_directors"))

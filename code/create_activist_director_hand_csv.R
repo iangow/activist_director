@@ -1,5 +1,5 @@
 library(dplyr, warn.conflicts = FALSE)
-Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
+# Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
 pg <- src_postgres()
 
 activist_director_equilar <-

@@ -26,7 +26,6 @@ activist_directors_3 <-
     filter(!is.na(appointment_date)) %>%
     mutate(source = 3L)
 
-Sys.setenv(PGHOST = "iangow.me", PGDATABASE = "crsp")
 pg <- src_postgres()
 
 campaign_ids <-
@@ -77,3 +76,4 @@ sql <- paste0("
 
 rs <- dbGetQuery(pg$con, sql)
 
+dbDisconnect(pg$con)
