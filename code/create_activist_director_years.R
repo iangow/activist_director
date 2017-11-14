@@ -27,12 +27,6 @@ firm_years <-
     distinct() %>%
     arrange(gvkey, datadate)
 
-activist_director_on_board AS (
-    SELECT DISTINCT a.permno, a.datadate, b.permno IS NOT NULL AS on_board
-    FROM activist_director.outcome_controls AS a
-    LEFT JOIN activist_director AS b
-    ON a.permno=b.permno AND a.datadate BETWEEN appointment_date AND retirement_date)
-
 SELECT DISTINCT permno, datadate, BOOL_OR(on_board) AS ad_on_board
 FROM activist_director_on_board
 GROUP BY permno, datadate
@@ -48,4 +42,11 @@ activist_director <-
     summarize(appointment_date = min(appointment_date),
               retirement_date = max(coalesce(retirement_date, '2016-12-31'))) %>%
     arrange(permno, appointment_date)
+
+activist_director_on_board <-
+    outcome_controls %>%
+    left_join(activist_director, by="permno") %>%
+    filter(between(datadate, appointment_date, retirement_date)) %>%
+    mutate(on_board = !is.na(permno)) %>%
+    select(permno, datadate, on_board)
 
