@@ -27,11 +27,6 @@ firm_years <-
     distinct() %>%
     arrange(gvkey, datadate)
 
-SELECT DISTINCT permno, datadate, BOOL_OR(on_board) AS ad_on_board
-FROM activist_director_on_board
-GROUP BY permno, datadate
-ORDER BY permno, datadate;
-
 #COMMENT ON TABLE activist_director.activist_director_years IS
 #'CREATED USING create_activist_director_years.sql';
 
@@ -49,4 +44,13 @@ activist_director_on_board <-
     filter(between(datadate, appointment_date, retirement_date)) %>%
     mutate(on_board = !is.na(permno)) %>%
     select(permno, datadate, on_board)
+
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_years")
+
+activist_director_years <-
+    activist_director_on_board %>%
+    group_by(permno, datadate) %>%
+    summarize(ad_on_board = bool_or(on_board)) %>%
+    arrange(permno, datadate) %>%
+    compute(name = "activist_director_years", temporary=FALSE)
 
