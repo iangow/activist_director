@@ -13,7 +13,7 @@ activist_directors <- tbl(pg, sql("SELECT * FROM activist_directors"))
 
 activist_director <-
     activist_directors %>%
-    group_by(permno, dissident_group, eff_announce_date) %>%
+    group_by(campaign_id) %>%
     summarize(
         first_appointment_date= min(appointment_date),
         num_activist_directors = n(),
@@ -23,7 +23,7 @@ activist_director <-
 matched <-
     activism_sample %>%
     left_join(activist_director,
-              by = c("permno", "eff_announce_date", "dissident_group")) %>%
+              by = "campaign_id") %>%
     mutate(activist_director = !is.na(dissident_board_seats_wongranted_date) |
                dissident_board_seats_won > 0 |
                campaign_resulted_in_board_seats_for_activist) %>%
