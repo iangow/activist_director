@@ -18,13 +18,16 @@ outcome_controls <- tbl(pg, sql("SELECT * FROM outcome_controls"))
 # Compustat with PERMNO
 firm_years <-
     comp.funda %>%
+    filter(indfmt=='INDL', consol=='C', popsrc=='D', datafmt=='STD') %>%
     filter(fyear > 2000) %>%
     inner_join(crsp.ccmxpf_linktable) %>%
     filter(usedflag=='1',
            linkprim %in% c('C', 'P')) %>%
+    filter(datadate >= linkdt,
+           datadate <= linkenddt | is.na(linkenddt)) %>%
     rename(permno = lpermno) %>%
     select(gvkey, datadate, permno) %>%
-    distinct() %>%
+    compute()
 
 activist_director <-
     activist_directors %>%
