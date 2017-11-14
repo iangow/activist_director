@@ -27,10 +27,6 @@ firm_years <-
     distinct() %>%
     arrange(gvkey, datadate)
 
-#COMMENT ON TABLE activist_director.activist_director_years IS
-#'CREATED USING create_activist_director_years.sql';
-
-# ALTER TABLE activist_director.activist_director_years OWNER TO activism;
 activist_director <-
     activist_directors %>%
     group_by(campaign_id, permno) %>%
@@ -54,3 +50,9 @@ activist_director_years <-
     arrange(permno, datadate) %>%
     compute(name = "activist_director_years", temporary=FALSE)
 
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_years IS
+                'CREATED USING create_activist_director_years.R'")
+
+dbGetQuery(pg, "ALTER TABLE activist_director_years OWNER TO activism")
+
+dbDisconnect(pg)
