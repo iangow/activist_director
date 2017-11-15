@@ -11,12 +11,12 @@ rs <-dbGetQuery(pg, "
 
     WITH permnos AS (
         SELECT DISTINCT cusip, permno, permco
-        FROM factset.permnos
+        FROM activist_director.permnos
         INNER JOIN crsp.stocknames
         USING (permno)),
 
     equilar AS (
-        SELECT DISTINCT a.company_id, director_id, director_name,
+        SELECT DISTINCT a.company_id, a.executive_id, director_name,
             (director.parse_name(director_name)).*, a.fy_end, date_start,
             substr(cusip,1,8) AS cusip
         FROM director.director AS a
@@ -30,17 +30,17 @@ rs <-dbGetQuery(pg, "
         USING (cusip)),
 
     first_name_years AS (
-        SELECT company_id, director_id, min(fy_end) AS fy_end
+        SELECT company_id, executive_id, min(fy_end) AS fy_end
         FROM equilar_w_permnos
-        GROUP BY company_id, director_id),
+        GROUP BY company_id, executive_id),
 
     equilar_final AS (
-        SELECT company_id, director_id, fy_end,
+        SELECT company_id, executive_id, fy_end,
             b.director_name, b.first_name, b.last_name, b.permno, b.permco
         FROM first_name_years AS a
         INNER JOIN equilar_w_permnos AS b
-        USING (company_id, director_id, fy_end)
-        ORDER BY company_id, director_id, fy_end),
+        USING (company_id, executive_id, fy_end)
+        ORDER BY company_id, executive_id, fy_end),
 
     activist_directors AS (
         SELECT DISTINCT b.permco, a.permno, a.dissident_group, a.eff_announce_date,
@@ -59,7 +59,7 @@ rs <-dbGetQuery(pg, "
     activist_director_equilar AS (
         SELECT DISTINCT a.*,
             COALESCE(b.company_id, c.company_id, d.company_id, e.company_id) AS company_id,
-            COALESCE(b.director_id, c.director_id, d.director_id, e.director_id) AS equilar_director_id,
+            COALESCE(b.executive_id, c.executive_id, d.executive_id, e.executive_id) AS executive_id,
             COALESCE(b.fy_end, c.fy_end, d.fy_end, e.fy_end) AS fy_end,
             COALESCE(b.first_name, c.first_name, d.first_name, e.first_name) AS equilar_first_name,
             COALESCE(b.last_name, c.last_name, d.last_name, e.last_name) AS equilar_last_name,
