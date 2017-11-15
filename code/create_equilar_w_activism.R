@@ -13,7 +13,7 @@ rs <-dbGetQuery(pg, "
     equilar AS (
     SELECT DISTINCT a.company_id,
         a.fy_end,
-        director_id,
+        executive_id,
         (director.parse_name(director_name)).*,
         director_name AS director,
         date_start,
@@ -40,13 +40,13 @@ rs <-dbGetQuery(pg, "
     INNER JOIN director.co_fin AS c
     ON a.company_id=c.company_id AND a.fy_end=c.fy_end
     WHERE a.fy_end > '2003-12-31'
-    ORDER BY company_id, director_id, fy_end),
+    ORDER BY company_id, executive_id, fy_end),
 
     -- Match Equilar to PERMCOs
     equilar_permnos AS (
         SELECT DISTINCT c.permco, b.permno, company_id AS company_id, fy_end
         FROM director.co_fin AS a
-        LEFT JOIN factset.permnos AS b
+        LEFT JOIN activist_director.permnos AS b
         ON substr(a.cusip, 1, 8)=b.ncusip
         INNER JOIN crsp.stocknames AS c
         ON b.permno=c.permno),
@@ -60,17 +60,17 @@ rs <-dbGetQuery(pg, "
 
     -- Identify directors' first years
     director_first_years AS (
-        SELECT company_id AS company_id, director_id,
+        SELECT company_id AS company_id, executive_id,
             min(a.date_start) AS date_start,
             min(a.fy_end) AS fy_end
         FROM director.director AS a
-        GROUP BY company_id, director_id
-        ORDER BY company_id, director_id),
+        GROUP BY company_id, executive_id
+        ORDER BY company_id, executive_id),
 
     -- Classify directors' first years on Equilar based on whether
     -- they were appointed during an activism event or shortly thereafter
     equilar_activism_match AS (
-        SELECT DISTINCT b.permno, company_id, director_id, fy_end,
+        SELECT DISTINCT b.permno, company_id, executive_id, fy_end,
             bool_or(sharkwatch50) AS sharkwatch50,
             bool_or(activism) AS activism_firm,
             bool_or(activist_demand) AS activist_demand_firm,
@@ -81,8 +81,8 @@ rs <-dbGetQuery(pg, "
         LEFT JOIN activist_director.activism_events AS c
         ON b.permno=c.permno AND
         a.date_start BETWEEN c.first_date AND c.end_date + interval '128 days'
-        GROUP BY b.permno, company_id, director_id, fy_end
-        ORDER BY permno, company_id, director_id)
+        GROUP BY b.permno, company_id, executive_id, fy_end
+        ORDER BY permno, company_id, executive_id)
 
     -- Now pull all directors from Equilar and add data on activism from above
     SELECT DISTINCT a.*,
@@ -97,7 +97,7 @@ rs <-dbGetQuery(pg, "
         WHEN activist_demand_firm THEN 'activist_demand_firm'
         WHEN activism_firm THEN 'activism_firm'
         ELSE '_none' END AS category,
-        d.equilar_director_id IS NOT NULL AND NOT d.prior_director AS activist_director,
+        d.executive_id IS NOT NULL AND NOT d.prior_director AS activist_director,
         d.independent IS FALSE AS affiliated_director,
         d.independent IS TRUE AS independent,
         d.prior_director IS TRUE AS prior_director
@@ -106,13 +106,13 @@ rs <-dbGetQuery(pg, "
     ON a.company_id=b.company_id AND a.fy_end=b.fy_end
     LEFT JOIN equilar_activism_match AS c
     ON a.company_id=c.company_id
-    AND a.director_id=c.director_id
+    AND a.executive_id=c.executive_id
     AND a.fy_end=c.fy_end
     LEFT JOIN activist_director.activist_director_equilar AS d
     ON a.company_id=d.company_id
-    AND a.director_id=d.equilar_director_id
+    AND a.executive_id=d.executive_id
     AND a.fy_end=d.fy_end
-    ORDER BY company_id, fy_end, director_id;
+    ORDER BY company_id, fy_end, executive_id;
     --Query returned in 108940ms")
 
 rs <- dbGetQuery(pg, "
