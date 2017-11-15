@@ -4,7 +4,11 @@ library(googlesheets)
 library(dplyr, warn.conflicts = FALSE)
 library(RPostgreSQL)
 
-# As a one-time thing per user and machine, you will need to run gs_auth()
+# As a one-time thing per user and machine, you will need to run
+# library(googlesheets)
+# options(httr_oob_default=TRUE)
+# gs_auth(new_user = TRUE)
+# gs_ls()
 # to authorize googlesheets to access your Google Sheets.
 gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
 
