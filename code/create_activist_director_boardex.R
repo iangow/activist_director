@@ -7,7 +7,7 @@ rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 rs <- dbGetQuery(pg, "SET search_path='activist_director'")
 
 crsp.stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
-factset.permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+activist_director.permnos <- tbl(pg, sql("SELECT * FROM activist_director.permnos"))
 director.co_fin <- tbl(pg, sql("SELECT * FROM director.co_fin"))
 director.director <- tbl(pg, sql("SELECT * FROM director.director"))
 activist_director.activist_directors <-
@@ -18,7 +18,6 @@ activist_director_equilar <-
     tbl(pg, sql("SELECT * FROM activist_director_equilar"))
 activist_director.director_names <-
     tbl(pg, sql("SELECT * FROM activist_director.director_names"))
-
 boardex.director_characteristics <-
     tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
 boardex.board_characteristics <-
@@ -47,7 +46,7 @@ equilar <-
     rename(start_date = date_start) %>%
     mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
            last_name = sql("(director.parse_name(director_name)).last_name")) %>%
-    select(company_id, director_id, director_name, fy_end,
+    select(company_id, executive_id, director_name, fy_end,
            first_name, last_name, start_date, cusip) %>%
     rename(director = director_name) %>%
     compute()
@@ -55,20 +54,20 @@ equilar <-
 equilar_w_permnos <-
     equilar %>%
     rename(ncusip = cusip) %>%
-    inner_join(factset.permnos) %>%
+    inner_join(activist_director.permnos) %>%
     inner_join(permcos)
 
 first_name_years <-
     equilar %>%
-    group_by(company_id, director_id) %>%
+    group_by(company_id, executive_id) %>%
     summarize(fy_end = min(fy_end)) %>%
     compute()
 
 equilar_final <-
     first_name_years %>%
     inner_join(equilar_w_permnos,
-               by = c("company_id", "director_id", "fy_end")) %>%
-    select(company_id, director_id, fy_end,
+               by = c("company_id", "executive_id", "fy_end")) %>%
+    select(company_id, executive_id, fy_end,
            director, first_name, last_name, permno, permco) %>%
     mutate(first_name_l = lower(first_name),
            last_name_l = lower(last_name)) %>%
@@ -93,23 +92,23 @@ activist_directors <-
 match_1 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, first_name, last_name, company_id, director_id) %>%
+    select(campaign_id, first_name, last_name, company_id, executive_id) %>%
     compute()
 
 match_2 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, first_name, last_name, company_id, director_id)
+    select(campaign_id, first_name, last_name, company_id, executive_id)
 
 match_3 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, first_name, last_name, company_id, director_id)
+    select(campaign_id, first_name, last_name, company_id, executive_id)
 
 match_4 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, first_name, last_name, company_id, director_id)
+    select(campaign_id, first_name, last_name, company_id, executive_id)
 
 match_a <-
     match_1 %>%
