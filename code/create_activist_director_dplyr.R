@@ -120,18 +120,18 @@ match_b <-
                                            "last_name"))) %>%
     compute()
 
-dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar_new")
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
     match_a %>%
     union(match_4 %>% anti_join(match_a, by=c("campaign_id", "first_name",
                                            "last_name"))) %>%
-    compute(name = "activist_director_equilar_new", temporary=FALSE)
+    compute(name = "activist_director_equilar", temporary=FALSE)
 
-dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar_new IS
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
                 'CREATED USING activist_director_boardex_dplyr.R'")
 
-dbGetQuery(pg, "ALTER TABLE activist_director_equilar_new OWNER TO activism")
+dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
 
 # Create BoardEx link table ----
 
@@ -209,17 +209,17 @@ match_b <-
                         by=c("campaign_id", "first_name", "last_name"))) %>%
     compute()
 
-dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex_new")
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex")
 
-activist_director_equilar <-
+activist_director_boardex <-
     match_a %>%
     union(match_4 %>%
               anti_join(match_a,
                         by=c("campaign_id", "first_name", "last_name"))) %>%
-    compute(name = "activist_director_boardex_new", temporary=FALSE)
+    compute(name = "activist_director_boardex", temporary=FALSE)
 
-dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex_new IS
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex IS
                 'CREATED USING activist_director_boardex_dplyr.R'")
 
-dbGetQuery(pg, "ALTER TABLE activist_director_boardex_new OWNER TO activism")
+dbGetQuery(pg, "ALTER TABLE activist_director_boardex OWNER TO activism")
 # boardex.board_characteristics isn't doing anything
