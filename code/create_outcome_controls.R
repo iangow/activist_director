@@ -9,7 +9,7 @@ rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
 # Get all votes on directors that were not withdrawn and which have meaningful vote data
 issvoting.compvote <- tbl(pg, sql("SELECT * FROM issvoting.compvote"))
-factset.permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+activist_director.permnos <- tbl(pg, sql("SELECT * FROM activist_director.permnos"))
 factset.sharkrepellent  <- tbl(pg, sql("SELECT * FROM factset.sharkrepellent"))
 factset.staggered_board  <- tbl(pg, sql("SELECT * FROM factset.staggered_board"))
 director_names <- tbl(pg, sql("SELECT * FROM issvoting.director_names"))
@@ -40,7 +40,8 @@ firm_years <-
            datadate <= linkenddt | is.na(linkenddt)) %>%
     select(gvkey, datadate, lpermno) %>%
     rename(permno = lpermno) %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 sics <-
     firm_years %>%
@@ -49,7 +50,8 @@ sics <-
     filter(between(year, year1, year2)) %>%
     select(gvkey, datadate, sic) %>%
     mutate(sic2 = substr(sic, 1L, 2L)) %>%
-    compute()
+    compute() %>%
+    arrange(gvkey, datadate)
 
 #- Compustat controls
 funda_mod <-
@@ -71,26 +73,29 @@ compustat <-
     group_by(gvkey) %>%
     arrange(datadate) %>%
     mutate(capex = if_else(lag(ppent) > 0, capx/lag(ppent), NA),
-           log_at = if_else(at > 0, log(at), NA),
-           payout = if_else(oibdp > 0, (dvc+prstkc-pstkrv)/oibdp, NA),
-           mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
-           btm = if_else(prcc_f * csho > 0, ceq/(prcc_f*csho), NA),
-           leverage = if_else(dltt+dlc+ceq > 0, (dltt+dlc)/(dltt+dlc+ceq), NA),
-           dividend = if_else(oibdp > 0, (dvc + dvp)/oibdp,
-                              if_else(oibdp <= 0 & (dvc + dvp)==0, 0, NA)),
-           cash = if_else(at > 0, che/at, NA),
-           roa = if_else(lag(at) > 0, oibdp/lag(at), NA),
-           sale_growth = if_else(lag(sale) > 0, sale/lag(sale), NA),
-           firm_exists_p1 = !is.na(lead(datadate, 1L)),
+            log_at = if_else(at > 0, log(at), NA),
+            payout = if_else(oibdp > 0, (dvc+prstkc-pstkrv)/oibdp, NA),
+            mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
+            btm = if_else(prcc_f * csho > 0, ceq/(prcc_f * csho), NA),
+            leverage = if_else(dltt+dlc+ceq > 0, (dltt+dlc)/(dltt+dlc+ceq), NA),
+            dividend = if_else(oibdp > 0, (dvc + dvp)/oibdp,
+                        if_else(oibdp <= 0 & (dvc + dvp)==0, 0, NA)),
+            cash = if_else(at > 0, che/at, NA),
+            roa = if_else(lag(at) > 0, oibdp/lag(at), NA),
+            sale_growth = if_else(lag(sale) > 0, sale/lag(sale), NA),
+            firm_exists_p1 = !is.na(lead(datadate, 1L)),
             firm_exists_p2 = !is.na(lead(datadate, 2L)),
             firm_exists_p3 = !is.na(lead(datadate, 3L)),
-            tnol_carryforward = tlcf > 0 & coalesce(pi,txfed) <= 0) %>%
+            nol_carryforward = tlcf > 0 & coalesce(pi,txfed) <= 0) %>%
     compute()
 
 compustat_w_permno <-
     compustat %>%
     inner_join(firm_years) %>%
-    inner_join(sics)
+    inner_join(sics) %>%
+    select(permno, datadate, everything()) %>%
+    arrange(permno, datadate)
+
 
 #- CRSP Returns
 crsp <-
@@ -104,7 +109,8 @@ crsp <-
     summarize(size_return =  product(1+ret) - product(1+vwretd),
               num_months = n()) %>%
     ungroup() %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 # crsp %>% count(num_months) %>% arrange(num_months) %>% print(n=12)
 
@@ -122,7 +128,8 @@ crsp_m1 <-
               num_months = n()) %>%
     ungroup() %>%
     select(-num_months) %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 # crsp_m1 %>% count(num_months) %>% arrange(num_months) %>% print(n = Inf)
 factset.sharkrepellent %>%
@@ -157,7 +164,7 @@ sharkrepellent <-
            inst_percent, top_10_percent, majority, dual_class,
            company_name) %>%
      mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(factset.permnos) %>%
+    inner_join(activist_director.permnos) %>%
     inner_join(firm_years) %>%
     select(-gvkey) %>%
     filter(datadate < company_status_date | is.na(company_status_date),
@@ -208,10 +215,11 @@ staggered_board <-
     # SELECT DISTINCT permno, beg_date, end_date, staggered_board
     factset.staggered_board %>%
     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(factset.permnos) %>%
+    inner_join(activist_director.permnos) %>%
     inner_join(firm_years) %>%
     filter(between(datadate, beg_date, end_date)) %>%
-    select(permno, datadate, staggered_board)
+    select(permno, datadate, staggered_board) %>%
+    arrange(permno, datadate)
 
 
 # analyst coverage
@@ -221,12 +229,13 @@ ibes <-
     mutate(analyst = numest, ncusip = cusip,
            fy_end = eomonth(statpers)) %>%
     select(ncusip, fy_end, analyst) %>%
-    inner_join(factset.permnos) %>%
+    inner_join(activist_director.permnos) %>%
     inner_join(
         firm_years %>%
             mutate(fy_end = eomonth(datadate))) %>%
-    select(permno, datadate, analyst)
-
+    select(permno, datadate, analyst) %>%
+    distinct() %>%
+    arrange(permno, datadate)
 
 equilar <-
     equilar_w_activism %>%
@@ -236,15 +245,16 @@ equilar <-
     filter(company_id %NOT IN% c(2583L, 8598L, 2907L, 7506L),
            !(company_id == 4431L & fy_end =='2010-09-30'),
            !(company_id == 46588L & fy_end == '2012-12-31')) %>%
-    ungroup()
+    ungroup() %>%
+    arrange(company_id, fy_end)
 
 count_directors <-
     director.director %>%
-        select(company_id, fy_end, director_id) %>%
+        select(company_id, fy_end, executive_id) %>%
         distinct() %>%
         group_by(company_id, fy_end) %>%
-        summarize(num_directors = n())
-
+        summarize(num_directors = n()) %>%
+        arrange(company_id, fy_end)
 
 equilar_w_permno <-
     equilar %>%
@@ -253,15 +263,17 @@ equilar_w_permno <-
         director.co_fin %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
             select(company_id, fy_end, ncusip)) %>%
-    inner_join(factset.permnos) %>%
+    inner_join(activist_director.permnos) %>%
     select(-ncusip, -company_id) %>%
     rename(datadate = fy_end) %>%
     select(permno, datadate, everything()) %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 inst <-
     activist_director.inst %>%
-    select(permno, datadate, inst)
+    select(permno, datadate, inst) %>%
+    arrange(permno, datadate)
 
 controls <-
     compustat_w_permno %>%
@@ -275,7 +287,8 @@ controls <-
     mutate(inst = coalesce(inst, 0),
            analyst = coalesce(analyst, 0),
            on_equilar = coalesce(on_equilar, FALSE)) %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 first_date <-
     activism_events %>%
@@ -295,8 +308,9 @@ outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
     left_join(activism_events) %>%
+    compute() %>%
     filter(between(eff_announce_date, datadate,
-                   sql("datadate + interval '1 year - 1 day'"))) %>%
+                   sql("datadate + interval '1 year - 1 day'")) | is.na(eff_announce_date)) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
               funs(coalesce(., '_none'))) %>%
@@ -304,6 +318,8 @@ outcome_controls <-
               funs(coalesce(., FALSE))) %>%
     mutate(category_activist_director = if_else(activist_director, 'activist_director',
             if_else(activism, 'non_activist_director', '_none'))) %>%
+    distinct() %>%
+    arrange(permno, datadate) %>%
     compute(name = "outcome_controls_new", temporary = FALSE)
 
 rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls_new SET SCHEMA activist_director")
