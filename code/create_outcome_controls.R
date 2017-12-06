@@ -34,11 +34,12 @@ firm_years <-
     funda %>%
     filter(fyear > 2000) %>%
     filter(indfmt=='INDL', consol=='C', popsrc=='D', datafmt=='STD') %>%
+    mutate(year = date_part('year', datadate)) %>%
     inner_join(ccmxpf_linktable) %>%
     filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
     filter(datadate >= linkdt,
            datadate <= linkenddt | is.na(linkenddt)) %>%
-    select(gvkey, datadate, lpermno) %>%
+    select(gvkey, year, datadate, lpermno) %>%
     rename(permno = lpermno) %>%
     compute() %>%
     arrange(permno, datadate)
@@ -302,15 +303,24 @@ last_date <-
     pull() %>%
     as.Date()
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.outcome_controls_new")
+controls_activism_years <-
+    firm_years %>%
+    inner_join(activism_events) %>%
+    filter(between(eff_announce_date, datadate,
+                    sql("datadate + interval '1 year - 1 day'"))) %>%
+    select(-gvkey) %>%
+    distinct() %>%
+    arrange(permno, datadate)
+
+rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.outcome_controls")
+rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS outcome_controls")
 
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
-    left_join(activism_events) %>%
     compute() %>%
-    filter(between(eff_announce_date, datadate,
-                   sql("datadate + interval '1 year - 1 day'")) | is.na(eff_announce_date)) %>%
+    left_join(controls_activism_years) %>%f
+    arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
               funs(coalesce(., '_none'))) %>%
@@ -320,13 +330,13 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    compute(name = "outcome_controls_new", temporary = FALSE)
+    compute(name = "outcome_controls", temporary = FALSE)
 
-rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls_new SET SCHEMA activist_director")
+rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls SET SCHEMA activist_director")
 
-rs <- dbGetQuery(pg, "COMMENT ON TABLE activist_director.outcome_controls_new IS
+rs <- dbGetQuery(pg, "COMMENT ON TABLE activist_director.outcome_controls IS
     'CREATED USING create_outcome_controls.R'")
 
-rs <- dbGetQuery(pg, "CREATE INDEX ON activist_director.outcome_controls_new (permno, datadate)")
+rs <- dbGetQuery(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
 
-rs <- dbGetQuery(pg, "ALTER TABLE activist_director.outcome_controls_new OWNER TO activism")
+rs <- dbGetQuery(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
