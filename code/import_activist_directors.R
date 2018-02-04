@@ -22,12 +22,14 @@ activist_directors_1 <-
 activist_directors_2 <-
     gs_read(gs, ws = "2013-2015 + Extra") %>%
     filter(!is.na(appointment_date)) %>%
+    mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 2L)
 
 #### Sheet 3 ####
 activist_directors_3 <-
     gs_read(gs, ws = "Extra2") %>%
     filter(!is.na(appointment_date)) %>%
+    # mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 3L)
 
 pg <- src_postgres()
