@@ -57,6 +57,8 @@ WITH sharkwatch_raw AS (
     dissident_board_seats_won > 0 OR
     campaign_resulted_in_board_seats_for_activist='Yes' OR
     dissident_board_seats_wongranted_date IS NOT NULL AS activist_demand_old,
+    settlement_agreement_special_exhibit_included='Yes' AS settlement_agreement_special_exhibit_included,
+    standstill_agreement_special_exhibit_included='Yes' AS standstill_agreement_special_exhibit_included,
     (governance_demands_followthroughsuccess ilike '%Yes%'
         OR value_demands_followthroughsuccess ilike '%Yes%'
         OR settlement_agreement_special_exhibit_included='Yes'
@@ -103,6 +105,8 @@ WITH sharkwatch_raw AS (
     bool_or(concession_made) AS concession_made,
     array_agg(DISTINCT governance_demands_followthroughsuccess) AS governance_demands,
     array_agg(DISTINCT value_demands_followthroughsuccess) AS value_demands,
+    bool_or(settlement_agreement_special_exhibit_included) AS settlement_agreement_special_exhibit_included,
+    bool_or(standstill_agreement_special_exhibit_included) AS standstill_agreement_special_exhibit_included,
     bool_or(sharkwatch50) AS sharkwatch50,
     bool_or(s13d_filer) AS s13d_filer,
     min(first_date) AS first_date,
