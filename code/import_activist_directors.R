@@ -29,7 +29,7 @@ activist_directors_2 <-
 activist_directors_3 <-
     gs_read(gs, ws = "Extra2") %>%
     filter(!is.na(appointment_date)) %>%
-    # mutate(issuer_cik=as.integer(issuer_cik)) %>%
+    mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 3L)
 
 pg <- src_postgres()
