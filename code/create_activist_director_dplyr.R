@@ -92,41 +92,40 @@ activist_directors <-
 match_1 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id) %>%
+    select(campaign_id, period, first_name, last_name, company_id, executive_id) %>%
     compute()
 
 match_2 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id)
 
 match_3 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id)
 
 match_4 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id)
 
 match_a <-
     match_1 %>%
-    union(match_2 %>% anti_join(match_1, by=c("campaign_id", "first_name",
-                                           "last_name")))
+    union(match_2 %>% anti_join(match_1, by=c("campaign_id", "period", "first_name", "last_name")))
+
 match_b <-
     match_a %>%
-    union(match_3 %>% anti_join(match_a, by=c("campaign_id", "first_name",
-                                           "last_name"))) %>%
+    union(match_3 %>% anti_join(match_a, by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     compute()
 
 dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
     match_b %>%
-    union(match_4 %>% anti_join(match_b, by=c("campaign_id", "first_name",
-                                           "last_name"))) %>%
-    compute(name = "activist_director_equilar", temporary=FALSE)
+    union(match_4 %>% anti_join(match_b, by=c("campaign_id", "period", "first_name", "last_name"))) %>%
+    compute(name = "activist_director_equilar", temporary=FALSE) %>%
+    arrange(campaign_id, period, last_name)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
                 'CREATED USING activist_director_dplyr.R'")

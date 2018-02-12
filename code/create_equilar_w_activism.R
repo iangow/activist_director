@@ -11,41 +11,42 @@ rs <-dbGetQuery(pg, "
     WITH
     -- Pull together director characteristics
     equilar AS (
-    SELECT DISTINCT a.company_id,
-        a.fy_end,
-        executive_id,
-        (director.parse_name(director_name)).*,
-        director_name AS director,
-        date_start,
-        age,
-        (a.fy_end - date_start)/365.25 AS tenure_calc,
-        tenure,
-        cmtes_cnt,
-        cmtes,
-        is_chair,
-        is_vice_chair,
-        is_lead,
-        is_audit_cmte_spec,
-        gender='F' AS female,
-        gender='M' AS male,
-        insider_outsider_related='Outsider' AS outsider,
-        insider_outsider_related='Insider' AS insider,
-        cmtes_cnt > 0 AS any_committee,
-        CASE WHEN cmtes IS NOT NULL THEN COALESCE(cmtes ~ 'Comp', FALSE)
-        WHEN cmtes_cnt = 0 THEN FALSE END AS comp_committee,
-        CASE WHEN cmtes IS NOT NULL THEN COALESCE(cmtes ~ 'Audit', FALSE)
-        WHEN cmtes_cnt = 0 THEN FALSE END AS audit_committee,
-        is_audit_cmte_spec AS audit_committee_financial_expert
-    FROM director.director AS a
-    INNER JOIN director.co_fin AS c
-    ON a.company_id=c.company_id AND a.fy_end=c.fy_end
-    WHERE a.fy_end > '2003-12-31'
-    ORDER BY company_id, executive_id, fy_end),
+SELECT DISTINCT a.company_id,
+    a.period,
+    executive_id,
+    (director.parse_name(director_name)).*,
+    director_name AS director,
+    date_start,
+    age,
+    (a.period - date_start)/365.25 AS tenure_calc,
+    tenure,
+    cmtes_cnt,
+    cmtes,
+    is_chair,
+    is_vice_chair,
+    is_lead,
+    is_audit_cmte_spec,
+    gender='F' AS female,
+    gender='M' AS male,
+    insider_outsider_related='Outsider' AS outsider,
+    insider_outsider_related='Insider' AS insider,
+    cmtes_cnt > 0 AS any_committee,
+    CASE WHEN cmtes IS NOT NULL THEN COALESCE(cmtes ~ 'Comp', FALSE)
+    WHEN cmtes_cnt = 0 THEN FALSE END AS comp_committee,
+    CASE WHEN cmtes IS NOT NULL THEN COALESCE(cmtes ~ 'Audit', FALSE)
+    WHEN cmtes_cnt = 0 THEN FALSE END AS audit_committee,
+    is_audit_cmte_spec AS audit_committee_financial_expert
+    FROM equilar_hbs.director_index AS a
+    INNER JOIN equilar_hbs.company_financials AS c
+    ON a.company_id=c.company_id AND a.period=c.fye
+    WHERE a.period > '2003-12-31'
+    ORDER BY company_id, executive_id, period
+),
 
     -- Match Equilar to PERMCOs
     equilar_permnos AS (
-        SELECT DISTINCT c.permco, b.permno, company_id AS company_id, fy_end
-        FROM director.co_fin AS a
+        SELECT DISTINCT c.permco, b.permno, company_id AS company_id, fye AS period
+        FROM equilar_hbs.company_financials AS a
         LEFT JOIN activist_director.permnos AS b
         ON substr(a.cusip, 1, 8)=b.ncusip
         INNER JOIN crsp.stocknames AS c
@@ -53,8 +54,8 @@ rs <-dbGetQuery(pg, "
 
     -- Identify companies' first years
     company_first_years AS (
-        SELECT company_id AS company_id, min(fy_end) AS fy_end
-        FROM director.co_fin AS a
+        SELECT company_id AS company_id, min(fye) AS period
+        FROM equilar_hbs.company_financials AS a
         GROUP BY company_id
         ORDER BY company_id),
 
@@ -62,32 +63,32 @@ rs <-dbGetQuery(pg, "
     director_first_years AS (
         SELECT company_id AS company_id, executive_id,
             min(a.date_start) AS date_start,
-            min(a.fy_end) AS fy_end
-        FROM director.director AS a
+            min(a.period) AS period
+        FROM equilar_hbs.director_index AS a
         GROUP BY company_id, executive_id
         ORDER BY company_id, executive_id),
 
     -- Classify directors' first years on Equilar based on whether
     -- they were appointed during an activism event or shortly thereafter
     equilar_activism_match AS (
-        SELECT DISTINCT b.permno, company_id, executive_id, fy_end,
+        SELECT DISTINCT b.permno, company_id, executive_id, period,
             bool_or(sharkwatch50) AS sharkwatch50,
             bool_or(activism) AS activism_firm,
             bool_or(activist_demand) AS activist_demand_firm,
             bool_or(activist_director) AS activist_director_firm
         FROM director_first_years AS a
         INNER JOIN equilar_permnos AS b
-        USING (company_id, fy_end)
+        USING (company_id, period)
         LEFT JOIN activist_director.activism_events AS c
         ON b.permno=c.permno AND
         a.date_start BETWEEN c.first_date AND c.end_date + interval '128 days'
-        GROUP BY b.permno, company_id, executive_id, fy_end
+        GROUP BY b.permno, company_id, executive_id, period
         ORDER BY permno, company_id, executive_id)
 
     -- Now pull all directors from Equilar and add data on activism from above
     SELECT DISTINCT a.*,
-        b.fy_end IS NOT NULL AS firm_first_year,
-        c.fy_end IS NOT NULL AS director_first_year,
+        b.period IS NOT NULL AS firm_first_year,
+        c.period IS NOT NULL AS director_first_year,
         COALESCE(c.sharkwatch50, FALSE) AS sharkwatch50,
         COALESCE(c.activism_firm, FALSE) AS activism_firm,
         COALESCE(c.activist_demand_firm, FALSE) AS activist_demand_firm,
@@ -103,16 +104,16 @@ rs <-dbGetQuery(pg, "
         d.prior_director IS TRUE AS prior_director
     FROM equilar AS a
     LEFT JOIN company_first_years AS b
-    ON a.company_id=b.company_id AND a.fy_end=b.fy_end
+    ON a.company_id=b.company_id AND a.period=b.period
     LEFT JOIN equilar_activism_match AS c
     ON a.company_id=c.company_id
     AND a.executive_id=c.executive_id
-    AND a.fy_end=c.fy_end
+    AND a.period=c.period
     LEFT JOIN activist_director.activist_director_equilar AS d
     ON a.company_id=d.company_id
     AND a.executive_id=d.executive_id
-    AND a.fy_end=d.fy_end
-    ORDER BY company_id, fy_end, executive_id;
+    AND a.period=d.period
+    ORDER BY company_id, period, executive_id;
     --Query returned in 108940ms")
 
 rs <- dbGetQuery(pg, "
