@@ -92,23 +92,23 @@ activist_directors <-
 match_1 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id) %>%
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent) %>%
     compute()
 
 match_2 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
 
 match_3 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
 
 match_4 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
 
 match_a <-
     match_1 %>%
@@ -222,3 +222,5 @@ dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex IS
 
 dbGetQuery(pg, "ALTER TABLE activist_director_boardex OWNER TO activism")
 # boardex.board_characteristics isn't doing anything
+
+dbDisconnect(pg)
