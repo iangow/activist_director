@@ -8,16 +8,16 @@ rs <- dbGetQuery(pg, "SET search_path='activist_director'")
 
 crsp.stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
 activist_director.permnos <- tbl(pg, sql("SELECT * FROM activist_director.permnos"))
-director.co_fin <- tbl(pg, sql("SELECT * FROM director.co_fin"))
-director.director <- tbl(pg, sql("SELECT * FROM director.director"))
+equilar_hbs.company_financials <- tbl(pg, sql("SELECT *, fye AS period FROM equilar_hbs.company_financials"))
+equilar_hbs.director_index <- tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
 activist_director.activist_directors <-
     tbl(pg, sql("SELECT * FROM activist_directors"))
 activist_director.activism_events <-
     tbl(pg, sql("SELECT * FROM activism_events"))
 activist_director_equilar <-
     tbl(pg, sql("SELECT * FROM activist_director_equilar"))
-activist_director.director_names <-
-    tbl(pg, sql("SELECT * FROM activist_director.director_names"))
+activist_equilar_hbs.director_index_names <-
+    tbl(pg, sql("SELECT * FROM activist_equilar_hbs.director_index_names"))
 boardex.director_characteristics <-
     tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
 boardex.board_characteristics <-
@@ -40,13 +40,13 @@ permnos <-
     compute()
 
 equilar <-
-    director.director %>%
-    left_join(director.co_fin, by=c("company_id", "fy_end")) %>%
+    equilar_hbs.director_index %>%
+    left_join(equilar_hbs.company_financials, by=c("company_id", "period")) %>%
     mutate(ncusip = substr(cusip, 1L, 8L)) %>%
     rename(start_date = date_start) %>%
     mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
            last_name = sql("(director.parse_name(director_name)).last_name")) %>%
-    select(company_id, executive_id, director_name, fy_end,
+    select(company_id, executive_id, director_name, period,
            first_name, last_name, start_date, cusip) %>%
     rename(director = director_name) %>%
     compute()
@@ -60,14 +60,14 @@ equilar_w_permnos <-
 first_name_years <-
     equilar %>%
     group_by(company_id, executive_id) %>%
-    summarize(fy_end = min(fy_end)) %>%
+    summarize(period = min(period)) %>%
     compute()
 
 equilar_final <-
     first_name_years %>%
     inner_join(equilar_w_permnos,
-               by = c("company_id", "executive_id", "fy_end")) %>%
-    select(company_id, executive_id, fy_end,
+               by = c("company_id", "executive_id", "period")) %>%
+    select(company_id, executive_id, period,
            director, first_name, last_name, permno, permco) %>%
     mutate(first_name_l = lower(first_name),
            last_name_l = lower(last_name)) %>%
@@ -123,13 +123,13 @@ match_b <-
 dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
-    match_a %>%
-    union(match_4 %>% anti_join(match_a, by=c("campaign_id", "first_name",
+    match_b %>%
+    union(match_4 %>% anti_join(match_b, by=c("campaign_id", "first_name",
                                            "last_name"))) %>%
     compute(name = "activist_director_equilar", temporary=FALSE)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
-                'CREATED USING activist_director_boardex_dplyr.R'")
+                'CREATED USING activist_director_dplyr.R'")
 
 dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
 
@@ -150,7 +150,7 @@ be_directors <-
     filter(row_type=='Board Member', !is.na(annual_report_date)) %>%
     select(boardid, annual_report_date, directorid, director_name) %>%
     rename(directorname = director_name) %>%
-    inner_join(activist_director.director_names) %>%
+    inner_join(activist_equilar_hbs.director_index_names) %>%
     select(-prefix, -suffix)
 
 boardex <-
@@ -212,14 +212,14 @@ match_b <-
 dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex")
 
 activist_director_boardex <-
-    match_a %>%
+    match_b %>%
     union(match_4 %>%
-              anti_join(match_a,
+              anti_join(match_b,
                         by=c("campaign_id", "first_name", "last_name"))) %>%
     compute(name = "activist_director_boardex", temporary=FALSE)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex IS
-                'CREATED USING activist_director_boardex_dplyr.R'")
+                'CREATED USING activist_director_dplyr.R'")
 
 dbGetQuery(pg, "ALTER TABLE activist_director_boardex OWNER TO activism")
 # boardex.board_characteristics isn't doing anything
