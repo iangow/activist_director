@@ -72,25 +72,25 @@ director_votes AS (
 
 issvoting AS (
     SELECT DISTINCT permno, extract(year from meetingdate) as year,
-    meetingdate, last_name, first_name,
-    substr(first_name,1,3) AS initial3,
-    substr(first_name,1,2) AS initial2,
-    substr(first_name,1,1) AS initial,
-    mgmtrec, issrec, base, vote_pct, votes_cast
+        meetingdate, last_name, first_name,
+        substr(first_name,1,3) AS initial3,
+        substr(first_name,1,2) AS initial2,
+        substr(first_name,1,1) AS initial,
+        mgmtrec, issrec, base, vote_pct, votes_cast
     FROM director_votes
     ORDER BY permno, meetingdate, last_name, first_name),
 
 equilar_simplified AS (
     SELECT DISTINCT permno, executive_id, last_name,
-    substr(first_name,1,3) AS initial3,
-    substr(first_name,1,2) AS initial2,
-    substr(first_name,1,1) AS initial
+        substr(first_name,1,3) AS initial3,
+        substr(first_name,1,2) AS initial2,
+        substr(first_name,1,1) AS initial
     FROM activist_director.equilar_w_activism
     WHERE permno IS NOT NULL AND executive_id IS NOT NULL),
 
 issvoting_w_id AS (
     SELECT DISTINCT coalesce(e.executive_id, b.executive_id, c.executive_id, d.executive_id) AS executive_id, a.*
-        FROM issvoting AS a
+    FROM issvoting AS a
     LEFT JOIN equilar_simplified AS e
     ON a.permno=e.permno AND a.last_name ilike e.last_name AND a.initial3 ilike e.initial3
     LEFT JOIN equilar_simplified AS b
@@ -142,105 +142,35 @@ issvoting_detailed AS (
 
 issvoting_lead_lag AS (
     SELECT DISTINCT permno, executive_id, year,
-    lag(meetingdate,3) over w AS meetingdate_m3,
-    lag(meetingdate,2) over w AS meetingdate_m2,
-    lag(meetingdate,1) over w AS meetingdate_m1,
-    meetingdate,
-    lead(meetingdate,1) over w AS meetingdate_p1,
-    lead(meetingdate,2) over w AS meetingdate_p2,
-    lag(issrec,3) over w AS issrec_m3,
-    lag(issrec,2) over w AS issrec_m2,
-    lag(issrec,1) over w AS issrec_m1,
-    issrec,
-    lead(issrec,1) over w AS issrec_p1,
-    lead(issrec,2) over w AS issrec_p2,
-    lag(vote_pct,3) over w AS vote_pct_m3,
-    lag(vote_pct,2) over w AS vote_pct_m2,
-    lag(vote_pct,1) over w AS vote_pct_m1,
-    vote_pct,
-    lead(vote_pct,1) over w AS vote_pct_p1,
-    lead(vote_pct,2) over w AS vote_pct_p2,
-    lag(votes_cast,3) over w AS votes_cast_m3,
-    lag(votes_cast,2) over w AS votes_cast_m2,
-    lag(votes_cast,1) over w AS votes_cast_m1,
-    votes_cast,
-    lead(votes_cast,1) over w AS votes_cast_p1,
-    lead(votes_cast,2) over w AS votes_cast_p2
+        lag(meetingdate,3) over w AS meetingdate_m3,
+        lag(meetingdate,2) over w AS meetingdate_m2,
+        lag(meetingdate,1) over w AS meetingdate_m1,
+        meetingdate,
+        lead(meetingdate,1) over w AS meetingdate_p1,
+        lead(meetingdate,2) over w AS meetingdate_p2,
+        lag(issrec,3) over w AS issrec_m3,
+        lag(issrec,2) over w AS issrec_m2,
+        lag(issrec,1) over w AS issrec_m1,
+        issrec,
+        lead(issrec,1) over w AS issrec_p1,
+        lead(issrec,2) over w AS issrec_p2,
+        lag(vote_pct,3) over w AS vote_pct_m3,
+        lag(vote_pct,2) over w AS vote_pct_m2,
+        lag(vote_pct,1) over w AS vote_pct_m1,
+        vote_pct,
+        lead(vote_pct,1) over w AS vote_pct_p1,
+        lead(vote_pct,2) over w AS vote_pct_p2,
+        lag(votes_cast,3) over w AS votes_cast_m3,
+        lag(votes_cast,2) over w AS votes_cast_m2,
+        lag(votes_cast,1) over w AS votes_cast_m1,
+        votes_cast,
+        lead(votes_cast,1) over w AS votes_cast_p1,
+        lead(votes_cast,2) over w AS votes_cast_p2
     FROM issvoting_detailed
     WINDOW w AS (PARTITION BY permno, executive_id ORDER BY year, meetingdate)
-    ORDER BY permno, executive_id, year, meetingdate),
-
-average_voting_support AS (
-    SELECT DISTINCT permno, meetingdate,
-    avg(vote_pct_m3) AS avg_vote_pct_m3,
-    avg(vote_pct_m2) AS avg_vote_pct_m2,
-    avg(vote_pct_m1) AS avg_vote_pct_m1,
-    avg(vote_pct) AS avg_vote_pct,
-    avg(vote_pct_p1) AS avg_vote_pct_p1,
-    avg(vote_pct_p2) AS avg_vote_pct_p2
-    FROM issvoting_lead_lag
-    GROUP BY permno, meetingdate
-    ORDER BY permno, meetingdate),
-
-issvoting_matched AS (
-    SELECT DISTINCT a.permno, a.executive_id, a.year, COALESCE(b.period, c.period, d.period) AS period,
-    meetingdate_m3, meetingdate_m2, meetingdate_m1, meetingdate, meetingdate_p1, meetingdate_p2,
-    issrec_m3, issrec_m2, issrec_m1, issrec, issrec_p1, issrec_p2,
-    vote_pct_m3, vote_pct_m2, vote_pct_m1, vote_pct, vote_pct_p1, vote_pct_p2,
-    votes_cast_m3, votes_cast_m2, votes_cast_m1, votes_cast, votes_cast_p1, votes_cast_p2
-    FROM issvoting_lead_lag AS a
-    LEFT JOIN activist_director.equilar_w_activism AS b
-    ON a.permno=b.permno AND a.executive_id=b.executive_id
-    AND a.meetingdate_p1 BETWEEN b.period AND b.period + interval '1 year'
-    LEFT JOIN activist_director.equilar_w_activism AS c
-    ON a.permno=c.permno AND a.executive_id=c.executive_id
-    AND a.meetingdate BETWEEN c.period - interval '1 year' AND c.period
-    LEFT JOIN activist_director.equilar_w_activism AS d
-    ON a.permno=d.permno AND a.executive_id=d.executive_id
-    AND a.meetingdate_p2 BETWEEN d.period + interval '1 year' AND d.period + interval '2 years'
-    WHERE COALESCE(b.period, c.period, d.period) IS NOT NULL
     ORDER BY permno, executive_id, year, meetingdate)
 
-SELECT DISTINCT a.permno, a.executive_id, a.period, c.eff_announce_date,
-    a.meetingdate_m3, a.meetingdate_m2, a.meetingdate_m1, a.meetingdate, a.meetingdate_p1, a.meetingdate_p2,
-    issrec_m3, issrec_m2, issrec_m1, issrec, issrec_p1, issrec_p2,
-    votes_cast_m3, votes_cast_m2, votes_cast_m1, votes_cast, votes_cast_p1, votes_cast_p2,
-    vote_pct_m3, vote_pct_m2, vote_pct_m1, vote_pct, vote_pct_p1, vote_pct_p2,
-    c.first_date, c.last_date,
-    avg_vote_pct_m3, avg_vote_pct_m2, avg_vote_pct_m1, avg_vote_pct, avg_vote_pct_p1, avg_vote_pct_p2,
-    c.activism_category,
-    c.dissident_group_ownership_percent,
-    c.board_seats_won,
-    c.targeted_firm, c.targeted_firm_non_board,
-    c.targeted_board_non_proxy, c.targeted_board_proxy,
-    c.targeted_board_settled,
-    c.first_appointment_date,
-    c.activist_director, c.elected, c.went_the_distance, c.sharkwatch50,
-    c.num_activist_directors, c.num_affiliate_directors, c.num_unaffiliate_directors,
-    b.age, b.tenure, b.tenure_calc, b.comp_committee, b.audit_committee, b.audit_committee_financial_expert, --is_chairman, is_lead,
-    b.insider, b.outsider,
-    --ceo, ceo_turnover_p1, ceo_turnover_p0,
-    --return, size_return, mkt_return, ind_return,
-    --return_m5p3, size_return_m5p3, mkt_return_m5p3, ind_return_m5p3,
-    --return_m6p0, size_return_m6p0, mkt_return_m6p0, ind_return_m6p0,
-    --return_m8p4, size_return_m8p4, mkt_return_m8p4, ind_return_m8p4,
-    --return_m9p3, size_return_m9p3, mkt_return_m9p3, ind_return_m9p3,
-    --size_return_activism, mkt_return_activism,
-    mv, btm, leverage, --rnd, capex, payout, dividend, cash_ivst, roa, ind_roa, sale_growth,
-    dual_class, analyst, inst
-FROM issvoting_matched AS a
-LEFT JOIN activist_director.equilar_w_activism AS b
-ON a.permno=b.permno AND a.executive_id=b.executive_id AND a.period=b.period
-LEFT JOIN targeted.activism_events AS c
-ON a.permno=c.permno
-AND c.eff_announce_date BETWEEN
-COALESCE(meetingdate, meetingdate_p1 - interval '1 year', meetingdate_m1 + interval '1 year')
-AND COALESCE(meetingdate_p1, meetingdate + interval '1 year', meetingdate_p2 - interval '1 year')
-LEFT JOIN activist_director.outcome_controls AS d
-ON a.permno=d.permno AND a.period=d.datadate
-LEFT JOIN average_voting_support AS e
-ON a.permno=e.permno AND a.meetingdate=e.meetingdate
-ORDER BY permno, executive_id, period;
+SELECT * FROM issvoting_lead_lag;
 
 ALTER TABLE activist_director.iss_voting OWNER TO activism;
 ")
