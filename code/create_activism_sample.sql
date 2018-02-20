@@ -74,12 +74,12 @@ WITH sharkwatch_raw AS (
     AND holder_type NOT IN ('Corporation')
     AND campaign_status='Closed'
     AND least(announce_date, date_original_13d_filed) >= '2004-01-01'
-    AND least(announce_date, date_original_13d_filed) <= '2015-12-31'
+    AND least(announce_date, date_original_13d_filed) <= '2016-12-31'
     AND activism_type != '13D Filer - No Publicly Disclosed Activism'),
 
     permnos AS (
     SELECT DISTINCT cusip, permno, permco
-    FROM factset.permnos AS a
+    FROM activist_director.permnos AS a
     INNER JOIN crsp.stocknames AS b
     USING (permno)),
 
@@ -88,7 +88,7 @@ WITH sharkwatch_raw AS (
     FROM sharkwatch_raw AS a
     LEFT JOIN permnos AS b
     ON substr(a.cusip_9_digit,1,8)=b.cusip
-    LEFT JOIN factset.permnos AS c
+    LEFT JOIN activist_director.permnos AS c
     ON substr(a.cusip_9_digit,1,8)=c.ncusip),
 
     sharkwatch_agg AS (
