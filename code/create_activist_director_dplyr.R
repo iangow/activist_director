@@ -17,7 +17,7 @@ activist_director.activism_events <-
 activist_director_equilar <-
     tbl(pg, sql("SELECT * FROM activist_director_equilar"))
 activist_equilar_hbs.director_index_names <-
-    tbl(pg, sql("SELECT * FROM activist_equilar_hbs.director_index_names"))
+    tbl(pg, sql("SELECT * FROM equilar_hbs.director_index_names"))
 boardex.director_characteristics <-
     tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
 boardex.board_characteristics <-
@@ -92,23 +92,23 @@ activist_directors <-
 match_1 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent) %>%
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
     compute()
 
 match_2 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
 
 match_3 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
 
 match_4 <-
     activist_directors %>%
     inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, independent)
+    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
 
 match_a <-
     match_1 %>%
