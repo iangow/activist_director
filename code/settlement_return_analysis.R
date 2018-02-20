@@ -17,7 +17,8 @@ standstill_agreement AS (
     ORDER BY campaign_id),
 
 before_remove_dups AS (
-    SELECT DISTINCT a.campaign_id, a.permno, a.eff_announce_date, a.dissident_board_seats_wongranted_date AS appointment_date, settle_date, standstill_date, COALESCE(settle_date, standstill_date)::DATE AS any_settle_date
+    SELECT DISTINCT a.campaign_id, a.permno, a.eff_announce_date, a.proxy_fight_went_the_distance,
+            a.dissident_board_seats_wongranted_date AS appointment_date, settle_date, standstill_date, COALESCE(settle_date, standstill_date)::DATE AS any_settle_date
     FROM activist_director.activism_events AS a
     LEFT JOIN settlement_agreement AS b
     ON b.campaign_id=ANY(a.campaign_ids)
@@ -26,10 +27,10 @@ before_remove_dups AS (
     --WHERE a.activist_director
     ORDER BY campaign_id)
 
-SELECT DISTINCT campaign_id, permno, eff_announce_date, extract(year from eff_announce_date) AS year,
+SELECT DISTINCT campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, extract(year from eff_announce_date) AS year,
         min(appointment_date) As appointment_date, min(settle_date) AS settle_date, min(standstill_date) AS standstill_date, min(any_settle_date) AS any_settle_date
 FROM before_remove_dups
-GROUP BY campaign_id, permno, eff_announce_date
+GROUP BY campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance
 ORDER BY campaign_id
 ")
 
@@ -92,8 +93,11 @@ dbGetQuery(pg, "
             sum((appointment_date IS NOT NULL)::INT) AS activist_dir,
             sum((settle_date IS NOT NULL)::INT) AS settle,
             sum((standstill_date IS NOT NULL)::INT) AS standstill,
-            sum((any_settle_date IS NOT NULL)::INT) AS any_settle
+            sum((any_settle_date IS NOT NULL)::INT) AS any_settle,
+            sum(proxy_fight_went_the_distance::INT) AS proxy_fight,
+            sum((NOT proxy_fight_went_the_distance AND any_settle_date IS NULL)::INT) AS no_elect_no_sett
     FROM activist_director.settlement_return
+    WHERE appointment_date IS NOT NULL
     GROUP BY year
     ORDER BY year
     ")
