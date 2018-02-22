@@ -22,8 +22,8 @@ names <- tbl(pg, sql("SELECT * FROM comp.names"))
 activist_director.inst <- tbl(pg, sql("SELECT * FROM activist_director.inst"))
 ibes.statsum_epsus <- tbl(pg, sql("SELECT * FROM ibes.statsum_epsus"))
 mrets <- tbl(pg, sql("SELECT * FROM crsp.mrets"))
-director.co_fin <- tbl(pg, sql("SELECT * FROM director.co_fin"))
-director.director <- tbl(pg, sql("SELECT * FROM director.director"))
+equilar_hbs.company_financials <- tbl(pg, sql("SELECT *, fye AS period FROM equilar_hbs.company_financials"))
+equilar_hbs.director_index <- tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
 
 # DROP TABLE IF EXISTS activist_director.outcome_controls;
 
@@ -76,6 +76,7 @@ compustat <-
     mutate(capex = if_else(lag(ppent) > 0, capx/lag(ppent), NA),
             log_at = if_else(at > 0, log(at), NA),
             payout = if_else(oibdp > 0, (dvc+prstkc-pstkrv)/oibdp, NA),
+            bv = if_else(ceq > 0, log(ceq), NA),
             mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
             btm = if_else(prcc_f * csho > 0, ceq/(prcc_f * csho), NA),
             leverage = if_else(dltt+dlc+ceq > 0, (dltt+dlc)/(dltt+dlc+ceq), NA),
@@ -240,33 +241,34 @@ ibes <-
 
 equilar <-
     equilar_w_activism %>%
-    group_by(company_id, fy_end) %>%
+    group_by(company_id, period) %>%
     summarize(outside_percent = mean(as.integer(outsider)),
-              age = avg(age), tenure = avg(tenure)) %>%
+              age = mean(as.integer(age)),
+              tenure = mean(as.integer(tenure_calc))) %>%
     filter(company_id %NOT IN% c(2583L, 8598L, 2907L, 7506L),
-           !(company_id == 4431L & fy_end =='2010-09-30'),
-           !(company_id == 46588L & fy_end == '2012-12-31')) %>%
+           !(company_id == 4431L & period =='2010-09-30'),
+           !(company_id == 46588L & period == '2012-12-31')) %>%
     ungroup() %>%
-    arrange(company_id, fy_end)
+    arrange(company_id, period)
 
 count_directors <-
-    director.director %>%
-        select(company_id, fy_end, executive_id) %>%
+    equilar_hbs.director_index %>%
+        select(company_id, period, executive_id) %>%
         distinct() %>%
-        group_by(company_id, fy_end) %>%
+        group_by(company_id, period) %>%
         summarize(num_directors = n()) %>%
-        arrange(company_id, fy_end)
+        arrange(company_id, period)
 
 equilar_w_permno <-
     equilar %>%
     inner_join(count_directors) %>%
     inner_join(
-        director.co_fin %>%
+        equilar_hbs.company_financials %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
-            select(company_id, fy_end, ncusip)) %>%
+            select(company_id, period, ncusip)) %>%
     inner_join(activist_director.permnos) %>%
     select(-ncusip, -company_id) %>%
-    rename(datadate = fy_end) %>%
+    rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%
     compute() %>%
     arrange(permno, datadate)
