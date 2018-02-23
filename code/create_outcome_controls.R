@@ -241,23 +241,20 @@ ibes <-
 
 equilar <-
     equilar_w_activism %>%
-    group_by(company_id, period) %>%
+    group_by(permno, period) %>%
     summarize(outside_percent = mean(as.integer(outsider)),
               age = mean(as.integer(age)),
               tenure = mean(as.integer(tenure_calc))) %>%
-    filter(company_id %NOT IN% c(2583L, 8598L, 2907L, 7506L),
-           !(company_id == 4431L & period =='2010-09-30'),
-           !(company_id == 46588L & period == '2012-12-31')) %>%
     ungroup() %>%
-    arrange(company_id, period)
+    arrange(permno, period)
 
 count_directors <-
-    equilar_hbs.director_index %>%
-        select(company_id, period, executive_id) %>%
+    equilar_w_activism %>%
+        select(permno, period, executive_id) %>%
         distinct() %>%
-        group_by(company_id, period) %>%
+        group_by(permno, period) %>%
         summarize(num_directors = n()) %>%
-        arrange(company_id, period)
+        arrange(permno, period)
 
 equilar_w_permno <-
     equilar %>%
@@ -314,14 +311,13 @@ controls_activism_years <-
     distinct() %>%
     arrange(permno, datadate)
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.outcome_controls")
 rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS outcome_controls")
 
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
     compute() %>%
-    left_join(controls_activism_years) %>%f
+    left_join(controls_activism_years) %>%
     arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
