@@ -1,29 +1,80 @@
 # Get data from database ----
-library("RPostgreSQL")
+library(dplyr, warn.conflicts = FALSE)
+library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
-# Get voting changes data from PostgreSQL ----
-vote.data <- dbGetQuery(pg, "
-    -- Match Equilar to PERMNOs
-    WITH equilar_permnos AS (
-    SELECT DISTINCT b.permno, company_id AS company_id, fye AS period
-    FROM equilar_hbs.company_financials AS a
-    LEFT JOIN activist_director.permnos AS b
-    ON substr(a.cusip, 1, 8)=b.ncusip),
+dbGetQuery(pg, "SET search_path TO activist_director, public")
 
-    activist_director_equilar as (
-    SELECT DISTINCT b.permno, a.*
-    FROM activist_director.activist_director_equilar AS a
-    LEFT JOIN equilar_permnos AS b
-    ON a.company_id=b.company_id AND a.period=b.period
-    ORDER BY permno, period, executive_id)
+company_financials <- tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials"))
+permnos <- tbl(pg, "permnos")
+activist_director_equilar <- tbl(pg, "activist_director_equilar")
+iss_voting <- tbl(pg, "iss_voting")
+
+# Get voting changes data from PostgreSQL ----
+
+# Match Equilar to PERMNOs
+equilar_permnos <-
+    company_financials %>%
+    mutate(ncusip = substr(cusip, 1L, 8L)) %>%
+    left_join(permnos) %>%
+    select(company_id, permno, fye) %>%
+    rename(period = fye)
+
+meeting_votes <-
+    iss_voting %>%
+    filter(!is.na(meetingdate), !is.na(vote_pct)) %>%
+    select(permno, executive_id, meetingdate)
+
+ad_first_votes <-
+    activist_director_equilar %>%
+    inner_join(equilar_permnos, by = c("period", "company_id")) %>%
+    inner_join(meeting_votes, by = c("executive_id", "permno")) %>%
+    group_by(executive_id, permno, appointment_date) %>%
+    summarize(meetingdate = min(meetingdate, na.rm = TRUE)) %>%
+    mutate(days_to_vote = meetingdate - appointment_date) %>%
+    ungroup() %>%
+    compute()
+
+ad_first_votes %>%
+    mutate(rel_date = sign(days_to_vote)) %>%
+    count(rel_date)
+
+ad_first_votes %>%
+    mutate(problem = days_to_vote > 364) %>%
+    count(problem)
+
+library(ggplot2)
+ad_first_votes %>%
+    filter(days_to_vote > 0, days_to_vote < 364) %>%
+    collect() %>%
+    ggplot(aes(x = days_to_vote)) +
+    geom_histogram()
+
+
+ad_first_vote <-
+    activist_director_equilar %>%
+    left_join(equilar_permnos, by = c("period", "company_id"))
+
+
+
+vote_data <-
+    iss_voting %>%
+    left_join(equilar, by = c("permno", "executive_id")) %>%
+    compute()
+
+
+vote.data <- dbGetQuery(pg, "
+
+
+
+
 
     SELECT DISTINCT a.*, b.appointment_date, b.appointment_date IS NOT NULL AS activist_director, b.independent IS FALSE AS affiliated_director,
         c.permno IS NOT NULL AS activist_director_period
-    FROM activist_director.iss_voting AS a
-    LEFT JOIN activist_director_equilar AS b
+    FROM iss_voting AS a
+    LEFT JOIN equilar AS b
     ON a.permno=b.permno AND a.executive_id=b.executive_id AND meetingdate BETWEEN b.appointment_date-100 AND b.appointment_date+100
-    LEFT JOIN activist_director_equilar AS c
+    LEFT JOIN equilar AS c
     ON a.permno=c.permno AND meetingdate BETWEEN c.appointment_date-100 AND c.appointment_date+100
 ")
 
