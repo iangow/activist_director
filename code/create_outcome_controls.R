@@ -3,31 +3,32 @@ library(dplyr, warn.conflicts = FALSE)
 
 pg <- dbConnect(PostgreSQL())
 
-rs <- dbGetQuery(pg, "RESET search_path")
+rs <- dbGetQuery(pg, "SET search_path TO activist_director, public")
 
 rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
 # Get all votes on directors that were not withdrawn and which have meaningful vote data
+
+activist_director.permnos <- tbl(pg, "permnos")
+activism_events <- tbl(pg, "activism_events")
+activist_director.inst <- tbl(pg, "inst")
+equilar_w_activism <- tbl(pg, "equilar_w_activism")
+
 issvoting.compvote <- tbl(pg, sql("SELECT * FROM issvoting.compvote"))
-activist_director.permnos <- tbl(pg, sql("SELECT * FROM activist_director.permnos"))
 factset.sharkrepellent  <- tbl(pg, sql("SELECT * FROM factset.sharkrepellent"))
 factset.staggered_board  <- tbl(pg, sql("SELECT * FROM factset.staggered_board"))
 director_names <- tbl(pg, sql("SELECT * FROM issvoting.director_names"))
-# This tables about 2 minutes to run.
-equilar_w_activism  <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_activism"))
+
 funda <- tbl(pg, sql("SELECT * FROM comp.funda"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
-activism_events <- tbl(pg, sql("SELECT * FROM activist_director.activism_events"))
 names <- tbl(pg, sql("SELECT * FROM comp.names"))
-activist_director.inst <- tbl(pg, sql("SELECT * FROM activist_director.inst"))
 ibes.statsum_epsus <- tbl(pg, sql("SELECT * FROM ibes.statsum_epsus"))
 mrets <- tbl(pg, sql("SELECT * FROM crsp.mrets"))
-equilar_hbs.company_financials <- tbl(pg, sql("SELECT *, fye AS period FROM equilar_hbs.company_financials"))
-equilar_hbs.director_index <- tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
-
-# DROP TABLE IF EXISTS activist_director.outcome_controls;
-
-# CREATE TABLE activist_director.outcome_controls AS
+equilar_hbs.company_financials <-
+    tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials")) %>%
+    rename(period = fye)
+equilar_hbs.director_index <-
+    tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
 
 #-- Compustat with PERMNO
 firm_years <-
@@ -175,14 +176,6 @@ sharkrepellent <-
     ungroup() %>%
     compute()
 
-without_agg <-
-    sharkrepellent %>%
-    mutate(has_insider_percent=!is.na(insider_percent)) %>%
-    count(has_insider_percent) %>%
-    filter(has_insider_percent==TRUE) %>%
-    select(n) %>%
-    pull()
-
 with_agg <-
     sharkrepellent %>%
     group_by(permno) %>%
@@ -195,8 +188,7 @@ with_agg <-
     inner_join(sharkrepellent %>% select(permno, datadate)) %>%
     select(-permno, -datadate) %>%
     mutate_all(.funs = as.integer) %>%
-    summarize_all(.funs = sum) %>%
-    collect()
+    summarize_all(.funs = sum)
 
 without_agg <-
     sharkrepellent %>%
@@ -208,21 +200,15 @@ without_agg <-
            inst_percent, top_10_percent), funs(not)) %>%
     select(-permno) %>%
     mutate_all(.funs = as.integer) %>%
-    summarize_all(.funs = sum) %>%
-    collect()
-
-with_agg - without_agg
+    summarize_all(.funs = sum)
 
 staggered_board <-
-    # SELECT DISTINCT permno, beg_date, end_date, staggered_board
     factset.staggered_board %>%
     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
     inner_join(activist_director.permnos) %>%
     inner_join(firm_years) %>%
     filter(between(datadate, beg_date, end_date)) %>%
-    select(permno, datadate, staggered_board) %>%
-    arrange(permno, datadate)
-
+    select(permno, datadate, staggered_board)
 
 # analyst coverage
 ibes <-
@@ -236,15 +222,14 @@ ibes <-
         firm_years %>%
             mutate(fy_end = eomonth(datadate))) %>%
     select(permno, datadate, analyst) %>%
-    distinct() %>%
-    arrange(permno, datadate)
+    distinct()
 
 equilar <-
     equilar_w_activism %>%
     group_by(permno, period) %>%
-    summarize(outside_percent = mean(as.integer(outsider)),
-              age = mean(as.integer(age)),
-              tenure = mean(as.integer(tenure_calc))) %>%
+    summarize(outside_percent = mean(as.integer(outsider), na.rm = TRUE),
+              age = mean(as.integer(age), na.rm = TRUE),
+              tenure = mean(as.integer(tenure_calc), na.rm = TRUE)) %>%
     ungroup() %>%
     arrange(permno, period)
 
@@ -253,8 +238,7 @@ count_directors <-
         select(permno, period, executive_id) %>%
         distinct() %>%
         group_by(permno, period) %>%
-        summarize(num_directors = n()) %>%
-        arrange(permno, period)
+        summarize(num_directors = n())
 
 equilar_w_permno <-
     equilar %>%
@@ -267,13 +251,11 @@ equilar_w_permno <-
     select(-ncusip, -company_id) %>%
     rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%
-    compute() %>%
-    arrange(permno, datadate)
+    compute()
 
 inst <-
     activist_director.inst %>%
-    select(permno, datadate, inst) %>%
-    arrange(permno, datadate)
+    select(permno, datadate, inst)
 
 controls <-
     compustat_w_permno %>%
@@ -298,7 +280,7 @@ first_date <-
 
 last_date <-
     activism_events %>%
-    summarize(max(eff_announce_date)) %>%
+    summarize(max(eff_announce_date, na.rm = TRUE)) %>%
     pull() %>%
     as.Date()
 
@@ -330,11 +312,9 @@ outcome_controls <-
     arrange(permno, datadate) %>%
     compute(name = "outcome_controls", temporary = FALSE)
 
-rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls SET SCHEMA activist_director")
-
-rs <- dbGetQuery(pg, "COMMENT ON TABLE activist_director.outcome_controls IS
+rs <- dbGetQuery(pg, "COMMENT ON TABLE outcome_controls IS
     'CREATED USING create_outcome_controls.R'")
 
-rs <- dbGetQuery(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
+rs <- dbGetQuery(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
 
-rs <- dbGetQuery(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
+rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls OWNER TO activism")
