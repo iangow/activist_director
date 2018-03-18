@@ -5,6 +5,7 @@ pg <- dbConnect(PostgreSQL())
 dbGetQuery(pg, "SET work_mem='8GB'")
 
 dbGetQuery(pg, "SET search_path='activist_director'")
+
 dbGetQuery(pg, "DROP TABLE IF EXISTS activism_events")
 
 activism_sample <- tbl(pg, sql("SELECT * FROM activism_sample"))
@@ -58,7 +59,6 @@ matched <-
     compute(name = "activism_events", temporary = FALSE)
 
 sql <- paste0("
-
     ALTER TABLE activism_events OWNER TO activism;
 
     COMMENT ON TABLE activism_events IS

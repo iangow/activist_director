@@ -49,13 +49,11 @@ runSQL('code/create_activism_sample.sql')
 source('code/create_activism_events.R', echo=TRUE)
 
 # runSQL('code/create_first_voting.sql')
-source('code/create_activist_director_equilar.R', echo=TRUE)
+source('code/create_activist_director_dplyr.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
-runSQL('code/create_outcome_controls.sql')
-pg_comment("activist_director.outcome_controls",
-           "CREATED USING create_outcome_controls.sql")
+source('code/create_outcome_controls.R', echo=TRUE)
 
 source('code/import_spinoff_divestiture_ciq.R', echo=TRUE)

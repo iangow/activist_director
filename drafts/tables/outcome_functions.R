@@ -132,9 +132,9 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
         rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
     }
   if (include.lag) {
-    lhs <- paste0(the.var,"_p3")
+    lhs <- paste0(the.var,"_p2")
   } else if (changes) {
-    lhs <- paste0("(", the.var,"_p3 - ", the.var, ")")
+    lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
   } else {
     lhs <- the.var
   }

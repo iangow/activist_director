@@ -16,8 +16,8 @@ activist_director.activism_events <-
     tbl(pg, sql("SELECT * FROM activism_events"))
 activist_director_equilar <-
     tbl(pg, sql("SELECT * FROM activist_director_equilar"))
-activist_equilar_hbs.director_index_names <-
-    tbl(pg, sql("SELECT * FROM equilar_hbs.director_index_names"))
+activist_equilar_hbs.director_index <-
+    tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
 boardex.director_characteristics <-
     tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
 boardex.board_characteristics <-
@@ -132,95 +132,95 @@ dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
 
 dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
 
-# Create BoardEx link table ----
-
-be_cusips <-
-    boardex.company_profile_stocks %>%
-    # We end up inner_joining on CUSIP, so filter eliminates observations
-    # that wont match in any case.
-    filter(substr(isin, 1L, 2L)=='US') %>%
-    mutate(cusip = substr(isin, 3L, 10L)) %>%
-    select(boardid, cusip) %>%
-    distinct() %>%
-    compute()
-
-be_directors <-
-    boardex.director_characteristics %>%
-    filter(row_type=='Board Member', !is.na(annual_report_date)) %>%
-    select(boardid, annual_report_date, directorid, director_name) %>%
-    rename(directorname = director_name) %>%
-    inner_join(activist_equilar_hbs.director_index_names) %>%
-    select(-prefix, -suffix)
-
-boardex <-
-    be_directors %>%
-    inner_join(be_cusips, by = "boardid") %>%
-    inner_join(permnos, by = "cusip")
-
-first_name_years <-
-    boardex %>%
-    group_by(boardid, directorid) %>%
-    summarize(annual_report_date = min(annual_report_date))
-
-boardex_final <-
-    first_name_years %>%
-    inner_join(boardex, by = c("boardid", "directorid", "annual_report_date")) %>%
-    select(boardid, directorid, annual_report_date,
-           last_name, first_name, permno, permco) %>%
-    mutate(first_name_l = lower(first_name),
-           last_name_l = lower(last_name)) %>%
-    mutate(first1 = substr(first_name_l, 1L, 1L),
-           first2 = substr(first_name_l, 1L, 2L)) %>%
-    select(-first_name, -last_name) %>%
-    distinct() %>%
-    compute()
-
-match_1 <-
-    activist_directors %>%
-    inner_join(boardex_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, first_name, last_name, boardid, directorid) %>%
-    compute()
-
-match_2 <-
-    activist_directors %>%
-    inner_join(boardex_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, first_name, last_name, boardid, directorid)
-
-match_3 <-
-    activist_directors %>%
-    inner_join(boardex_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, first_name, last_name, boardid, directorid)
-
-match_4 <-
-    activist_directors %>%
-    inner_join(boardex_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, first_name, last_name, boardid, directorid)
-
-match_a <-
-    match_1 %>%
-    union(match_2 %>%
-              anti_join(match_1,
-                        by=c("campaign_id", "first_name", "last_name")))
-match_b <-
-    match_a %>%
-    union(match_3 %>%
-              anti_join(match_a,
-                        by=c("campaign_id", "first_name", "last_name"))) %>%
-    compute()
-
-dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex")
-
-activist_director_boardex <-
-    match_b %>%
-    union(match_4 %>%
-              anti_join(match_b,
-                        by=c("campaign_id", "first_name", "last_name"))) %>%
-    compute(name = "activist_director_boardex", temporary=FALSE)
-
-dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex IS
-                'CREATED USING activist_director_dplyr.R'")
-
-dbGetQuery(pg, "ALTER TABLE activist_director_boardex OWNER TO activism")
-# boardex.board_characteristics isn't doing anything
-
-dbDisconnect(pg)
+# # Create BoardEx link table ----
+#
+# be_cusips <-
+#     boardex.company_profile_stocks %>%
+#     # We end up inner_joining on CUSIP, so filter eliminates observations
+#     # that wont match in any case.
+#     filter(substr(isin, 1L, 2L)=='US') %>%
+#     mutate(cusip = substr(isin, 3L, 10L)) %>%
+#     select(boardid, cusip) %>%
+#     distinct() %>%
+#     compute()
+#
+# be_directors <-
+#     boardex.director_characteristics %>%
+#     filter(row_type=='Board Member', !is.na(annual_report_date)) %>%
+#     select(boardid, annual_report_date, directorid, director_name) %>%
+#     rename(directorname = director_name) %>%
+#     inner_join(activist_equilar_hbs.director_index) %>%
+#     select(-prefix, -suffix)
+#
+# boardex <-
+#     be_directors %>%
+#     inner_join(be_cusips, by = "boardid") %>%
+#     inner_join(permnos, by = "cusip")
+#
+# first_name_years <-
+#     boardex %>%
+#     group_by(boardid, directorid) %>%
+#     summarize(annual_report_date = min(annual_report_date))
+#
+# boardex_final <-
+#     first_name_years %>%
+#     inner_join(boardex, by = c("boardid", "directorid", "annual_report_date")) %>%
+#     select(boardid, directorid, annual_report_date,
+#            last_name, first_name, permno, permco) %>%
+#     mutate(first_name_l = lower(first_name),
+#            last_name_l = lower(last_name)) %>%
+#     mutate(first1 = substr(first_name_l, 1L, 1L),
+#            first2 = substr(first_name_l, 1L, 2L)) %>%
+#     select(-first_name, -last_name) %>%
+#     distinct() %>%
+#     compute()
+#
+# match_1 <-
+#     activist_directors %>%
+#     inner_join(boardex_final, by=c("permco", "last_name_l", "first_name_l")) %>%
+#     select(campaign_id, first_name, last_name, boardid, directorid) %>%
+#     compute()
+#
+# match_2 <-
+#     activist_directors %>%
+#     inner_join(boardex_final, by=c("permco", "last_name_l", "first2")) %>%
+#     select(campaign_id, first_name, last_name, boardid, directorid)
+#
+# match_3 <-
+#     activist_directors %>%
+#     inner_join(boardex_final, by=c("permco", "last_name_l", "first1")) %>%
+#     select(campaign_id, first_name, last_name, boardid, directorid)
+#
+# match_4 <-
+#     activist_directors %>%
+#     inner_join(boardex_final, by=c("permco", "last_name_l")) %>%
+#     select(campaign_id, first_name, last_name, boardid, directorid)
+#
+# match_a <-
+#     match_1 %>%
+#     union(match_2 %>%
+#               anti_join(match_1,
+#                         by=c("campaign_id", "first_name", "last_name")))
+# match_b <-
+#     match_a %>%
+#     union(match_3 %>%
+#               anti_join(match_a,
+#                         by=c("campaign_id", "first_name", "last_name"))) %>%
+#     compute()
+#
+# dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_boardex")
+#
+# activist_director_boardex <-
+#     match_b %>%
+#     union(match_4 %>%
+#               anti_join(match_b,
+#                         by=c("campaign_id", "first_name", "last_name"))) %>%
+#     compute(name = "activist_director_boardex", temporary=FALSE)
+#
+# dbGetQuery(pg, "COMMENT ON TABLE activist_director_boardex IS
+#                 'CREATED USING activist_director_dplyr.R'")
+#
+# dbGetQuery(pg, "ALTER TABLE activist_director_boardex OWNER TO activism")
+# # boardex.board_characteristics isn't doing anything
+#
+# dbDisconnect(pg)
