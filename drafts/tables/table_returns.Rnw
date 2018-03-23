@@ -9,279 +9,16 @@ library(lmtest)
 library(sandwich)
 @
 
-<<ff_data_step, include=FALSE>>=
+<<ret_data_step, include=FALSE>>==
 ## PostgreSQL Connection
 library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
-#### Combine Fama_French Abnormal Returns with Raw, Size-Adjusted, and Market-Adjusted Returns
-
-## Step 1. Calculating Fama-French Abnormal Returns
-events <- dbGetQuery(pg, "
-     SET work_mem='10GB';
-
-    WITH sharkwatch AS (
-       SELECT DISTINCT permno, eff_announce_date,
-            dissident_group, end_date,
-            date_original_13d_filed, big_investment,
-            num_activist_directors, num_affiliate_directors,
-            proxy_fight, proxy_fight_went_definitive, proxy_fight_went_the_distance,
-            affiliated, elected, first_appointment_date,
-            early, delisted_p1, delisted_p2, delisted_p3,
-            category, inv_value, activist_director, activist_demand, activism
-       FROM activist_director.activism_events
-       WHERE dlstdt >= eff_announce_date OR dlstdt IS NULL),
-
-    me06 AS (
-        SELECT DISTINCT permno, date,
-            extract(year from date) AS year, abs(prc)*shrout/1000 AS me
-        FROM crsp.msf
-        WHERE extract(month from date) = 6),
-
-    me12 AS (
-        SELECT DISTINCT permno, date,
-            extract(year from date) AS year, abs(prc)*shrout/1000 AS me
-        FROM crsp.msf
-        WHERE extract(month from date) = 12),
-
-    be AS (
-        SELECT DISTINCT lpermno AS permno, datadate, fyear, fyr, ceq AS be
-        FROM comp.funda AS a
-        INNER JOIN crsp.ccmxpf_linktable AS b
-        ON a.gvkey=b.gvkey
-            AND a.datadate >= b.linkdt AND (a.datadate <= b.linkenddt OR b.linkenddt IS NULL)
-            AND b.USEDFLAG='1' AND linkprim IN ('C','P')
-        WHERE indfmt='INDL' AND consol='C' AND popsrc='D' AND datafmt='STD'),
-
-    beme_me AS (
-        SELECT DISTINCT a.permno, a.year, a.date AS date_me06,
-            b.date AS date_me12, datadate AS date_be, fyear, a.me,
-            CASE WHEN c.be > 0 AND b.me > 0 THEN c.be/b.me END AS beme
-        FROM me06 AS a
-        LEFT JOIN me12 AS b
-        ON a.permno=b.permno AND a.year=b.year+1
-        LEFT JOIN be AS c
-        ON a.permno=c.permno AND a.year=c.fyear+1),
-
-    beme_me_2 AS (
-        SELECT DISTINCT permno, year, me,
-            COALESCE(beme, lag(beme,1) OVER w, lag(beme,2) OVER w) AS beme
-        FROM beme_me
-        WINDOW w AS (PARTITION BY permno ORDER BY year)),
-
-    ff_port AS (
-        SELECT DISTINCT a.*,
-            CASE WHEN me <= c.p20 THEN 1
-                WHEN me > c.p20 AND me <= c.p40 THEN 2
-                WHEN me > c.p40 AND me <= c.p60 THEN 3
-                WHEN me > c.p60 AND me <= c.p80 THEN 4
-                WHEN me > c.p80 THEN 5 END AS me_portfolio,
-            CASE WHEN beme <= b.p20 THEN 1
-                WHEN beme > b.p20 AND beme <= b.p40 THEN 2
-                WHEN beme > b.p40 AND beme <= b.p60 THEN 3
-                WHEN beme > b.p60 AND beme <= b.p80 THEN 4
-                WHEN beme > b.p80 THEN 5
-            END AS beme_portfolio
-        FROM beme_me_2 AS a
-        LEFT JOIN ff.beme AS b
-        ON a.year=b.year
-        LEFT JOIN ff.me AS c
-        ON a.year=c.year AND c.month = 6),
-
-    permno AS (
-        SELECT DISTINCT a.permno
-        FROM crsp.msf AS a
-        INNER JOIN sharkwatch AS b
-        ON a.permno=b.permno),
-
-    date AS (
-        SELECT DISTINCT date
-        FROM crsp.msf),
-
-    permno_date AS (
-        SELECT permno, date
-        FROM permno AS a, date AS b),
-
-    returns AS (
-        SELECT DISTINCT a.permno, a.date, abs(prc) AS prc, shrout,
-            ret, c.dlret, d.dlstdt, vwretd,
-            CASE WHEN ret IS NOT NULL OR c.dlret IS NOT NULL
-                THEN coalesce(ret,0)+coalesce(c.dlret,0)
-            END AS return
-        FROM permno_date AS a
-        LEFT JOIN crsp.msf AS b
-        ON a.permno=b.permno AND a.date=b.date
-        LEFT JOIN crsp.msedelist AS c
-        ON a.permno=c.permno AND eomonth(a.date)=eomonth(c.dlstdt)
-        LEFT JOIN crsp.msedelist AS d
-        ON a.permno=d.permno
-        LEFT JOIN crsp.msi AS e
-        ON a.date=e.date),
-
-    ff_returns AS (
-        SELECT DISTINCT a.*,
-            b.beme_portfolio, b.me_portfolio, c.vwret, c.ewret
-        FROM returns AS a
-        LEFT JOIN ff_port AS b
-        ON a.permno=b.permno AND extract(year from a.date)=b.year
-        LEFT JOIN ff.ff25_mo AS c
-        ON extract(year FROM a.date)=c.year
-        AND extract(month FROM a.date)=c.month
-        AND b.beme_portfolio=c.beme AND b.me_portfolio=c.me),
-
-    last_date AS (
-        SELECT max(date) AS maxdate
-        FROM crsp.msi),
-
-    compounded AS (
-        SELECT DISTINCT permno, date, return,
-                product((1+COALESCE(return, vwret))) OVER w_m1 -
-                product((1+vwret)) OVER w_m1 AS ab_vwret_m1,
-                product((1+COALESCE(return, ewret))) OVER w_m1 -
-                product((1+ewret)) OVER w_m1 AS ab_ewret_m1,
-
-            CASE WHEN date + interval '1 year' <= maxdate THEN
-                product((1+COALESCE(return, vwret))) OVER w_p1 -
-                product((1+vwret)) OVER w_p1 END AS ab_vwret_p1,
-            CASE WHEN date + interval '1 year' <= maxdate THEN
-                product((1+COALESCE(return, ewret))) OVER w_p1 -
-                product((1+ewret)) OVER w_p1 END AS ab_ewret_p1,
-            CASE WHEN date + interval '3 years' <= maxdate THEN
-                product((1+COALESCE(return, vwret))) OVER w_p3 -
-                product((1+vwret)) OVER w_p3 END AS ab_vwret_p3,
-            CASE WHEN date + interval '3 years' <= maxdate THEN
-                product((1+COALESCE(return, ewret))) OVER w_p3 -
-                product((1+ewret)) OVER w_p3 END AS ab_ewret_p3
-        FROM ff_returns, last_date
-        WINDOW
-            w_m1 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN 12 PRECEDING AND 1 PRECEDING),
-            w_p1 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN CURRENT ROW AND 12 FOLLOWING),
-            w_p2 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN CURRENT ROW AND 24 FOLLOWING),
-            w_p3 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN CURRENT ROW AND 36 FOLLOWING),
-            w_p4 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN CURRENT ROW AND 48 FOLLOWING),
-            w_p5 AS (PARTITION BY permno ORDER BY date ROWS BETWEEN CURRENT ROW AND 60 FOLLOWING)),
-
-    ff_ann AS (
-        SELECT DISTINCT a.*,
-            b.ab_vwret_m1, b.ab_ewret_m1,
-            b.ab_vwret_p1, b.ab_ewret_p1,
-            b.ab_vwret_p3, b.ab_ewret_p3
-        FROM sharkwatch AS a
-        LEFT JOIN compounded AS b
-        ON a.permno=b.permno
-            AND extract(year FROM a.eff_announce_date) = extract(year FROM b.date)
-            AND extract(month FROM a.eff_announce_date) = extract(month FROM b.date)),
-
-    ff_appt AS (
-        SELECT DISTINCT a.permno, a.eff_announce_date, a.dissident_group,
-            b.ab_vwret_p1, b.ab_ewret_p1,
-            b.ab_vwret_p3, b.ab_ewret_p3
-        FROM sharkwatch AS a
-        INNER JOIN compounded AS b
-        ON a.permno=b.permno
-            AND extract(year FROM a.first_appointment_date) = extract(year FROM b.date)
-            AND extract(month FROM a.first_appointment_date) = extract(month FROM b.date)
-        WHERE category='activist_director')
-
-    SELECT DISTINCT a.*,
-        b.ab_vwret_p1 AS ab_vwret_appt_p1,
-        b.ab_ewret_p1 AS ab_ewret_appt_p1,
-        b.ab_vwret_p3 AS ab_vwret_appt_p3,
-        b.ab_ewret_p3 AS ab_ewret_appt_p3
-    FROM ff_ann AS a
-    LEFT JOIN ff_appt AS b
-    ON a.permno=b.permno AND a.eff_announce_date=b.eff_announce_date
-        AND a.dissident_group=b.dissident_group
-    ORDER BY permno, dissident_group, eff_announce_date
-")
+merged <- dbGetQuery(pg, "SELECT * FROM activist_director.event_returns")
 
 rs <- dbDisconnect(pg)
-@
-
-<<ret_data_step, include=FALSE, dependson="ff_data_step">>==
-source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsDaily.R")
-source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsMonthly.R")
-# -12 to -1 months (activism)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=-12, end.month=0)
-names(ret.data.m) <- c("permno", "eff_announce_date", "ret_m1", "ret_mkt_m1", "ret_sz_m1")
-merged <- merge(events, ret.data.m, by = c("permno", "eff_announce_date"), all = TRUE)
-
-# 0 - 12 months (Activism)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=12)
-names(ret.data.m) <- c("permno", "eff_announce_date", "ret_p1", "ret_mkt_p1", "ret_sz_p1")
-merged <- merge(merged, ret.data.m, by = c("permno", "eff_announce_date"), all = TRUE)
-
-# 0 to 24 months (activism)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=24)
-names(ret.data.m) <- c("permno", "eff_announce_date", "ret_p2", "ret_mkt_p2", "ret_sz_p2")
-merged <- merge(merged, ret.data.m, by = c("permno", "eff_announce_date"), all = TRUE)
-
-# 0 - 36 months (Activism)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=36)
-names(ret.data.m) <- c("permno", "eff_announce_date", "ret_p3", "ret_mkt_p3", "ret_sz_p3")
-merged <- merge(merged, ret.data.m, by = c("permno", "eff_announce_date"), all = TRUE)
-
-# 0 - 12 months (Since First Appointment Date)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$first_appointment_date,
-                                     start.month=0, end.month=12)
-names(ret.data.m) <- c("permno", "first_appointment_date", "ret_p1_appt",
-                       "ret_mkt_p1_appt", "ret_sz_p1_appt")
-merged <- merge(merged, ret.data.m, by = c("permno", "first_appointment_date"), all = TRUE)
-
-# 0 - 24 months (Since First Appointment Date)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$first_appointment_date,
-                                     start.month=0, end.month=24)
-names(ret.data.m) <- c("permno", "first_appointment_date", "ret_p2_appt",
-                       "ret_mkt_p2_appt", "ret_sz_p2_appt")
-merged <- merge(merged, ret.data.m, by = c("permno", "first_appointment_date"), all = TRUE)
-
-# 0 - 36 months (Since First Appointment Date)
-ret.data.m <- getEventReturnsMonthly(events$permno, events$first_appointment_date,
-                                     start.month=0, end.month=36)
-names(ret.data.m) <- c("permno", "first_appointment_date", "ret_p3_appt",
-                       "ret_mkt_p3_appt", "ret_sz_p3_appt")
-merged <- merge(merged, ret.data.m, by = c("permno", "first_appointment_date"), all = TRUE)
-
-# Around Appointment Date
-ret.data.d <- getEventReturns(events$permno, events$first_appointment_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_appt")
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d,
-                by.x= c("permno", "first_appointment_date"),
-                by.y= c("permno", "event_date"), all.x = TRUE)
-
-# Around 13D filing (or announcement) date
-ret.data.d <- getEventReturns(events$permno, events$eff_announce_date,
-                              days.before=-20, days.after=20,
-                              label="ret_d_alt_ann")
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d,
-                by.x= c("permno", "eff_announce_date"),
-                by.y= c("permno", "event_date"), all.x = TRUE)
-
-# Announcement Date to Appointment Date
-ret.data.d <- getEventReturns(events$permno, events$eff_announce_date,
-                              end.event.date=events$first_appointment_date)
-names(ret.data.d) <- c("permno", "eff_announce_date", "first_appointment_date", "ret_ann_appt",
-                       "ret_mkt_ann_appt", "ret_sz_ann_appt")
-merged <- merge(merged, ret.data.d,
-                by = c("permno", "eff_announce_date", "first_appointment_date"),
-                all = TRUE)
 
 merged$category <- as.factor(merged$category)
-merged$affiliated <- as.factor(merged$affiliated)
-merged$early <- as.factor(merged$early)
-merged$delisted_p1 <- as.factor(merged$delisted_p1)
-merged$delisted_p2 <- as.factor(merged$delisted_p2)
-merged$delisted_p3 <- as.factor(merged$delisted_p3)
-merged$merged_p1 <- merged$delisted_p1=="merged"
-merged$merged_p2 <- merged$delisted_p2=="merged"
-merged$merged_p3 <- merged$delisted_p3=="merged"
 @
 
 <<return_functions, include=FALSE, message=FALSE>>=
@@ -412,45 +149,40 @@ reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
 rhs <- "category"
 @
 
+<<returns_panel_a, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
+caption <- "Panel A: Days $-1$ to $+1$ around announcement of activism."
+lhs.vars <- c("ret_d_annc", "ret_d_annc_mkt", "ret_d_annc_sz")
+out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
+@
+
 <<returns_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel A: Days $-20$ to $+20$ around announcement of activism."
-lhs.vars <- c("ret_d_alt_ann", "ret_d_alt_ann_mkt", "ret_d_alt_ann_sz")
+caption <- "Panel B: Long-term returns around announcement of activism."
+lhs.vars <- c("ret_annc_m12p0_sz", "ret_annc_m0p12_sz", "ret_annc_m0p24_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
 <<returns_panel_c, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel B: Days $-1$ to $+1$ around appointment."
+caption <- "Panel C: Days $-1$ to $+1$ around announcement of settlement."
+lhs.vars <- c("ret_d_any_sett", "ret_d_any_sett_mkt", "ret_d_any_sett_sz")
+out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
+@
+
+% \clearpage
+<<return_data_prep_appt, cache=TRUE, dependson="ret_data_step", results='asis'>>=
+reg.data <- subset(merged, !is.na(ret_d_appt & permno!=66800)) # Drop Greenburg-AIG event
+rhs <- "1"
+@
+
+<<returns_panel_d, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
+caption <- "Panel D: Days $-1$ to $+1$ around announcement of appointment."
 lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption, ff=FALSE, use.caption=FALSE)
+out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
-% \clearpage
-<<returns_panel_d, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel C: From activism announcement (month $t$) to month $t+12$."
-lhs.vars <- c("ret_p1", "ret_mkt_p1", "ret_sz_p1", "ab_vwret_p1", "ab_ewret_p1")
-out.table(reg.data, lhs.vars, rhs=rhs, caption)
-@
-% \clearpage
-<<returns_panel_e, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel D: From activism announcement (month $t$) to month $t+36$."
-lhs.vars <- c("ret_p3", "ret_mkt_p3", "ret_sz_p3", "ab_vwret_p3", "ab_ewret_p3")
-out.table(reg.data, lhs.vars, rhs=rhs, caption)
-@
-
-% \clearpage
-<<returns_panel_f, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel E: From activist appointment date (month $t$) to month $t+12$."
-lhs.vars <- c("ret_p1_appt", "ret_mkt_p1_appt",  "ret_sz_p1_appt", "ab_vwret_appt_p1",
-              "ab_ewret_appt_p1")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption, use.caption=FALSE)
-@
-
-% \clearpage
-<<returns_panel_g, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel F: From activist appointment date (month $t$) to month $t+36$."
-lhs.vars <- c("ret_p3_appt", "ret_mkt_p3_appt", "ret_sz_p3_appt", "ab_vwret_appt_p3",
-              "ab_ewret_appt_p3")
-out.table(reg.data, lhs.vars, rhs="big_investment", caption)
+<<returns_panel_e, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
+caption <- "Panel E: Long-term returns around announcement of appointment."
+lhs.vars <- c("ret_appt_m12p0_sz", "ret_appt_m0p12_sz", "ret_appt_m0p24_sz")
+out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 \addtocounter{table}{1}
 % \clearpage
