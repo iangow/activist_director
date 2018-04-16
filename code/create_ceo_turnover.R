@@ -44,7 +44,7 @@ sole_ceo_firm_years <-
 # Finalize table creation ----
 dbExecute(pg, "DROP TABLE IF EXISTS ceo_turnover")
 
-ceo_panel_w_lags <-
+ceo_turnover <-
     ceos %>%
     semi_join(sole_ceo_firm_years) %>%
     group_by(company_id) %>%
@@ -53,7 +53,13 @@ ceo_panel_w_lags <-
            ceo_turnover = executive_id != lag(executive_id)) %>%
     ungroup() %>%
     filter(is.na(lag_fy_end) | lag_fy_end > sql("fy_end - interval '13 months'")) %>%
-    arrange(company_id, fy_end) %>%
+    select(company_id, fy_end, ceo_turnover) %>%
+    group_by(company_id) %>%
+    arrange(fy_end) %>%
+    mutate(ceo_turnover_p1 = lead(ceo_turnover, 1L)) %>%
+    mutate(ceo_turnover_p2 = ceo_turnover_p1 | lead(ceo_turnover, 2L)) %>%
+    mutate(ceo_turnover_p3 = ceo_turnover_p2 | lead(ceo_turnover, 3L)) %>%
+    mutate_at(vars(matches("^ceo_turnover_p")), .funs = as.integer) %>%
     compute(name = "ceo_turnover", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE ceo_turnover OWNER TO activism")
