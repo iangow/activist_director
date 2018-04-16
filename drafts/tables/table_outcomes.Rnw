@@ -125,7 +125,6 @@ Table presents regressions of variables on firm-year level activism categorical 
 \textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
 % TODO: Is it end of t or end of t+1?
 $\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$
-\textit{Perf comp} is the percentage of CEO compensation that not salary.
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
@@ -134,12 +133,11 @@ Values in parentheses are standard errors clustered by firm.
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 <<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
-lhs.vars <- list("ceo_turnover", "ceo_comp", "perf_comp")
+lhs.vars <- list("ceo_turnover", "ceo_comp")
 
 t6.pb <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
-col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$",
-                "$\\textrm{Perf comp}_{t+2}$")
+col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
 row.labels <- c("Non-board activism", "Board demand", "Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
 names(summ) <- col.labels
