@@ -47,6 +47,7 @@ ceo_data_permnos <-
     left_join(permno_links, by = c("company_id", "fy_end")) %>%
     rename(datadate = fy_end)
 
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS ceo_outcomes")
 ceo_outcomes <-
     outcome_controls %>%
     mutate(default_p2 = if_else(firm_exists_p2, FALSE, NA),

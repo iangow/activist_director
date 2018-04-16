@@ -44,20 +44,22 @@ combined_data <-
     mutate(perf_comp = if_else(comp_total > 0, 1 - 1.0*comp_salary/comp_total, NA_real_))
 
 # Create final table ----
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS ceo_comp")
+
 ceo_comp <-
     combined_data %>%
     group_by(company_id, fy_end) %>%
-    summarize(comp_total = avg(comp_total),
+    summarize(ceo_comp = avg(comp_total),
               perf_comp = avg(perf_comp)) %>%
     group_by(company_id) %>%
     arrange(fy_end) %>%
-    mutate(ceo_comp_p1 = lead(comp_total, 1L),
-           ceo_comp_p2 = lead(comp_total, 2L),
-           ceo_comp_p3 = lead(comp_total, 3L),
+    mutate(ceo_comp_p1 = lead(ceo_comp, 1L),
+           ceo_comp_p2 = lead(ceo_comp, 2L),
+           ceo_comp_p3 = lead(ceo_comp, 3L),
            perf_comp_p1 = lead(perf_comp, 1L),
            perf_comp_p2 = lead(perf_comp, 2L),
            perf_comp_p3 = lead(perf_comp, 3L)) %>%
-    mutate(ceo_comp = if_else(comp_total > 0, ln(comp_total), NA_real_),
+    mutate(ceo_comp = if_else(ceo_comp > 0, ln(ceo_comp), NA_real_),
            ceo_comp_p1 = if_else(ceo_comp_p1 > 0, ln(ceo_comp_p1), NA_real_),
            ceo_comp_p2 = if_else(ceo_comp_p2 > 0, ln(ceo_comp_p2), NA_real_),
            ceo_comp_p3 = if_else(ceo_comp_p3 > 0, ln(ceo_comp_p3), NA_real_)) %>%

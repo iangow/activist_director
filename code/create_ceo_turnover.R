@@ -59,7 +59,7 @@ ceo_turnover <-
     mutate(ceo_turnover_p1 = lead(ceo_turnover, 1L)) %>%
     mutate(ceo_turnover_p2 = ceo_turnover_p1 | lead(ceo_turnover, 2L)) %>%
     mutate(ceo_turnover_p3 = ceo_turnover_p2 | lead(ceo_turnover, 3L)) %>%
-    mutate_at(vars(matches("^ceo_turnover_p")), .funs = as.integer) %>%
+    mutate_at(vars(matches("^ceo_turnover")), .funs = as.integer) %>%
     compute(name = "ceo_turnover", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE ceo_turnover OWNER TO activism")
