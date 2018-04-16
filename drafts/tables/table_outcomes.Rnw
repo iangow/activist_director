@@ -124,7 +124,7 @@ reg.data <- winsorizeDF(reg.data, winsor.vars)
 Table presents regressions of variables on firm-year level activism categorical variables.
 \textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
 % TODO: Is it end of t or end of t+1?
-$\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$
+$\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
 Controls are as described in Table \ref{tbl:div_acq}.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
