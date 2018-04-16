@@ -105,9 +105,7 @@ rm(t6.pa)
 
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
-rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("outcome_ceo.sql"), collapse="\n")
-reg.data <- dbGetQuery(pg, sql)
+reg.data <- dbGetQuery(pg, "SELECT * FROM activist_director.ceo_outcomes")
 rs <- dbDisconnect(pg)
 
 winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
