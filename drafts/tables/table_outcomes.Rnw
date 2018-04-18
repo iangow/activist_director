@@ -99,6 +99,55 @@ rm(t6.pa)
 \end{tabularx}
 \end{table}
 
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_ceo.sql'))}
+% Panel B - CEO turnover and compensation
+<<ceo_data_step>>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+reg.data <- dbGetQuery(pg, "SELECT * FROM activist_director.ceo_outcomes")
+rs <- dbDisconnect(pg)
+
+winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
+reg.data <- winsorizeDF(reg.data, winsor.vars)
+@
+
+\newpage
+
+\begin{center}
+\begin{table}[htb]
+\caption{CEO turnover and compensation}
+\label{tbl:ceo}
+\begin{minipage}[t]{\columnwidth}
+% \begin{flushleft}
+{\small
+Table presents regressions of variables on firm-year level activism categorical variables.
+\textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
+% TODO: Is it end of t or end of t+1?
+$\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$
+Controls are as described in Table \ref{tbl:div_acq}.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+% \end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{3}{Y}}
+<<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
+lhs.vars <- list("ceo_turnover", "ceo_comp")
+
+t6.pb <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+summ <- make.fTest.table(t6.pb, reg.data)
+col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
+row.labels <- c("Non-board activism", "Board demand", "Activist director",
+                "$\\textrm{Dep. var.}_{t}$")
+names(summ) <- col.labels
+stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
+rm(t6.pb)
+@
+\end{tabularx}
+\end{table}
+\end{center}
+
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
 <<other_outcome_data_step, dependson="winsorize">>=
 
