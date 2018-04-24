@@ -158,14 +158,8 @@ lhs.vars <- c("ret_d_annc", "ret_d_annc_mkt", "ret_d_annc_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
-<<returns_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel B: Long-term returns around announcement of activism."
-lhs.vars <- c("ret_annc_m12p0_sz", "ret_annc_m0p12_sz", "ret_annc_m0p24_sz")
-out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
-@
-
 <<returns_panel_c, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
-caption <- "Panel C: Days $-1$ to $+1$ around announcement of settlement."
+caption <- "Panel B: Days $-1$ to $+1$ around announcement of settlement."
 lhs.vars <- c("ret_d_any_sett", "ret_d_any_sett_mkt", "ret_d_any_sett_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
@@ -177,13 +171,13 @@ rhs <- "1"
 @
 
 <<returns_panel_d, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
-caption <- "Panel D: Days $-1$ to $+1$ around announcement of appointment."
+caption <- "Panel C: Days $-1$ to $+1$ around announcement of appointment."
 lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
 <<returns_panel_e, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
-caption <- "Panel E: Long-term returns around announcement of appointment."
+caption <- "Panel D: Long-term returns around announcement of appointment."
 lhs.vars <- c("ret_appt_m12p0_sz", "ret_appt_m0p12_sz", "ret_appt_m0p24_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
