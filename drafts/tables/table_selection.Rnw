@@ -68,31 +68,7 @@ pg <- dbConnect(PostgreSQL())
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
 
-activism_events <- tbl(pg, "activism_events")
 outcome_controls <- tbl(pg, "outcome_controls")
-
-dissidents <-
-    activism_events %>%
-    mutate(dissident = unnest(dissidents)) %>%
-    select(dissident_group, dissident)
-
-big_dissidents <-
-    activism_events %>%
-    inner_join(dissidents) %>%
-    group_by(dissident) %>%
-    summarize(activism = sum(as.integer(activism), na.rm = TRUE),
-           activist_demand = sum(as.integer(activist_demand), na.rm = TRUE),
-           activist_director = sum(as.integer(activist_director), na.rm = TRUE)) %>%
-    mutate(activist_demand_over_activism =
-               if_else(activism > 0, activist_demand*1.0/activism, 0),
-           demanding_activist = activism > 2 & activist_demand*1.0/activism > 0.50)
-    # May need coalesce for demanding_activist
-
-dissident_names <-
-    dissidents %>%
-    inner_join(big_dissidents, by = "dissident") %>%
-    group_by(dissident_group) %>%
-    summarize(demanding_activist = bool_or(demanding_activist))
 
 min_date <-
     outcome_controls %>%
@@ -111,7 +87,6 @@ prob_activist_director <-
            analyst = coalesce(analyst, 0),
            inst = coalesce(inst, 0),
            on_boardex = !is.na(permno)) %>%
-    left_join(dissident_names, by = "dissident_group") %>%
     filter(datadate >= min_date_sql) %>%
     collect()
 
@@ -222,9 +197,6 @@ Panel B presents logit regression where the dependent variables are indicators f
      \multicolumn{3}{l}{Panel B: Activism, board demand and activist director (activism only)} \\
 <<Table_3_panelA2, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel B
-# Add demanding activst to RHS (for columns 2 & 3)
-rhs.2 <- paste(rhs.1, "big_investment")
-
 # Subset on activism
 reg.data <-
     prob_activist_director %>%
