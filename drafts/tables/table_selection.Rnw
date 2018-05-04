@@ -1,11 +1,12 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<table_3_libraries, cache=FALSE, include=FALSE>>=
+<<selection_libraries, cache=FALSE, include=FALSE>>=
 require(stargazer)
+library(dplyr, warn.conflicts = FALSE)
 @
 
-<<table_3_functions>>=
+<<selection_functions>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
@@ -45,110 +46,6 @@ getPseudoR2s <- function(a.list) {
     return(unlist(temp))
 }
 
-@
-
-<<table_3_prob_target_data, cache=TRUE, results='asis'>>=
-# PostgreSQL Connection
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
-
-## Data table
-prob_activist_director <- dbGetQuery(pg, "
-    -- Compustat with Permno
-    SET work_mem='3GB';
-
-    WITH dissidents AS (
-      SELECT dissident_group, unnest(dissidents) AS dissident
-      FROM activist_director.activism_events),
-
-    big_dissidents AS (
-        SELECT DISTINCT dissident,
-            sum(activism::INT)::INT AS activism,
-            sum(activist_demand::INT)::INT AS activist_demand,
-            sum(activist_director::INT) AS activist_director,
-            CASE WHEN sum(activism::INT) > 0
-            THEN sum(activist_demand::INT)*1.0/sum(activism::INT) ELSE 0
-            END AS activist_demand_over_activism,
-            sum(activism::INT) > 2 AND sum(activist_demand::INT)*1.0/sum(activism::INT) > 0.50
-                AS demanding_activist
-            -- CASE WHEN sum(activism::INT) > 13
-            -- THEN b.dissident ELSE NULL END AS dissident
-            -- CASE WHEN sum(market_capitalization_at_time_of_campaign) > 10000
-            -- AND sum(activism::INT) > 7 THEN b.dissident ELSE NULL END AS dissident
-      FROM activist_director.activism_events AS a
-      INNER JOIN dissidents AS b
-      USING (dissident_group)
-      GROUP BY dissident),
-
-    dissident_names AS (
-        SELECT DISTINCT a.dissident_group,
-            bool_or(demanding_activist) AS demanding_activist
-        FROM dissidents AS a
-        INNER JOIN big_dissidents AS b
-        ON a.dissident=b.dissident
-        GROUP BY dissident_group),
-
-    activism_events AS (
-        SELECT DISTINCT a.permno, a.eff_announce_date,
-            demanding_activist,
-            category, activism, activist_demand, activist_director,
-            dissident_group_ownership_percent,
-            'Hedge Fund Company' = ANY(holder_types) AS hedge_fund,
-            inv_value >= 100 AS big_investment
-        FROM activist_director.activism_events AS a
-        LEFT JOIN dissident_names AS b
-        ON a.dissident_group=b.dissident_group),
-
-    min_date AS (
-        SELECT min(eff_announce_date) AS min_date
-        FROM activism_events)
-
--- Matched with activism events (datadate BETWEEN eff_announce_date - 1 year AND eff_announce_date)
-    SELECT DISTINCT a.permno, a.datadate, a.fyear,
-        COALESCE(b.category, '_none') AS category,
-        COALESCE(b.activism, FALSE) AS activism,
-        COALESCE(b.activist_demand, FALSE) AS activist_demand,
-        COALESCE(b.activist_director, FALSE) AS activist_director,
-        dissident_group_ownership_percent,
-        demanding_activist, hedge_fund, b.big_investment,
-        a.size_return, a.size_return_m1, a.BV, a.MV, a.BTM, a.leverage,
-        a.capex, a.dividend, a.roa, a.sale_growth,
-        a.insider_percent, a.insider_diluted_percent, a.inst_percent, a.top_10_percent,
-        a.majority, a.dual_class,
-        COALESCE(a.analyst, 0) AS analyst, COALESCE(a.inst,0) AS inst,
-        a.num_directors, a.outside_percent, a.age,
-        a.tenure, a.staggered_board,
-        a.permno IS NOT NULL AS on_boardex
-    FROM min_date, activist_director.outcome_controls AS a
-    LEFT JOIN activism_events AS b
-    ON a.permno=b.permno AND a.datadate
-    BETWEEN b.eff_announce_date - interval '1 year' AND b.eff_announce_date
-    WHERE a.datadate >= min_date - interval '1 year'
-")
-
-library(psych)
-
-# Update Data - Winsorization
-prob_activist_director <- within(prob_activist_director, {
-  # Winsorize variables
-  size_return <- winsor(size_return, trim=0.01)
-  size_return_m1 <- winsor(size_return_m1, trim=0.01)
-  bv <- winsor(bv, trim=0.01)
-  mv <- winsor(mv, trim=0.01)
-  btm <- winsor(btm, trim=0.01)
-  leverage <- winsor(leverage, trim=0.01)
-  capex <- winsor(capex, trim=0.01)
-  dividend <- winsor(dividend, trim=0.01)
-  roa <- winsor(roa, trim=0.01)
-  sale_growth <- winsor(sale_growth, trim=0.01)
-  analyst <- winsor(analyst, trim=0.01)
-  inst <- winsor(inst, trim=0.01)
-})
-
-rs <- dbDisconnect(pg)
-@
-
-<<prob_target_analyses, dependson='table_3_prob_target_data', results='asis'>>=
 combineVars <- function(vars) {
     paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
 }
@@ -161,11 +58,76 @@ fit.model <- function(data, lhs, rhs, cluster1) {
     fitted.cluster <- coeftest.cluster(data, fitted, cluster1=cluster1)
     return(list(fitted, fitted.cluster, pseudoR2))
 }
-
-
-
-
 @
+
+<<selection_data, cache=TRUE, results='asis'>>=
+# PostgreSQL Connection
+library(RPostgreSQL)
+pg <- dbConnect(PostgreSQL())
+
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='3GB'")
+
+activism_events <- tbl(pg, "activism_events")
+outcome_controls <- tbl(pg, "outcome_controls")
+
+dissidents <-
+    activism_events %>%
+    mutate(dissident = unnest(dissidents)) %>%
+    select(dissident_group, dissident)
+
+big_dissidents <-
+    activism_events %>%
+    inner_join(dissidents) %>%
+    group_by(dissident) %>%
+    summarize(activism = sum(as.integer(activism), na.rm = TRUE),
+           activist_demand = sum(as.integer(activist_demand), na.rm = TRUE),
+           activist_director = sum(as.integer(activist_director), na.rm = TRUE)) %>%
+    mutate(activist_demand_over_activism =
+               if_else(activism > 0, activist_demand*1.0/activism, 0),
+           demanding_activist = activism > 2 & activist_demand*1.0/activism > 0.50)
+    # May need coalesce for demanding_activist
+
+dissident_names <-
+    dissidents %>%
+    inner_join(big_dissidents, by = "dissident") %>%
+    group_by(dissident_group) %>%
+    summarize(demanding_activist = bool_or(demanding_activist))
+
+min_date <-
+    outcome_controls %>%
+    summarise(min(eff_announce_date, na.rm = TRUE)) %>%
+    pull()
+
+min_date_sql <- sql(paste0("'", min_date, "'::date - interval '1 year'"))
+
+prob_activist_director <-
+    outcome_controls %>%
+    mutate(category = coalesce(category, "_none"),
+           activism = coalesce(activism, FALSE),
+           activist_demand = coalesce(activist_demand, FALSE),
+           activist_director = coalesce(activist_director, FALSE),
+           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
+           analyst = coalesce(analyst, 0),
+           inst = coalesce(inst, 0),
+           on_boardex = !is.na(permno)) %>%
+    left_join(dissident_names, by = "dissident_group") %>%
+    filter(datadate >= min_date_sql) %>%
+    collect()
+
+rs <- dbDisconnect(pg)
+
+win01 <- function(x) psych::winsor(x, trim=0.01)
+
+win_vars <- vars(bv, mv, btm, size_return, size_return_m1, leverage,
+                 capex, dividend, roa, sale_growth, analyst, inst)
+
+# Update Data - Winsorization
+prob_activist_director <-
+    prob_activist_director %>%
+    mutate_at(win_vars, win01)
+@
+
 \begin{table}[htb]
 \caption{Activist target selection}
 \label{tbl:selection}
@@ -211,12 +173,12 @@ Panel A presents logit regression where the dependent variables are indicators f
   \end{minipage}
 \begin{tabularx}{5in}{l*{3}{Y}}
 \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
-<<Table_3_panelA, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
+<<Table_3_panelA, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A
 rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
             num_directors outside_percent age tenure staggered_board"
 
-reg.data <- subset(prob_activist_director, on_boardex)
+reg.data <- as.data.frame(prob_activist_director)
 
 t3.pa <- list()
 t3.pa[[1]] <- fit.model(data=reg.data,
@@ -258,13 +220,17 @@ Panel B presents logit regression where the dependent variables are indicators f
   \end{minipage}
     \begin{tabularx}{6.5in}{l*{3}{Y}}
      \multicolumn{3}{l}{Panel B: Activism, board demand and activist director (activism only)} \\
-<<Table_3_panelA2, dependson=c("table_3_functions", "prob_target_analyses"), results='asis'>>=
+<<Table_3_panelA2, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel B
 # Add demanding activst to RHS (for columns 2 & 3)
 rhs.2 <- paste(rhs.1, "big_investment")
 
 # Subset on activism
-reg.data <- subset(prob_activist_director, on_boardex & !is.na(category))
+reg.data <-
+    prob_activist_director %>%
+    filter(!is.na(category)) %>%
+    as.data.frame()
+
 t3.pb <- list()
 t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")
