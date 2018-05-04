@@ -228,7 +228,7 @@ rhs.2 <- paste(rhs.1, "big_investment")
 # Subset on activism
 reg.data <-
     prob_activist_director %>%
-    filter(!is.na(category)) %>%
+    filter(activism) %>%
     as.data.frame()
 
 t3.pb <- list()
