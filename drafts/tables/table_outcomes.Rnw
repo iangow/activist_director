@@ -142,10 +142,8 @@ divestiture_count <-
     mutate(divest_p2 = between(announcedate, datadate, datadate_p2),
            divest_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_divestiture_p2 = sum(as.integer(if_else(firm_exists_p2,
-                                                          coalesce(divest_p2, FALSE), NA))),
-              num_divestiture_p3 = sum(as.integer(if_else(firm_exists_p2,
-                                                          coalesce(divest_p3, FALSE), NA)))) %>%
+    summarize(num_divestiture_p2 = sum(as.integer(coalesce(divest_p2, FALSE))),
+              num_divestiture_p3 = sum(as.integer(coalesce(divest_p3, FALSE)))) %>%
     ungroup() %>%
     mutate(divestiture_p2 = num_divestiture_p2 > 0,
            divestiture_p3 = num_divestiture_p3 > 0) %>%
@@ -157,10 +155,8 @@ acquisition_count <-
     mutate(acquisition_p2 = between(announcedate, datadate, datadate_p2),
            acquisition_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_acquisition_p2 = sum(as.integer(if_else(firm_exists_p2,
-                                                          coalesce(acquisition_p2, FALSE), NA))),
-              num_acquisition_p3 = sum(as.integer(if_else(firm_exists_p2,
-                                                          coalesce(acquisition_p3, FALSE), NA)))) %>%
+    summarize(num_acquisition_p2 = sum(as.integer(coalesce(acquisition_p2, FALSE))),
+              num_acquisition_p3 = sum(as.integer(coalesce(acquisition_p3, FALSE)))) %>%
     ungroup() %>%
     mutate(acquisition_p2 = num_acquisition_p2 > 0,
            acquisition_p3 = num_acquisition_p3 > 0) %>%
@@ -172,10 +168,8 @@ spinoff_count <-
     mutate(spinoff_p2 = between(announcedate, datadate, datadate_p2),
            spinoff_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_spinoff_p2 = sum(as.integer(if_else(firm_exists_p2,
-                                                      coalesce(spinoff_p2, FALSE), NA))),
-              num_spinoff_p3 = sum(as.integer(if_else(firm_exists_p3,
-                                                      coalesce(spinoff_p3, FALSE), NA)))) %>%
+    summarize(num_spinoff_p2 = sum(as.integer(coalesce(spinoff_p2, FALSE))),
+              num_spinoff_p3 = sum(as.integer(coalesce(spinoff_p3, FALSE)))) %>%
     ungroup() %>%
     compute()
 
