@@ -53,7 +53,8 @@ combineVars <- function(vars) {
 fit.model <- function(data, lhs, rhs, cluster1) {
     model <- paste0(lhs, " ~ ", combineVars(rhs))
     fitted <- glm(model, data=data, na.action="na.exclude", family="binomial")
-    fitted_constant <- glm(paste(lhs, "~ 1"), data=reg.data, na.action="na.exclude", family="binomial")
+    fitted_constant <- glm(paste(lhs, "~ 1"), data=reg.data, na.action="na.exclude",
+                           family="binomial")
     pseudoR2 <- 1- logLik(fitted)[[1]]/logLik(fitted_constant)[[1]]
     fitted.cluster <- coeftest.cluster(data, fitted, cluster1=cluster1)
     return(list(fitted, fitted.cluster, pseudoR2))
@@ -142,7 +143,11 @@ prob_activist_director <-
             \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-Panel A presents logit regression where the dependent variables are indicators for being targeted for activism in any category (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1), being the target of an activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3). Sample includes firm-years with and without activism.
+Panel A presents logit regression where the dependent variables are indicators for
+being targeted for activism in any category
+(\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
+being the target of an activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3).
+Sample includes firm-years with and without activism.
     \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -169,7 +174,8 @@ stargazer(getFitted(t3.pa),
                             "Activist director"),
         covariate.labels = c("Analyst", "Inst","Size-adj. ret","Market value","Book-to-market",
                               "Leverage","Payout","ROA","Sales growth",
-                              "Num. directors", "Outside percent","Age","Tenure","Staggered board"),
+                              "Num. directors", "Outside percent", "Age", "Tenure",
+                             "Staggered board"),
         se= getSEs(t3.pa),
         p= getPs(t3.pa),
        float=FALSE, align=TRUE, font.size="small",
