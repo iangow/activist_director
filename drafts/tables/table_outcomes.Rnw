@@ -18,13 +18,6 @@ library(psych)
 # Winsorize selected variables in a data frame
 win01 <- function(x) psych::winsor(x, trim=0.01)
 
-winsorizeDF <- function(data, vars) {
-    for (var in vars) {
-        data[, var] <- winsor(data[ , var], trim=0.01)
-    }
-    return(data)
-}
-
 controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
                   "num_directors outside_percent staggered_board log_at")
 
@@ -265,11 +258,20 @@ rm(t6.pa)
 
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
-reg.data <- dbGetQuery(pg, "SELECT * FROM activist_director.ceo_outcomes")
-rs <- dbDisconnect(pg)
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+ceo_outcomes <- tbl(pg, "ceo_outcomes")
 
 winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
-reg.data <- winsorizeDF(reg.data, winsor.vars)
+
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    ceo_outcomes %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
 @
 
 \newpage
@@ -309,14 +311,18 @@ rm(t6.pb)
 \end{center}
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
+
 <<other_outcome_data_step, dependson="winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(PostgreSQL())
-rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("other_outcomes.sql"), collapse="\n")
-reg.data <- dbGetQuery(pg, sql)
-rs <- dbDisconnect(pg)
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='5GB'")
+
+outcome_controls <- tbl(pg, "outcome_controls")
+activist_director_years <- tbl(pg, "activist_director_years")
+outcomes <-
+    tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
@@ -324,8 +330,19 @@ winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
                         paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"),
                         paste0(lhs.vars, "_p3")))
 
-reg.data <- winsorizeDF(reg.data, winsor.vars)
-reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    outcome_controls %>%
+    inner_join(outcomes, by = c("gvkey", "datadate")) %>%
+    inner_join(activist_director_years, by = c("permno", "datadate")) %>%
+    filter(firm_exists_p2) %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    mutate(activism = if_else(category=="_none", FALSE, TRUE)) %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
 @
 
 % Financing and investment

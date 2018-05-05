@@ -22,17 +22,13 @@ WITH compustat AS (
         CASE
             WHEN txfed IS NOT NULL THEN txfed + COALESCE(txs,0)
             WHEN txfo IS NOT NULL AND txt-txdi IS NOT NULL THEN txt-txdi-txfo
-            ELSE NULL END AS txfed,
-        -- CASE statements are evaluated in order, so txfo IS NULL is
-        -- redundant
+            END AS txfed,
         CASE
             WHEN txfo IS NOT NULL THEN txfo
             WHEN txfed = txt-txdi THEN 0
             WHEN pidom = pi THEN 0
             ELSE txt-txdi-txfo
         END AS txfo,
-        -- I think COALESCE is much easier than elaborate (but equivalent)
-        -- CASE statements
         COALESCE(txt-txdi, txfed + COALESCE(txs,0) + txfo) AS txww,
         COALESCE(pifo, pi - pidom) AS pifo,
         COALESCE(pidom, pi - pifo) AS pidom,
@@ -88,58 +84,41 @@ compustat_w_lags AS (
         p2 AS (PARTITION BY gvkey ORDER BY datadate
                 ROWS BETWEEN 1 FOLLOWING AND 2 FOLLOWING),
         p3 AS (PARTITION BY gvkey ORDER BY datadate
-                ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING)),
+                ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING))
 
-outcomes AS (
-    SELECT gvkey, datadate,
-        -- CASE WHEN at > 0 THEN che/at END AS cash,
-        CASE WHEN at > 0 THEN xrd/at END AS rnd_cum,
-        CASE WHEN at > 0 THEN xad/at END AS adv_cum,
-        CASE WHEN at > 0 THEN capx/at END AS capex_cum,
+SELECT gvkey, datadate,
+    CASE WHEN at > 0 THEN xrd/at END AS rnd_cum,
+    CASE WHEN at > 0 THEN xad/at END AS adv_cum,
+    CASE WHEN at > 0 THEN capx/at END AS capex_cum,
 
-        CASE WHEN at > 0 THEN che_p1/at END AS cash_p1,
-        CASE WHEN oibdp_cum_p1 > 0
-            THEN (dvc_cum_p1 + prstkc_cum_p1 - pstkrv_cum_p1)/oibdp_cum_p1 END AS payout_p1,
-        -- CASE WHEN dltt+dlc+ceq > 0 THEN (dltt+dlc)/(dltt+dlc+ceq) END AS lev,
-        CASE WHEN dltt_p1 + dlc_p1 + ceq_p1 > 0
-            THEN (dltt_p1 + dlc_p1)/(dltt_p1 + dlc_p1 + ceq_p1)
-        END AS leverage_p1,
-        CASE WHEN at > 0 THEN (xrd_cum_p1)/at END AS rnd_cum_p1,
-        CASE WHEN at > 0 THEN (xad_cum_p1)/at END AS adv_cum_p1,
-        CASE WHEN at > 0 THEN (capx_cum_p1)/at END AS capex_cum_p1,
+    CASE WHEN at > 0 THEN che_p1/at END AS cash_p1,
+    CASE WHEN oibdp_cum_p1 > 0
+        THEN (dvc_cum_p1 + prstkc_cum_p1 - pstkrv_cum_p1)/oibdp_cum_p1 END AS payout_p1,
+    CASE WHEN dltt_p1 + dlc_p1 + ceq_p1 > 0
+        THEN (dltt_p1 + dlc_p1)/(dltt_p1 + dlc_p1 + ceq_p1)
+    END AS leverage_p1,
+    CASE WHEN at > 0 THEN (xrd_cum_p1)/at END AS rnd_cum_p1,
+    CASE WHEN at > 0 THEN (xad_cum_p1)/at END AS adv_cum_p1,
+    CASE WHEN at > 0 THEN (capx_cum_p1)/at END AS capex_cum_p1,
 
-        CASE WHEN at > 0 THEN che_p2/at END AS cash_p2,
-        CASE WHEN oibdp_cum_p2 > 0
-            THEN (dvc_cum_p2 + prstkc_cum_p2 - pstkrv_cum_p2)/oibdp_cum_p2 END AS payout_p2,
-        -- CASE WHEN dltt+dlc+ceq > 0 THEN (dltt+dlc)/(dltt+dlc+ceq) END AS lev,
-        CASE WHEN dltt_p2 + dlc_p2 + ceq_p2 > 0
-            THEN (dltt_p2 + dlc_p2)/(dltt_p2 + dlc_p2 + ceq_p2)
-        END AS leverage_p2,
-        CASE WHEN at > 0 THEN (xrd_cum_p2)/at END AS rnd_cum_p2,
-        CASE WHEN at > 0 THEN (xad_cum_p2)/at END AS adv_cum_p2,
-        CASE WHEN at > 0 THEN (capx_cum_p2)/at END AS capex_cum_p2,
+    CASE WHEN at > 0 THEN che_p2/at END AS cash_p2,
+    CASE WHEN oibdp_cum_p2 > 0
+        THEN (dvc_cum_p2 + prstkc_cum_p2 - pstkrv_cum_p2)/oibdp_cum_p2 END AS payout_p2,
+    -- CASE WHEN dltt+dlc+ceq > 0 THEN (dltt+dlc)/(dltt+dlc+ceq) END AS lev,
+    CASE WHEN dltt_p2 + dlc_p2 + ceq_p2 > 0
+        THEN (dltt_p2 + dlc_p2)/(dltt_p2 + dlc_p2 + ceq_p2)
+    END AS leverage_p2,
+    CASE WHEN at > 0 THEN (xrd_cum_p2)/at END AS rnd_cum_p2,
+    CASE WHEN at > 0 THEN (xad_cum_p2)/at END AS adv_cum_p2,
+    CASE WHEN at > 0 THEN (capx_cum_p2)/at END AS capex_cum_p2,
 
-        CASE WHEN at > 0 THEN che_p3/at END AS cash_p3,
-        CASE WHEN oibdp_cum_p3 > 0
-            THEN (dvc_cum_p3 + prstkc_cum_p3 - pstkrv_cum_p3)/oibdp_cum_p3 END AS payout_p3,
-        -- CASE WHEN dltt+dlc+ceq > 0 THEN (dltt+dlc)/(dltt+dlc+ceq) END AS lev,
-        CASE WHEN dltt_p3 + dlc_p3 + ceq_p3 > 0
-            THEN (dltt_p3 + dlc_p3)/(dltt_p3 + dlc_p3 + ceq_p3)
-        END AS leverage_p3,
-        CASE WHEN at > 0 THEN (xrd_cum_p3)/at END AS rnd_cum_p3,
-        CASE WHEN at > 0 THEN (xad_cum_p3)/at END AS adv_cum_p3,
-        CASE WHEN at > 0 THEN (capx_cum_p3)/at END AS capex_cum_p3
-    FROM compustat_w_lags)
-
-SELECT DISTINCT a.*, rnd_cum, adv_cum, capex_cum,
-		cash_p1, payout_p1, leverage_p1, rnd_cum_p1, adv_cum_p1, capex_cum_p1,
-		cash_p2, payout_p2, leverage_p2, rnd_cum_p2, adv_cum_p2, capex_cum_p2,
-		cash_p3, payout_p3, leverage_p3, rnd_cum_p3, adv_cum_p3, capex_cum_p3,
-		b.ad_on_board
-FROM activist_director.outcome_controls AS a
-INNER JOIN outcomes AS h
-USING (gvkey, datadate)
-INNER JOIN activist_director.activist_director_years AS b
-ON a.permno=b.permno AND a.datadate=b.datadate
-WHERE firm_exists_p2
-ORDER BY gvkey, datadate;
+    CASE WHEN at > 0 THEN che_p3/at END AS cash_p3,
+    CASE WHEN oibdp_cum_p3 > 0
+        THEN (dvc_cum_p3 + prstkc_cum_p3 - pstkrv_cum_p3)/oibdp_cum_p3 END AS payout_p3,
+    CASE WHEN dltt_p3 + dlc_p3 + ceq_p3 > 0
+        THEN (dltt_p3 + dlc_p3)/(dltt_p3 + dlc_p3 + ceq_p3)
+    END AS leverage_p3,
+    CASE WHEN at > 0 THEN (xrd_cum_p3)/at END AS rnd_cum_p3,
+    CASE WHEN at > 0 THEN (xad_cum_p3)/at END AS adv_cum_p3,
+    CASE WHEN at > 0 THEN (capx_cum_p3)/at END AS capex_cum_p3
+FROM compustat_w_lags
