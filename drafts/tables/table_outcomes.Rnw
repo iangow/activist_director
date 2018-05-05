@@ -16,6 +16,8 @@ library(psych)
 
 <<winsorize>>=
 # Winsorize selected variables in a data frame
+win01 <- function(x) psych::winsor(x, trim=0.01)
+
 winsorizeDF <- function(data, vars) {
     for (var in vars) {
         data[, var] <- winsor(data[ , var], trim=0.01)
@@ -27,6 +29,7 @@ controls <- paste("analyst inst size_return mv btm leverage payout roa sale_grow
                   "num_directors outside_percent staggered_board log_at")
 
 omits <- unlist(strsplit(controls, "\\s+"))
+
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
@@ -38,16 +41,179 @@ source("outcome_functions.R")
 <<div_acq_data_step, dependson="winsorize">>=
 
 # Get data from PostgreSQL
+library(dplyr, warn.conflicts = FALSE)
+library(RPostgreSQL)
+
 pg <- dbConnect(PostgreSQL())
-rs <- dbGetQuery(pg, "SET work_mem='5GB'")
-sql <- paste0(readLines("outcome_div_acq.sql"), collapse="\n")
-reg.data <- dbGetQuery(pg, sql)
-rs <- dbDisconnect(pg)
+
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='3GB'")
+
+outcome_controls <- tbl(pg, "outcome_controls")
+dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
+wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
+ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
+dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
+
+outcome_controls_mod <-
+    outcome_controls %>%
+    mutate(default_p2 = if_else(firm_exists_p2, FALSE, NA),
+           default_p3 = if_else(firm_exists_p3, FALSE, NA),
+           default_num_p2 = if_else(firm_exists_p2, 0L, NA),
+           default_num_p3 = if_else(firm_exists_p3, 0L, NA),
+           datadate_p2 = sql("datadate + interval '2 years'"),
+           datadate_p3 = sql("datadate + interval '3 years'")) %>%
+    select(permno, matches("^(datadate|default_|firm_exists_)"))
+
+delisting <-
+    dsedelist %>%
+    select(permno, dlstdt, dlstcd) %>%
+    mutate(delist = dlstcd > 100,
+           merger = between(dlstcd, 200L, 399L),
+           failure = between(dlstcd, 520L, 599L)) %>%
+    select(-dlstcd)
+
+permno_link <-
+    ccmxpf_linktable %>%
+    filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
+    rename(permno = lpermno) %>%
+    select(gvkey, permno, linkdt, linkenddt)
+
+spinoff <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 137,
+           keydevtoobjectroletypeid == 4,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+spinoff_linked <-
+    spinoff %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+spinoff_crsp <-
+    dsedist %>%
+    mutate(year = date_part('year', rcrddt),
+           crsp_date = greatest(dclrdt, exdt, rcrddt, paydt)) %>%
+    rename(new_permno = acperm) %>%
+    full_join(spinoff_linked, by = c("permno", "year")) %>%
+    mutate(date = coalesce(crsp_date, announcedate)) %>%
+    select(permno, new_permno, date)
+
+divestiture <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 81,
+           keydevtoobjectroletypeid == 4,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+divestiture_linked <-
+    divestiture %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+acquisition <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 81,
+           keydevtoobjectroletypeid == 3,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+acquisition_linked <-
+    acquisition %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+divestiture_count <-
+    outcome_controls_mod %>%
+    left_join(divestiture_linked) %>%
+    mutate(divest_p2 = between(announcedate, datadate, datadate_p2),
+           divest_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_divestiture_p2 = sum(as.integer(if_else(firm_exists_p2,
+                                                          coalesce(divest_p2, FALSE), NA))),
+              num_divestiture_p3 = sum(as.integer(if_else(firm_exists_p2,
+                                                          coalesce(divest_p3, FALSE), NA)))) %>%
+    ungroup() %>%
+    mutate(divestiture_p2 = num_divestiture_p2 > 0,
+           divestiture_p3 = num_divestiture_p3 > 0) %>%
+compute()
+
+acquisition_count <-
+    outcome_controls_mod %>%
+    left_join(acquisition_linked,  by = "permno") %>%
+    mutate(acquisition_p2 = between(announcedate, datadate, datadate_p2),
+           acquisition_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_acquisition_p2 = sum(as.integer(if_else(firm_exists_p2,
+                                                          coalesce(acquisition_p2, FALSE), NA))),
+              num_acquisition_p3 = sum(as.integer(if_else(firm_exists_p2,
+                                                          coalesce(acquisition_p3, FALSE), NA)))) %>%
+    ungroup() %>%
+    mutate(acquisition_p2 = num_acquisition_p2 > 0,
+           acquisition_p3 = num_acquisition_p3 > 0) %>%
+    compute()
+
+spinoff_count <-
+    outcome_controls_mod %>%
+    left_join(spinoff_linked) %>%
+    mutate(spinoff_p2 = between(announcedate, datadate, datadate_p2),
+           spinoff_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_spinoff_p2 = sum(as.integer(if_else(firm_exists_p2,
+                                                      coalesce(spinoff_p2, FALSE), NA))),
+              num_spinoff_p3 = sum(as.integer(if_else(firm_exists_p3,
+                                                      coalesce(spinoff_p3, FALSE), NA)))) %>%
+    ungroup() %>%
+    compute()
+
+delisting_data <-
+    outcome_controls_mod %>%
+    left_join(delisting) %>%
+    mutate(delist_p2 = delist & between(dlstdt, datadate, datadate_p2),
+           delist_p3 = delist & between(dlstdt, datadate, datadate_p3),
+           merger_p2 = merger & between(dlstdt, datadate, datadate_p2),
+           merger_p3 = merger & between(dlstdt, datadate, datadate_p3),
+           failure_p2 = failure & between(dlstdt, datadate, datadate_p2),
+           failure_p3 = failure & between(dlstdt, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(delist_p2 = bool_or(delist_p2),
+              delist_p3 = bool_or(delist_p3),
+              merger_p2 = bool_or(merger_p2),
+              merger_p3 = bool_or(merger_p3),
+              failure_p2 = bool_or(failure_p2),
+              failure_p3 = bool_or(failure_p3)) %>%
+    ungroup() %>%
+    compute()
 
 winsor.vars <- unlist(strsplit(controls, "\\s+"))
 
-reg.data <- winsorizeDF(reg.data, winsor.vars)
-reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    outcome_controls %>%
+    inner_join(divestiture_count, by = c("permno", "datadate")) %>%
+    inner_join(acquisition_count, by = c("permno", "datadate")) %>%
+    inner_join(spinoff_count, by = c("permno", "datadate")) %>%
+    inner_join(delisting_data, by = c("permno", "datadate")) %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    mutate(activism = if_else(category=="_none", FALSE, TRUE)) %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
 @
 
 
@@ -160,7 +326,9 @@ rs <- dbDisconnect(pg)
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
-winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars, paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"), paste0(lhs.vars, "_p3")))
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
+                        paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"),
+                        paste0(lhs.vars, "_p3")))
 
 reg.data <- winsorizeDF(reg.data, winsor.vars)
 reg.data$activism <- ifelse(reg.data$category=="_none",FALSE,TRUE)
