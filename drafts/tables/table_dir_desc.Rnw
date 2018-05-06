@@ -10,62 +10,77 @@ library(xtable)
 <<dir_desc_sample, message=FALSE, echo=FALSE, results='asis'>>=
 # PostgreSQL connection #
 library(RPostgreSQL)
+library(dplyr, warn.conflicts = FALSE)
 pg <- dbConnect(PostgreSQL())
 
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+
+activist_directors <- tbl(pg, "activist_directors")
+activism_events <- tbl(pg, "activism_events")
+boardex_w_activism <- tbl(pg, "boardex_w_activism")
+
+censor_date <- "2017-12-31"
+
 # All Director Sample
-activist_directors <- dbGetQuery(pg, "
-    WITH raw_data AS (
-        SELECT DISTINCT a.*,  --activist_affiliate,
-            (retirement_date IS NULL)::int AS still_active,
-            (retirement_date IS NOT NULL)::int AS left_board,
-            (retirement_date-appointment_date)::float8 AS tenure,
-            COALESCE(retirement_date, '2016-09-30')-appointment_date AS tenure_censored
-       FROM activist_director.activist_directors AS a
-       INNER JOIN activist_director.activism_events AS b
-       USING (permno, dissident_group, eff_announce_date)
-       WHERE appointment_date IS NOT NULL AND permno IS NOT NULL)
+activist_director_stats <-
+    activist_directors %>%
+    filter(!is.na(independent)) %>%
+    select(-permno, -dissident_group, -eff_announce_date) %>%
+    inner_join(activism_events, by="campaign_id") %>%
+    mutate(still_active = as.integer(is.na(retirement_date)),
+           left_board  = as.integer(!is.na(retirement_date)),
+           tenure = retirement_date - appointment_date, # ::float8
+           tenure_censored = coalesce(retirement_date, censor_date) - appointment_date) %>%
+    mutate(activist_affiliate = !independent) %>%
+    group_by(activist_affiliate) %>%
+    summarize(num_all = n(),
+              num_left_board  = sum(left_board, na.rm = TRUE),
+              left_tenure = if_else(sum(left_board, na.rm = TRUE) > 0,
+                                    sum(tenure_censored*left_board, na.rm = TRUE) * 1.0 /
+                                        sum(left_board, na.rm = TRUE), NA),
+              num_still_active = sum(still_active, na.rm = TRUE),
+              active_tenure = if_else(sum(still_active, na.rm = TRUE) > 0,
+                                      sum(tenure_censored*still_active, na.rm = TRUE) * 1.0 /
+                                          sum(still_active, na.rm = TRUE), NA)) %>%
+    collect()
 
-    SELECT independent IS FALSE AS activist_affiliate,
-        count(*) AS num_all,
-        sum(left_board) AS num_left_board,
-        sum(tenure_censored*left_board)/sum(left_board)::int AS left_tenure,
-        sum(still_active) AS num_still_active,
-        sum(tenure_censored*still_active)/sum(still_active)::int AS active_tenure
-    FROM raw_data
-    GROUP BY activist_affiliate")
+names(activist_director_stats) <- c("Category", "N", "Left board", "Tenure",
+                                    "Still active", "Tenure")
+activist_director_stats[,1] <- c("Unffiliated directors","Affiliated directors")
 
-names(activist_directors) <- c("Category", "N", "Left board", "Tenure",
-                 "Still active", "Tenure")
-activist_directors[,1] <- c("Unffiliated directors","Affiliated directors")
+all.dir.data <-
+    boardex_w_activism %>%
+    filter(annual_report_date > '2003-12-31') %>%
+    mutate(activist_director = if_else(activist_director, 'Activist director', NA),
+           all_directors = as.character("All directors")) %>%
+    select(all_directors, activist_director, audit_committee, comp_committee,
+           nom_committee, time_retirement, time_role, time_brd, time_inco,
+           tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
+           female, no_quals, age) %>%
+    collect()
 
-all.dir.data <- dbGetQuery(pg, "
-    SELECT 'All directors'::text AS all_directors,
-        CASE WHEN activist_director THEN 'Activist director' ELSE NULL END AS activist_director,
-        audit_committee, comp_committee, nom_committee,
-        time_retirement, time_role, time_brd, time_inco,
-        tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
-        female, no_quals, age
-    FROM activist_director.boardex_w_activism
-    WHERE annual_report_date > '2003-12-31'")
-
-act.dir.data <- dbGetQuery(pg, "
-    SELECT 'Activist directors'::text AS activist_director,
-      CASE WHEN affiliated_director THEN 'Affiliated directors'::text
-        ELSE 'Unaffiliated directors' END AS affiliated_director,
-        audit_committee, comp_committee, nom_committee,
-        time_retirement, time_role, time_brd, time_inco,
-        tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
-        female, no_quals, age
-    FROM activist_director.boardex_w_activism
-    WHERE activist_director
-    AND annual_report_date > '2003-12-31'")
+act.dir.data <-
+    boardex_w_activism %>%
+    filter(annual_report_date > '2003-12-31',
+           activist_director) %>%
+    mutate(affiliated_director = if_else(affiliated_director,
+                                       'Affiliated director', 'Unaffiliated directors'),
+           activist_director = as.character("Activist directors")) %>%
+    select(activist_director, affiliated_director, audit_committee, comp_committee,
+           nom_committee, time_retirement, time_role, time_brd, time_inco,
+           tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
+           female, no_quals, age) %>%
+    collect()
 
 # New Director Sample
-new.dir.data <- dbGetQuery(pg, "
-  SELECT 'New directors'::text AS new_directors, *
-  FROM activist_director.boardex_w_activism
-  WHERE annual_report_date > '2003-12-31'
-  AND director_first_year AND NOT firm_first_year")
+new.dir.data <-
+    boardex_w_activism %>%
+    filter(annual_report_date > '2003-12-31',
+           director_first_year,
+           !firm_first_year) %>%
+    mutate(new_directors = as.character("New directors")) %>%
+    select(new_directors, everything()) %>%
+    collect()
 
 new.dir.data$category <- as.factor(new.dir.data$category)
 levels(new.dir.data$category) <- c("New directors: No activism",
@@ -86,31 +101,33 @@ sum.var.str <- "audit_committee comp_committee nom_committee
         female no_quals age"
 
 sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
-sum.model <-  paste(sum.vars, collapse=" + ")
 
 getTab <- function(cat, df) {
-     tab.1 <- cbind(
-         cat,
-         N=aggregate(df$age,
-              by=list(df[ , cat]), FUN=length)[,2],
-         summaryBy(formula(paste(sum.model, "~", cat )),
-              data = df,
-              FUN = function(x) { c(mean=mean(x, na.rm=TRUE)) },
-              keep.names=TRUE))
 
-    var.order <- unlist(strsplit(paste(cat, "N", sum.var.str), "\\s+"))
-    tab.1 <- tab.1[, var.order]
-    names(tab.1) <- col.names
-    return(tab.1)
+    means <-
+        df %>%
+        group_by_(cat) %>%
+        summarize_at(vars(sum.vars), function(x) mean(x, na.rm = TRUE))
+
+    count <-
+        df %>%
+        group_by_(cat) %>%
+        count()
+
+    df_new <-
+        count %>%
+        inner_join(means) %>%
+        ungroup()
+
+    names(df_new) <- col.names
+    df_new
 }
 
 tab.1 <- getTab("all_directors", all.dir.data)
-# New director sample - table
-# tab.2 <- getTab("category", new.dir.data)
 tab.2 <- getTab("new_directors", new.dir.data)
 tab.3 <- getTab("activist_director", act.dir.data)
 tab.4 <- getTab("affiliated_director", act.dir.data)
-tab <- rbind(tab.1, tab.2, tab.3, tab.4)
+tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 @
 
 \begin{table}[htb]
@@ -121,7 +138,15 @@ tab <- rbind(tab.1, tab.2, tab.3, tab.4)
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents descriptive statistics for directors. Panel A presents data on directors matched to boardex. $N$ refers to the number of observations. \textit{Age} refers to mean age of directors in each category. Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively. Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards. Panel B presents data on all activist directors (i.e., no requirement for boardex match). \textit{Tenure} is measured in days and is censored for directors still active on December 31, 2013.
+This table presents descriptive statistics for directors.
+Panel A presents data on directors matched to boardex. $N$ refers to the number of observations.
+\textit{Age} refers to mean age of directors in each category.
+Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for
+being female, being a member of at least one board committee, being a member of the compensation committee,
+being a member of the audit committee, and being designated a financial expert of the audit committee, respectively.
+Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards.
+Panel B presents data on all activist directors (i.e., no requirement for boardex match).
+\textit{Tenure} is measured in days and is censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -143,7 +168,7 @@ print(xtable(tab, display=c("s", "s", "d", rep("f", 8))),
 \\
 <<dir_desc_panel_B, dependson="dir_desc_table", results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(activist_directors, display=c("s", "s", "d", "d", "d", "d", "d")),
+print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d")),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
