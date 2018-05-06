@@ -128,6 +128,6 @@ activist_director_equilar <-
     arrange(campaign_id, period, last_name)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
-                'CREATED USING activist_director_dplyr.R'")
+                'CREATED USING activist_director_equilar.R'")
 
 dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
