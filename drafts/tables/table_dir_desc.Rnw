@@ -2,7 +2,6 @@
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
-library(doBy)
 library(xtable)
 @
 
@@ -17,7 +16,7 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
-boardex_w_activism <- tbl(pg, "boardex_w_activism")
+equilar_w_activism <- tbl(pg, "equilar_w_activism")
 
 censor_date <- "2017-12-31"
 
@@ -49,35 +48,32 @@ names(activist_director_stats) <- c("Category", "N", "Left board", "Tenure",
 activist_director_stats[,1] <- c("Unffiliated directors","Affiliated directors")
 
 all.dir.data <-
-    boardex_w_activism %>%
-    filter(annual_report_date > '2003-12-31') %>%
+    equilar_w_activism %>%
+    filter(!is.na(age)) %>%
     mutate(activist_director = if_else(activist_director, 'Activist director', NA),
            all_directors = as.character("All directors")) %>%
-    select(all_directors, activist_director, audit_committee, comp_committee,
-           nom_committee, time_retirement, time_role, time_brd, time_inco,
-           tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
-           female, no_quals, age) %>%
+    select(all_directors, activist_director, age, female,
+           any_committee, comp_committee, audit_committee,
+           audit_committee_financial_expert) %>%
     collect()
 
 act.dir.data <-
-    boardex_w_activism %>%
-    filter(annual_report_date > '2003-12-31',
+    equilar_w_activism %>%
+    filter(!is.na(age),
            activist_director) %>%
     mutate(affiliated_director = if_else(affiliated_director,
                                        'Affiliated director', 'Unaffiliated directors'),
            activist_director = as.character("Activist directors")) %>%
-    select(activist_director, affiliated_director, audit_committee, comp_committee,
-           nom_committee, time_retirement, time_role, time_brd, time_inco,
-           tot_nolstd_brd, tot_noun_lstd_brd, tot_curr_nolstd_brd, tot_curr_noun_lstd_brd,
-           female, no_quals, age) %>%
+    select(activist_director, affiliated_director, age, female,
+           any_committee, comp_committee, audit_committee,
+           audit_committee_financial_expert) %>%
     collect()
 
 # New Director Sample
 new.dir.data <-
-    boardex_w_activism %>%
-    filter(annual_report_date > '2003-12-31',
-           director_first_year,
-           !firm_first_year) %>%
+    equilar_w_activism %>%
+    filter(!is.na(age),
+           director_first_year) %>%
     mutate(new_directors = as.character("New directors")) %>%
     select(new_directors, everything()) %>%
     collect()
@@ -89,15 +85,13 @@ levels(new.dir.data$category) <- c("New directors: No activism",
                                    "New directors: Activist director")
 rs <- dbDisconnect(pg)
 @
-
-<<dir_desc_table, cache=TRUE, dependson="dir_desc_sample", results='asis'>>=
+<<dir_desc_table, dependson="dir_desc_sample", results='asis'>>=
 
 # All Director Sample - Table
-col.names <- unlist(strsplit("Category, N, Age, Female, Audit, Comp, Nom,
-                             Listed, Unlisted, Edu", ",\\s*"))
-
-sum.var.str <- "age female audit_committee comp_committee nom_committee
-        tot_curr_nolstd_brd tot_curr_noun_lstd_brd no_quals"
+col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
+                             Audit comm., Fin. expert", ",\\s*"))
+sum.var.str <- "age female any_committee comp_committee audit_committee
+                            audit_committee_financial_expert"
 
 sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
 
@@ -123,7 +117,8 @@ getTab <- function(cat, df) {
 }
 
 tab.1 <- getTab("all_directors", all.dir.data)
-tab.2 <- getTab("new_directors", new.dir.data)
+# New director sample - table
+tab.2 <- getTab("category", new.dir.data)
 tab.3 <- getTab("activist_director", act.dir.data)
 tab.4 <- getTab("affiliated_director", act.dir.data)
 tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
@@ -138,25 +133,22 @@ tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel A presents data on directors matched to boardex.
-$N$ refers to the number of observations in each category.
-\textit{Age} refers to mean age of directors by category.
-Values for \textit{Female}, \textit{Audit}, \textit{Comp}, and \textit{Nom} are means of indicator variables for
-being female, being a member of the compensation committee, being a member of the audit committee, and being a member of the nominations committee, respectively.
-Values for \textit{Listed} (\textit{Unlisted}) and \textit{Edu} are the mean number of listed (unlisted) boards served on by directors and mean number of educational qualifiations, respectively.
+Panel A presents data on directors matched to Equilar.
+$N$ refers to the number of observations. \textit{Age} refers to mean age of directors in each category.
+Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively.
 Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards.
-Panel B presents data on all activist directors (i.e., no requirement for Boardex matches).
+Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Tenure} is measured in days and is censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}.
 \newline}
 % \end{flushleft}
 \end{minipage}
-\begin{tabularx}{\linewidth}{l*{9}{Y}}
-\multicolumn{9}{l}{Panel A: Director characteristics by activism classification}
+\begin{tabularx}{\linewidth}{l*{7}{Y}}
+\multicolumn{7}{l}{Panel A: Director characteristics by activism classification}
 % \hline
 \\
 <<dir_desc_panel_A, dependson="dir_desc_table", results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(tab, display=c("s", "s", "d", rep("f", 8))),
+print(xtable(tab, display=c("s", "s", "d", rep("f", 6))),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
