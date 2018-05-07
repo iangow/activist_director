@@ -1,5 +1,5 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(cache=FALSE, warning=FALSE, echo=FALSE, message=FALSE)}
+\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
 library(xtable)
