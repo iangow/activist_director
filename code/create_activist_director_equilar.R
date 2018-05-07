@@ -4,44 +4,34 @@ library(dplyr, warn.conflicts = FALSE)
 pg <- dbConnect(PostgreSQL())
 
 rs <- dbGetQuery(pg, "SET work_mem='8GB'")
-rs <- dbGetQuery(pg, "SET search_path='activist_director'")
+rs <- dbGetQuery(pg, "SET search_path TO activist_director, equilar_hbs")
 
-crsp.stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
-activist_director.permnos <- tbl(pg, sql("SELECT * FROM activist_director.permnos"))
-equilar_hbs.company_financials <- tbl(pg, sql("SELECT *, fye AS period FROM equilar_hbs.company_financials"))
-equilar_hbs.director_index <- tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
-activist_director.activist_directors <-
-    tbl(pg, sql("SELECT * FROM activist_directors"))
-activist_director.activism_events <-
-    tbl(pg, sql("SELECT * FROM activism_events"))
-activist_director_equilar <-
-    tbl(pg, sql("SELECT * FROM activist_director_equilar"))
-activist_equilar_hbs.director_index <-
-    tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
-boardex.director_characteristics <-
-    tbl(pg, sql("SELECT * FROM boardex.director_characteristics"))
-boardex.board_characteristics <-
-    tbl(pg, sql("SELECT * FROM boardex.board_characteristics"))
-boardex.company_profile_stocks <-
-    tbl(pg, sql("SELECT * FROM boardex.company_profile_stocks"))
+stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
+
+company_financials <- tbl(pg, "company_financials")
+director_index <- tbl(pg, "director_index")
+
+activist_directors <- tbl(pg, "activist_directors")
 
 # Create Equilar link table ----
 permcos <-
-    crsp.stocknames %>%
+    stocknames %>%
     select(permno, permco) %>%
     distinct() %>%
     compute()
 
 permnos <-
-    crsp.stocknames %>%
-    select(permno, permco, ncusip) %>%
-    rename(cusip = ncusip) %>%
-    distinct() %>%
-    compute()
+   stocknames %>%
+   select(permno, permco, ncusip) %>%
+   # rename(cusip = ncusip) %>%
+   distinct() %>%
+   compute()
 
 equilar <-
-    equilar_hbs.director_index %>%
-    left_join(equilar_hbs.company_financials, by=c("company_id", "period")) %>%
+    director_index %>%
+    rename(fye = period) %>%
+    left_join(company_financials, by=c("company_id", "fye")) %>%
+    rename(period = fye) %>%
     mutate(ncusip = substr(cusip, 1L, 8L)) %>%
     rename(start_date = date_start) %>%
     mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
@@ -54,7 +44,7 @@ equilar <-
 equilar_w_permnos <-
     equilar %>%
     rename(ncusip = cusip) %>%
-    inner_join(activist_director.permnos) %>%
+    inner_join(permnos) %>%
     inner_join(permcos)
 
 first_name_years <-
@@ -77,8 +67,8 @@ equilar_final <-
     distinct() %>%
     compute()
 
-activist_directors <-
-    activist_director.activist_directors %>%
+activist_directors_mod <-
+    activist_directors %>%
     select(campaign_id, first_name, last_name,
            independent, appointment_date, retirement_date,
            permno) %>%
@@ -90,42 +80,52 @@ activist_directors <-
     compute()
 
 match_1 <-
-    activist_directors %>%
+    activist_directors_mod %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
+    select(campaign_id, period, first_name, last_name, company_id,
+           executive_id, appointment_date, retirement_date, independent) %>%
     compute()
 
 match_2 <-
-    activist_directors %>%
+    activist_directors_mod %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first2")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
+    select(campaign_id, period, first_name, last_name, company_id,
+           executive_id, appointment_date, retirement_date, independent)
 
 match_3 <-
-    activist_directors %>%
+    activist_directors_mod %>%
     inner_join(equilar_final, by=c("permco", "last_name_l", "first1")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
+    select(campaign_id, period, first_name, last_name, company_id,
+           executive_id, appointment_date, retirement_date, independent)
 
 match_4 <-
-    activist_directors %>%
+    activist_directors_mod %>%
     inner_join(equilar_final, by=c("permco", "last_name_l")) %>%
-    select(campaign_id, period, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent)
+    select(campaign_id, period, first_name, last_name, company_id,
+           executive_id, appointment_date, retirement_date, independent)
 
 match_a <-
     match_1 %>%
-    union(match_2 %>% anti_join(match_1, by=c("campaign_id", "period", "first_name", "last_name")))
+    union(match_2 %>%
+              anti_join(match_1,
+                        by=c("campaign_id", "period", "first_name", "last_name")))
 
 match_b <-
     match_a %>%
-    union(match_3 %>% anti_join(match_a, by=c("campaign_id", "period", "first_name", "last_name"))) %>%
+    union(match_3 %>%
+              anti_join(match_a,
+                        by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     compute()
 
 dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
     match_b %>%
-    union(match_4 %>% anti_join(match_b, by=c("campaign_id", "period", "first_name", "last_name"))) %>%
-    compute(name = "activist_director_equilar", temporary=FALSE) %>%
-    arrange(campaign_id, period, last_name)
+    union(match_4 %>%
+              anti_join(match_b,
+                        by=c("campaign_id", "period", "first_name", "last_name"))) %>%
+    select(campaign_id, first_name, last_name, company_id, executive_id) %>%
+    compute(name = "activist_director_equilar", temporary=FALSE)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
                 'CREATED USING activist_director_equilar.R'")
