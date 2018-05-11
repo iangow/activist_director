@@ -269,6 +269,7 @@ reg.data <-
     ceo_outcomes %>%
     collect() %>%
     mutate_at(win_vars, win01) %>%
+    distinct() %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
