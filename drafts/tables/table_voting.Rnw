@@ -3,85 +3,188 @@
 
 <<vote_data, results='asis'>>=
 # PostgreSQL Connection
+# Get data from database ----
 library(RPostgreSQL)
+library(dplyr, warn.conflicts = FALSE)
 pg <- dbConnect(PostgreSQL())
 
-# Matching activist directors with ISS Voting Analytics ----
-activist_director_matches <-
-    tbl(pg, sql("
-    SELECT DISTINCT a.permno, a.last_name, a.first_name,
-        a.meetingdate, a.vote_pct, a.issrec, a.contested,
-        a.meetingdate_p1, a.vote_pct_p1, a.issrec_p1, a.contested_p1,
-        a.meetingdate_p2, a.vote_pct_p2, a.issrec_p2, a.contested_p2,
-    COALESCE(b.appointment_date, c.appointment_date, d.appointment_date, e.appointment_date) AS appointment_date,
-    COALESCE(b.appointment_date, c.appointment_date,
-             d.appointment_date, e.appointment_date) IS NOT NULL AS activist_director,
-    COALESCE(b.independent, c.independent, d.independent, e.independent) IS FALSE AS affiliated_director
-    FROM activist_director.director_votes AS a
-    LEFT JOIN activist_director.activist_directors AS b
-    ON a.permno=b.permno AND a.last_name ILIKE b.last_name AND substr(a.first_name,1,3) ILIKE substr(b.first_name,1,3)
-    LEFT JOIN activist_director.activist_directors AS c
-    ON a.permno=c.permno AND a.last_name ILIKE c.last_name AND substr(a.first_name,1,2) ILIKE substr(c.first_name,1,2)
-    LEFT JOIN activist_director.activist_directors AS d
-    ON a.permno=d.permno AND a.last_name ILIKE d.last_name AND substr(a.first_name,1,1) ILIKE substr(d.first_name,1,1)
-    LEFT JOIN activist_director.activist_directors AS e
-    ON a.permno=e.permno AND a.last_name ILIKE e.last_name
-    WHERE a.last_name IS NOT NULL AND a.first_name IS NOT NULL
-    ORDER BY permno, last_name, first_name, meetingdate")) %>%
-    compute(name = "activist_director_matches")
+rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
 
+permnos <- tbl(pg, "permnos")
+risk.vavoteresults <- tbl(pg, "vavoteresults")
+risk.issrec <- tbl(pg, "issrec")
+activist_directors <- tbl(pg, "activist_directors")
 
-activist_director_years <-
-    tbl(pg, sql("
-    SELECT DISTINCT permno, meetingdate
-    FROM activist_director_matches
-    WHERE activist_director AND vote_pct IS NOT NULL
-    AND meetingdate > appointment_date - interval '1 week'
-    ORDER BY permno, meetingdate")) %>%
-    compute(name = "activist_director_years")
+vavoteresults <-
+    risk.vavoteresults %>%
+    left_join(risk.issrec) %>%
+    mutate(itemonagendaid = as.integer(itemonagendaid)) %>%
+    filter(issagendaitemid %in% c('S0299', 'M0299', 'M0201', 'S0201', 'M0225'),
+           itemdesc %~% '^Elect',
+           voteresult != 'Withdrawn',
+           !(agendageneraldesc %ilike% '%inactive%'),
+           !(votedfor %in% c(0L,1L) |
+                 greatest(votedagainst, votedabstain, votedwithheld) %in% c(0L, 1L))) %>%
+    mutate(last_name = sql("(extract_name(itemdesc)).last_name"),
+           first_name = sql("(extract_name(itemdesc)).first_name"),
+           issrec = issrec == "For") %>%
+    compute()
 
-first_election_dates <-
-    tbl(pg, sql("
-        SELECT  permno, last_name, first_name, min(meetingdate) AS first_election_date
-        FROM activist_director_matches
-        WHERE activist_director AND vote_pct IS NOT NULL
-            AND meetingdate BETWEEN appointment_date - INTERVAL '1 week' AND appointment_date + INTERVAL '3 years'
-        GROUP BY permno, last_name, first_name
-        ORDER BY permno, last_name, first_name")) %>%
-    mutate(first_election = TRUE) %>%
-    compute(name = "first_election_dates")
+# When there are multiple items (i.e., in contested elections), we need to
+# aggregate votes by ballotitem number to get all votes cast for the
+# competing directors
+multiple_items <-
+    vavoteresults %>%
+    filter(issagendaitemid %in% c('M0299','S0299')) %>%
+    group_by(companyid, meetingid, ballotitemnumber) %>%
+    summarise(votes_cast = sum(votedfor + votedagainst + votedabstain, na.rm = TRUE),
+              num_items = n_distinct(itemdesc)) %>%
+    filter(num_items > 1) %>%
+    select(-num_items) %>%
+    compute()
 
-any_first_election_dates <-
-    first_election_dates %>%
-    rename(any_first_election_date = first_election_date) %>%
-    select(permno, any_first_election_date) %>%
-    distinct() %>%
-    mutate(any_first_election = TRUE)
+# Otherwise we just add up votes for the director.
+# Sometimes the votedagainst number is duplicated as votewithheld, so we
+# want to just take the one number in these cases. Otherwise, I think
+# we should include for, against, withheld, and abstain in the denominator.
+single_items <-
+    vavoteresults %>%
+    mutate(votes_cast = votedfor +
+               if_else(!is.na(votedwithheld) && votedwithheld==votedagainst,
+                       votedagainst,
+                       coalesce(votedagainst, 0) + coalesce(votedwithheld, 0)) +
+               coalesce(votedabstain, 0)) %>%
+    select(companyid, meetingid, ballotitemnumber, votes_cast) %>%
+    filter(!is.na(votes_cast)) %>%
+    compute()
 
+# Combine the two mutually exclusive datasets
+votes_cast <-
+    multiple_items %>%
+    union(single_items) %>%
+    left_join(multiple_items %>% mutate(contested = TRUE)) %>%
+    mutate(contested = coalesce(contested, FALSE)) %>%
+    ungroup() %>%
+    compute()
+
+# Calculate vote_pct
 director_votes <-
-    activist_director_matches %>%
-    inner_join(activist_director_years, by = c("permno", "meetingdate")) %>%
-    left_join(first_election_dates %>% rename(meetingdate=first_election_date),
-              by = c("permno", "last_name", "first_name", "meetingdate")) %>%
-    left_join(any_first_election_dates %>% rename(meetingdate=any_first_election_date),
-              by = c("permno", "meetingdate")) %>%
-    mutate(any_first_election = coalesce(any_first_election, FALSE),
-           first_election = coalesce(first_election, FALSE))
+    vavoteresults %>%
+    inner_join(votes_cast, by = c("companyid", "meetingid", "ballotitemnumber")) %>%
+    mutate(vote_pct = if_else(votes_cast > 0, votedfor/votes_cast, NA_real_)) %>%
+    select(itemonagendaid, last_name, first_name,
+           meetingid, companyid, meetingdate, vote_pct, contested, cusip, issrec) %>%
+    mutate(year = as.integer(date_part('year', meetingdate))) %>%
+    filter(!contested) %>%
+    compute()
 
-vote.data <-
+activist_directors_mod <-
+    activist_directors %>%
+    mutate(upper_last_name = upper(last_name),
+           upper_first_name = upper(first_name),
+           initial3 = substr(upper_first_name, 1L, 3L),
+           initial2 = substr(upper_first_name, 1L, 2L),
+           initial1 = substr(upper_first_name, 1L, 1L)) %>%
+    compute()
+
+director_votes_mod <-
     director_votes %>%
-    filter(any_first_election) %>%
-    distinct() %>%
-    collect() %>%
-    as.data.frame()
+    mutate(ncusip = substr(cusip, 1L, 8L)) %>%
+    left_join(permnos, by = "ncusip") %>%
+    mutate(itemonagendaid = as.integer(itemonagendaid)) %>%
+    mutate(upper_last_name = upper(last_name),
+           upper_first_name = upper(first_name),
+           initial3 = substr(upper_first_name, 1L, 3L),
+           initial2 = substr(upper_first_name, 1L, 2L),
+           initial1 = substr(upper_first_name, 1L, 1L)) %>%
+    select(itemonagendaid, permno, meetingdate, upper_last_name,
+           matches("^initial")) %>%
+    filter(!is.na(itemonagendaid)) %>%
+    compute()
 
-## Create permno_meetingdate variable
-vote.data$permno_meetingdate <- paste(vote.data$permno, " & ", vote.data$meetingdate, sep="")
+match_init3 <-
+    activist_directors_mod %>%
+    inner_join(director_votes_mod,
+               by = c("permno", "upper_last_name", "initial3")) %>%
+    select(campaign_id, appointment_date, last_name,
+           first_name, itemonagendaid)
+
+match_init2 <-
+    activist_directors_mod %>%
+    inner_join(director_votes_mod,
+               by = c("permno", "upper_last_name", "initial2")) %>%
+    select(campaign_id, appointment_date, last_name,
+           first_name, itemonagendaid)
+
+match_init1 <-
+    activist_directors_mod %>%
+    inner_join(director_votes_mod,
+               by = c("permno", "upper_last_name", "initial1")) %>%
+    select(campaign_id, appointment_date, last_name,
+           first_name, itemonagendaid)
+
+match_a <-
+    match_init3 %>%
+    union(
+        match_init2 %>%
+            anti_join(match_init3))
+
+va_match <-
+    match_a %>%
+    union(
+        match_init1 %>%
+            anti_join(match_a)) %>%
+    compute()
+
+ad_vote_data <-
+    activist_directors %>%
+    select(campaign_id, first_name, last_name, appointment_date, independent) %>%
+    inner_join(va_match) %>%
+    inner_join(director_votes) %>%
+    filter(meetingdate > sql("appointment_date - interval '1 week'")) %>%
+    group_by(campaign_id, first_name, last_name, appointment_date) %>%
+    arrange(meetingdate) %>%
+    mutate(vote_num = row_number()) %>%
+    ungroup() %>%
+    compute()
+
+director_votes <- collect(director_votes)
+va_match <- collect(va_match)
+ad_vote_data <- collect(ad_vote_data)
 
 rs <- dbDisconnect(pg)
 @
 
-<<vote_regs, dependson="vote_data", results='asis'>>=
+<<vote_func, results='asis'>>=
+library(lubridate)
+
+get_reg_data <- function(vote_number) {
+
+    ad_data <-
+        ad_vote_data %>%
+        mutate(appointment_date = pmin(meetingdate, appointment_date),
+               start_date = appointment_date + make_difftime(day = (vote_number - 1) * 365),
+               end_date   = appointment_date + make_difftime(day = vote_number * 365)) %>%
+        filter(meetingdate >= start_date, meetingdate < end_date) %>%
+        select(-campaign_id, -appointment_date, -vote_num,
+               -start_date, -end_date)
+
+    other_dirs <-
+        director_votes %>%
+        setdiff(ad_data %>% select(-independent)) %>%
+        semi_join(ad_data, by="meetingid")
+
+    other_dirs %>%
+        mutate(independent = NA) %>%
+        dplyr::union(ad_data) %>%
+        mutate(affiliated = coalesce(!independent, FALSE),
+               independent = coalesce(independent, FALSE)) %>%
+        mutate(meetingid = factor(meetingid)) %>%
+        as.data.frame()
+}
+@
+
+<<vote_regs, dependson=c("vote_data", "vote_func"), results='asis'>>=
 # Functions
 library(psych)
 library(car)
@@ -91,45 +194,38 @@ source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.
 ### Regression Analyses----
 
 #### voting_p1 ~ activism
-reg.data <-
-    vote.data %>%
-    mutate(permno_meetingdate = factor(permno_meetingdate))
+reg.data <- get_reg_data(1L)
 
-fm.t1.pa.c0 <- lm(vote_pct * 100 ~ activist_director * affiliated_director + permno_meetingdate,
+fm_t0 <- lm(vote_pct * 100 ~ independent + affiliated + meetingid,
                   data=reg.data, na.action="na.exclude")
-fm.t1.pa.c0.se <- coeftest.cluster(reg.data, fm.t1.pa.c0, cluster1="permno")
+fm_t0_se <- coeftest.cluster(reg.data, fm_t0, cluster1="companyid")
 
 #### voting_p1 ~ activism (activist_director firms only)
 ## reg.data <- subset(vote.data, activist_director_period)
-fm.t1.pa.c1 <- lm(vote_pct * 100 ~ activist_director * affiliated_director + issrec + permno_meetingdate,
+fm_t0_iss <- lm(vote_pct * 100 ~ independent + affiliated + issrec +
+                      meetingid,
                   data=reg.data, na.action="na.exclude")
-fm.t1.pa.c1.se <- coeftest.cluster(reg.data, fm.t1.pa.c1, cluster1="permno")
+fm_t0_iss_se <- coeftest.cluster(reg.data, fm_t0_iss, cluster1="companyid")
 
-fm.t1.pa.c2 <- lm(vote_pct * 100 ~ activist_director * affiliated_director * contested + permno_meetingdate,
+reg.data <- get_reg_data(2L) %>% mutate(vote_pct_p1 = vote_pct)
+fm_t1 <- lm(vote_pct_p1 * 100 ~ independent + affiliated + meetingid,
                   data=reg.data, na.action="na.exclude")
-fm.t1.pa.c2.se <- coeftest.cluster(reg.data, fm.t1.pa.c2, cluster1="permno")
+fm_t1_se <- coeftest.cluster(reg.data, fm_t1, cluster1="companyid")
 
-fm.t1.pa.c3 <- lm(vote_pct_p1 * 100 ~ activist_director * affiliated_director + permno_meetingdate,
+fm_t1_iss <- lm(vote_pct_p1 * 100 ~ independent + affiliated  + issrec
+                + meetingid,
                   data=reg.data, na.action="na.exclude")
-fm.t1.pa.c3.se <- coeftest.cluster(reg.data, fm.t1.pa.c3, cluster1="permno")
+fm_t1_iss_se <- coeftest.cluster(reg.data, fm_t1_iss, cluster1="companyid")
 
-fm.t1.pa.c4 <-
-    reg.data %>%
-    mutate(contested = contested_p1) %>%
-    lm(vote_pct_p1 * 100 ~ activist_director * affiliated_director * contested + permno_meetingdate,
-       data=., na.action="na.exclude")
-fm.t1.pa.c4.se <- coeftest.cluster(reg.data, fm.t1.pa.c4, cluster1="permno")
-
-fm.t1.pa.c5 <- lm(vote_pct_p2 * 100 ~ activist_director * affiliated_director + permno_meetingdate,
+reg.data <- get_reg_data(3L) %>% mutate(vote_pct_p2 = vote_pct)
+fm_t2 <- lm(vote_pct_p2 * 100 ~ independent + affiliated + meetingid,
                   data=reg.data, na.action="na.exclude")
-fm.t1.pa.c5.se <- coeftest.cluster(reg.data, fm.t1.pa.c5, cluster1="permno")
+fm_t2_se <- coeftest.cluster(reg.data, fm_t2, cluster1="companyid")
 
-fm.t1.pa.c6 <-
-    reg.data %>%
-    mutate(contested = contested_p2) %>%
-    lm(vote_pct_p2 * 100 ~ activist_director * affiliated_director * contested + permno_meetingdate,
-       data=., na.action="na.exclude")
-fm.t1.pa.c6.se <- coeftest.cluster(reg.data, fm.t1.pa.c6, cluster1="permno")
+fm_t2_iss <- lm(vote_pct_p2 * 100 ~ independent + affiliated  + issrec
+                + meetingid,
+                  data=reg.data, na.action="na.exclude")
+fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 @
 \begin{landscape}
 \begin{table}[htb]
@@ -145,20 +241,19 @@ All columns include meeting fixed effects.
 <<vote_output, dependson="vote_regs", results='asis'>>=
 # Produce Excel file with results for prob_activism
 library(stargazer)
-stargazer(fm.t1.pa.c0, fm.t1.pa.c1, fm.t1.pa.c2,
-          fm.t1.pa.c3, fm.t1.pa.c4,
-          fm.t1.pa.c5, fm.t1.pa.c6,
-          omit = c("Constant", "(permno_meetingdate|activist_director.*affiliated)"),
+stargazer(fm_t0, fm_t0_iss,
+          fm_t1, fm_t1_iss,
+          fm_t2, fm_t2_iss,
+          omit = c("Constant", "(meetingid|activist_director.*affiliated)"),
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
           dep.var.labels = c("$\\textit{Support}_{t}$", "$\\textit{Support}_{t+1}$",
                              "$\\textit{Support}_{t+2}$"),
-          covariate.labels = c("Activist director", "Affiliated director", "ISS for",
-                               "Contested election", "Activist director $\\times$ Contested",
-                               "Affiliated director $\\times$ Contested"),
-          se=list(fm.t1.pa.c0.se, fm.t1.pa.c1.se, fm.t1.pa.c2.se,
-                  fm.t1.pa.c3.se, fm.t1.pa.c4.se,
-                  fm.t1.pa.c5.se, fm.t1.pa.c6.se))
+          covariate.labels = c("Activist director, independent",
+                               "Activist director, affiliated", "ISS for"),
+          se=list(fm_t0_se[ ,2], fm_t0_iss_se[ ,2],
+                  fm_t1_se[ ,2], fm_t1_iss_se[ ,2],
+                  fm_t2_se[ ,2], fm_t2_iss_se[ ,2]))
 @
 \end{tabularx}
 \addtocounter{table}{-1}

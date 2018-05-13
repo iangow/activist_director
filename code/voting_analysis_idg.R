@@ -135,6 +135,8 @@ director_votes <-
            votes_cast_p2 = lead(votes_cast, 2L)) %>%
     ungroup()
 
+
+
 activist_director_names <-
     activist_directors  %>%
     select(permno, last_name, first_name, appointment_date, independent) %>%
