@@ -166,6 +166,26 @@ ret.data.d$event_date <- NULL
 ret.data.d$end_event_date <- NULL
 merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
 
+# Before Appointment Date (Long-term, -12,0) - Breakdown_1 (-12,annc)
+subevents <- subset(events, eff_announce_date < appointment_date)
+ret.data.d <- getEventReturns(subevents$permno, subevents$appointment_date, subevents$eff_announce_date,
+                              days.before=-252, days.after=0,
+                              label="ret_appt_m12_annc")
+ret.data.d$appointment_date <- ret.data.d$event_date
+ret.data.d$eff_announce_date <- ret.data.d$end_event_date
+ret.data.d$event_date <- NULL
+ret.data.d$end_event_date <- NULL
+merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date", "eff_announce_date"), all = TRUE)
+
+# Before Appointment Date (Long-term, -12,0) - Breakdown_2 (annc, appt)
+ret.data.d <- getEventReturns(subevents$permno, subevents$eff_announce_date, subevents$appointment_date,
+                              days.before=0, days.after=0,
+                              label="ret_appt_annc_appt")
+ret.data.d$eff_announce_date <- ret.data.d$event_date
+ret.data.d$appointment_date <- ret.data.d$end_event_date
+ret.data.d$event_date <- NULL
+ret.data.d$end_event_date <- NULL
+merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date", "appointment_date"), all = TRUE)
 
 
 
