@@ -252,7 +252,6 @@ rm(t6.pa)
 \end{tabularx}
 \end{table}
 
-\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_ceo.sql'))}
 % Panel B - CEO turnover and compensation
 <<ceo_data_step>>=
 
