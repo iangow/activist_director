@@ -101,6 +101,10 @@ ceo_turnover <-
     arrange(fy_end) %>%
     mutate(lag_fy_end = lag(fy_end),
            ceo_turnover = executive_id != lag(executive_id)) %>%
+    mutate(ceo_turnover = if_else(!is.na(date_start_ceo) &
+                                      date_start_ceo < fy_end - sql("interval '1 year'") &
+                                      (is.na(date_resign_ceo) | date_resign_ceo > fy_end),
+                                  FALSE, ceo_turnover)) %>%
     ungroup() %>%
     filter(is.na(lag_fy_end) | lag_fy_end > sql("fy_end - interval '13 months'")) %>%
     select(company_id, fy_end, ceo_turnover) %>%
@@ -110,6 +114,7 @@ ceo_turnover <-
     mutate(ceo_turnover_p2 = ceo_turnover_p1 | lead(ceo_turnover, 2L)) %>%
     mutate(ceo_turnover_p3 = ceo_turnover_p2 | lead(ceo_turnover, 3L)) %>%
     mutate_at(vars(matches("^ceo_turnover_p")), .funs = as.integer) %>%
+    ungroup() %>%
     compute()
 
 # Process data ----
