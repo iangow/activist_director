@@ -51,7 +51,7 @@ source('code/create_activism_events.R', echo=TRUE)
 # runSQL('code/create_first_voting.sql')
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
-source('code/create_equilar_w_activism.R', echo=TRUE)
+source('code/create_iss_voting.R', echo=TRUE)
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
