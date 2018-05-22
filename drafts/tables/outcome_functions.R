@@ -1,3 +1,4 @@
+library(dplyr, warn.conflicts = FALSE)
 devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
                             "acct_data/master/code/cluster2.R"))
 # Simple regressions ----
@@ -137,11 +138,9 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
 get.model.2 <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.controls=FALSE) {
 
-    data <- within(data, {
-        year <- as.factor(year)
-        category_activist_director <- as.factor(category_activist_director)
-        sic2 <- as.factor(sic2)
-    })
+    data <-
+        data %>%
+        mutate_at(c("year", "category", "sic2"), as.factor)
 
     rhs <- trim(paste(rhs.t6.1, if(include.lag) "lagged.var", if(use.controls) controls))
 

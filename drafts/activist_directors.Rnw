@@ -82,8 +82,8 @@ dirs <- dbGetQuery(pg, "
         WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
 
     SELECT COUNT(*) AS all_dirs,
-        sum((independent IS FALSE)::int) AS affiliated,
-        sum((independent IS TRUE)::int) AS unaffiliated,
+        sum((independent=0)::int) AS affiliated,
+        sum((independent=1)::int) AS unaffiliated,
         sum(elected::int) AS elected,
         sum((NOT elected)::int) AS settled
     FROM ad_years
