@@ -1,4 +1,3 @@
-
 devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
                             "acct_data/master/code/cluster2.R"))
 # Simple regressions ----
@@ -44,19 +43,13 @@ make.fTest.table <- function(model.set, data) {
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        c(linearHypothesis(model, "categoryactivism - categoryactivist_director",
-                           vcov.=cov)[4][2,],
-          linearHypothesis(model, "categoryactivism - categoryactivist_demand",
-                           vcov.=cov)[4][2,],
-          linearHypothesis(model, "categoryactivist_demand - categoryactivist_director",
-                           vcov.=cov)[4][2,])
+        linearHypothesis(model, "category_activist_directornon_activist_director - category_activist_directoractivist_director",
+                           vcov.=cov)[4][2,]
     }
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
     # temp <-  do.call(cbind, mclapply(t6.pa, FUN = fTest, mc.cores=4))
-    row.names(temp) <- c("Non-board activism = Activist director",
-                         "Non-board activism = Board demand",
-                         "Board demand = Activist director")
+    row.names(temp) <- c("Non-activist director = Activist director")
     return(as.data.frame(temp))
 }
 
@@ -86,7 +79,7 @@ stargazer.mod <- function(model.set, col.labels, row.labels, omits, ftable=NULL)
               p=getPs(model.set),
               se=getSEs(model.set),
               align=TRUE, float=FALSE, no.space=TRUE,
-              omit=c("^sic", "^year", omits),
+              omit=c("^sic", "^year", "^Costant", omits),
               keep.stat=c("n", "adj.rsq"),
               omit.table.layout="n",
               font.size="small",
@@ -101,7 +94,7 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs.t6.1 <- "category year sic2"
+rhs.t6.1 <- "category_activist_director year sic2"
 rhs.t6.2 <- "activist_director year sic2 log_at"
 rhs.t6.3 <- "activism activist_demand affiliated non_affiliated year sic2 "
 rhs.t6.4 <- "early year sic2 log_at"
@@ -119,7 +112,7 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
     data <- within(data, {
         year <- as.factor(year)
-        category <- as.factor(category)
+        category_activist_director <- as.factor(category_activist_director)
         sic2 <- as.factor(sic2)
     })
 
@@ -146,7 +139,7 @@ get.model.2 <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.con
 
     data <- within(data, {
         year <- as.factor(year)
-        category <- as.factor(category)
+        category_activist_director <- as.factor(category_activist_director)
         sic2 <- as.factor(sic2)
     })
 

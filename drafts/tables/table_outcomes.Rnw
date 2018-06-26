@@ -197,7 +197,7 @@ reg.data <-
     inner_join(delisting_data, by = c("permno", "datadate")) %>%
     collect() %>%
     mutate_at(win_vars, win01) %>%
-    mutate(activism = if_else(category=="_none", FALSE, TRUE)) %>%
+    mutate(category_activist_director = if_else(!is.na(category_activist_director), category_activist_director, "_none")) %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
@@ -242,7 +242,7 @@ lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
 t6.pa <- lapply(lhs.vars, get.model.2, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
-row.labels <- c("Non-board activism", "Board demand", "Activist director")
+row.labels <- c("Activist director","Non-Activist director")
 col.labels <-c ("Acquisition", "Acquired", "Divestiture")
 names(summ) <- col.labels
 stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
@@ -268,6 +268,7 @@ reg.data <-
     ceo_outcomes %>%
     collect() %>%
     mutate_at(win_vars, win01) %>%
+    mutate(category_activist_director = if_else(!is.na(category_activist_director), category_activist_director, "_none")) %>%
     distinct() %>%
     as.data.frame()
 
@@ -300,8 +301,8 @@ lhs.vars <- list("ceo_turnover", "ceo_comp")
 t6.pb <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
 col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
-row.labels <- c("Non-board activism", "Board demand", "Activist director",
-                "$\\textrm{Dep. var.}_{t}$")
+row.labels <- c("Activist director", "Non-Activist director",
+                "$\\textrm{Dep. var.}_{t}$", "$\\textrm{lagged.var}$")
 names(summ) <- col.labels
 stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 rm(t6.pb)
@@ -339,7 +340,7 @@ reg.data <-
     filter(firm_exists_p2) %>%
     collect() %>%
     mutate_at(win_vars, win01) %>%
-    mutate(activism = if_else(category=="_none", FALSE, TRUE)) %>%
+    mutate(category_activist_director = if_else(!is.na(category_activist_director), category_activist_director, "_none")) %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
@@ -369,7 +370,7 @@ Values in parentheses are standard errors clustered by firm.
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
 t6.pd <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-row.labels <- c("Non-board activism", "Board demand", "Activist director",
+row.labels <- c("Activist director", "Non-Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("Cash", "Leverage", "Payout")
 summ <- make.fTest.table(t6.pd, reg.data)
@@ -405,7 +406,7 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
 t6.pf <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
-row.labels <- c("Non-board activism", "Board demand", "Activist director",
+row.labels <- c("Activist director", "Non-Activist director",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("$\\textrm{CapEx}$",
                 "$\\textrm{R\\&D}$",
