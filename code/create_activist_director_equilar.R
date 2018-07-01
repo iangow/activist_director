@@ -18,14 +18,16 @@ permcos <-
     stocknames %>%
     select(permno, permco) %>%
     distinct() %>%
+    arrange(permno, permco) %>%
     compute()
 
 permnos <-
-   stocknames %>%
-   select(permno, permco, ncusip) %>%
-   # rename(cusip = ncusip) %>%
-   distinct() %>%
-   compute()
+    stocknames %>%
+    select(permno, permco, ncusip) %>%
+    # rename(cusip = ncusip) %>%
+    distinct() %>%
+    arrange(permno, permco) %>%
+    compute()
 
 equilar <-
     director_index %>%
@@ -39,6 +41,7 @@ equilar <-
     select(company_id, executive_id, director_name, period,
            first_name, last_name, start_date, cusip) %>%
     rename(director = director_name) %>%
+    arrange(company_id, executive_id, period) %>%
     compute()
 
 equilar_w_permnos <-
@@ -51,6 +54,7 @@ first_name_years <-
     equilar %>%
     group_by(company_id, executive_id) %>%
     summarize(period = min(period)) %>%
+    arrange(company_id, executive_id) %>%
     compute()
 
 equilar_final <-
@@ -77,6 +81,7 @@ activist_directors_mod <-
     mutate(first1 = substr(first_name_l, 1L, 1L),
            first2 = substr(first_name_l, 1L, 2L)) %>%
     inner_join(permcos) %>%
+    arrange(permco, appointment_date) %>%
     compute()
 
 match_1 <-
@@ -125,6 +130,7 @@ activist_director_equilar <-
               anti_join(match_b,
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     select(campaign_id, first_name, last_name, company_id, executive_id) %>%
+    arrange(company_id, executive_id) %>%
     compute(name = "activist_director_equilar", temporary=FALSE)
 
 dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS

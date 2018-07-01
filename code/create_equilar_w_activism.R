@@ -22,7 +22,7 @@ equilar <-
     select(-ticker, -company_name) %>%
     rename(period = fye) %>%
     inner_join(director_index, by = c("company_id", "period")) %>%
-    filter(period > '2003-12-31') %>%
+    filter(period > '2000-12-31') %>%
     mutate(tenure_calc = (period - date_start)/365.25,
            female = gender=='F',
            male = gender=='M') %>%
@@ -39,7 +39,10 @@ equilar <-
            comp_committee = coalesce(cmtes %~% 'Comp', FALSE),
            audit_committee = coalesce(cmtes %~% 'Audit', FALSE)) %>%
     rename(director = director_name,
-           audit_committee_financial_expert = is_audit_cmte_spec)
+           audit_committee_financial_expert = is_audit_cmte_spec)  %>%
+    distinct() %>%
+    arrange(company_id, executive_id, period) %>%
+    compute()
 
 # Match Equilar to PERMCOs
 equilar_permnos <-
@@ -51,6 +54,7 @@ equilar_permnos <-
     inner_join(stocknames, by = "permno") %>%
     select(company_id, period, permno, permco) %>%
     distinct() %>%
+    arrange(company_id, period) %>%
     compute()
 
 # Identify companies' first years
@@ -58,14 +62,16 @@ company_first_years <-
     company_financials %>%
     group_by(company_id) %>%
     summarize(period = min(fye)) %>%
-    mutate(firm_first_year = TRUE)
+    mutate(firm_first_year = TRUE) %>%
+    arrange(company_id)
 
 # Identify directors' first years
 director_first_years <-
     director_index %>%
     group_by(company_id, executive_id) %>%
     summarize(date_start = min(date_start),
-              period = min(period))
+              period = min(period)) %>%
+    arrange(company_id, executive_id)
 
 # Classify directors' first years on Equilar based on whether
 # they were appointed during an activism event or shortly thereafter
@@ -78,20 +84,24 @@ equilar_activism_match <-
     summarize(sharkwatch50 = bool_or(sharkwatch50),
               activism_firm = bool_or(activism),
               activist_demand_firm = bool_or(activist_demand),
-              activist_director_firm = bool_or(activist_director))
+              activist_director_firm = bool_or(activist_director)) %>%
+    arrange(company_id, executive_id, period)
 
 activist_directors_mod <-
     activist_directors %>%
-    inner_join(activist_director_equilar)
+    inner_join(activist_director_equilar) %>%
+    arrange(company_id, executive_id, appointment_date)
 
 director_first_years_plus <-
     director_first_years %>%
     left_join(equilar_activism_match,
               by = c("company_id", "executive_id", "period")) %>%
+    select(-date_start, -permno) %>%
     mutate(director_first_year = TRUE)
 
 rs <- dbExecute(pg, "BEGIN")
 rs <- dbExecute(pg, "DROP TABLE IF EXISTS equilar_w_activism")
+
 equilar_w_activism <-
     equilar %>%
     left_join(company_first_years, by = c("company_id", "period")) %>%
@@ -107,12 +117,14 @@ equilar_w_activism <-
            activist_demand_firm = coalesce(activist_demand_firm, FALSE),
            activist_director_firm = coalesce(activist_director_firm, FALSE),
            activist_director = !is.na(appointment_date) & director_first_year,
-           independent = independent & director_first_year,
+           independent = case_when(independent & director_first_year ~ TRUE, TRUE ~ FALSE),
            affiliated_director = !independent,
            category = case_when(activist_director_firm ~ "activist_director_firm",
                                 activist_demand_firm ~ "activist_demand_firm",
                                 activism_firm ~ "activism_firm",
                                 TRUE ~ "_none")) %>%
+    distinct() %>%
+    arrange(company_id, executive_id, period) %>%
     compute(name = "equilar_w_activism", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE equilar_w_activism OWNER TO activism")
