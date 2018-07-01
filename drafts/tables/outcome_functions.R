@@ -95,11 +95,11 @@ xtable.mod <- function(summ) {
 
 # RHS of models
 rhs.t6.1 <- "category_activist_director year sic2"
-rhs.t6.2 <- "activist_director year sic2 log_at"
+rhs.t6.2 <- "activist_director year sic2"
 rhs.t6.3 <- "activism activist_demand affiliated non_affiliated year sic2 "
-rhs.t6.4 <- "early year sic2 log_at"
-rhs.t6.5 <- "big_investment year sic2 log_at"
-rhs.t6.6 <- "two_plus year sic2 log_at"
+rhs.t6.4 <- "early year sic2"
+rhs.t6.5 <- "big_investment year sic2"
+rhs.t6.6 <- "two_plus year sic2"
 
 trim <- function (x) {
   # Function removes spaces at end or beginning

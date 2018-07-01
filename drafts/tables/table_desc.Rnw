@@ -34,12 +34,12 @@ summ.dirs <- dbGetQuery(pg, "
             (retirement_date IS NULL)::int AS still_active,
             (retirement_date IS NOT NULL)::int AS left_board,
             (retirement_date-appointment_date)::float8 AS tenure,
-            COALESCE(retirement_date, '2016-09-30')-appointment_date AS tenure_censored,
+            COALESCE(retirement_date, '2017-12-31')-appointment_date AS tenure_censored,
             extract(year FROM a.eff_announce_date) AS year
         FROM activist_director.activist_directors AS a
         INNER JOIN activist_director.activism_events AS b
         ON a.permno=b.permno AND a.dissident_group=b.dissident_group AND a.eff_announce_date=b.eff_announce_date
-        WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL)
+        WHERE appointment_date IS NOT NULL AND b.permno IS NOT NULL AND independent IS NOT NULL)
 
     SELECT year,
         COUNT(*) AS activist_director,
