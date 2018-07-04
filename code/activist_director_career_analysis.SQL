@@ -1,3 +1,11 @@
+--------------------------------------------------------
+-------- Create activist_director.equilar_final --------
+--------------------------------------------------------
+
+DROP TABLE IF EXISTS activist_director.equilar_final CASCADE;
+
+CREATE TABLE activist_director.equilar_final AS
+
 WITH equilar AS (
     SELECT DISTINCT c.permno, a.executive_id, extract(YEAR FROM a.period) AS YEAR, a.period,
     substr(b.sic,1,2) AS sic2,
@@ -97,17 +105,28 @@ equilar_final AS (
     ON a.executive_id=dd.executive_id
     LEFT JOIN director_industry_expert AS e
     ON a.executive_id=e.executive_id AND a.sic2=e.sic2 AND e.count > 1
-    ORDER BY permno, executive_id),
+    ORDER BY permno, executive_id)
 
-company_years AS (
+SELECT * FROM equilar_final;
+
+
+---------------------------------------------------------
+-------- Create activist_director.equilar_career --------
+---------------------------------------------------------
+
+DROP TABLE IF EXISTS activist_director.equilar_career CASCADE;
+
+CREATE TABLE activist_director.equilar_career AS
+
+WITH company_years AS (
     SELECT DISTINCT permno, period
-    FROM equilar_final
+    FROM activist_director.equilar_final
     ORDER BY permno, period),
 
 -- Get all firm-director combinations (note: no years)
 company_directors AS (
     SELECT DISTINCT permno, executive_id, company_director_min_start, company_director_max_term
-    FROM equilar_final
+    FROM activist_director.equilar_final
     ORDER BY permno, executive_id),
 
 own_board AS (
@@ -154,14 +173,14 @@ own_boards AS (
 
 directorship_counts AS (
     SELECT DISTINCT a.executive_id, YEAR, count(a.permno) AS total_boards, sum(a.insider::INT) AS inside_boards, sum(a.outsider::INT) AS outside_boards
-    FROM equilar_final AS a
+    FROM activist_director.equilar_final AS a
     GROUP BY executive_id, YEAR
     ORDER BY executive_id, YEAR),
 
 all_company_director_years AS (
     SELECT DISTINCT a.executive_id, a.permno, b.year
-    FROM (SELECT DISTINCT executive_id, permno FROM equilar_final) AS a,
-    (SELECT DISTINCT year FROM equilar_final) AS b
+    FROM (SELECT DISTINCT executive_id, permno FROM activist_director.equilar_final) AS a,
+    (SELECT DISTINCT year FROM activist_director.equilar_final) AS b
     ORDER BY executive_id, permno, year),
 
 -- Other Boards = Total Boards - Own Board
@@ -200,13 +219,16 @@ count_others AS (
     lead(other_boards, 5) OVER w AS other_p5
     FROM count_other
     WINDOW w AS (PARTITION BY permno, executive_id ORDER BY year)
-    ORDER BY executive_id, permno, year),
+    ORDER BY executive_id, permno, year)
 
-equilar_activism_match AS (
-    SELECT *
-        FROM company_director_min_start AS a
-    INNER JOIN activist_director.activism_events AS b
-    ON a.permno=b.permno AND company_director_min_start BETWEEN first_date AND end_date + INTERVAL '128 DAYS'
-    ORDER BY a.permno, executive_id)
+SELECT DISTINCT a.*, b.inside_boards, outside_boards,
+                total_m3, total_m2, total_m1, total_boards, total_p1, total_p2, total_p3, total_p4, total_p5,
+                other_m3, other_m2, other_m1, other_boards, other_p1, other_p2, other_p3, other_p4, other_p5
+FROM own_boards AS a
+LEFT JOIN count_others AS b
+ON a.permno=b.permno AND a.executive_id=b.executive_id AND extract(YEAR FROM a.period)=b.year
+ORDER BY permno, executive_id, period;
 
-SELECT * FROM equilar_activism_match
+-----------------------------------------------------------------
+-------- Create activist_director.equilar_activism_match --------
+-----------------------------------------------------------------
