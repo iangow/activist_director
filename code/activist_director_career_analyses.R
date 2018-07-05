@@ -29,13 +29,13 @@ dir.data <- within(dir.data, {
 })
 
 controls <- c("factor(year)", "factor(sic2)",
-              "outsider", "age", "tenure_calc", "comp_committee", "audit_committee",
+              "outsider", "age", "female", "tenure_calc", "comp_committee", "audit_committee",
               "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
 controls1 <- c("factor(year)", "factor(sic2)",
-              "outsider", "age", "comp_committee", "audit_committee",
+              "outsider", "age", "female", "comp_committee", "audit_committee",
               "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
 controls2 <- c("factor(year)", "factor(sic2)",
-               "age", "tenure_calc", "comp_committee", "audit_committee",
+               "age", "female", "comp_committee", "audit_committee",
                "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
 
 # Set up models
