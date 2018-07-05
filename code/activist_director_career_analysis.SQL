@@ -127,13 +127,13 @@ WITH company_years AS (
 
 -- Get all firm-director combinations (note: no years)
 company_directors AS (
-    SELECT DISTINCT permno, executive_id, company_director_min_start, company_director_max_term
+    SELECT DISTINCT permno, executive_id, company_director_min_start, company_director_min_period, company_director_max_term
     FROM activist_director.equilar_final
     ORDER BY permno, executive_id),
 
 own_board AS (
-    SELECT DISTINCT a.permno, a.executive_id, b.period, a.company_director_min_start, a.company_director_max_term,
-                b.period BETWEEN a.company_director_min_start AND a.company_director_max_term AS own_board,
+    SELECT DISTINCT a.permno, a.executive_id, b.period, a.company_director_min_start, a.company_director_min_period, a.company_director_max_term,
+                b.period BETWEEN LEAST(a.company_director_min_start, a.company_director_min_period) AND a.company_director_max_term AS own_board,
     TRUE AS firm_exists
     FROM company_directors AS a
     LEFT JOIN company_years AS b
@@ -141,7 +141,7 @@ own_board AS (
     ORDER BY permno, executive_id, period),
 
 own_boards AS (
-    SELECT permno, executive_id, period, company_director_min_start, company_director_max_term,
+    SELECT permno, executive_id, period, company_director_min_start, company_director_min_period, company_director_max_term,
                 --        lag(own_board, 3) over w AS own_m3,
                 --        lag(own_board, 2) over w AS own_m2,
                 --        lag(own_board, 1) over w AS own_m1,
@@ -281,3 +281,77 @@ ORDER BY permno, executive_id, first_name, last_name, period, director_first_yea
 
 SELECT *
 FROM unique_matches
+
+
+-----------------------------------------------------------
+-------- Create activist_director.equilar_activism --------
+-----------------------------------------------------------
+DROP TABLE IF EXISTS activist_director.equilar_all;
+
+CREATE TABLE activist_director.equilar_all AS
+
+SELECT DISTINCT a.*,
+			b.own_m3, b.own_m2, b.own_m1, b.own_board, b.own_p1, b.own_p2, b.own_p3, b.own_p4, b.own_p5,
+			b.firm_exists_m3, b.firm_exists_m2, b.firm_exists_m1, b.firm_exists, b.firm_exists_p1, b.firm_exists_p2, b.firm_exists_p3, b.firm_exists_p4, b.firm_exists_p5,
+			b.total_m3, b.total_m2, b.total_m1, b.total_boards, b.total_p1, b.total_p2, b.total_p3, b.total_p4, b.total_p5,
+			b.other_m3, b.other_m2, b.other_m1, b.other_boards, b.other_p1, b.other_p2, b.other_p3, b.other_p4, b.other_p5,
+			b.inside_boards, b.outside_boards,
+			c.activism_firm, c.activist_demand_firm, c.activist_director_firm, c.activist_director, c.affiliated_director, c.unaffiliated_director,
+			d.analyst, d.inst, d.size_return, d.mv, d.btm, d.leverage, d.dividend, d.roa, d.sale_growth, d.payout
+FROM activist_director.equilar_final AS a
+LEFT JOIN activist_director.equilar_career AS b
+ON a.permno=b.permno AND a.executive_id=b.executive_id AND a.period=b.period
+LEFT JOIN activist_director.equilar_activism AS c
+ON a.permno=c.permno AND a.executive_id=c.executive_id AND a.period=c.period
+LEFT JOIN activist_director.outcome_controls AS d
+ON a.permno=d.permno AND a.period=d.datadate
+WHERE own_board
+ORDER BY permno, executive_id, period;
+
+SELECT * FROM activist_director.equilar_all;
+
+-- DESCRIPTIVE STATISTICS (Focusing on Appointment years)
+SELECT activist_director, affiliated_director,
+	avg(age) AS age,
+	avg(female::INT) AS female,
+	avg(comp_committee::INT) AS comp_committee,
+	avg(audit_committee::INT) AS audit_committee,
+	avg(cmtes_cnt) AS committee,
+	avg(audit_committee_financial_expert::INT) AS audit_committee_financial_expert,
+	avg(industry_expert::INT) AS industry_expert,
+	avg(super_industry_expert::INT) AS super_industry_expert,
+FROM activist_director.equilar_all
+WHERE director_first_years --AND own_m1 IS FALSE
+GROUP BY activist_director, affiliated_director
+ORDER BY activist_director, affiliated_director;
+
+SELECT activist_director, affiliated_director,
+    avg(own_m3::INT) AS own_m3,
+	avg(own_m2::INT) AS own_m2,
+	avg(own_m1::INT) AS own_m1,
+	avg(own_board::INT) AS own_p0,
+	avg(own_p1::INT) AS own_p1,
+	avg(own_p2::INT) AS own_p2,
+	avg(own_p3::INT) AS own_p3,
+	avg(own_p4::INT) AS own_p4,
+	avg(own_p5::INT) AS own_p5,
+FROM activist_director.equilar_all
+WHERE director_first_years --AND own_m1 IS FALSE
+GROUP BY activist_director, affiliated_director
+ORDER BY activist_director, affiliated_director;
+
+SELECT activist_director, affiliated_director,
+	avg(other_m3) AS other_m3,
+	avg(other_m2) AS other_m2,
+	avg(other_m1) AS other_m1,
+	avg(other_boards) other_p0,
+	avg(other_p1) AS other_p1,
+	avg(other_p2) AS other_p2,
+	avg(other_p3) AS other_p3,
+	avg(other_p4) AS other_p4,
+	avg(other_p5) AS other_p5,
+	count(other_boards)
+FROM activist_director.equilar_all
+WHERE director_first_years --AND own_m1 IS FALSE
+GROUP BY activist_director, affiliated_director
+ORDER BY activist_director, affiliated_director;
