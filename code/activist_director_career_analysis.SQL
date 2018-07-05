@@ -249,7 +249,7 @@ WITH equilar_activist_director_match AS (
 	ORDER BY permno, executive_id), --1456 activist directors matched to equilar
 
 equilar_activism_event_match AS (
-    SELECT DISTINCT a.permno, a.executive_id, a.first_name, a.last_name, period, a.director_first_years,
+    SELECT DISTINCT a.permno, a.executive_id, a.first_name, a.last_name, period, a.director_first_years, b.appointment_date, b.retirement_date,
             	COALESCE(b.independent IS NOT NULL, FALSE) AS activist_director,
             	COALESCE(b.independent IS FALSE, FALSE) AS affiliated_director,
             	COALESCE(b.independent IS TRUE, FALSE) AS unaffiliated_director,
@@ -266,7 +266,7 @@ equilar_activism_event_match AS (
     ORDER BY a.permno, executive_id),
 
 unique_matches AS (
-SELECT DISTINCT permno, executive_id, first_name, last_name, period, director_first_years,
+SELECT DISTINCT permno, executive_id, first_name, last_name, period, director_first_years, appointment_date, retirement_date,
 				BOOL_OR(activism_firm) AS activism_firm,
 				BOOL_OR(activist_demand_firm) AS activist_demand_firm,
 				BOOL_OR(activist_director_firm) AS activist_director_firm,
@@ -274,9 +274,8 @@ SELECT DISTINCT permno, executive_id, first_name, last_name, period, director_fi
 				BOOL_OR(affiliated_director) AS affiliated_director,
 				BOOL_OR(unaffiliated_director) AS unaffiliated_director
 FROM equilar_activism_event_match
---WHERE activist_director
-GROUP BY permno, executive_id, first_name, last_name, period, director_first_years
-ORDER BY permno, executive_id, first_name, last_name, period, director_first_years)
+GROUP BY permno, executive_id, first_name, last_name, period, director_first_years, appointment_date, retirement_date
+ORDER BY permno, executive_id, period)
 --1316 activist directors successfully MATCHED
 
 SELECT *
@@ -297,6 +296,7 @@ SELECT DISTINCT a.*,
 			b.other_m3, b.other_m2, b.other_m1, b.other_boards, b.other_p1, b.other_p2, b.other_p3, b.other_p4, b.other_p5,
 			b.inside_boards, b.outside_boards,
 			c.activism_firm, c.activist_demand_firm, c.activist_director_firm, c.activist_director, c.affiliated_director, c.unaffiliated_director,
+			c.appointment_date, c.retirement_date,
 			d.analyst, d.inst, d.size_return, d.mv, d.btm, d.leverage, d.dividend, d.roa, d.sale_growth, d.payout
 FROM activist_director.equilar_final AS a
 LEFT JOIN activist_director.equilar_career AS b
@@ -308,10 +308,11 @@ ON a.permno=d.permno AND a.period=d.datadate
 WHERE own_board
 ORDER BY permno, executive_id, period;
 
-SELECT * FROM activist_director.equilar_all;
 
--- DESCRIPTIVE STATISTICS (Focusing on Appointment years)
-SELECT activist_director, affiliated_director,
+----------------------------------------------------------------
+---- DESCRIPTIVE STATISTICS (Focusing on Appointment years) ----
+----------------------------------------------------------------
+SELECT activist_director, affiliated_director, count(activist_director),
 	avg(age) AS age,
 	avg(female::INT) AS female,
 	avg(comp_committee::INT) AS comp_committee,
@@ -319,13 +320,13 @@ SELECT activist_director, affiliated_director,
 	avg(cmtes_cnt) AS committee,
 	avg(audit_committee_financial_expert::INT) AS audit_committee_financial_expert,
 	avg(industry_expert::INT) AS industry_expert,
-	avg(super_industry_expert::INT) AS super_industry_expert,
+	avg(super_industry_expert::INT) AS super_industry_expert
 FROM activist_director.equilar_all
 WHERE director_first_years --AND own_m1 IS FALSE
 GROUP BY activist_director, affiliated_director
 ORDER BY activist_director, affiliated_director;
 
-SELECT activist_director, affiliated_director,
+SELECT activist_director, affiliated_director, count(own_board),
     avg(own_m3::INT) AS own_m3,
 	avg(own_m2::INT) AS own_m2,
 	avg(own_m1::INT) AS own_m1,
@@ -334,13 +335,13 @@ SELECT activist_director, affiliated_director,
 	avg(own_p2::INT) AS own_p2,
 	avg(own_p3::INT) AS own_p3,
 	avg(own_p4::INT) AS own_p4,
-	avg(own_p5::INT) AS own_p5,
+	avg(own_p5::INT) AS own_p5
 FROM activist_director.equilar_all
 WHERE director_first_years --AND own_m1 IS FALSE
 GROUP BY activist_director, affiliated_director
 ORDER BY activist_director, affiliated_director;
 
-SELECT activist_director, affiliated_director,
+SELECT activist_director, affiliated_director, count(other_boards),
 	avg(other_m3) AS other_m3,
 	avg(other_m2) AS other_m2,
 	avg(other_m1) AS other_m1,
@@ -349,8 +350,7 @@ SELECT activist_director, affiliated_director,
 	avg(other_p2) AS other_p2,
 	avg(other_p3) AS other_p3,
 	avg(other_p4) AS other_p4,
-	avg(other_p5) AS other_p5,
-	count(other_boards)
+	avg(other_p5) AS other_p5
 FROM activist_director.equilar_all
 WHERE director_first_years --AND own_m1 IS FALSE
 GROUP BY activist_director, affiliated_director
