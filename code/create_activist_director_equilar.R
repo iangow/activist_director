@@ -129,7 +129,7 @@ activist_director_equilar <-
     union(match_4 %>%
               anti_join(match_b,
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id) %>%
+    select(campaign_id, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
     arrange(company_id, executive_id) %>%
     compute(name = "activist_director_equilar", temporary=FALSE)
 
