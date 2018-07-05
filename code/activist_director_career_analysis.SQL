@@ -18,7 +18,8 @@ WITH equilar AS (
                 insider_outsider_related='Insider' AS insider,
                 COALESCE(cmtes ~ 'Comp', FALSE) AS comp_committee,
                 COALESCE(cmtes ~ 'Audit', FALSE) AS audit_committee,
-                cmtes_cnt, cmtes, is_audit_cmte_spec AS audit_committee_financial_expert,
+                cmtes_cnt, cmtes, cmtes_cnt > 0 AS any_committee,
+                is_audit_cmte_spec AS audit_committee_financial_expert,
                 is_chair, is_vice_chair, is_lead
     FROM equilar_hbs.director_index AS a
     INNER JOIN equilar_hbs.company_financials AS b
@@ -279,7 +280,7 @@ ORDER BY permno, executive_id, period)
 --1316 activist directors successfully MATCHED
 
 SELECT *
-FROM unique_matches
+FROM unique_matches;
 
 
 -----------------------------------------------------------
@@ -297,7 +298,11 @@ SELECT DISTINCT a.*,
 			b.inside_boards, b.outside_boards,
 			c.activism_firm, c.activist_demand_firm, c.activist_director_firm, c.activist_director, c.affiliated_director, c.unaffiliated_director,
 			c.appointment_date, c.retirement_date,
-			d.analyst, d.inst, d.size_return, d.mv, d.btm, d.leverage, d.dividend, d.roa, d.sale_growth, d.payout
+			d.analyst, d.inst, d.size_return, d.mv, d.btm, d.leverage, d.dividend, d.roa, d.sale_growth, d.payout,
+			CASE WHEN activist_director_firm THEN 'activist_director_firm'
+                WHEN activist_demand_firm THEN 'activist_demand_firm'
+                WHEN activism_firm THEN 'activism_firm'
+                    ELSE '_none' END AS category
 FROM activist_director.equilar_final AS a
 LEFT JOIN activist_director.equilar_career AS b
 ON a.permno=b.permno AND a.executive_id=b.executive_id AND a.period=b.period
