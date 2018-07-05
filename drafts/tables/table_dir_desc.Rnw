@@ -15,7 +15,7 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
-equilar_w_activism <- tbl(pg, "equilar_w_activism")
+equilar_w_activism <- tbl(pg, "equilar_all")
 
 censor_date <- "2017-12-31"
 
@@ -72,7 +72,7 @@ act.dir.data <-
 new.dir.data <-
     equilar_w_activism %>%
     filter(!is.na(age),
-           director_first_year) %>%
+           director_first_years) %>%
     mutate(new_directors = as.character("New directors")) %>%
     select(new_directors, everything()) %>%
     collect()
