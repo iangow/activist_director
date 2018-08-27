@@ -83,6 +83,7 @@ Section \ref{sect:lit_review} describes features of shareholder activism campaig
 Section \ref{sect:desc_stats} describes our data and descriptive statistics.
 Section \ref{sect:selection} examines the circumstances in which activists seek and obtain board representation.
 Section \ref{sect:holding} examines the association with activist board representation and activist holding periods.
+Section \ref{sect:career} examines the career consquences of activist directors.
 Section \ref{sect:returns} examines stock returns for activism targets with and without board-related demands and
 for firm where activists get board representation.
 Section \ref{sect:outcomes} examines the association between activist directors and firm outcomes, such as operating performance, investment behavior and CEO incentives.
