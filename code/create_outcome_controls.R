@@ -3,7 +3,7 @@ library(dplyr, warn.conflicts = FALSE)
 
 pg <- dbConnect(PostgreSQL())
 
-rs <- dbGetQuery(pg, "SET search_path TO activist_director, public")
+rs <- dbGetQuery(pg, "SET search_path TO public, activist_director")
 
 rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
@@ -12,7 +12,7 @@ rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 activist_director.permnos <- tbl(pg, "permnos")
 activism_events <- tbl(pg, "activism_events")
 activist_director.inst <- tbl(pg, "inst")
-equilar_w_activism <- tbl(pg, "equilar_w_activism")
+equilar_w_activism <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_activism"))
 
 issvoting.compvote <- tbl(pg, sql("SELECT * FROM issvoting.compvote"))
 factset.sharkrepellent  <- tbl(pg, sql("SELECT * FROM factset.sharkrepellent"))
@@ -246,12 +246,13 @@ equilar_w_permno <-
     inner_join(
         equilar_hbs.company_financials %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
-            select(company_id, period, ncusip)) %>%
-    inner_join(activist_director.permnos) %>%
+            select(company_id, period, ncusip),copy=TRUE) %>%
+    inner_join(activist_director.permnos,copy=TRUE) %>%
     select(-ncusip, -company_id) %>%
     rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%
-    compute()
+    compute() %>%
+    arrange(permno, datadate)
 
 inst <-
     activist_director.inst %>%
@@ -259,13 +260,13 @@ inst <-
 
 controls <-
     compustat_w_permno %>%
-    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE)) %>%
-    left_join(crsp) %>%
-    left_join(crsp_m1) %>%
-    left_join(staggered_board) %>%
-    left_join(sharkrepellent) %>%
-    left_join(ibes) %>%
-    left_join(inst) %>%
+    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE), copy=TRUE) %>%
+    left_join(crsp, copy=TRUE) %>%
+    left_join(crsp_m1, copy=TRUE) %>%
+    left_join(staggered_board, copy=TRUE) %>%
+    left_join(sharkrepellent, copy=TRUE) %>%
+    left_join(ibes, copy=TRUE) %>%
+    left_join(inst, copy=TRUE) %>%
     mutate(inst = coalesce(inst, 0),
            analyst = coalesce(analyst, 0),
            on_equilar = coalesce(on_equilar, FALSE)) %>%
@@ -286,20 +287,20 @@ last_date <-
 
 controls_activism_years <-
     firm_years %>%
-    inner_join(activism_events) %>%
+    inner_join(activism_events, copy=TRUE) %>%
     filter(between(eff_announce_date, datadate,
                     sql("datadate + interval '1 year - 1 day'"))) %>%
     select(-gvkey) %>%
     distinct() %>%
     arrange(permno, datadate)
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS outcome_controls")
+rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.outcome_controls")
 
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
     compute() %>%
-    left_join(controls_activism_years) %>%
+    left_join(controls_activism_years, copy=TRUE) %>%
     arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
@@ -310,11 +311,15 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    compute(name = "outcome_controls", temporary = FALSE)
+    collect()
 
-rs <- dbGetQuery(pg, "COMMENT ON TABLE outcome_controls IS
-    'CREATED USING create_outcome_controls.R'")
+rs <- dbWriteTable(pg, c("activist_director", "outcome_controls"), outcome_controls, overwrite=TRUE, row.names=FALSE)
 
-rs <- dbGetQuery(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
+rs <- dbExecute(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
 
-rs <- dbGetQuery(pg, "ALTER TABLE outcome_controls OWNER TO activism")
+rs <- dbExecute(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
+
+sql <- paste("
+             COMMENT ON TABLE activist_director.outcome_controls IS
+             'CREATED USING create_outcome_controls ON ", Sys.time() , "';", sep="")
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
