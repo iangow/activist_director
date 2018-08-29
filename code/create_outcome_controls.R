@@ -316,7 +316,7 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    compute(name = "outcome_controls")
+    compute(name = "outcome_controls", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER TO activism")
 
