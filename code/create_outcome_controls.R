@@ -246,8 +246,8 @@ equilar_w_permno <-
     inner_join(
         equilar_hbs.company_financials %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
-            select(company_id, period, ncusip),copy=TRUE) %>%
-    inner_join(activist_director.permnos,copy=TRUE) %>%
+            select(company_id, period, ncusip)) %>%
+    inner_join(activist_director.permnos) %>%
     select(-ncusip, -company_id) %>%
     rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%
@@ -260,13 +260,13 @@ inst <-
 
 controls <-
     compustat_w_permno %>%
-    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE), copy=TRUE) %>%
-    left_join(crsp, copy=TRUE) %>%
-    left_join(crsp_m1, copy=TRUE) %>%
-    left_join(staggered_board, copy=TRUE) %>%
-    left_join(sharkrepellent, copy=TRUE) %>%
-    left_join(ibes, copy=TRUE) %>%
-    left_join(inst, copy=TRUE) %>%
+    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE)) %>%
+    left_join(crsp) %>%
+    left_join(crsp_m1) %>%
+    left_join(staggered_board) %>%
+    left_join(sharkrepellent) %>%
+    left_join(ibes) %>%
+    left_join(inst) %>%
     mutate(inst = coalesce(inst, 0),
            analyst = coalesce(analyst, 0),
            on_equilar = coalesce(on_equilar, FALSE)) %>%
@@ -287,7 +287,7 @@ last_date <-
 
 controls_activism_years <-
     firm_years %>%
-    inner_join(activism_events, copy=TRUE) %>%
+    inner_join(activism_events) %>%
     filter(between(eff_announce_date, datadate,
                     sql("datadate + interval '1 year - 1 day'"))) %>%
     select(-gvkey) %>%
@@ -300,7 +300,7 @@ outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
     compute() %>%
-    left_join(controls_activism_years, copy=TRUE) %>%
+    left_join(controls_activism_years) %>%
     arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
