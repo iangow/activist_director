@@ -323,3 +323,5 @@ sql <- paste("
              COMMENT ON TABLE activist_director.outcome_controls IS
              'CREATED USING create_outcome_controls ON ", Sys.time() , "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
+
+rs <- dbDisconnect(pg)
