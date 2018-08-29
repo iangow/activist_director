@@ -3,7 +3,7 @@ library(dplyr, warn.conflicts = FALSE)
 
 pg <- dbConnect(PostgreSQL())
 
-rs <- dbGetQuery(pg, "SET search_path TO public, activist_director")
+rs <- dbGetQuery(pg, "SET search_path TO activist_director, public")
 
 rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
@@ -36,7 +36,7 @@ firm_years <-
     filter(fyear > 2000) %>%
     filter(indfmt=='INDL', consol=='C', popsrc=='D', datafmt=='STD') %>%
     mutate(year = date_part('year', datadate)) %>%
-    inner_join(ccmxpf_linktable) %>%
+    inner_join(ccmxpf_linktable, by = "gvkey") %>%
     filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
     filter(datadate >= linkdt,
            datadate <= linkenddt | is.na(linkenddt)) %>%
@@ -48,7 +48,7 @@ firm_years <-
 sics <-
     firm_years %>%
     mutate(year = date_part('year', datadate)) %>%
-    inner_join(names) %>%
+    inner_join(names, by = "gvkey") %>%
     filter(between(year, year1, year2)) %>%
     select(gvkey, datadate, sic) %>%
     mutate(sic2 = substr(sic, 1L, 2L)) %>%
@@ -94,8 +94,8 @@ compustat <-
 
 compustat_w_permno <-
     compustat %>%
-    inner_join(firm_years) %>%
-    inner_join(sics) %>%
+    inner_join(firm_years, by = c("gvkey", "datadate")) %>%
+    inner_join(sics, by = c("gvkey", "datadate")) %>%
     select(permno, datadate, everything()) %>%
     arrange(permno, datadate)
 
@@ -103,9 +103,9 @@ compustat_w_permno <-
 #- CRSP Returns
 crsp <-
     mrets %>%
-    inner_join(firm_years) %>%
+    inner_join(firm_years, by = "permno") %>%
     mutate(end_date = eomonth(datadate),
-        start_date = sql("datadate - interval '11 months'")) %>%
+           start_date = sql("datadate - interval '11 months'")) %>%
     mutate(start_date = date_trunc('month', start_date)) %>%
     filter(between(date, start_date, end_date)) %>%
     group_by(permno, datadate) %>%
@@ -124,7 +124,7 @@ crsp_m1 <-
            start_date = sql("datadate - interval '23 months'")) %>%
     mutate(start_date = date_trunc('month', start_date),
            end_date = eomonth(end_date)) %>%
-    inner_join(mrets) %>%
+    inner_join(mrets, by = "permno") %>%
     filter(between(date, start_date, end_date)) %>%
     group_by(permno, datadate) %>%
     summarize(size_return_m1 =  product(1+ret) - product(1+vwretd),
@@ -140,7 +140,8 @@ factset.sharkrepellent %>%
     distinct() %>%
     group_by(cusip_9_digit) %>%
     filter(n() > 1) %>%
-    inner_join(factset.sharkrepellent) %>%
+    inner_join(factset.sharkrepellent,
+               by = c("vote_requirement_to_elect_directors", "cusip_9_digit")) %>%
     count()
 
 factset.sharkrepellent %>%
@@ -148,7 +149,8 @@ factset.sharkrepellent %>%
     distinct() %>%
     group_by(cusip_9_digit) %>%
     filter(n() > 1) %>%
-    inner_join(factset.sharkrepellent) %>%
+    inner_join(factset.sharkrepellent,
+               by = c("unequal_voting", "cusip_9_digit")) %>%
     count()
 
 sharkrepellent <-
@@ -166,9 +168,9 @@ sharkrepellent <-
            prior_date, insider_percent, insider_diluted_percent,
            inst_percent, top_10_percent, majority, dual_class,
            company_name) %>%
-     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(activist_director.permnos) %>%
-    inner_join(firm_years) %>%
+    mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
+    inner_join(activist_director.permnos, by = "ncusip") %>%
+    inner_join(firm_years, by = "permno") %>%
     select(-gvkey) %>%
     filter(datadate < company_status_date | is.na(company_status_date),
            datadate >= prior_date | is.na(prior_date)) %>%
@@ -185,7 +187,8 @@ with_agg <-
            inst_percent, top_10_percent), funs(not)) %>%
     summarize_at(vars(insider_percent, insider_diluted_percent,
            inst_percent, top_10_percent), funs(bool_or)) %>%
-    inner_join(sharkrepellent %>% select(permno, datadate)) %>%
+    inner_join(sharkrepellent %>% select(permno, datadate),
+               by = "permno") %>%
     select(-permno, -datadate) %>%
     mutate_all(.funs = as.integer) %>%
     summarize_all(.funs = sum)
@@ -205,8 +208,8 @@ without_agg <-
 staggered_board <-
     factset.staggered_board %>%
     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(activist_director.permnos) %>%
-    inner_join(firm_years) %>%
+    inner_join(activist_director.permnos, by = "ncusip") %>%
+    inner_join(firm_years, by = "permno") %>%
     filter(between(datadate, beg_date, end_date)) %>%
     select(permno, datadate, staggered_board)
 
@@ -217,10 +220,11 @@ ibes <-
     mutate(analyst = numest, ncusip = cusip,
            fy_end = eomonth(statpers)) %>%
     select(ncusip, fy_end, analyst) %>%
-    inner_join(activist_director.permnos) %>%
+    inner_join(activist_director.permnos, by = "ncusip") %>%
     inner_join(
         firm_years %>%
-            mutate(fy_end = eomonth(datadate))) %>%
+            mutate(fy_end = eomonth(datadate)),
+        by = c("fy_end", "permno")) %>%
     select(permno, datadate, analyst) %>%
     distinct()
 
@@ -242,12 +246,12 @@ count_directors <-
 
 equilar_w_permno <-
     equilar %>%
-    inner_join(count_directors) %>%
+    inner_join(count_directors, by = c("permno", "period")) %>%
     inner_join(
         equilar_hbs.company_financials %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
-            select(company_id, period, ncusip)) %>%
-    inner_join(activist_director.permnos) %>%
+            select(company_id, period, ncusip), by = "period") %>%
+    inner_join(activist_director.permnos, by = c("permno", "ncusip")) %>%
     select(-ncusip, -company_id) %>%
     rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%
@@ -260,13 +264,14 @@ inst <-
 
 controls <-
     compustat_w_permno %>%
-    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE)) %>%
-    left_join(crsp) %>%
-    left_join(crsp_m1) %>%
-    left_join(staggered_board) %>%
-    left_join(sharkrepellent) %>%
-    left_join(ibes) %>%
-    left_join(inst) %>%
+    left_join(equilar_w_permno %>% mutate(on_equilar = TRUE),
+              by = c("permno", "datadate")) %>%
+    left_join(crsp, by = c("permno", "datadate")) %>%
+    left_join(crsp_m1, by = c("permno", "datadate")) %>%
+    left_join(staggered_board, by = c("permno", "datadate")) %>%
+    left_join(sharkrepellent, by = c("permno", "datadate", "year")) %>%
+    left_join(ibes, by = c("permno", "datadate")) %>%
+    left_join(inst, by = c("permno", "datadate")) %>%
     mutate(inst = coalesce(inst, 0),
            analyst = coalesce(analyst, 0),
            on_equilar = coalesce(on_equilar, FALSE)) %>%
@@ -287,20 +292,20 @@ last_date <-
 
 controls_activism_years <-
     firm_years %>%
-    inner_join(activism_events) %>%
+    inner_join(activism_events, by = "permno") %>%
     filter(between(eff_announce_date, datadate,
                     sql("datadate + interval '1 year - 1 day'"))) %>%
     select(-gvkey) %>%
     distinct() %>%
     arrange(permno, datadate)
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.outcome_controls")
+rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS outcome_controls")
 
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
     compute() %>%
-    left_join(controls_activism_years) %>%
+    left_join(controls_activism_years, by = c("permno", "datadate", "year")) %>%
     arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment, two_plus),
@@ -311,17 +316,14 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    collect()
+    compute(name = "outcome_controls")
 
-rs <- dbWriteTable(pg, c("activist_director", "outcome_controls"), outcome_controls, overwrite=TRUE, row.names=FALSE)
+rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER TO activism")
 
-rs <- dbExecute(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
+rs <- dbExecute(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
 
-rs <- dbExecute(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
-
-sql <- paste("
-             COMMENT ON TABLE activist_director.outcome_controls IS
-             'CREATED USING create_outcome_controls ON ", Sys.time() , "';", sep="")
+sql <- paste("COMMENT ON TABLE outcome_controls IS
+             'CREATED USING create_outcome_controls.R ON ", Sys.time() , "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)
