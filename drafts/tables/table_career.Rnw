@@ -1,11 +1,10 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<career_data, results='asis'>>=
+<<career_data>>=
 # Connect to database ----
 library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname = "crsp")
+pg <- dbConnect(PostgreSQL(), dbname = "crsp")
 
 dir.data <- dbGetQuery(pg, "SELECT * FROM activist_director.equilar_all")
 
@@ -163,7 +162,7 @@ fm.t4.c5.se <- coeftest.cluster(reg.data, fm.t4.c5, cluster1="permno")
 reg.data <- subset(dir.data, director_first_years & activist_demand_firm)
 fm.t4.c6  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c6.se <- coeftest.cluster(reg.data, fm.t4.c6, cluster1="permno")
-
+rm(dir.data, reg.data)
 @
 
 % Table 1: Career Consequences for Activist Directors: Activism Firm Directorship
@@ -194,6 +193,7 @@ texreg(list(fm.t1.c1, fm.t1.c2, fm.t1.c4, fm.t1.c5, fm.t1.c6),
         scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
 @
 \end{center}
+\addtocounter{table}{-1}
 \end{table}
 
 % Table 2: Career Consequences for Activist Directors: Activism Firm Directorship
@@ -204,7 +204,12 @@ texreg(list(fm.t1.c1, fm.t1.c2, fm.t1.c4, fm.t1.c5, fm.t1.c6),
     \begin{minipage}[t]{\columnwidth}
     {Panel B: Activism firm directorship}
     {\small \newline
-Panel B presents results from OLS regressions where the dependent variable is Departure(\textit{t}, \textit{t}+2), i.e., an indicator for the director leaving the board of the firm by year \textit{t}+2 (i.e., the year after the activism event, if any). Column 1 presents OLS results for all directors. Columns 2 and 3 focus on first-year directors (just appointed). In Columns 4 and 5, we focus on the sample of firms targeted by activists. All variables are defined in Appendix A. All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
+Panel B presents results from OLS regressions where the dependent variable is Departure($t$, $t+2$), i.e., an indicator for the director leaving the board of the firm by year $t+2$ (i.e., the year after the activism event, if any).
+Column 1 presents OLS results for all directors.
+Columns 2 and 3 focus on first-year directors (just appointed).
+In Columns 4 and 5, we focus on the sample of firms targeted by activists.
+All variables are defined in Appendix A.
+All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
     \end{minipage}
 \begin{center}
@@ -223,6 +228,7 @@ texreg(list(fm.t2.c1, fm.t2.c2, fm.t2.c4, fm.t2.c5, fm.t2.c6),
           scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
 @
 \end{center}
+\addtocounter{table}{-1}
 \end{table}
 
 % Table 3: Career Consequences for Activist Directors: Other Directorships
@@ -252,6 +258,7 @@ texreg(list(fm.t3.c1, fm.t3.c2, fm.t3.c4, fm.t3.c5, fm.t3.c6),
           scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
 @
 \end{center}
+\addtocounter{table}{-1}
 \end{table}
 
 % Table 4: Career Consequences for Activist Directors: Other Directorships
@@ -281,6 +288,7 @@ texreg(list(fm.t4.c1, fm.t4.c2, fm.t4.c4, fm.t4.c5, fm.t4.c6),
           scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
 @
 \end{center}
+\addtocounter{table}{-1}
 \end{table}
 
 %\end{landscape}
