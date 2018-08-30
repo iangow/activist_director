@@ -171,27 +171,31 @@ rm(dir.data, reg.data)
     \begin{minipage}[t]{\columnwidth}
     {Panel A: Activism firm directorship}
     {\small \newline
-Panel A presents results from OLS regressions where the dependent variable is Departure(\textit{t}, \textit{t}+2), i.e., an indicator for the director leaving the board of the firm by year \textit{t}+2 (i.e., the year after the activism event, if any). Column 1 presents OLS results for all directors. Columns 2 and 3 focus on first-year directors (just appointed). In Columns 4 and 5, we focus on the sample of firms targeted by activists. All variables are defined in Appendix A. All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
+Panel A presents results from OLS regressions where the dependent variable is $\textit{Departure}(t, t+2)$, an indicator for the director leaving the board of the firm by year \textit{t}+2 (i.e., the year after the activism event, if any).
+Column 1 presents OLS results for all directors. Columns 2 and 3 focus on first-year directors (just appointed).
+In Columns 4 and 5, we focus on the sample of firms targeted by activists.
+All variables are defined in Appendix A.
+All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
     \end{minipage}
 \begin{center}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<career_output_1, dependson="career_data", results='asis'>>=
-# Produce Excel file with results for prob_activism
-library(texreg)
 # Tabulate results
-# Produce Excel file with results for Table
-texreg(list(fm.t1.c1, fm.t1.c2, fm.t1.c4, fm.t1.c5, fm.t1.c6),
-        # file="tables/count.doc",
-        table = FALSE,
-        stars = c(0.01, 0.05, 0.1),
-        omit.coef = "((Intercept)|sic2|year)",
-        custom.model.names = c("All Dir.", "1st-Yr Dir.", "1st-Yr Firm exists", "Activism Yrs", "Act. Demand Yrs"),
-        custom.coef.names = c("Activist Director", "Outsider", "Age", "Female", "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.", "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
-        custom.note = "%stars",
-        override.se=  list(fm.t1.c1.se[,2], fm.t1.c2.se[,2], fm.t1.c4.se[,2], fm.t1.c5.se[,2], fm.t1.c6.se[,2]),
-        override.pval= list(fm.t1.c1.se[,4], fm.t1.c2.se[,4], fm.t1.c4.se[,4], fm.t1.c5.se[,4], fm.t1.c6.se[,4]),
-        scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
+library(stargazer)
+stargazer(fm.t1.c1, fm.t1.c2, fm.t1.c4, fm.t1.c5, fm.t1.c6,
+          omit = c("Constant", "(factor.*)"),
+          column.labels =  c("All dir.", "New dir.", "New firm", "Activism", "Act. demand"),
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE, # "$\\textit{Other Boards}_{t+2}$",
+          float=FALSE, align=TRUE, font.size="small",
+          keep.stat=c("n"), no.space=TRUE,
+          covariate.labels = c("Activist director", "Outsider", "Age", "Female",
+                               "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.",
+                               "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
+          se=list(fm.t1.c1.se[,2], fm.t1.c2.se[,2], fm.t1.c4.se[,2], fm.t1.c5.se[,2], fm.t1.c6.se[,2]))
 @
+\end{tabularx}
 \end{center}
 \addtocounter{table}{-1}
 \end{table}
@@ -204,7 +208,7 @@ texreg(list(fm.t1.c1, fm.t1.c2, fm.t1.c4, fm.t1.c5, fm.t1.c6),
     \begin{minipage}[t]{\columnwidth}
     {Panel B: Activism firm directorship}
     {\small \newline
-Panel B presents results from OLS regressions where the dependent variable is Departure($t$, $t+2$), i.e., an indicator for the director leaving the board of the firm by year $t+2$ (i.e., the year after the activism event, if any).
+Panel B presents results from OLS regressions where the dependent variable is $\textit{Departure}(t, t+2)$, an indicator for the director leaving the board of the firm by year $t+2$ (i.e., the year after the activism event, if any).
 Column 1 presents OLS results for all directors.
 Columns 2 and 3 focus on first-year directors (just appointed).
 In Columns 4 and 5, we focus on the sample of firms targeted by activists.
@@ -213,20 +217,24 @@ All regressions include year fixed-effects and robust standard errors (in parent
         \newline}
     \end{minipage}
 \begin{center}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<career_output_2, dependson="career_data", results='asis'>>=
 # Tabulate results
 # Produce Excel file with results for Table
-texreg(list(fm.t2.c1, fm.t2.c2, fm.t2.c4, fm.t2.c5, fm.t2.c6),
-          # file="tables/count.doc",
-          table = FALSE,
-          stars = c(0.01, 0.05, 0.1),
-          omit.coef = "((Intercept)|sic2|year)",
-          custom.model.names = c("All Dir.", "1st-Yr Dir.", "1st-Yr Firm exists", "Activism Yrs", "Act. Demand Yrs"),
-          custom.coef.names = c("Affiliated Director", "Unaffiliated Director", "Outsider", "Age", "Female", "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.", "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
-          override.se=  list(fm.t2.c1.se[,2], fm.t2.c2.se[,2], fm.t2.c4.se[,2], fm.t2.c5.se[,2], fm.t2.c6.se[,2]),
-          override.pval= list(fm.t2.c1.se[,4], fm.t2.c2.se[,4], fm.t2.c4.se[,4], fm.t2.c5.se[,4], fm.t2.c6.se[,4]),
-          scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
+library(stargazer)
+stargazer(fm.t2.c1, fm.t2.c2, fm.t2.c4, fm.t2.c5, fm.t2.c6,
+          omit = c("Constant", "(factor.*)"),
+          column.labels =  c("All dir.", "New dir.", "New firm", "Activism", "Act. demand"),
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE, # "$\\textit{Other Boards}_{t+2}$",
+          float=FALSE, align=TRUE, font.size="small",
+          keep.stat=c("n"), no.space=TRUE,
+          covariate.labels = c("Affiliated director", "Unaffiliated director", "Outsider", "Age", "Female",
+                               "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.",
+                               "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
+          se=list(fm.t2.c1.se[,2], fm.t2.c2.se[,2], fm.t2.c4.se[,2], fm.t2.c5.se[,2], fm.t2.c6.se[,2]))
 @
+\end{tabularx}
 \end{center}
 \addtocounter{table}{-1}
 \end{table}
@@ -239,24 +247,33 @@ texreg(list(fm.t2.c1, fm.t2.c2, fm.t2.c4, fm.t2.c5, fm.t2.c6),
     \begin{minipage}[t]{\columnwidth}
     {Panel C: Other directorships}
     {\small \newline
-The table presents results from OLS regressions where the dependent variable is Other Boards(t+2), which is the number of directorships a director has with firms other than the firm of interest in year \textit{t}+2 (i.e., the year after the activism event, if any). Columns 1 presents results for all directors; Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively; Columns 4 and 5 present results for firms with activism or activist demand of board seat, respectively. Firm-level controls include industry-adjusted return, return on assets, sales growth, market value, book-to-market ratio, leverage, dividend payout ratio, the number of analysts, and institutional ownership. Director-level controls include director age, director tenure, and audit and compensation committee position. All variables are defined in Appendix A. All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
+The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms other in year \textit{t}+2 (i.e., the year after the activism event, if any).
+Columns 1 presents results for all directors; Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively; Columns 4 and 5 present results for firms with activism or activist demand for board seats, respectively.
+All variables are defined in Appendix A.
+All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
 \newline}
     \end{minipage}
 \begin{center}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<career_output_3, dependson="career_data", results='asis'>>=
 # Tabulate results
 # Produce Excel file with results for Table
-texreg(list(fm.t3.c1, fm.t3.c2, fm.t3.c4, fm.t3.c5, fm.t3.c6),
-          # file="tables/count.doc",
-          table = FALSE,
-          stars = c(0.01, 0.05, 0.1),
-          omit.coef = "((Intercept)|sic2|year)",
-          custom.model.names = c("All Dir.", "1st-Yr Dir.", "1st-Yr Ind. Dir.", "Activism Yrs", "Act. Demand Yrs"),
-          custom.coef.names = c("Other Boards", "Activist Director", "Outsider", "Age", "Female", "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.", "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
-          override.se=  list(fm.t3.c1.se[,2], fm.t3.c2.se[,2], fm.t3.c4.se[,2], fm.t3.c5.se[,2], fm.t3.c6.se[,2]),
-          override.pval= list(fm.t3.c1.se[,4], fm.t3.c2.se[,4], fm.t3.c4.se[,4], fm.t3.c5.se[,4], fm.t3.c6.se[,4]),
-          scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
+library(stargazer)
+stargazer(fm.t3.c1, fm.t3.c2, fm.t3.c4, fm.t3.c5, fm.t3.c6,
+          omit = c("Constant", "(factor.*)"),
+          column.labels =  c("All dir.", "New dir.", "New firm", "Activism", "Act. demand"),
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE, # "$\\textit{Other Boards}_{t+2}$",
+          float=FALSE, align=TRUE, font.size="small",
+          keep.stat=c("n"), no.space=TRUE,
+          covariate.labels = c("Other Boards", "Activist Director", "Outsider", "Age", "Female",
+                               "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.",
+                               "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
+          se=list(fm.t3.c1.se[ ,2], fm.t3.c2.se[ ,2],
+                  fm.t3.c4.se[ ,2], fm.t3.c5.se[ ,2],
+                  fm.t3.c6.se[ ,2]))
 @
+\end{tabularx}
 \end{center}
 \addtocounter{table}{-1}
 \end{table}
@@ -269,24 +286,31 @@ texreg(list(fm.t3.c1, fm.t3.c2, fm.t3.c4, fm.t3.c5, fm.t3.c6),
     \begin{minipage}[t]{\columnwidth}
     {Panel D: Other Directorships}
     {\small \newline
-The table presents results from OLS regressions where the dependent variable is Other Boards(t+2), which is the number of directorships a director has with firms other than the firm of interest in year \textit{t}+2 (i.e., the year after the activism event, if any). Columns 1 presents results for all directors; Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively; Columns 4 and 5 present results for firms with activism or activist demand of board seat, respectively. Firm-level controls include industry-adjusted return, return on assets, sales growth, market value, book-to-market ratio, leverage, dividend payout ratio, the number of analysts, and institutional ownership. Director-level controls include director age, director tenure, and audit and compensation committee position. All variables are defined in Appendix A. All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
+The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms  in year $t+2$  (i.e., the year after the activism event, if any).
+Columns 1 presents results for all directors; Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively; Columns 4 and 5 present results for firms with activism or activist demand of board seat, respectively.
+All variables are defined in Appendix A.
+All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
     \end{minipage}
 \begin{center}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<career_output_4, dependson="career_data", results='asis'>>=
 # Tabulate results
 # Produce Excel file with results for Table
-texreg(list(fm.t4.c1, fm.t4.c2, fm.t4.c4, fm.t4.c5, fm.t4.c6),
-          # file="tables/count.doc",
-          table = FALSE,
-          stars = c(0.01, 0.05, 0.1),
-          omit.coef = "((Intercept)|sic2|year)",
-          custom.model.names = c("All Dir.", "1st-Yr Dir.", "1st-Yr Ind. Dir.", "Activism Yrs", "Act. Demand Yrs"),
-          custom.coef.names = c("Other Boards", "Affiliated Director", "Unaffiliated Director", "Outsider", "Age", "Female", "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.", "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
-          override.se=  list(fm.t4.c1.se[,2], fm.t4.c2.se[,2], fm.t4.c4.se[,2], fm.t4.c5.se[,2], fm.t4.c6.se[,2]),
-          override.pval= list(fm.t4.c1.se[,4], fm.t4.c2.se[,4], fm.t4.c4.se[,4], fm.t4.c5.se[,4], fm.t4.c6.se[,4]),
-          scalebox = 0.8, include.rsquared = FALSE, include.rmse=FALSE)
+library(stargazer)
+stargazer(fm.t4.c1, fm.t4.c2, fm.t4.c4, fm.t4.c5, fm.t4.c6,
+          omit = c("Constant", "(factor.*)"),
+          column.labels =  c("All dir.", "New dir.", "New firm", "Activism", "Act. demand"),
+          dep.var.caption = "",
+          dep.var.labels.include = FALSE, # "$\\textit{Other Boards}_{t+2}$",
+          float=FALSE, align=TRUE, font.size="small",
+          keep.stat=c("n"), no.space=TRUE,
+          covariate.labels = c("Other Boards", "Affiliated director", "Unaffiliated director", "Outsider", "Age", "Female",
+                               "Comp. Comm.", "Audit. Comm.", "Analyst", "Inst", "Size-adj. Ret.",
+                               "Market Value", "Book-to-Market", "Leverage", "Dividend", "ROA", "Sales Growth"),
+          se=list(fm.t4.c1.se[,2], fm.t4.c2.se[,2], fm.t4.c4.se[,2], fm.t4.c5.se[,2], fm.t4.c6.se[,2]))
 @
+\end{tabularx}
 \end{center}
 \addtocounter{table}{-1}
 \end{table}
