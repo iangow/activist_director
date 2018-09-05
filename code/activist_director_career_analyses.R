@@ -1,7 +1,6 @@
 # Connect to database ----
-library(RPostgreSQL)
-drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, dbname = "crsp")
+library(DBI)
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 dir.data <- dbGetQuery(pg, "SELECT * FROM activist_director.equilar_all")
 
