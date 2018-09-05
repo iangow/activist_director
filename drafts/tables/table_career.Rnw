@@ -1,9 +1,11 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
-
-<<career_data>>=
-# Connect to database ----
+<<packages, include=FALSE, cache=FALSE>>=
 library(RPostgreSQL)
+@
+
+<<career_data, include=FALSE>>=
+# Connect to database ----
 pg <- dbConnect(PostgreSQL(), dbname = "crsp")
 
 dir.data <- dbGetQuery(pg, "SELECT * FROM activist_director.equilar_all")
@@ -239,10 +241,9 @@ stargazer(fm.t2.c1, fm.t2.c2, fm.t2.c4, fm.t2.c5, fm.t2.c6,
 \addtocounter{table}{-1}
 \end{table}
 
-% Table 3: Career Consequences for Activist Directors: Other Directorships
+% Career Consequences for Activist Directors: Other Directorships
 \newpage
 \begin{table}
-
 \caption{Career consequences for activist directors}
     \begin{minipage}[t]{\columnwidth}
     {Panel C: Other directorships}
@@ -287,7 +288,9 @@ stargazer(fm.t3.c1, fm.t3.c2, fm.t3.c4, fm.t3.c5, fm.t3.c6,
     {Panel D: Other Directorships}
     {\small \newline
 The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms  in year $t+2$  (i.e., the year after the activism event, if any).
-Columns 1 presents results for all directors; Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively; Columns 4 and 5 present results for firms with activism or activist demand of board seat, respectively.
+Columns 1 presents results for all directors;
+Columns 2 and 3 present results for first-year directors and first-year independent directors, respectively;
+Columns 4 and 5 present results for firms with activism or activist demand of board seat, respectively.
 All variables are defined in Appendix A.
 All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}

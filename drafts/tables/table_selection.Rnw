@@ -6,7 +6,7 @@ require(stargazer)
 library(dplyr, warn.conflicts = FALSE)
 @
 
-<<selection_functions>>=
+<<selection_functions, include=FALSE>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
@@ -61,9 +61,8 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 }
 @
 
-<<selection_data, cache=TRUE, results='asis'>>=
+<<selection_data, results='asis', include=FALSE>>=
 # PostgreSQL Connection
-library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
