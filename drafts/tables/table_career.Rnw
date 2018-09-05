@@ -1,12 +1,12 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 <<packages, include=FALSE, cache=FALSE>>=
-library(RPostgreSQL)
+library(DBI)
 @
 
 <<career_data, include=FALSE>>=
 # Connect to database ----
-pg <- dbConnect(PostgreSQL(), dbname = "crsp")
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 dir.data <- dbGetQuery(pg, "SELECT * FROM activist_director.equilar_all")
 
@@ -60,12 +60,9 @@ fm.t4.c6  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c6.se <- coeftest.cluster(reg.data, fm.t4.c6, cluster1="permno")
 rm(dir.data, reg.data)
 @
-
-% Table 4: Career Consequences for Activist Directors: Other Directorships
-\newpage
-\begin{table}
-
-\caption{Career consequences for activist directors: Other directorships}
+% Career Consequences for Activist Directors: Other Directorships
+\begin{table}[ht]
+\caption{Activist directors: Career outcomes}
     \begin{minipage}[t]{\columnwidth}
     {\small
 The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms in year $t+2$ (i.e., the year after the activism event, if any).
@@ -76,24 +73,24 @@ All regressions include year fixed-effects and robust standard errors (in parent
         \newline}
     \end{minipage}
 \begin{center}
-\begin{tabularx}{\linewidth}{l*{4}{Y}}
+\begin{tabularx}{\linewidth}{l*{5}{Y}}
 <<career_output_4, dependson="career_data", results='asis'>>=
 # Tabulate results
 # Produce Excel file with results for Table
 library(stargazer)
 stargazer(fm.t4.c1, fm.t4.c2, fm.t4.c5, fm.t4.c6,
           omit = c("Constant", "(factor.*)"),
-          column.labels =  c("All dir.", "New dir.", "Activism", "Act. demand"),
+          column.labels =  c("All directors", "New directors", "Activism", "Activist demand"),
           dep.var.caption = "",
-          dep.var.labels.include = FALSE, # "$\\textit{Other Boards}_{t+2}$",
+          dep.var.labels.include = FALSE,
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
-          covariate.labels = c("Other boards", "Affiliated director", "Unaffiliated director", "Age", "Female",
-                               "Comp. comm.", "Audit. comm.", "Analyst", "Inst", "Size-adj. ret.",
+          covariate.labels = c("Other boards", "Activist director, affiliated",
+                               "Activist director, unaffiliated", "Age", "Female",
+                               "Comp. committee", "Audit committee", "Analyst", "Inst", "Size-adj. returns",
                                "Market value", "Book-to-market", "Leverage", "Dividend", "ROA", "Sales growth"),
           se=list(fm.t4.c1.se[,2], fm.t4.c2.se[,2], fm.t4.c5.se[,2], fm.t4.c6.se[,2]))
 @
 \end{tabularx}
 \end{center}
-\addtocounter{table}{-1}
 \end{table}
