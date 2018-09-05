@@ -135,28 +135,28 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_desc, child='tables/table_desc.Rnw'>>=
 @
 
-<<table-2, child='tables/table_dir_desc.Rnw'>>=
+<<table_dir_desc, child='tables/table_dir_desc.Rnw'>>=
 @
 
-<<table-3, child='tables/table_selection.Rnw'>>=
+<<table_voting, child='tables/table_voting.Rnw'>>=
 @
 
-<<table-4, child='tables/table_holding_period.Rnw'>>=
+<<table_career, child='tables/table_career.Rnw'>>=
 @
 
-<<table-voting, child='tables/table_voting.Rnw'>>=
+<<table_selection, child='tables/table_selection.Rnw'>>=
 @
 
-<<table-career, child='tables/table_career.Rnw'>>=
+<<table_holding_period, child='tables/table_holding_period.Rnw'>>=
 @
 
-<<table-5, child='tables/table_returns.Rnw'>>=
+<<table_returns, child='tables/table_returns.Rnw'>>=
 @
 
-<<roa, child='tables/roa_table.Rnw'>>=
+<<roa_table, child='tables/roa_table.Rnw'>>=
 @
 
-<<table-6, child='tables/table_outcomes.Rnw'>>=
+<<table_outcomes, child='tables/table_outcomes.Rnw'>>=
 @
 
 \end{document}
