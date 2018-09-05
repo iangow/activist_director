@@ -61,7 +61,7 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 }
 @
 
-<<selection_data, results='asis', include=FALSE>>=
+<<selection_data, include=FALSE>>=
 # PostgreSQL Connection
 pg <- dbConnect(PostgreSQL())
 

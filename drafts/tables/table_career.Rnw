@@ -63,6 +63,7 @@ rm(dir.data, reg.data)
 % Career Consequences for Activist Directors: Other Directorships
 \begin{table}[ht]
 \caption{Activist directors: Career outcomes}
+\label{tbl:career}
     \begin{minipage}[t]{\columnwidth}
     {\small
 The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms in year $t+2$ (i.e., the year after the activism event, if any).
