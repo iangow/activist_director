@@ -231,7 +231,7 @@ fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 @
 \begin{landscape}
 \begin{table}[htb]
-\caption{Voting Analysis}
+\caption{Director elections}
 \begin{minipage}[t]{\columnwidth}
 {\small
 This table presents regression results where the dependent variables are voting support for directors, activist directors (\textit{Activist director}) and affiliated directors (\textit{Affiliated director}).
@@ -241,7 +241,6 @@ All columns include meeting fixed effects.
 \end{minipage}
 \begin{tabularx}{6.5in}{l*{3}{Y}}
 <<vote_output, dependson="vote_regs", results='asis'>>=
-# Produce Excel file with results for prob_activism
 library(stargazer)
 stargazer(fm_t0, fm_t0_iss,
           fm_t1, fm_t1_iss,
@@ -251,13 +250,12 @@ stargazer(fm_t0, fm_t0_iss,
           keep.stat=c("n"), no.space=TRUE,
           dep.var.labels = c("$\\textit{Support}_{t}$", "$\\textit{Support}_{t+1}$",
                              "$\\textit{Support}_{t+2}$"),
-          covariate.labels = c("Activist director, independent",
+          covariate.labels = c("Activist director, unaffiliated",
                                "Activist director, affiliated", "ISS for"),
           se=list(fm_t0_se[ ,2], fm_t0_iss_se[ ,2],
                   fm_t1_se[ ,2], fm_t1_iss_se[ ,2],
                   fm_t2_se[ ,2], fm_t2_iss_se[ ,2]))
 @
 \end{tabularx}
-\addtocounter{table}{-1}
 \end{table}
 \end{landscape}
