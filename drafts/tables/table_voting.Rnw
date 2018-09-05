@@ -1,11 +1,13 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<vote_data, results='asis'>>=
-# PostgreSQL Connection
-# Get data from database ----
+<<vote_packages, cache=FALSE, include=FALSE>>=
 library(RPostgreSQL)
 library(dplyr, warn.conflicts = FALSE)
+@
+
+<<vote_data, include=FALSE>>=
+# Get data from database ----
 pg <- dbConnect(PostgreSQL())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
@@ -155,7 +157,7 @@ ad_vote_data <- collect(ad_vote_data)
 rs <- dbDisconnect(pg)
 @
 
-<<vote_func, results='asis'>>=
+<<vote_func, include=FALSE>>=
 library(lubridate)
 
 get_reg_data <- function(vote_number) {
@@ -184,7 +186,7 @@ get_reg_data <- function(vote_number) {
 }
 @
 
-<<vote_regs, dependson=c("vote_data", "vote_func"), results='asis'>>=
+<<vote_regs, dependson=c("vote_data", "vote_func"), include=FALSE>>=
 # Functions
 library(psych)
 library(car)
@@ -233,7 +235,7 @@ fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 \begin{minipage}[t]{\columnwidth}
 {\small
 This table presents regression results where the dependent variables are voting support for directors, activist directors (\textit{Activist director}) and affiliated directors (\textit{Affiliated director}).
-Sample includes firm-years with and without activism.
+Sample includes firm-years with and without activism, but excludes contested elections.
 All columns include meeting fixed effects.
     \newline}
 \end{minipage}
