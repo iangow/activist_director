@@ -80,7 +80,7 @@ stargazer.mod <- function(model.set, col.labels, row.labels, omits, ftable=NULL)
               p=getPs(model.set),
               se=getSEs(model.set),
               align=TRUE, float=FALSE, no.space=TRUE,
-              omit=c("^sic", "^year", "^Costant", omits),
+              omit=c("^sic", "^year", "^Constant", omits),
               keep.stat=c("n", "adj.rsq"),
               omit.table.layout="n",
               font.size="small",
