@@ -1,30 +1,30 @@
 library(dplyr, warn.conflicts = FALSE)
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+library(DBI)
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
-dbGetQuery(pg, "SET work_mem='8GB'")
+rs <-  dbGetQuery(pg, "SET work_mem='8GB'")
+rs <- dbGetQuery(pg, "SET search_path TO activist_director")
 
-dbGetQuery(pg, "SET search_path='activist_director'")
-
-dbGetQuery(pg, "DROP TABLE IF EXISTS activism_events")
-
-activism_sample <- tbl(pg, sql("SELECT * FROM activism_sample"))
-
-activist_directors <- tbl(pg, sql("SELECT * FROM activist_directors"))
+activism_sample <- tbl(pg, "activism_sample")
+activist_directors <- tbl(pg, "activist_directors")
 
 activist_director <-
-    activist_directors %>%
-    group_by(campaign_id) %>%
+    activism_sample %>%
+    mutate(link_campaign_id = unnest(campaign_ids)) %>%
+    inner_join(activist_directors, by = c("link_campaign_id"="campaign_id")) %>%
+    group_by(campaign_ids) %>%
     summarize(
         first_appointment_date= min(appointment_date),
         num_activist_directors = n(),
         num_affiliate_directors = sum(as.integer(!independent)),
-        num_unaffiliate_directors = sum(as.integer(independent)))
+        num_unaffiliate_directors = sum(as.integer(independent))) %>%
+    ungroup() %>%
+    compute()
 
+rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activism_events")
 matched <-
     activism_sample %>%
-    left_join(activist_director,
-              by = "campaign_id") %>%
+    left_join(activist_director, by = "campaign_ids") %>%
     mutate(activist_director = !is.na(dissident_board_seats_wongranted_date) |
                dissident_board_seats_won > 0 |
                campaign_resulted_in_board_seats_for_activist) %>%
