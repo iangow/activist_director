@@ -95,12 +95,7 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs.t6.1 <- "category_activist_director year sic2"
-rhs.t6.2 <- "activist_director year sic2"
-rhs.t6.3 <- "activism activist_demand affiliated non_affiliated year sic2 "
-rhs.t6.4 <- "early year sic2"
-rhs.t6.5 <- "big_investment year sic2"
-rhs.t6.6 <- "two_plus year sic2"
+rhs <- paste("category_activist_director year sic2", controls)
 
 trim <- function (x) {
   # Function removes spaces at end or beginning
@@ -111,16 +106,14 @@ trim <- function (x) {
 
 get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.controls=FALSE) {
 
-    data <- within(data, {
-        year <- as.factor(year)
-        category_activist_director <- as.factor(category_activist_director)
-        sic2 <- as.factor(sic2)
-    })
+    data <-
+        data %>%
+        mutate_at(c("year", "category", "sic2"), as.factor)
 
-    rhs <- trim(paste(rhs.t6.1, if(include.lag) "lagged.var", if(use.controls) controls))
+    rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
 
-    if(include.lag) {
-        data$lagged.var <- data[, the.var]
+    if (include.lag) {
+        data <- mutate_(data, lagged.var = the.var)
 
         # Exclude lagged LHS from RHS if already there.
         rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
@@ -134,29 +127,4 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
   }
 
   ols.model(data=data, lhs=lhs, rhs=rhs)
-}
-
-get.model.2 <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.controls=FALSE) {
-
-    data <-
-        data %>%
-        mutate_at(c("year", "category", "sic2"), as.factor)
-
-    rhs <- trim(paste(rhs.t6.1, if(include.lag) "lagged.var", if(use.controls) controls))
-
-    if(include.lag) {
-        data$lagged.var <- data[, the.var]
-
-        # Exclude lagged LHS from RHS if already there.
-        rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
-    }
-    if (include.lag) {
-        lhs <- paste0(the.var,"_p2")
-    } else if (changes) {
-        lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
-    } else {
-        lhs <- the.var
-    }
-
-    ols.model(data=data, lhs=lhs, rhs=rhs)
 }
