@@ -12,6 +12,7 @@ library(xtable)
 library(parallel)
 library(RPostgreSQL)
 library(psych)
+library(dplyr)
 @
 
 <<winsorize>>=
@@ -22,11 +23,10 @@ controls <- paste("analyst inst size_return mv btm leverage payout roa sale_grow
                   "num_directors outside_percent staggered_board log_at")
 
 omits <- unlist(strsplit(controls, "\\s+"))
-
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
-<<table_6_functions, include=FALSE>>=
+<<outcome_functions, include=FALSE>>=
 source("outcome_functions.R")
 @
 
@@ -203,7 +203,6 @@ reg.data <-
 rs <- dbDisconnect(pg)
 @
 
-
 \begin{table}[htb]
 \caption{Divestitures and acquisitions}
 \label{tbl:div_acq}
@@ -237,12 +236,12 @@ Values in parentheses are standard errors clustered by firm.
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_6_div_and_acq, dependson=c("table_6_functions", "div_acq_data_step"), results='asis'>>=
+<<table_div_and_acq, dependson=c("outcome_functions", "div_acq_data_step"), results='asis'>>=
 lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
-t6.pa <- lapply(lhs.vars, get.model.2, data=reg.data, use.controls=TRUE)
+t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
-row.labels <- c("Activist director","Non-Activist director")
+row.labels <- c("Activist director","Other activism")
 col.labels <-c ("Acquisition", "Acquired", "Divestiture")
 names(summ) <- col.labels
 stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
@@ -285,27 +284,26 @@ rs <- dbDisconnect(pg)
 % \begin{flushleft}
 {\small
 Table presents regressions of variables on firm-year level activism categorical variables.
-\textit{CEO exit} indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
-% TODO: Is it end of t or end of t+1?
-$\textit{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
-Controls are as described in Table \ref{tbl:div_acq}.
+$\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
+$\textrm{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
-<<table_6_ceo_turnover, dependson=c("table_6_functions", "ceo_data_step"), results='asis'>>=
+<<table_ceo_turnover, dependson=c("outcome_functions", "ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp")
 
-t6.pb <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
-col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
-row.labels <- c("Activist director", "Non-Activist director",
-                "$\\textrm{Dep. var.}_{t}$", "$\\textrm{lagged.var}$")
+col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
+row.labels <- c("Activist director", "Other activism",
+                "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
 names(summ) <- col.labels
 stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
-rm(t6.pb)
+
 @
 \end{tabularx}
 \end{table}
@@ -360,17 +358,17 @@ rs <- dbDisconnect(pg)
     sum of the book value of debt and equity.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to
     EBITDA for the two years after year $t$.
-Controls are as described in Table \ref{tbl:div_acq}.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_6_cap_struct, dependson=c("table_6_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
+<<table_cap_struct, dependson=c("outcome_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
-t6.pd <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-row.labels <- c("Activist director", "Non-Activist director",
+t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+row.labels <- c("Activist director", "Other activism",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("Cash", "Leverage", "Payout")
 summ <- make.fTest.table(t6.pd, reg.data)
@@ -395,18 +393,18 @@ Table presents regressions of variables on firm-year level activism categorical 
 \textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
-Controls are as described in Table \ref{tbl:div_acq}.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
 %\end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_6_investment, dependson=c("table_6_functions", "other_outcome_data_step"), results='asis'>>=
+<<table_investment, dependson=c("outcome_functions", "other_outcome_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
-t6.pf <- lapply(lhs.vars, get.model.2, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
-row.labels <- c("Activist director", "Non-Activist director",
+row.labels <- c("Activist director", "Other activism",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("$\\textrm{CapEx}$",
                 "$\\textrm{R\\&D}$",
