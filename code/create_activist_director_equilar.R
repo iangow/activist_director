@@ -4,12 +4,17 @@ library(dplyr, warn.conflicts = FALSE)
 pg <- dbConnect(PostgreSQL())
 
 rs <- dbGetQuery(pg, "SET work_mem='8GB'")
-rs <- dbGetQuery(pg, "SET search_path TO activist_director, equilar_hbs")
+rs <- dbGetQuery(pg, "SET search_path TO activist_director, executive_gsb")
 
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
 
-company_financials <- tbl(pg, "company_financials")
-director_index <- tbl(pg, "director_index")
+company_financials <- tbl(pg, "proxy_company")
+proxy_board_director <- tbl(pg, "proxy_board_director")
+executive <- tbl(pg, "executive")
+
+director_index <-
+    proxy_board_director %>%
+    left_join(executive %>% select(-title))
 
 activist_directors <- tbl(pg, "activist_directors")
 
@@ -31,16 +36,15 @@ permnos <-
 
 equilar <-
     director_index %>%
-    rename(fye = period) %>%
-    left_join(company_financials, by=c("company_id", "fye")) %>%
-    rename(period = fye) %>%
+    left_join(company_financials, by=c("company_id", "fiscal_year_id")) %>%
+    rename(period = fy_end) %>%
     mutate(ncusip = substr(cusip, 1L, 8L)) %>%
     rename(start_date = date_start) %>%
-    mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
-           last_name = sql("(director.parse_name(director_name)).last_name")) %>%
-    select(company_id, executive_id, director_name, period,
+    mutate(first_name = fname,
+           last_name = lname) %>%
+    select(company_id, executive_id, period,
            first_name, last_name, start_date, cusip) %>%
-    rename(director = director_name) %>%
+    mutate(director = first_name %||% last_name) %>%
     arrange(company_id, executive_id, period) %>%
     compute()
 
@@ -122,7 +126,7 @@ match_b <-
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     compute()
 
-dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
+dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar_alt")
 
 activist_director_equilar <-
     match_b %>%
@@ -131,9 +135,9 @@ activist_director_equilar <-
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     select(campaign_id, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
     arrange(company_id, executive_id) %>%
-    compute(name = "activist_director_equilar", temporary=FALSE)
+    compute(name = "activist_director_equilar_alt", temporary=FALSE)
 
-dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
+dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar_alt IS
                 'CREATED USING activist_director_equilar.R'")
 
-dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
+dbGetQuery(pg, "ALTER TABLE activist_director_equilar_alt OWNER TO activism")
