@@ -54,9 +54,9 @@ make.fTest.table <- function(model.set, data) {
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
     # temp <-  do.call(cbind, mclapply(t6.pa, FUN = fTest, mc.cores=4))
-    row.names(temp) <- c("Affiliated = Non_affiliated",
+    row.names(temp) <- c("Affiliated = Unaffiliated",
                          "Affiliated = Other activism",
-                         "Non_affiliated = Other activism")
+                         "Unaffiliated = Other activism")
     return(as.data.frame(temp))
 }
 
