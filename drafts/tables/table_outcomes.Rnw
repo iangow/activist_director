@@ -245,7 +245,7 @@ lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
 t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
-row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism")
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism")
 col.labels <-c("Acquisition", "Acquired", "Divestiture")
 names(summ) <- col.labels
 stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
@@ -306,7 +306,7 @@ lhs.vars <- list("ceo_turnover", "ceo_comp")
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
 col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
-row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                 "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
 names(summ) <- col.labels
 stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
@@ -379,7 +379,7 @@ Values in parentheses are standard errors clustered by firm.
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
 t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("Cash", "Leverage", "Payout")
 summ <- make.fTest.table(t6.pd, reg.data)
@@ -415,7 +415,7 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
-row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                 "$\\textrm{Dep. var.}_{t}$")
 col.labels <- c("$\\textrm{CapEx}$",
                 "$\\textrm{R\\&D}$",
