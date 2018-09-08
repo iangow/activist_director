@@ -428,4 +428,3 @@ rm(t6.pf)
 \end{tabularx}
 \end{table}
 
-%\end{landscape}
