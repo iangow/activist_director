@@ -3,33 +3,33 @@ devtools::source_url(paste0("https://raw.githubusercontent.com/iangow/",
                             "acct_data/master/code/cluster2.R"))
 # Simple regressions ----
 getFitted <- function(list) {
-  temp <- list()
-  for (i in 1:length(list)) {
-    temp[[i]] <- list[[i]][[1]]
-  }
-  return(temp)
+    temp <- list()
+    for (i in 1:length(list)) {
+        temp[[i]] <- list[[i]][[1]]
+    }
+    return(temp)
 }
 
 # Get standard errors
 getSEs <- function(a.list) {
-  temp <- list()
-  for (i in 1:length(a.list)) {
-    temp[[i]] <- a.list[[i]][[2]][,2]
-  }
-  return(temp)
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,2]
+    }
+    return(temp)
 }
 
 # Get p-values
 getPs <- function(a.list) {
-  temp <- list()
-  for (i in 1:length(a.list)) {
-    temp[[i]] <- a.list[[i]][[2]][,4]
-  }
-  return(temp)
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,4]
+    }
+    return(temp)
 }
 
 combineVars <- function(vars) {
-  paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
+    paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
 }
 
 ols.model <- function(data, lhs, rhs, cluster1) {
@@ -44,13 +44,19 @@ make.fTest.table <- function(model.set, data) {
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        linearHypothesis(model, "category_activist_directornon_activist_director - category_activist_directoractivist_director",
-                           vcov.=cov)[4][2,]
+        c(linearHypothesis(model, "affiliatedaffiliated - affiliatednon_affiliated",
+                         vcov.=cov)[4][2,],
+          linearHypothesis(model, "affiliatedaffiliated - affiliatedother_activism",
+                         vcov.=cov)[4][2,],
+          linearHypothesis(model, "affiliatednon_affiliated - affiliatedother_activism",
+                         vcov.=cov)[4][2,])
     }
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
     # temp <-  do.call(cbind, mclapply(t6.pa, FUN = fTest, mc.cores=4))
-    row.names(temp) <- c("Other activism = Activist director")
+    row.names(temp) <- c("Affiliated = Non_affiliated",
+                         "Affiliated = Other activism",
+                         "Non_affiliated = Other activism")
     return(as.data.frame(temp))
 }
 
@@ -95,20 +101,20 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs <- paste("category_activist_director year sic2", controls)
+rhs <- paste("affiliated year sic2", controls)
 
 trim <- function (x) {
-  # Function removes spaces at end or beginning
-  # And removes multiple spaces
-  x <- gsub("^\\s+|\\s+$", "", x)
-  x <- gsub("\\s+", " ", x)
+    # Function removes spaces at end or beginning
+    # And removes multiple spaces
+    x <- gsub("^\\s+|\\s+$", "", x)
+    x <- gsub("\\s+", " ", x)
 }
 
 get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.controls=FALSE) {
 
     data <-
         data %>%
-        mutate_at(c("year", "category", "sic2"), as.factor)
+        mutate_at(c("year", "affiliated", "sic2"), as.factor)
 
     rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
 
@@ -118,13 +124,13 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
         # Exclude lagged LHS from RHS if already there.
         rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
     }
-  if (include.lag) {
-    lhs <- paste0(the.var,"_p2")
-  } else if (changes) {
-    lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
-  } else {
-    lhs <- the.var
-  }
+    if (include.lag) {
+        lhs <- paste0(the.var,"_p2")
+    } else if (changes) {
+        lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
+    } else {
+        lhs <- the.var
+    }
 
-  ols.model(data=data, lhs=lhs, rhs=rhs)
+    ols.model(data=data, lhs=lhs, rhs=rhs)
 }
