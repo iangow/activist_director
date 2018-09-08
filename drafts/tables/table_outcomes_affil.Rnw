@@ -1,0 +1,432 @@
+\Sexpr{set_parent('../activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+
+<<load_libraries, cache=FALSE, include=FALSE>>=
+# Yihui Xie recommends _not_ caching the loading of packages used
+# by several chunks.
+library(lmtest)
+library(sandwich)
+library(car)
+library(stargazer)
+library(xtable)
+library(parallel)
+library(RPostgreSQL)
+library(psych)
+library(dplyr)
+@
+
+<<winsorize>>=
+# Winsorize selected variables in a data frame
+win01 <- function(x) psych::winsor(x, trim=0.01)
+
+controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
+                  "num_directors outside_percent staggered_board log_at")
+
+omits <- unlist(strsplit(controls, "\\s+"))
+@
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions_affil.R'))}
+<<outcome_functions, include=FALSE>>=
+source("outcome_functions_affil.R")
+@
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
+<<div_acq_data_step, dependson="winsorize">>=
+
+# Get data from PostgreSQL
+library(dplyr, warn.conflicts = FALSE)
+library(RPostgreSQL)
+
+pg <- dbConnect(PostgreSQL())
+
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='3GB'")
+
+outcome_controls <- tbl(pg, "outcome_controls")
+dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
+wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
+ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
+dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
+
+outcome_controls_mod <-
+    outcome_controls %>%
+    mutate(default_p2 = if_else(firm_exists_p2, FALSE, NA),
+           default_p3 = if_else(firm_exists_p3, FALSE, NA),
+           default_num_p2 = if_else(firm_exists_p2, 0L, NA),
+           default_num_p3 = if_else(firm_exists_p3, 0L, NA),
+           datadate_p2 = sql("datadate + interval '2 years'"),
+           datadate_p3 = sql("datadate + interval '3 years'")) %>%
+    select(permno, matches("^(datadate|default_|firm_exists_)"))
+
+delisting <-
+    dsedelist %>%
+    select(permno, dlstdt, dlstcd) %>%
+    mutate(delist = dlstcd > 100,
+           merger = between(dlstcd, 200L, 399L),
+           failure = between(dlstcd, 520L, 599L)) %>%
+    select(-dlstcd)
+
+permno_link <-
+    ccmxpf_linktable %>%
+    filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
+    rename(permno = lpermno) %>%
+    select(gvkey, permno, linkdt, linkenddt)
+
+spinoff <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 137,
+           keydevtoobjectroletypeid == 4,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+spinoff_linked <-
+    spinoff %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+spinoff_crsp <-
+    dsedist %>%
+    mutate(year = date_part('year', rcrddt),
+           crsp_date = greatest(dclrdt, exdt, rcrddt, paydt)) %>%
+    rename(new_permno = acperm) %>%
+    full_join(spinoff_linked, by = c("permno", "year")) %>%
+    mutate(date = coalesce(crsp_date, announcedate)) %>%
+    select(permno, new_permno, date)
+
+divestiture <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 81,
+           keydevtoobjectroletypeid == 4,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+divestiture_linked <-
+    divestiture %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+acquisition <-
+    wrds_keydev %>%
+     filter(keydeveventtypeid == 81,
+           keydevtoobjectroletypeid == 3,
+           !is.na(gvkey)) %>%
+    select(gvkey, announcedate)
+
+acquisition_linked <-
+    acquisition %>%
+    inner_join(permno_link, by = "gvkey") %>%
+    filter(announcedate >= linkdt,
+           announcedate <= linkenddt | is.na(linkenddt)) %>%
+    select(permno, announcedate) %>%
+    mutate(year = date_part('year', announcedate)) %>%
+    compute()
+
+divestiture_count <-
+    outcome_controls_mod %>%
+    left_join(divestiture_linked) %>%
+    mutate(divest_p2 = between(announcedate, datadate, datadate_p2),
+           divest_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_divestiture_p2 = sum(as.integer(coalesce(divest_p2, FALSE))),
+              num_divestiture_p3 = sum(as.integer(coalesce(divest_p3, FALSE)))) %>%
+    ungroup() %>%
+    mutate(divestiture_p2 = num_divestiture_p2 > 0,
+           divestiture_p3 = num_divestiture_p3 > 0) %>%
+compute()
+
+acquisition_count <-
+    outcome_controls_mod %>%
+    left_join(acquisition_linked,  by = "permno") %>%
+    mutate(acquisition_p2 = between(announcedate, datadate, datadate_p2),
+           acquisition_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_acquisition_p2 = sum(as.integer(coalesce(acquisition_p2, FALSE))),
+              num_acquisition_p3 = sum(as.integer(coalesce(acquisition_p3, FALSE)))) %>%
+    ungroup() %>%
+    mutate(acquisition_p2 = num_acquisition_p2 > 0,
+           acquisition_p3 = num_acquisition_p3 > 0) %>%
+    compute()
+
+spinoff_count <-
+    outcome_controls_mod %>%
+    left_join(spinoff_linked) %>%
+    mutate(spinoff_p2 = between(announcedate, datadate, datadate_p2),
+           spinoff_p3 = between(announcedate, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(num_spinoff_p2 = sum(as.integer(coalesce(spinoff_p2, FALSE))),
+              num_spinoff_p3 = sum(as.integer(coalesce(spinoff_p3, FALSE)))) %>%
+    ungroup() %>%
+    compute()
+
+delisting_data <-
+    outcome_controls_mod %>%
+    left_join(delisting) %>%
+    mutate(delist_p2 = delist & between(dlstdt, datadate, datadate_p2),
+           delist_p3 = delist & between(dlstdt, datadate, datadate_p3),
+           merger_p2 = merger & between(dlstdt, datadate, datadate_p2),
+           merger_p3 = merger & between(dlstdt, datadate, datadate_p3),
+           failure_p2 = failure & between(dlstdt, datadate, datadate_p2),
+           failure_p3 = failure & between(dlstdt, datadate, datadate_p3)) %>%
+    group_by(permno, datadate) %>%
+    summarize(delist_p2 = bool_or(delist_p2),
+              delist_p3 = bool_or(delist_p3),
+              merger_p2 = bool_or(merger_p2),
+              merger_p3 = bool_or(merger_p3),
+              failure_p2 = bool_or(failure_p2),
+              failure_p3 = bool_or(failure_p3)) %>%
+    ungroup() %>%
+    compute()
+
+winsor.vars <- unlist(strsplit(controls, "\\s+"))
+
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    outcome_controls %>%
+    inner_join(divestiture_count, by = c("permno", "datadate")) %>%
+    inner_join(acquisition_count, by = c("permno", "datadate")) %>%
+    inner_join(spinoff_count, by = c("permno", "datadate")) %>%
+    inner_join(delisting_data, by = c("permno", "datadate")) %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
+                                if_else(affiliated=="non_affiliated", "non_affiliated",
+                                if_else(affiliated=="activist_director", "non_affiliated",
+                                if_else(affiliated=="activist_demand", "other_activism",
+                                if_else(affiliated=="activism", "other_activism", "_none")))))) %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
+@
+
+\begin{table}[htb]
+\caption{Divestitures and acquisitions}
+\label{tbl:div_acq}
+\begin{minipage}[t]{\columnwidth}
+% \begin{flushleft}
+{\small
+Table presents regressions of outcome variables on firm-year level activism indicators.
+\textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
+\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
+% and \textit{Failures} (500, 520-599).
+Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
+\textit{Total assets}, book value of total assets;
+\textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
+\textit{Institutional},  proportion of the firm's outstanding stock held by institutions;
+\textit{Size-adj. ret}, twelve-month size-adjusted returns;
+\textit{Market value}, the value of market capitalization;
+\textit{Book-to-market}, market capitalization divided by the book value of common equity;
+\textit{Leverage}, ratio of debt to debt plus book value of common equity;
+\textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA;
+\textit{ROA}, EBITDA divided by the lagged total assets;
+\textit{Sales growth}, sales divided by lagged sales;
+\textit{Num. directors}, the number of directors on the board;
+\textit{Outside percent}, the percentage of outside directors;
+\textit{Age}, the average age of directors;
+\textit{Tenure}, the average tenure of directors;
+\textit{Staggered board}, indicator for staggered board.
+All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+% \end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_div_and_acq, dependson=c("outcome_functions", "div_acq_data_step"), results='asis'>>=
+lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
+
+t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
+summ <- make.fTest.table(t6.pa, reg.data)
+row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism")
+col.labels <-c("Acquisition", "Acquired", "Divestiture")
+names(summ) <- col.labels
+stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
+# Free up some memory
+rm(t6.pa)
+@
+\end{tabularx}
+\end{table}
+
+% Panel B - CEO turnover and compensation
+<<ceo_data_step>>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+ceo_outcomes <- tbl(pg, "ceo_outcomes")
+
+winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
+
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    ceo_outcomes %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
+                                if_else(affiliated=="non_affiliated", "non_affiliated",
+                                if_else(affiliated=="activist_director", "non_affiliated",
+                                if_else(affiliated=="activist_demand", "other_activism",
+                                if_else(affiliated=="activism", "other_activism", "_none")))))) %>%
+    distinct() %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
+@
+
+\newpage
+
+\begin{center}
+\begin{table}[htb]
+\caption{CEO turnover and compensation}
+\label{tbl:ceo}
+\begin{minipage}[t]{\columnwidth}
+% \begin{flushleft}
+{\small
+Table presents regressions of variables on firm-year level activism categorical variables.
+$\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
+$\textrm{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+% \end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{3}{Y}}
+<<table_ceo_turnover, dependson=c("outcome_functions", "ceo_data_step"), results='asis'>>=
+lhs.vars <- list("ceo_turnover", "ceo_comp")
+
+t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+summ <- make.fTest.table(t6.pb, reg.data)
+col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
+row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+                "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
+names(summ) <- col.labels
+stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
+
+@
+\end{tabularx}
+\end{table}
+\end{center}
+
+\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
+
+<<other_outcome_data_step, dependson="winsorize">>=
+
+# Get data from PostgreSQL
+pg <- dbConnect(PostgreSQL())
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='5GB'")
+
+outcome_controls <- tbl(pg, "outcome_controls")
+activist_director_years <- tbl(pg, "activist_director_years")
+outcomes <-
+    tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
+
+# Winsorize changes
+lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
+                        paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"),
+                        paste0(lhs.vars, "_p3")))
+
+win_vars <- vars(winsor.vars)
+
+reg.data <-
+    outcome_controls %>%
+    inner_join(outcomes, by = c("gvkey", "datadate")) %>%
+    inner_join(activist_director_years, by = c("permno", "datadate")) %>%
+    filter(firm_exists_p2) %>%
+    collect() %>%
+    mutate_at(win_vars, win01) %>%
+    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
+                                if_else(affiliated=="non_affiliated", "non_affiliated",
+                                if_else(affiliated=="activist_director", "non_affiliated",
+                                if_else(affiliated=="activist_demand", "other_activism",
+                                if_else(affiliated=="activism", "other_activism", "_none")))))) %>%
+    as.data.frame()
+
+rs <- dbDisconnect(pg)
+@
+
+% Financing and investment
+\newpage
+\begin{table}[htb]
+\caption{Capital structure}
+\label{table:fin}
+\begin{minipage}[t]{\columnwidth}
+% \begin{flushleft}
+{\small
+\textit{Cash} is calculated as the ratio of total cash and short-term
+    investments to the book value of total assets.
+\textit{Leverage} is measured as the ratio of book value of debt to the
+    sum of the book value of debt and equity.
+\textit{Payout} is measured as the ratio of total dividends and share repurchases to
+    EBITDA for the two years after year $t$.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
+Values in parentheses are standard errors clustered by firm.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+% \end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_cap_struct, dependson=c("outcome_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
+# Export tables to spreadsheet
+lhs.vars <- list("cash", "leverage", "payout")
+t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+                "$\\textrm{Dep. var.}_{t}$")
+col.labels <- c("Cash", "Leverage", "Payout")
+summ <- make.fTest.table(t6.pd, reg.data)
+names(summ) <- col.labels
+stargazer.mod(t6.pd, col.labels, row.labels, omits, summ)
+
+rm(t6.pd)
+@
+\end{tabularx}
+\end{table}
+\newpage
+
+\newpage
+\begin{table}[htb]
+\caption{Investment}
+\label{tbl:invest}
+\begin{minipage}[t]{\columnwidth}
+%\begin{flushleft}
+{\small
+Table presents regressions of variables on firm-year level activism categorical variables.
+% \textit{Tax rate} is measured as the ratio of total tax expense for two years after announcement of activism to the pre-tax income during the same period.
+\textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
+\textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
+Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
+Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
+%\end{flushleft}
+\end{minipage}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
+<<table_investment, dependson=c("outcome_functions", "other_outcome_data_step"), results='asis'>>=
+# Export tables to spreadsheet
+lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
+t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
+summ <- make.fTest.table(t6.pf, reg.data)
+row.labels <- c("Affiliated director", "Non-affiliated director", "Other activism",
+                "$\\textrm{Dep. var.}_{t}$")
+col.labels <- c("$\\textrm{CapEx}$",
+                "$\\textrm{R\\&D}$",
+                "$\\textrm{Advertising}$")
+names(summ) <- col.labels
+
+stargazer.mod(t6.pf, col.labels, row.labels, omits, summ)
+rm(t6.pf)
+@
+\end{tabularx}
+\end{table}
+
+%\end{landscape}
