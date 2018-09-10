@@ -36,26 +36,31 @@ matched <-
             activist_director ~ 'activist_director',
             activist_demand ~ 'activist_demand',
             activism ~ 'activism',
-	        TRUE ~ '_none')) %>%
+	        TRUE ~ '_none'),
+           category_activist_director = case_when(
+               activist_director ~ 'activist_director',
+               activist_demand ~ 'activism',
+               activism ~ 'activism',
+               TRUE ~ '_none')) %>%
     mutate(affiliated = case_when(
-            activist_director & num_affiliate_directors > 0 ~ 'affiliated',
-            activist_director & num_affiliate_directors == 0 ~ 'non_affiliated',
-	        TRUE ~ category),
+                activist_director & num_affiliate_directors > 0 ~ 'affiliated',
+                activist_director ~ 'unaffiliated',
+	            TRUE ~ category_activist_director),
            two_plus = case_when(
-            num_activist_directors > 1 ~ 'two_plus_directors',
-	        activist_director ~ 'one_director',
-            TRUE ~ category),
+                num_activist_directors > 1 ~ 'two_plus_directors',
+	            activist_director ~ 'one_director',
+                TRUE ~ category_activist_director),
            early = case_when(
-            first_appointment_date - eff_announce_date <= 180 ~ 'early',
-            first_appointment_date - eff_announce_date > 180 ~ 'late',
-            TRUE ~ category),
+                first_appointment_date - eff_announce_date <= 180 ~ 'early',
+                first_appointment_date - eff_announce_date > 180 ~ 'late',
+                TRUE ~ category_activist_director),
            big_investment = case_when(
-	        activist_director &
+	            activist_director &
                 market_capitalization_at_time_of_campaign *
-                dissident_group_ownership_percent_at_announcement/100
+                    dissident_group_ownership_percent_at_announcement/100
 	                > 100 ~ 'big investment director',
-            activist_director ~ 'small investment director',
-	        TRUE ~ category)) %>%
+                activist_director ~ 'small investment director',
+	            TRUE ~ category_activist_director)) %>%
     compute(name = "activism_events", temporary = FALSE)
 
 sql <- paste0("
