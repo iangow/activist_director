@@ -17,7 +17,7 @@ events <- dbGetQuery(pg, "
                      ORDER BY campaign_id),
 
                      before_remove_dups AS (
-                     SELECT DISTINCT a.campaign_id, a.permno, a.eff_announce_date, a.proxy_fight_went_the_distance, a.category,
+                     SELECT DISTINCT a.campaign_id, a.permno, a.eff_announce_date, a.proxy_fight_went_the_distance, a.category, a.category_activist_director, a.affiliated,
                      a.dissident_board_seats_wongranted_date AS appointment_date, b.settle_date, c.standstill_date, COALESCE(b.settle_date, c.standstill_date)::DATE AS any_settle_date
                      FROM activist_director.activism_events AS a
                      LEFT JOIN settlement_agreement AS b
@@ -27,10 +27,10 @@ events <- dbGetQuery(pg, "
                      --WHERE a.activist_director
                      ORDER BY campaign_id)
 
-                     SELECT DISTINCT campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category, extract(year from eff_announce_date) AS year,
+                     SELECT DISTINCT campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category, category_activist_director, affiliated, extract(year from eff_announce_date) AS year,
                      min(appointment_date) As appointment_date, min(settle_date) AS settle_date, min(standstill_date) AS standstill_date, min(any_settle_date) AS any_settle_date
                      FROM before_remove_dups
-                     GROUP BY campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category
+                     GROUP BY campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category, category_activist_director, affiliated
                      ORDER BY campaign_id
                      ")
 
