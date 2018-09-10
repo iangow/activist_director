@@ -60,6 +60,16 @@ activist_director_events <-
     mutate(activist_director = TRUE) %>%
     compute()
 
+affiliated_director_events <-
+    activism_events %>%
+    filter(affiliated=='affiliated') %>%
+    mutate(fyear = fiscal_year(eff_announce_date)) %>%
+    mutate(fyear = as.integer(fyear) + 1L) %>%
+    select(permno, fyear) %>%
+    distinct() %>%
+    mutate(affiliated_director = TRUE) %>%
+    compute()
+
 min_year <-
     act_events %>%
     summarize(min_year = as.integer(min(fyear, na.rm = TRUE)) - 3L) %>%
@@ -149,8 +159,10 @@ dummies <-
     distinct() %>%
     left_join(act_events, by = c("fyear", "permno")) %>%
     left_join(activist_director_events, by = c("fyear", "permno")) %>%
+    left_join(affiliated_director_events, by = c("fyear", "permno")) %>%
     mutate(activism = coalesce(activism, FALSE),
-           activist_director = coalesce(activist_director, FALSE)) %>%
+           activist_director = coalesce(activist_director, FALSE),
+           affiliated_director = coalesce(affiliated_director, FALSE)) %>%
     ungroup() %>%
     group_by(permno) %>%
     mutate(year_m1 = lead(activism, 1L),
@@ -162,6 +174,7 @@ dummies <-
            year_p3 = lag(activism, 3L),
            year_p4 = lag(activism, 4L),
            year_p5 = lag(activism, 5L),
+
            year_ad_m1 = lead(activist_director, 1L),
            year_ad_m2 = lead(activist_director, 2L),
            year_ad_m3 = lead(activist_director, 3L),
@@ -171,6 +184,7 @@ dummies <-
            year_ad_p3 = lag(activist_director, 3L),
            year_ad_p4 = lag(activist_director, 4L),
            year_ad_p5 = lag(activist_director, 5L),
+
            year_nad_m1  = year_m1 & !year_ad_m1,
            year_nad_m2  = year_m2 & !year_ad_m2,
            year_nad_m3  = year_m3 & !year_ad_m3,
@@ -178,8 +192,28 @@ dummies <-
            year_nad_p1  = year_p1 & !year_ad_p1,
            year_nad_p2  = year_p2 & !year_ad_p2,
            year_nad_p3  = year_p3 & !year_ad_p3,
-           year_nad_p4  = year_p4 & !year_ad_p4 ,
-           year_nad_p5  = year_p5 & !year_ad_p5)
+           year_nad_p4  = year_p4 & !year_ad_p4,
+           year_nad_p5  = year_p5 & !year_ad_p5,
+
+           year_aff_m1 = lead(affiliated_director, 1L),
+           year_aff_m2 = lead(affiliated_director, 2L),
+           year_aff_m3 = lead(affiliated_director, 3L),
+           year_aff_p0 = lag(affiliated_director, 0L),
+           year_aff_p1 = lag(affiliated_director, 1L),
+           year_aff_p2 = lag(affiliated_director, 2L),
+           year_aff_p3 = lag(affiliated_director, 3L),
+           year_aff_p4 = lag(affiliated_director, 4L),
+           year_aff_p5 = lag(affiliated_director, 5L),
+
+           year_naff_m1  = year_m1 & year_ad_m1 & !year_aff_m1,
+           year_naff_m2  = year_m2 & year_ad_m2 & !year_aff_m2,
+           year_naff_m3  = year_m3 & year_ad_m3 & !year_aff_m3,
+           year_naff_p0  = year_p0 & year_ad_p0 & !year_aff_p0,
+           year_naff_p1  = year_p1 & year_ad_p1 & !year_aff_p1,
+           year_naff_p2  = year_p2 & year_ad_p2 & !year_aff_p2,
+           year_naff_p3  = year_p3 & year_ad_p3 & !year_aff_p3,
+           year_naff_p4  = year_p4 & year_ad_p4 & !year_aff_p4,
+           year_naff_p5  = year_p5 & year_ad_p5 & !year_aff_p5)
 
 win_01 <- function(x) psych::winsor(x, trim = 0.01, na.rm = TRUE)
 
@@ -229,8 +263,8 @@ getCoefs <- function(table) {
 
 # ROA regression
 sw_roa <- lm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
-         + mv + age + factor(fyear) + factor(sic3),
-         data=sw, na.action="na.omit")
+                    + mv + age + factor(fyear) + factor(sic3),
+             data=sw, na.action="na.omit")
 sw_roa.se <- coeftest.cluster(sw, sw_roa)
 sw_roa.cov <- coeftest.cluster(sw, sw_roa, ret="cov")
 sw_roa.f <- rbind(
@@ -246,9 +280,9 @@ sw_roa.f <- rbind(
     linearHypothesis(sw_roa, "year_p5 - year_p0", vcov.=sw_roa.cov)[4][2,])
 
 # Firm-Fixed Effects
-sw_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0
-                                + year_p1 + year_p2 + year_p3 + year_p4 + year_p5 + mv + age,
-                          data=sw, index=c("permno", "fyear"), model="within")
+sw_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
+                        + mv + age,
+                data=sw, index=c("permno", "fyear"), model="within")
 sw_roa_ffe.se <- coeftest.cluster(sw, sw_roa_ffe)
 sw_roa_ffe.cov <- coeftest.cluster(sw, sw_roa_ffe, ret="cov")
 sw_roa_ffe.f <- rbind(
@@ -264,11 +298,10 @@ sw_roa_ffe.f <- rbind(
     linearHypothesis(sw_roa_ffe, "year_p5 - year_p0", vcov.=sw_roa_ffe.cov)[4][2,])
 
 # Activist director incremental effect
-sw_ad_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 +
-                                   year_p2 + year_p3 + year_p4 + year_p5 + year_ad_m3 +
-                                   year_ad_m2 + year_ad_m1 + year_ad_p0 + year_ad_p1 + year_ad_p2 +
-                                   year_ad_p3 + year_ad_p4 + year_ad_p5  + mv + age,
-                             data=sw, index=c("permno", "fyear"), model="within")
+sw_ad_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
+                            + year_ad_m3 + year_ad_m2 + year_ad_m1 + year_ad_p0 + year_ad_p1 + year_ad_p2 + year_ad_p3 + year_ad_p4 + year_ad_p5
+                            + mv + age,
+                    data=sw, index=c("permno", "fyear"), model="within")
 sw_ad_roa_ffe.se <- coeftest.cluster(sw, sw_ad_roa_ffe)
 sw_ad_roa_ffe.cov <- coeftest.cluster(sw, sw_ad_roa_ffe, ret="cov")
 sw_ad_roa_ffe.f <- cbind(
@@ -299,6 +332,59 @@ sw_ad_roa_ffe.f <- cbind(
         (sw_ad_roa_ffe$coefficients[["year_ad_p5"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
         linearHypothesis(sw_ad_roa_ffe, "year_ad_p5 - year_ad_p0",
                          vcov.=sw_ad_roa_ffe.cov)[4][2,]))
+
+# Affiliated director incremental effect
+sw_aff_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
+                            + year_aff_m3 + year_aff_m2 + year_aff_m1 + year_aff_p0 + year_aff_p1 + year_aff_p2 + year_aff_p3 + year_aff_p4 + year_aff_p5
+                            + year_naff_m3 + year_naff_m2 + year_naff_m1 + year_naff_p0 + year_naff_p1 + year_naff_p2 + year_naff_p3 + year_naff_p4 + year_naff_p5
+                            + mv + age,
+                    data=sw, index=c("permno", "fyear"), model="within")
+sw_aff_roa_ffe.se <- coeftest.cluster(sw, sw_aff_roa_ffe)
+sw_aff_roa_ffe.cov <- coeftest.cluster(sw, sw_aff_roa_ffe, ret="cov")
+sw_aff_roa_ffe.f <- cbind(
+    rbind(
+        (sw_aff_roa_ffe$coefficients[["year_p1"]] - sw_aff_roa_ffe$coefficients[["year_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_p1 - year_p0", vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_p2"]] - sw_aff_roa_ffe$coefficients[["year_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_p2 - year_p0", vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_p3"]] - sw_aff_roa_ffe$coefficients[["year_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_p3 - year_p0", vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_p4"]] - sw_aff_roa_ffe$coefficients[["year_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_p4 - year_p0", vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_p5"]] - sw_aff_roa_ffe$coefficients[["year_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_p5 - year_p0", vcov.=sw_aff_roa_ffe.cov)[4][2,]),
+    rbind(
+        (sw_aff_roa_ffe$coefficients[["year_aff_p1"]] - sw_aff_roa_ffe$coefficients[["year_aff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_aff_p1 - year_aff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_aff_p2"]] - sw_aff_roa_ffe$coefficients[["year_aff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_aff_p2 - year_aff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_aff_p3"]] - sw_aff_roa_ffe$coefficients[["year_aff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_aff_p3 - year_aff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_aff_p4"]] - sw_aff_roa_ffe$coefficients[["year_aff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_aff_p4 - year_aff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_aff_p5"]] - sw_aff_roa_ffe$coefficients[["year_aff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_aff_p5 - year_aff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,]),
+    rbind(
+        (sw_aff_roa_ffe$coefficients[["year_naff_p1"]] - sw_aff_roa_ffe$coefficients[["year_naff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_naff_p1 - year_naff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_naff_p2"]] - sw_aff_roa_ffe$coefficients[["year_naff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_naff_p2 - year_naff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_naff_p3"]] - sw_aff_roa_ffe$coefficients[["year_naff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_naff_p3 - year_naff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_naff_p4"]] - sw_aff_roa_ffe$coefficients[["year_naff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_naff_p4 - year_naff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,],
+        (sw_aff_roa_ffe$coefficients[["year_naff_p5"]] - sw_aff_roa_ffe$coefficients[["year_naff_p0"]]),
+        linearHypothesis(sw_aff_roa_ffe, "year_naff_p5 - year_naff_p0",
+                         vcov.=sw_aff_roa_ffe.cov)[4][2,]))
 @
 %
 \begin{table}[htb]
@@ -322,7 +408,7 @@ The quantities presented in the table represent estimates of the impact of activ
  & \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activism}} &
     \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activist director}} \\
 <<table_roa_f_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
-sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_ad_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
+sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_ad_roa_ffe.f, sw_aff_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
 #coeff/qnorm(p-value/2)
 for (i in 1:5) {
     sw_f[i*2,] <- sw_f[i*2-1,]/abs(qnorm(sw_f[i*2,]/2))
@@ -342,8 +428,8 @@ print(xtable(getCoefs(sw_f), digit=3,
 @
 \hline
 \newline
-\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(C)} \\
-\textrm{Fixed effects:} & \multicolumn{1}{c}{\textrm{Industry, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} \\
+\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)}\\
+\textrm{Fixed effects:} & \multicolumn{1}{c}{\textrm{Industry, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}}\\
 \newline
 \end{tabular}
 \small
