@@ -40,13 +40,13 @@ source("code/import_activist_ciks.R")
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
 
-## Already done!!!
-# This one takes a long time to run (~23 minutes)
-source("code/create_activist_holdings.R", echo=TRUE)
-
 # Column 5
 runSQL('code/create_activism_sample.sql')
 source('code/create_activism_events.R', echo=TRUE)
+
+## Already done!!!
+# This one takes a long time to run (~23 minutes)
+source("code/create_activist_holdings.R", echo=TRUE)
 
 # runSQL('code/create_first_voting.sql')
 source('code/create_activist_director_equilar.R', echo=TRUE)
