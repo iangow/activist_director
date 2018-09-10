@@ -297,42 +297,6 @@ sw_roa_ffe.f <- rbind(
     (sw_roa_ffe$coefficients[["year_p5"]] - sw_roa_ffe$coefficients[["year_p0"]]),
     linearHypothesis(sw_roa_ffe, "year_p5 - year_p0", vcov.=sw_roa_ffe.cov)[4][2,])
 
-# Activist director incremental effect
-sw_ad_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
-                            + year_ad_m3 + year_ad_m2 + year_ad_m1 + year_ad_p0 + year_ad_p1 + year_ad_p2 + year_ad_p3 + year_ad_p4 + year_ad_p5
-                            + mv + age,
-                    data=sw, index=c("permno", "fyear"), model="within")
-sw_ad_roa_ffe.se <- coeftest.cluster(sw, sw_ad_roa_ffe)
-sw_ad_roa_ffe.cov <- coeftest.cluster(sw, sw_ad_roa_ffe, ret="cov")
-sw_ad_roa_ffe.f <- cbind(
-    rbind(
-        (sw_ad_roa_ffe$coefficients[["year_p1"]] - sw_ad_roa_ffe$coefficients[["year_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_p1 - year_p0", vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_p2"]] - sw_ad_roa_ffe$coefficients[["year_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_p2 - year_p0", vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_p3"]] - sw_ad_roa_ffe$coefficients[["year_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_p3 - year_p0", vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_p4"]] - sw_ad_roa_ffe$coefficients[["year_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_p4 - year_p0", vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_p5"]] - sw_ad_roa_ffe$coefficients[["year_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_p5 - year_p0", vcov.=sw_ad_roa_ffe.cov)[4][2,]),
-    rbind(
-        (sw_ad_roa_ffe$coefficients[["year_ad_p1"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_ad_p1 - year_ad_p0",
-                         vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_ad_p2"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_ad_p2 - year_ad_p0",
-                         vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_ad_p3"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_ad_p3 - year_ad_p0",
-                         vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_ad_p4"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_ad_p4 - year_ad_p0",
-                         vcov.=sw_ad_roa_ffe.cov)[4][2,],
-        (sw_ad_roa_ffe$coefficients[["year_ad_p5"]] - sw_ad_roa_ffe$coefficients[["year_ad_p0"]]),
-        linearHypothesis(sw_ad_roa_ffe, "year_ad_p5 - year_ad_p0",
-                         vcov.=sw_ad_roa_ffe.cov)[4][2,]))
-
 # Affiliated director incremental effect
 sw_aff_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
                             + year_aff_m3 + year_aff_m2 + year_aff_m1 + year_aff_p0 + year_aff_p1 + year_aff_p2 + year_aff_p3 + year_aff_p4 + year_aff_p5
@@ -402,14 +366,14 @@ The quantities presented in the table represent estimates of the impact of activ
 % \end{flushleft}
 \end{minipage}
 \small
-\begin{tabular}{l D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3}}
- & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)}\\
+\begin{tabular}{l D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3}}
+ & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} \\
 \hline
  & \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activism}} &
-    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activist director}} &
-    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Affiliated director}} & \multicolumn{1}{c}{\textrm{Unaffiliated director}}\\
+    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Affiliated director}}
+    & \multicolumn{1}{c}{\textrm{Unaffiliated director}}\\
 <<table_roa_f_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
-sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_ad_roa_ffe.f, sw_aff_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
+sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_aff_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
 #coeff/qnorm(p-value/2)
 for (i in 1:5) {
     sw_f[i*2,] <- sw_f[i*2-1,]/abs(qnorm(sw_f[i*2,]/2))
@@ -429,8 +393,8 @@ print(xtable(getCoefs(sw_f), digit=3,
 @
 \hline
 \newline
-\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)}\\
-\textrm{Fixed effects:} & \multicolumn{1}{c}{\textrm{Industry, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}}\\
+\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)}\\
+\textrm{Fixed effects:} & \multicolumn{1}{c}{\textrm{Industry, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} \\
 \newline
 \end{tabular}
 \small
