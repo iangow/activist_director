@@ -402,11 +402,12 @@ The quantities presented in the table represent estimates of the impact of activ
 % \end{flushleft}
 \end{minipage}
 \small
-\begin{tabular}{l D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} }
- & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} \\
+\begin{tabular}{l D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3}}
+ & \multicolumn{1}{c}{(1)} & \multicolumn{1}{c}{(2)} & \multicolumn{1}{c}{(3)} & \multicolumn{1}{c}{(4)} & \multicolumn{1}{c}{(5)} & \multicolumn{1}{c}{(6)} & \multicolumn{1}{c}{(7)}\\
 \hline
  & \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activism}} &
-    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activist director}} \\
+    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activist director}} &
+    \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Affiliated director}} & \multicolumn{1}{c}{\textrm{Unaffiliated director}}\\
 <<table_roa_f_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
 sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_ad_roa_ffe.f, sw_aff_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
 #coeff/qnorm(p-value/2)
