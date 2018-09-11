@@ -83,6 +83,7 @@ prob_activist_director <-
            activism = coalesce(activism, FALSE),
            activist_demand = coalesce(activist_demand, FALSE),
            activist_director = coalesce(activist_director, FALSE),
+           affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
 #           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
            analyst = coalesce(analyst, 0),
            inst = coalesce(inst, 0)) %>%
@@ -212,9 +213,12 @@ t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")
 t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
+t3.pb[[3]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="affiliated_director", rhs=rhs.1, cluster1="permno")
 stargazer(getFitted(t3.pb),
         dep.var.labels = c("Board demand",
-                           "Activist director"),
+                           "Activist director",
+                           "Affiliated director"),
         covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
                              "Leverage", "Payout", "ROA", "Sales growth", "Num. directors",
                              "Outside percent", "Age", "Tenure", "Staggered board"),
@@ -222,8 +226,7 @@ stargazer(getFitted(t3.pb),
         p=getPs(t3.pb),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
-       add.lines=list(c("Sample", "\\textrm{Activism}",
-                        "\\textrm{Activism}"),
+       add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}", "\\textrm{Activism}"),
                       c("Pseudo-$R^2$", getPseudoR2s(t3.pb))))
 rm(t3.pb)
 @
