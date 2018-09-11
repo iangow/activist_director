@@ -198,8 +198,8 @@ reg.data <-
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated=="non_affiliated", "non_affiliated",
-                                if_else(affiliated=="activist_director", "non_affiliated",
+                                if_else(affiliated=="unaffiliated", "unaffiliated",
+                                if_else(affiliated=="activist_director", "unaffiliated",
                                 if_else(affiliated=="activist_demand", "other_activism",
                                 if_else(affiliated=="activism", "other_activism", "_none")))))) %>%
     as.data.frame()
@@ -272,7 +272,7 @@ reg.data <-
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated %in% c("non_affiliated", "activist_director"), "non_affiliated",
+                                if_else(affiliated %in% c("unaffiliated", "activist_director"), "unaffiliated",
                                         if_else(affiliated %in% c("activist_demand", "activism"), "other_activism",
                                                 "_none")))) %>%
     distinct() %>%
@@ -346,8 +346,8 @@ reg.data <-
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated=="non_affiliated", "non_affiliated",
-                                if_else(affiliated=="activist_director", "non_affiliated",
+                                if_else(affiliated=="unaffiliated", "unaffiliated",
+                                if_else(affiliated=="activist_director", "unaffiliated",
                                 if_else(affiliated=="activist_demand", "other_activism",
                                 if_else(affiliated=="activism", "other_activism", "_none")))))) %>%
     as.data.frame()

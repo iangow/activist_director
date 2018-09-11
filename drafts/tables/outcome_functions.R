@@ -44,11 +44,11 @@ make.fTest.table <- function(model.set, data) {
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        c(linearHypothesis(model, "affiliatedaffiliated - affiliatednon_affiliated",
+        c(linearHypothesis(model, "affiliatedaffiliated - affiliatedunaffiliated",
                          vcov.=cov)[4][2,],
           linearHypothesis(model, "affiliatedaffiliated - affiliatedother_activism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliatednon_affiliated - affiliatedother_activism",
+          linearHypothesis(model, "affiliatedunaffiliated - affiliatedother_activism",
                          vcov.=cov)[4][2,])
     }
 
