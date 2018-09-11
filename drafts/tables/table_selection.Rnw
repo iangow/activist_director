@@ -112,7 +112,7 @@ prob_activist_director <-
     All regressions in this table include the following controls measured for the prior fiscal year-end:
     \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
     \textit{Institutional}, the proportion of the firms outstanding stock held by institutions;
-    \textit{Size-adj. ret}, twelve-month size-adjusted returns calculated as raw
+    \textit{Size-adj. return}, twelve-month size-adjusted returns calculated as raw
             return over a year minus return for the size-matched decile provided by CRSP;
     \textit{Market value}, the value of market capitalization;
     \textit{Book-to-market}, market capitalization divided by the book value of common equity;
@@ -145,7 +145,7 @@ prob_activist_director <-
 Panel A presents logit regression where the dependent variables are indicators for
 being targeted for activism in any category
 (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
-being the target of an activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3).
+being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3).
 Sample includes firm-years with and without activism.
     \newline}
 %  \end{flushleft}
@@ -160,11 +160,11 @@ rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
 reg.data <- as.data.frame(prob_activist_director)
 
 t3.pa <- list()
-t3.pa[[1]] <- fit.model(data=reg.data,
+t3.pa[[1]] <- fit.model(data = reg.data,
                   lhs="activism", rhs=rhs.1, cluster1="permno")
-t3.pa[[2]] <- fit.model(data=subset(reg.data, category!='activism'),
+t3.pa[[2]] <- fit.model(data = reg.data,
                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")
-t3.pa[[3]] <- fit.model(data=subset(reg.data, category!='activism'),
+t3.pa[[3]] <- fit.model(data = reg.data,
                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
 
 stargazer(getFitted(t3.pa),
@@ -194,7 +194,7 @@ rm(t3.pa)
         \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-Panel B presents logit regression where the dependent variables are indicators for activist demanding or getting board seats (\textit{Board demand} \emph{or} \textit{Activist director}, Column 1) and activists getting board seats (\textit{Activist director}, Column 2) conditional on the firm being targeted by activists.
+Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists.
   \newline}
 %  \end{flushleft}
   \end{minipage}
