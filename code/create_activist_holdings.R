@@ -206,7 +206,7 @@ holding_data <- dbGetQuery(pg, "
         b.next_report_period,
         e.first_appointment_date,
         e.eff_announce_date,
-        e.eff_announce_date IS NOT NULL AS activism, e.category, e.big_investment,
+        e.eff_announce_date IS NOT NULL AS activism, e.category, e.affiliated, e.big_investment,
         COALESCE(e.activist_demand, FALSE) AS activist_demand,
         COALESCE(e.activist_director, FALSE) AS activist_director,
         COALESCE(a.period_of_report >= e.eff_announce_date, FALSE) AS activism_announced,
