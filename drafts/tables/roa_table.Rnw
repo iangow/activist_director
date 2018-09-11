@@ -393,7 +393,7 @@ print(xtable(getCoefs(sw_f), digit=3,
 @
 \hline
 \newline
-\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(D)} & \multicolumn{1}{c}{(D)}\\
+\textrm{Model:} & \multicolumn{1}{c}{(A)} & \multicolumn{1}{c}{(B)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(C)} & \multicolumn{1}{c}{(C)}\\
 \textrm{Fixed effects:} & \multicolumn{1}{c}{\textrm{Industry, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} & \multicolumn{1}{c}{\textrm{Firm, year}} \\
 \newline
 \end{tabular}
