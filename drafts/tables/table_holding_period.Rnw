@@ -139,9 +139,8 @@ col2 <- rbind(summary2[[2]]$coefficients[1,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[2,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[3,1])
 col3 <- rbind(summary3[[2]]$coefficients[1,1], summary3[[2]]$coefficients[2,1])
-col3 <- rbind(0, col3)
+col3 <- rbind(NA, col3)
 panel2 <- cbind(col1, col2, col3)
-panel2 <- formatC(panel2, digits=0, format="f")
 colnames(panel2) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
 row.names(panel2) <- c("Other activism", "Affiliated director", "Unaffiliated director")
 @
@@ -180,10 +179,12 @@ print(xtable(panel1,
 # Output the table
 library(xtable)
 print(xtable(panel2,
-             display=c("s", rep("f",(dim(panel2)[2])))),
+             display=c("s", rep("f",(dim(panel2)[2]))),
+             digits = 0),
       include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
       size="small", type="latex", sanitize.text.function=function(x){x},
-      format.args = list(big.mark = ","))
+      format.args = list(big.mark = ","),
+      NA.string = "")
 @
 \end{tabular}
 \end{table}
