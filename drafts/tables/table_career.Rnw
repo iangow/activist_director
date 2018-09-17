@@ -70,7 +70,7 @@ The table presents results from OLS regressions where the dependent variable is 
 Columns 1 and 2 present results for all independent directors and first-year independent directors;
 Columns 3 and 4 present results for firms with activism and activist demands for board seats, respectively.
 All variables are defined in Appendix A.
-All regressions include year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
+All regressions include industry and year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
     \end{minipage}
 \begin{center}
