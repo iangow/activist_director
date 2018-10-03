@@ -14,10 +14,10 @@ activist_director <-
     inner_join(activist_directors, by = c("link_campaign_id"="campaign_id")) %>%
     group_by(campaign_ids) %>%
     summarize(
-        first_appointment_date= min(appointment_date),
+        first_appointment_date = min(appointment_date, na.rm = TRUE),
         num_activist_directors = n(),
-        num_affiliate_directors = sum(as.integer(!independent)),
-        num_unaffiliate_directors = sum(as.integer(independent))) %>%
+        num_affiliate_directors = sum(as.integer(!independent), na.rm = TRUE),
+        num_unaffiliate_directors = sum(as.integer(independent), na.rm = TRUE)) %>%
     ungroup() %>%
     compute()
 
