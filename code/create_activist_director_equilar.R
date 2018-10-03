@@ -53,7 +53,7 @@ equilar_w_permnos <-
 first_name_years <-
     equilar %>%
     group_by(company_id, executive_id) %>%
-    summarize(period = min(period)) %>%
+    summarize(period = min(period, na.rm = TRUE)) %>%
     arrange(company_id, executive_id) %>%
     compute()
 
