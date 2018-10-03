@@ -65,7 +65,7 @@ dbExecute(pg, "SET search_path TO activist_director, public")
 
 activism_events <- tbl(pg, "activism_events")
 activist_directors <- tbl(pg, "activist_directors")
-activist_ciks <- tbl(pg, "activist_ciks")
+activist_ciks <- tbl(pg, sql("SELECT * FROM factset.activist_ciks"))
 
 events <-
     activism_events %>%

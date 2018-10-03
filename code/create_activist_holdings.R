@@ -28,7 +28,7 @@ holding_data <- dbGetQuery(pg, "
         FROM whalewisdom.filings AS b
         INNER JOIN whalewisdom.filers AS c
         USING (filer_id)
-        INNER JOIN activist_director.activist_ciks AS e
+        INNER JOIN factset.activist_ciks AS e
         USING (cik)),
 
     activist_stocks AS (
@@ -62,7 +62,7 @@ holding_data <- dbGetQuery(pg, "
 
     by_cik AS (
         SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
-        FROM activist_director.activist_ciks
+        FROM factset.activist_ciks
         GROUP BY cik),
 
     activist_names AS (

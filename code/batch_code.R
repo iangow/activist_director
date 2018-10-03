@@ -35,7 +35,6 @@ pg_comment <- function(table, comment) {
 }
 
 source("code/import_activist_directors.R")
-source("code/import_activist_ciks.R")
 
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
