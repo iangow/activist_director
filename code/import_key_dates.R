@@ -1,9 +1,27 @@
+library(googlesheets)
+
 # Functions ----
 # Fix Cusips
 fixCUSIPs <- function(cusips) {
   to.fix <- nchar(cusips) < 9 & nchar(cusips) > 0
   cusips[to.fix] <- sprintf("%09d", as.integer(cusips[to.fix]))
   return(cusips)
+}
+
+is_boolean <- function(vec) {
+    if (length(setdiff(unique(vec), c(NA)))==0) return(FALSE)
+    length(setdiff(unique(vec), c(NA, "0", "1")))==0
+}
+
+get_booleans <- function(df) {
+    temp <- unlist(lapply(df, is_boolean))
+    names(temp[temp])
+}
+
+convert_logical <- function(vec) {
+    temp <- as.logical(vec)
+    temp[is.na(temp)] <- FALSE
+    temp
 }
 
 # Get data from Google Sheets ----
@@ -13,69 +31,47 @@ gs <- gs_key(key)
 
 #### Sharkwatch 50 ####
 # Import Dataset from Google Drive ----
-key_dates_sw50 <- gs %>% gs_read_csv(ws = "sw50_2004_2012")
-
-key_dates_sw50$event_date <- as.Date(key_dates_sw50$event_date)
-key_dates_sw50$announce_date <- as.Date(key_dates_sw50$announce_date)
-key_dates_sw50$cusip_9_digit <- fixCUSIPs(key_dates_sw50$cusip_9_digit)
-key_dates_sw50$etc <- NULL
-
-for (i in names(key_dates_sw50)) {
-    if (is.numeric(key_dates_sw50[,i])) key_dates_sw50[,i] <- !is.na(key_dates_sw50[,i])
-}
-key_dates_sw50$gid <- gid
+key_dates_sw50 <-
+    gs %>% gs_read(ws = "sw50_2004_2012",
+                   col_types = paste(c("cDccDl", rep("c", 39)), collapse="")) %>%
+    mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
+    select(-etc) %>%
+    mutate(gid = "sw50_2004_2012")
 
 # SHARKWATCH50 2012
 
-key_dates_2012 <- gs %>% gs_read_csv(ws = "sw_2012")
-key_dates_2012$event_date <- as.Date(key_dates_2012$event_date)
-key_dates_2012$announce_date <- as.Date(key_dates_2012$announce_date)
-key_dates_2012$cusip_9_digit <- fixCUSIPs(key_dates_2012$cusip_9_digit)
+key_dates_2012 <-
+    gs %>%
+    gs_read_csv(ws = "sw_2012",
+                col_types = paste(c("cDccDl", rep("c", 38)), collapse="")) %>%
+    mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
+    mutate(gid = "sw_2012")
 
-for (i in names(key_dates_2012)) {
-    if (is.numeric(key_dates_2012[,i])) key_dates_2012[,i] <- !is.na(key_dates_2012[,i])
-}
-key_dates_2012$gid <- gid
+key_dates_sw50 <- bind_rows(key_dates_sw50, key_dates_2012)
 
-key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2012)
-rm(key_dates_2012)
+key_dates_2013 <-
+    gs %>%
+    gs_read_csv(ws = "sw_2013",
+                col_types = paste(c("cDccDl", rep("c", 38)), collapse="")) %>%
+    mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
+    mutate(gid = "sw_2013")
 
-key_dates_2013 <- gs %>% gs_read_csv(ws = "sw_2013")
-key_dates_2013$event_date <- as.Date(key_dates_2013$event_date)
-key_dates_2013$announce_date <- as.Date(key_dates_2013$announce_date)
-key_dates_2013$cusip_9_digit <- fixCUSIPs(key_dates_2013$cusip_9_digit)
-
-for (i in names(key_dates_2013)) {
-    if (is.numeric(key_dates_2013[,i])) key_dates_2013[,i] <- !is.na(key_dates_2013[,i])
-}
-key_dates_2013$gid <- gid
-
-key_dates_sw50 <- rbind(key_dates_sw50, key_dates_2013)
+key_dates_sw50 <- bind_rows(key_dates_sw50, key_dates_2013)
 rm(key_dates_2013)
 
 #### Non-Sharkwatch 50 ####
-key_dates_nsw50 <- gs %>% gs_read_csv(ws = "non_sw50")
-
-key_dates_nsw50$cusip_9_digit <- fixCUSIPs(key_dates_nsw50$cusip_9_digit)
-key_dates_nsw50$announce_date <- as.Date(key_dates_nsw50$announce_date)
-key_dates_nsw50$event_date <- as.Date(key_dates_nsw50$event_date)
-
-# TODO: Fix weird values in these two variables.
-key_dates_nsw50$governance <- key_dates_nsw50$governance=="1"
-key_dates_nsw50$no_demand <- key_dates_nsw50$no_demand=="1"
-
-for (i in names(key_dates_nsw50)) {
-    if (is.numeric(key_dates_nsw50[,i])) key_dates_nsw50[,i] <- !is.na(key_dates_nsw50[,i])
-}
-key_dates_nsw50$gid <- gid
+key_dates_nsw50 <-
+    gs %>%
+    gs_read_csv(ws = "non_sw50") %>%
+    mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
+    mutate(gid = "non_sw50")
 
 # Use PostgreSQL to reshape the data ----
 library(RPostgreSQL)
 
 pg <- dbConnect(PostgreSQL())
 rs <- dbWriteTable(pg, c("activist_director", "key_dates_sw50"),
-                   as.data.frame(key_dates_sw50), overwrite=TRUE, row.names=FALSE)
-# rs <- dbGetQuery(pg, "CREATE ROLE activism")
+                   key_dates_sw50, overwrite=TRUE, row.names=FALSE)
 rs <- dbGetQuery(pg, "
     ALTER TABLE activist_director.key_dates_sw50 OWNER TO activism")
 
