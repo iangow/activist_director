@@ -43,7 +43,6 @@ source('code/import_key_dates.R', echo=TRUE)
 runSQL('code/create_activism_sample.sql')
 source('code/create_activism_events.R', echo=TRUE)
 
-## Already done!!!
 # This one takes a long time to run (~23 minutes)
 source("code/create_activist_holdings.R", echo=TRUE)
 
@@ -55,5 +54,3 @@ source('code/create_iss_voting.R', echo=TRUE)
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 source('code/create_outcome_controls.R', echo=TRUE)
-
-source('code/import_spinoff_divestiture_ciq.R', echo=TRUE)
