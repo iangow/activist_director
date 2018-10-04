@@ -11,8 +11,8 @@ WITH sharkwatch_raw AS (
 	    dissident_group,
 	    classified_board='Yes' AS classified_board,
 	    array_remove(regexp_split_to_array(
-	        regexp_replace(dissident_group_with_sharkwatch50, 'Dissident Group: ', '', 'g'),
-	        '\s+SharkWatch50\?:\s+(Yes|No)'),'') AS dissidents,
+	        regexp_replace(dissident_group_with_sharkwatch50, 'Dissident (?:GROUP|Group): ', '', 'gi'),
+	        '\s+SharkWatch50\?:\s+(?:Yes|No|NO)'),'i') AS dissidents,
 	    activism_type, primary_campaign_type, secondary_campaign_type,
 	    dissident_board_seats_sought,
 	    dissident_board_seats_won,
