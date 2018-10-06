@@ -181,8 +181,7 @@ get_reg_data <- function(vote_number) {
         dplyr::union(ad_data) %>%
         mutate(affiliated = coalesce(!independent, FALSE),
                independent = coalesce(independent, FALSE)) %>%
-        mutate(meetingid = factor(meetingid)) %>%
-        as.data.frame()
+        mutate(meetingid = factor(meetingid))
 }
 @
 
