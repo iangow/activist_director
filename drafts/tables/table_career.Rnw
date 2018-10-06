@@ -2,60 +2,50 @@
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 <<packages, include=FALSE, cache=FALSE>>=
 library(DBI)
+library(dplyr, warn.conflicts = FALSE)
+library(psych)
 @
 
 <<career_data, include=FALSE>>=
 # Connect to database ----
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
-
-dir.data <- dbGetQuery(pg, "SELECT * FROM activist_director.equilar_all")
-
 # Functions
-library(psych)
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 
-# Create Variables and Winsorize ----
-dir.data <- within(dir.data, {
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
-    #### Winsorize variables
-    mv <- winsor(mv, trim=0.01)
-    btm <- winsor(btm, trim=0.01)
-    leverage <- winsor(leverage, trim=0.01)
-    dividend <- winsor(dividend, trim=0.01)
-    payout <- winsor(payout, trim=0.01)
-    roa <- winsor(roa, trim=0.01)
-    sale_growth <- winsor(sale_growth, trim=0.01)
-    inst <- winsor(inst, trim=0.01)
-})
+equilar_all <- tbl(pg, sql("SELECT * FROM activist_director.equilar_all"))
+
+# Create Variables and Winsorize ----
+dir.data <-
+    equilar_all %>%
+    collect() %>%
+    mutate_at(vars(mv, btm, leverage, dividend,
+                   payout, roa, sale_growth, inst), function(x) winsor(x, trim=0.01))
 
 controls <- c("factor(year)", "factor(sic2)",
-              "age", "female", "tenure_calc", "comp_committee", "audit_committee",
-              "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
-controls1 <- c("factor(year)", "factor(sic2)",
               "age", "female", "comp_committee", "audit_committee",
-              "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
-controls2 <- c("factor(year)", "factor(sic2)",
-               "age", "female", "comp_committee", "audit_committee",
-               "analyst", "inst", "size_return", "mv", "btm", "leverage", "dividend", "roa", "sale_growth")
+              "analyst", "inst", "size_return", "mv", "btm", "leverage",
+              "dividend", "roa", "sale_growth")
 
 # Set up models
 lhs.t4.1 <- "other_p2"
-rhs.t4.1 <- paste(c("other_boards", "affiliated_director", "unaffiliated_director", controls1), collapse=" + ")
+rhs.t4.1 <- paste(c("other_boards", "affiliated_director", "unaffiliated_director",
+                    controls), collapse=" + ")
 model.t4.1 <- paste(lhs.t4.1, "~", rhs.t4.1)
 
 reg.data <- dir.data %>% filter(outsider)
 fm.t4.c1 <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c1.se <- coeftest.cluster(reg.data, fm.t4.c1, cluster1="permno")
 
-reg.data <- subset(dir.data, director_first_years)
+reg.data <- dir.data %>% filter(director_first_years)
 fm.t4.c2  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c2.se <- coeftest.cluster(reg.data, fm.t4.c2, cluster1="permno")
 
-reg.data <- subset(dir.data, director_first_years & activism_firm)
+reg.data <- dir.data %>% filter(director_first_years & activism_firm)
 fm.t4.c5  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c5.se <- coeftest.cluster(reg.data, fm.t4.c5, cluster1="permno")
 
-reg.data <- subset(dir.data, director_first_years & activist_demand_firm)
+reg.data <- dir.data %>% filter(director_first_years & activist_demand_firm)
 fm.t4.c6  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
 fm.t4.c6.se <- coeftest.cluster(reg.data, fm.t4.c6, cluster1="permno")
 rm(dir.data, reg.data)
