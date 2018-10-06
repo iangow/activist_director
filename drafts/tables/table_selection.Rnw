@@ -206,6 +206,7 @@ Panel B presents logit regression where the dependent variables are indicators f
 reg.data <-
     prob_activist_director %>%
     filter(activism) %>%
+    mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
     as.data.frame()
 
 t3.pb <- list()
@@ -214,10 +215,14 @@ t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
 t3.pb[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
 t3.pb[[3]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="unaffiliated_director", rhs=rhs.1, cluster1="permno")
+t3.pb[[4]] <- fit.model(data=subset(reg.data, activism),
                   lhs="affiliated_director", rhs=rhs.1, cluster1="permno")
+
 stargazer(getFitted(t3.pb),
         dep.var.labels = c("Board demand",
                            "Activist director",
+                           "Unaffiliated director",
                            "Affiliated director"),
         covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
                              "Leverage", "Payout", "ROA", "Sales growth", "Num. directors",
@@ -226,7 +231,8 @@ stargazer(getFitted(t3.pb),
         p=getPs(t3.pb),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
-       add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}", "\\textrm{Activism}"),
+       add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
+                        "\\textrm{Activism}",  "\\textrm{Activism}", "\\textrm{Activism}"),
                       c("Pseudo-$R^2$", getPseudoR2s(t3.pb))))
 rm(t3.pb)
 @
