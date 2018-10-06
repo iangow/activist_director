@@ -118,7 +118,9 @@ tab.1 <- getTab("all_directors", all.dir.data)
 # New director sample - table
 tab.2 <- getTab("category", new.dir.data)
 tab.3 <- getTab("activist_director", act.dir.data)
-tab.4 <- getTab("affiliated_director", act.dir.data)
+tab.4 <-
+    getTab("affiliated_director", act.dir.data) %>%
+    arrange(desc(Category))
 tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 @
 
