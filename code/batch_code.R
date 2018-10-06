@@ -51,6 +51,10 @@ source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 source('code/create_iss_voting.R', echo=TRUE)
 
+source('~/git/activist_director/code/create_equilar_final.R')
+source('~/git/activist_director/code/create_equilar_career.R')
+runSQL('code/activist_director_career_analysis.SQL')
+
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 source('code/create_outcome_controls.R', echo=TRUE)
