@@ -40,7 +40,7 @@ source("code/import_activist_directors.R")
 source('code/import_key_dates.R', echo=TRUE)
 
 # Column 5
-runSQL('code/create_activism_sample.sql')
+source('code/create_activism_sample.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
 
 # This one takes a long time to run (~23 minutes)
