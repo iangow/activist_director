@@ -28,6 +28,7 @@ equilar <-
            female = gender=='F',
            male = gender=='M',
            outsider = insider_outsider_related=='Outsider',
+           insider = insider_outsider_related=='Insider',
            comp_committee = coalesce(cmtes %~% 'Comp', FALSE),
            audit_committee = coalesce(cmtes %~% 'Audit', FALSE),
            any_committee =cmtes_cnt > 0) %>%
@@ -90,7 +91,7 @@ director_industry_expert <-
     group_by(executive_id, sic2) %>%
     summarize(count = n())
 
-rs <- dbExecute(pg, "DROP TABLE IF EXISTS equilar_final_new")
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS equilar_final")
 
 permnos <-
     stocknames %>%
@@ -114,6 +115,6 @@ equilar_final <-
     mutate(ncusip = substr(cusip, 1L, 8L)) %>%
     inner_join(permnos, by = "ncusip") %>%
     select(-ncusip, -cusip) %>%
-    compute(name = "equilar_final_new", temporary = FALSE)
+    compute(name = "equilar_final", temporary = FALSE)
 
-rs <- dbExecute(pg, "ALTER TABLE equilar_final_new OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE equilar_final OWNER TO activism")
