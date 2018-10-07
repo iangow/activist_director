@@ -37,8 +37,8 @@ summ.firms <-
 
 summ.dirs <-
     activism_events %>%
-    select(permno, dissident_group, eff_announce_date, elected) %>%
-    distinct() %>%
+    group_by(permno, dissident_group, eff_announce_date) %>%
+    summarize(elected = bool_or(elected)) %>%
     inner_join(activist_directors, by = c("permno", "dissident_group", "eff_announce_date")) %>%
     filter(!is.na(appointment_date), !is.na(permno), !is.na(independent)) %>%
     mutate(year = date_part('year', eff_announce_date)) %>%
