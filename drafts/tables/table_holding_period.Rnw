@@ -7,35 +7,39 @@
 <<quantreg_libraries, cache=FALSE>>=
 library(survival)
 library(quantreg)
+library(DBI)
+library(dplyr, warn.conflicts = FALSE)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
-survival_data <- dbGetQuery(pg, "
-    SET work_mem='5GB';
 
-    WITH activist_exit AS (
-        SELECT activist_name, permno, entry_date,
-            bool_or(exit IS TRUE) AS exit
-        FROM activist_director.activist_holdings
-        GROUP BY activist_name, permno, entry_date)
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
-    SELECT DISTINCT activist_name, permno, first_date, entry_date,
-        exit_date, last_date, first_appointment_date,
-        eff_announce_date, activism, activist_demand, activist_director,
-        category, affiliated, big_investment, b.exit
-    FROM activist_director.activist_holdings
-    INNER JOIN activist_exit AS b
-    USING (activist_name, permno, entry_date)
-    WHERE permno IS NOT NULL AND activism AND quarter>0
-        AND activist_name NOT IN (
-            'California State Teachers Retirement System',
-            'New York State Common Retirement Fund',
-            'Ontario Teachers'' Pension Plan Board',
-            'The California Public Employees Retirement System')
-    ORDER BY activist_name, permno
-")
+rs <- dbExecute(pg, "SET work_mem = '5GB'")
+rs <- dbExecute(pg, "SET search_path TO activist_director, public")
+
+activist_holdings <- tbl(pg, "activist_holdings")
+
+activist_exit <-
+    activist_holdings %>%
+    group_by(activist_name, permno, entry_date) %>%
+    summarize(exit = bool_or(exit)) %>%
+    compute()
+
+survival_data <-
+    activist_holdings %>%
+    select(-exit) %>%
+    inner_join(activist_exit, by = c("activist_name", "permno", "entry_date")) %>%
+    filter(!is.na(permno), activism, quarter>0,
+           !activist_name %in% c("California State Teachers Retirement System",
+                                 "New York State Common Retirement Fund",
+                                 "Ontario Teachers' Pension Plan Board",
+                                 "The California Public Employees Retirement System")) %>%
+    select(activist_name, permno, exit, entry_date, eff_announce_date,
+           first_appointment_date, exit_date, affiliated) %>%
+    distinct() %>%
+    collect() %>%
+    as.data.frame()
 
 rs <- dbDisconnect(pg)
 @
