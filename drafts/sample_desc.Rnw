@@ -20,8 +20,8 @@ The \textit{Affiliated} category comprises directors that we identified as emplo
 Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated} and \textit{Unaffiliated} directors.
 Of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as the result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 For illustration, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn is clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives'' Edward Bleier and Strauss Zelnick, are unaffiliated.
-% Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
-% We find that most directors are not appointed as the result of a shareholder vote: 646 of the 824 were appointed following some kind of settlement with the incumbent board.
+Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
+We find that most directors are not appointed as the result of a shareholder vote: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board.
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}

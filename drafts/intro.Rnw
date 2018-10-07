@@ -69,28 +69,31 @@ Finally, is there evidence of short-termism?
 Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2016.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contests involving another corporation.}
 In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board.
 We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} directors who were appointed to the board either through proxy fights or in response to activist demands.
-With regard to the first set of questions, we find, consistent with prior research, that activists tend to target firms with more institutional shareholders, smaller market capitalization, and worse recent stock performance.
-Additionally, conditional on being targeted by activists, we find that activists are more likely to demand board representation when the firm has worse performance, less leverage and is smaller.
-With regard to performance, we find evidence that board representation is demanded at firms with worse stock market performance, but with higher institutional ownership; this is consistent with board representation being sought for objectives other than reversing poor operating performance.
-But we also find that firms with older directors and with staggered boards are more likely to be targeted.
-Conditional on a firm being targeted for activism, we find little that explains when activists get board seats.
+With regard to the first set of questions, we find, consistent with prior research, that activists tend to target firms with worse recent stock performance and ``value'' firms (i.e., those with low market-to-book ratios).
+Conditional on being targeted by activists, we also find that activists are more likely to demand or get board representation when the firm has more institutional ownership, smaller market capitalization, worse stock market performance, and lower dividend payout levels.
+We also find that firms with older directors are more likely to appoint activist directors.
 
 We describe the characteristics of activist directors and compare them with new directors appointed at other firms.\footnote{\citet*{Gow:2014vf} show that activism is often associated with departure of incumbent directors.}
 We find that activist director characteristics differ according to whether the director is affiliated with activists or not.
-Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 11 years younger than other new directors and much less frequently female.
+Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 9 years younger than other activist directors and much less frequently female than unaffiliated activist directors, who are less frequently female than new directors in general.
 % TODO "Less likely" sounds like we have a p-value, which we don't. Perhaps we should to do this.
 Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly move into key board positions.
-About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed at the hedge fund activist; the rest (\Sexpr{dirs$unaffiliated}) appear to be unaffiliated directly to the hedge fund despite being sponsored by the activist for the board position.
+About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed at the hedge fund activist; the rest (\Sexpr{dirs$unaffiliated}), while sponsored or supported by the activist, appear not to be affiliated with the activist.
 
-Using methods that account for censoring, we find that activists hold stock in a target firm for a median of about 2.2 years when their demands do not include board representation, and that this increases to 3 years in cases where the activists obtain board representation.
-A three-year holding period implies that these activists can be considered as ``long-term'' investors.\footnote{As discussed in Section \ref{sect:holding}, pension funds have a typical duration of 2 years and investor relation professionals consider a horizon of more than $2.8$ years to warrant the label ``long-term.''}
+Using methods that account for censoring, we find that activists hold stock in a target firm for a median of about 1.8 years (639 days) when their demands do not include board representation, and that this increases to 2 to 2.5 years (731 to 912 days) when the activists obtain board representation.
+These holding periods suggest that these activists might be considered as ``long-term'' investors.\footnote{As discussed in Section \ref{sect:holding}, pension funds have a typical duration of 2 years and investor relation professionals consider a horizon of more than 2.8 years to warrant the label ``long-term.''}
 
 We then examine a number of possible consequences of activist directors for the firms whose boards they join.
-Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement ranging from $2.8\%$ to $3.6\%$.
-We also find some evidence of a positive market reaction at the appointment of activist directors.
-Looking beyond positive announcement-period returns, operating performance seems to improve, with return on assets increasing by more than $1\%$ over the five years after activism.
-In terms of underlying actions, we find evidence of increased divestiture, decreased acquisition activity, higher probability of being acquired, lower cash balances, greater leverage, higher payout, higher CEO turnover, lower CEO compensation, and lower capital expenditure, research and development.
-With the exception of the probability of being acquired, the estimated effects are generally greater when activists obtain board representation (though not always statistically so), consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
+Consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement ranging from $2.9\%$ to $3.8\%$.
+We a positive market reaction at the appointment of activist directors, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement of from $1.8\%$ for affiliated directors and $1.2\%$ for unaffiliated directors.
+Operating performance seems to improve with activism: return on assets increases by more than $1.7$ percentage points over the five years after announcement.
+We also find limited evidence of differential effects when \emph{affiliated} activist directors are appointed: an additional $3.2\%$ and $2.8\%$ percentage-point increase three and four years after announcement, respectively.
+But a statistically signicant effect is not found in the fifth year after announcement (perhaps due to sample limitations).
+
+In terms of underlying actions, we find evidence that activism is assoiciated increased divestiture, decreased acquisition activity, higher probability of being acquired, higher payout, higher CEO turnover, lower CEO compensation, and lower capital expenditure, research and development.
+For most of these outcomes, we do not find evidence of activist directors being differently associated with these outcomes than activism without board representation.
+We do find that affiliated activists are associated with a higher probability of the firm being acquire, higher payout levels, and lower R\&D spending. W
+This is consistent with board representation being an important mechanism for bringing about these kinds of changes.
 
 The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism.
 Overall, we find that activist directors are associated with significant strategic and operational actions by firms.
