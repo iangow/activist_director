@@ -14,19 +14,19 @@ We divide the \Sexpr{num_events} activism events into three mutually exclusive c
 \subsection{Activist directors}
 For each activism event in which SharkWatch indicated that the activist obtained board representation, we used proxy statements (DEF 14A) and current filings (Form 8-K, Item 5.02) to collect names of the directors who were appointed as a result of the activist campaign.
 We also collected appointment dates and basic biographical details.
-We then examined subsequent SEC filings to determine whether and, if so, when the director subsequently left the board during our sample period.
-We classified directors into two categories.
-The \textit{Affiliated} category comprises directors that we identified as employees or principals of the members of the activist group, and \textit{Unaffiliated} covers the rest.
+We then examined subsequent SEC filings up to December 31, 2017 to determine whether and, if so when, each director subsequently left the board.
+We divide activist directors into two categories.
+The \textit{Affiliated} category comprises directors that we identified as employees or principals of the members of the activist group, and \textit{Unaffiliated} covers the remaining activist directors.
 Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated} and \textit{Unaffiliated} directors.
-Of \Sexpr{dirs$all_dirs} activist directors appointed as the result of activism campaigns in our sample, \Sexpr{dirs$affiliated} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
+Of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as the result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 For illustration, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn is clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives'' Edward Bleier and Strauss Zelnick, are unaffiliated.
-% We further distinguish some of these directors into early appointment and late appointment depending on whether or not they were appointed within 6 months from announcement of activism.
 % Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
 % We find that most directors are not appointed as the result of a shareholder vote: 646 of the 824 were appointed following some kind of settlement with the incumbent board.
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}
-To identify activist holdings of the stock of targeted firms, we use data from WhaleWisdom, which provides comprehensive coverage of SEC Form 13F and 13F/A filings related to holdings in at quarter-ends from 2001 onward.\footnote{See \url{www.whalewisdom.com}.} These filings are required on a quarterly basis for investors having more than \$100 million in assets under management.
+To identify activist holdings of the stock of targeted firms, we use data from WhaleWisdom, which provides comprehensive coverage of SEC Form 13F and 13F/A filings related to holdings in at quarter-ends from 2001 onward.\footnote{See \url{www.whalewisdom.com}.}
+These filings are required on a quarterly basis for investors having more than \$100 million in assets under management.
 We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our sample are associated with an activist that files on Form 13F.
 
 % To match with the WhaleWisdom data, we first collected CIKs for each activist fund.
@@ -35,8 +35,9 @@ We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our 
 % For example, 3G Capital Management and 3G Capital Partners Ltd have different names, but further research confirmed that 3G Capital Partners Ltd is affiliated with 3G Capital Management.
 
 \subsection{Director characteristics}
-Data on on 531,169 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.} The Equilar database comprises directors of every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
-For each director on a company's board, Equilar provides director-level information such as committee memberships, gender, age, equity holding, etc.
+Data on on 532,609 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
+The Equilar database comprises directors of nearly every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
+For each director on a company's board, Equilar provides director-level information such as committee memberships, gender, age, etc.
 Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.
 
 \subsection{Other data}

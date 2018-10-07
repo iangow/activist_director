@@ -19,7 +19,7 @@ Determinants and consequences
 
 \singlespacing
 \begin{abstract}
-This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., those directors appointed in response to demands by activists. Using a sample of \Sexpr{num_events} activism events over the period 2004--2016, we identify \Sexpr{dirs$all_dirs} activist directors. We find that activists are more likely to gain board seats at smaller firms and those with weaker stock price performance.
+This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., those directors appointed in response to demands by activists. Using a sample of \Sexpr{num_events} activism events over the period 2004--2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors. We find that activists are more likely to gain board seats at smaller firms and those with weaker stock price performance.
 %We find that activist directors differ from other new directors in some respects.
 % I think this part of the paper is too undeveloped to warrant mentioning in the abstract.
 %
@@ -49,9 +49,7 @@ Does their impact differ from that of other cases of activism?
 Finally, is there evidence of short-termism?
 
 Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2016.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contests involving another corporation.}
-In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board. We identify \Sexpr{dirs$all_dirs} directors who were appointed to the board in response to activist demands.
-% TODO: I think we have too many repeated firms in our sample. Should some of these events be combined?
-% (involving \Sexpr{dirs$num_act_dir_firms} distinct firms)
+In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board. We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} directors who were appointed to the board either through proxy fights or in response to activist demands.
 With regard to the first set of questions, we find, consistent with prior research, that activists tend to target firms with more institutional shareholders, smaller market capitalization, and worse recent stock performance. Additionally, conditional on being targeted by activists, we find that activists are more likely to demand board representation when the firm has worse performance, less leverage and is smaller.
 With regard to performance, we find evidence that board representation is demanded at firms with worse stock market performance, but with higher institutional ownership; this is consistent with board representation being sought for objectives other than reversing poor operating performance. But we also find that firms with older directors and with staggered boards are more likely to be targeted. Conditional on a firm being targeted for activism, we find little that explains when activists get board seats.
 
