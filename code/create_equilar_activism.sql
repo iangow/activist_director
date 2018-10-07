@@ -66,3 +66,5 @@ unique_matches AS (
 
 SELECT *
 FROM unique_matches;
+
+ALTER TABLE activist_director.equilar_activism OWNER TO activism;

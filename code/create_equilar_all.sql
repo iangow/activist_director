@@ -30,3 +30,5 @@ LEFT JOIN activist_director.outcome_controls AS d
 ON a.permno=d.permno AND a.period=d.datadate
 WHERE own_board
 ORDER BY permno, executive_id, period;
+
+ALTER TABLE activist_director.equilar_all OWNER TO activism;
