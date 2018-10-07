@@ -18,7 +18,7 @@ SELECT DISTINCT a.*,
 	c.appointment_date, c.retirement_date,
 	d.analyst, d.inst, d.size_return, d.mv, d.btm, d.leverage, d.dividend, d.roa, d.sale_growth, d.payout,
 	CASE WHEN activist_director_firm THEN 'activist_director_firm'
-        WHEN activist_demand_firm THEN 'activist_demand_firm'
+        WHEN activist_demand_firm THEN 'activism_firm'
         WHEN activism_firm THEN 'activism_firm'
             ELSE '_none' END AS category
 FROM activist_director.equilar_final AS a
