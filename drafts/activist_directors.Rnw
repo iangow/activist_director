@@ -39,26 +39,38 @@
 \bibliographystyle{kluwer} % , chicago, kluwer
 
 <<check_pg, cache=FALSE, include=FALSE>>=
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+library(dplyr, warn.conflicts = FALSE)
+library(DBI)
 
-events.updated <- dbGetQuery(pg, "
-    SELECT description
-    FROM pg_description
-    JOIN pg_class
-    ON pg_description.objoid = pg_class.oid
-    JOIN pg_namespace
-    ON pg_class.relnamespace = pg_namespace.oid
-    WHERE relname = 'activism_events' AND nspname='activist_director'")
-rs <- dbDisconnect(pg)
+getComment <- function(table, schema) {
+    pg <- dbConnect(RPostgreSQL::PostgreSQL())
+
+    sql = sprintf("
+        SELECT description
+        FROM pg_description
+        JOIN pg_class
+        ON pg_description.objoid = pg_class.oid
+        JOIN pg_namespace
+        ON pg_class.relnamespace = pg_namespace.oid
+        WHERE relname = '%s' AND nspname='%s'", table, schema)
+
+    res <-
+        dbGetQuery(pg, sql) %>%
+        dplyr::select(description) %>%
+        dplyr::pull()
+
+    dbDisconnect(pg)
+    return(res)
+}
+
+events.updated <- getComment("activism_events", "activist_director")
 @
 
 % This code gets statistics to refer to in the document.
 \Sexpr{opts_chunk$set(cache.extra=events.updated)}
 <<sample_stats, cache=TRUE, include=FALSE>>=
 # PostgreSQL Connection
-library(dplyr)
-library(DBI)
+
 pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 dbExecute(pg, "SET search_path TO activist_director, public")
