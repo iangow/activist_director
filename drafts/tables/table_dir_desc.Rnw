@@ -128,7 +128,6 @@ tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 
 \begin{table}[htb]
   \caption{Director characteristics}
-
   \label{tbl:dir_chars}
   \begin{minipage}[t]{\columnwidth}
 %  \begin{flushleft}
