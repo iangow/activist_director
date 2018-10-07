@@ -21,13 +21,15 @@ censor_date <- "2017-12-31"
 
 # All Director Sample
 activist_director_stats <-
-    activist_directors %>%
+    activism_events %>%
+    mutate(campaign_id = unnest(campaign_ids)) %>%
+    group_by(campaign_id) %>%
+    summarize(elected = bool_or(elected)) %>%
+    inner_join(activist_directors, by = "campaign_id") %>%
     filter(!is.na(independent) & !is.na(permno) & !is.na(appointment_date)) %>%
-    #select(-permno, -dissident_group, -eff_announce_date) %>%
-    inner_join(activism_events, by=c("permno","dissident_group","eff_announce_date")) %>%
     mutate(still_active = as.integer(is.na(retirement_date)),
            left_board  = as.integer(!is.na(retirement_date)),
-           tenure = retirement_date - appointment_date, # ::float8
+           tenure = retirement_date - appointment_date,
            tenure_censored = coalesce(retirement_date, censor_date) - appointment_date) %>%
     mutate(activist_affiliate = !independent) %>%
     group_by(activist_affiliate) %>%
