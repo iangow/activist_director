@@ -74,15 +74,13 @@ events <-
     collect()
 
 ad_years <-
-    activist_directors %>%
-    inner_join(activism_events,
-               by = c("campaign_id", "permno", "dissident_group", "eff_announce_date")) %>%
-    mutate(still_active = as.integer(is.na(retirement_date)),
-           left_board =  as.integer(!is.na(retirement_date)),
-           tenure = retirement_date-appointment_date,
-           tenure_censored = coalesce(retirement_date, '2017-12-31') - appointment_date,
-           year = date_part('year', eff_announce_date)) %>%
-    filter(!is.na(appointment_date), !is.na(permno))
+    activism_events %>%
+    mutate(campaign_id = unnest(campaign_ids)) %>%
+    group_by(campaign_id) %>%
+    summarize(elected = bool_or(elected)) %>%
+    inner_join(activist_directors, by = "campaign_id") %>%
+    mutate(year = date_part('year', eff_announce_date)) %>%
+    filter(!is.na(appointment_date), !is.na(permno), !is.na(independent))
 
 dirs <-
     ad_years %>%
