@@ -35,20 +35,13 @@ summ.firms <-
     arrange(year) %>%
     collect()
 
-ad_years <-
+summ.dirs <-
     activism_events %>%
     select(permno, dissident_group, eff_announce_date, elected) %>%
     distinct() %>%
     inner_join(activist_directors, by = c("permno", "dissident_group", "eff_announce_date")) %>%
     filter(!is.na(appointment_date), !is.na(permno), !is.na(independent)) %>%
-    mutate(still_active = is.na(retirement_date),
-            left_board = !is.na(retirement_date),
-            tenure = retirement_date - appointment_date,
-            tenure_censored  = coalesce(retirement_date, '2017-12-31') - appointment_date,
-            year = date_part('year', eff_announce_date))
-
-summ.dirs <-
-    ad_years %>%
+    mutate(year = date_part('year', eff_announce_date)) %>%
     group_by(year) %>%
     summarize(activist_director = n(),
               affiliated = sum(as.integer(!independent), na.rm=TRUE),
