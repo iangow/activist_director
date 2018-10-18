@@ -1,5 +1,5 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(cache=FALSE, warning=FALSE, echo=FALSE, message=FALSE)}
+\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
 library(xtable)
@@ -56,17 +56,15 @@ summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
 
 activist_director_stats <-
     activist_dir_data %>%
+    collect() %>%
+    mutate(left_board = if_else(left_board==1L, 1, NA_real_),
+           still_active = if_else(still_active==1L, 1, NA_real_)) %>%
     group_by(activist_affiliate) %>%
     summarize(num_all = n(),
               num_left_board  = sum(left_board, na.rm = TRUE),
-              left_tenure = if_else(sum(left_board, na.rm = TRUE) > 0,
-                                    sum(tenure_censored*left_board, na.rm = TRUE) * 1.0 /
-                                        sum(left_board, na.rm = TRUE), NA),
+              left_tenure = median(tenure_censored*left_board, na.rm = TRUE),
               num_still_active = sum(still_active, na.rm = TRUE),
-              active_tenure = if_else(sum(still_active, na.rm = TRUE) > 0,
-                                      sum(tenure_censored*still_active, na.rm = TRUE) * 1.0 /
-                                          sum(still_active, na.rm = TRUE), NA)) %>%
-    collect()
+              active_tenure = median(tenure_censored*still_active, na.rm = TRUE))
 
 names(activist_director_stats) <- c("Category", "N", "Left board", "Tenure",
                                     "Still active", "Tenure")
@@ -143,7 +141,8 @@ getTab <- function(cat, df) {
 
 tab.1 <- getTab("all_directors", all.dir.data)
 # New director sample - table
-tab.2 <- getTab("category", new.dir.data)
+tab.2 <- getTab("category", new.dir.data) %>%
+    mutate(Category = as.character(Category))
 tab.3 <- getTab("activist_director", act.dir.data)
 tab.4 <-
     getTab("affiliated_director", act.dir.data) %>%
@@ -165,7 +164,7 @@ $N$ refers to the number of observations.
 Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively.
 Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
-\textit{Tenure} is measured in days and is censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}.
+\textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
 \textit{Tenure (adjusted)} is estimated median tenure for directors accounting for censoring.
 \newline}
 % \end{flushleft}
