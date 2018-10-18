@@ -1,10 +1,12 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+\Sexpr{opts_chunk$set(cache=FALSE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<dir_desc_libraries, cache=FALSE, include=FALSE>>=
 library(xtable)
 library(RPostgreSQL)
 library(dplyr, warn.conflicts = FALSE)
+library(survival)
+library(quantreg)
 @
 
 \begin{landscape}
@@ -20,7 +22,7 @@ equilar_all <- tbl(pg, "equilar_all")
 censor_date <- "2017-12-31"
 
 # All Director Sample
-activist_director_stats <-
+activist_dir_data <-
     activism_events %>%
     mutate(campaign_id = unnest(campaign_ids)) %>%
     group_by(campaign_id) %>%
@@ -30,8 +32,30 @@ activist_director_stats <-
     mutate(still_active = as.integer(is.na(retirement_date)),
            left_board  = as.integer(!is.na(retirement_date)),
            tenure = retirement_date - appointment_date,
-           tenure_censored = coalesce(retirement_date, censor_date) - appointment_date) %>%
+           exit = retirement_date > censor_date | is.na(retirement_date),
+           retirement_date = coalesce(retirement_date, censor_date),
+           tenure_censored = retirement_date - appointment_date) %>%
     mutate(activist_affiliate = !independent) %>%
+    compute()
+
+surv_data <-
+    activist_dir_data %>%
+    select(appointment_date, retirement_date, exit, activist_affiliate) %>%
+    collect()
+
+surv_est <-
+    with(surv_data, Surv(as.numeric(retirement_date - appointment_date), exit, type='right'))
+
+
+quantreg1 <- crq(surv_est ~ activist_affiliate,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=surv_data,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
+
+activist_director_stats <-
+    activist_dir_data %>%
     group_by(activist_affiliate) %>%
     summarize(num_all = n(),
               num_left_board  = sum(left_board, na.rm = TRUE),
@@ -46,6 +70,8 @@ activist_director_stats <-
 
 names(activist_director_stats) <- c("Category", "N", "Left board", "Tenure",
                                     "Still active", "Tenure")
+activist_director_stats <-cbind(activist_director_stats,
+          tibble(`Tenure (adjusted)`=cumsum(summary1[[1]]$coefficients[,1])))
 activist_director_stats[,1] <- c("Unffiliated directors","Affiliated directors")
 
 all.dir.data <-
@@ -140,6 +166,7 @@ Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit c
 Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Tenure} is measured in days and is censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}.
+\textit{Tenure (adjusted)} is estimated median tenure for directors accounting for censoring.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -161,7 +188,7 @@ print(xtable(tab, display=c("s", "s", "d", rep("f", 6))),
 \\
 <<dir_desc_panel_B, dependson="dir_desc_table", results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d")),
+print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d", "d")),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
