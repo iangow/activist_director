@@ -85,25 +85,24 @@ We later examine specifically whether the market returns and payout improve when
 
 \section{Activist holding periods} \label{sect:holding}
 We next examine whether having an activist director is associated with the length of time the activist holds the stock.
-We use 13F filing data to determine when an activist acquires and disposes of stock.
-Because 13F filings are quarterly, our measures of holding period (expressed in days) have some measurement error.
+Becausewe use 13F filing data to determine when an activist acquires and disposes of stock and 13F filings are quarterly, our measures of holding period (expressed in days) have some measurement error.
 We examine three holding periods: \textit{Entry--Exit}, which runs from the first date on which the stock was held to the last date the stock was held; \textit{Annc--Exit}, which runs from the date on which activism was first announced (typically with a 13D filing) to exit; and \textit{Appt--exit}, which runs from the first appointment of an activist director through to the date of exit.\footnote{We measure the exit date as the record date of the first 13F filing in which the stock is no longer part of the activist's portfolio.}
 
 One issue with measuring holding periods is that censoring is significant in our sample.
-This occurs because many of the activism campaigns in our sample are recent and the activist continues to hold stock at the time we measure the holding period.
+Many of the activism campaigns in our sample are recent and the activist continues to hold stock at the time we measure the holding period.
 Thus to estimate the association between activism category and holding period, we use censored median regression \citep{Portnoy:2003wp}.
 Table \ref{tbl:holdings} presents these results.
-When there are activist directors affiliated with the activist hedge fund, we find a highly significant incremental holding period of 365 days from entry to exit and 587 days from announcement of activism to exit relative to \textit{Other activism} without activist directors.\footnote{This is consistent with \textit{Affiliated director} having a shorter period from entry to announcement of activism.}
-However, we do not find such difference with \textit{Unaffiliated director} cases.\footnote{This is potentially associated with \textit{Unaffiliated director} cases having a higher likelihood of the target firm being acquired as shown in Table 10.}
-While the estimated median holding period for \textit{Other activism} events is 770 days (i.e., about 2.1 years), the equivalent for \textit{Unaffiliated director} events is 862 days (i.e., about 2.4 years) and that for \textit{Affiliated director} events is 1,135 days (i.e., about 3.1 years).
-From announcement to exit,  \textit{Affiliated director} activists hold the stock for 990 days (2.7 years) and for 709 days (1.9 years) from first appointment of an activist director.
+When there are activist directors affiliated with the activist hedge fund, we find a highly significant incremental holding period of 273 days from entry to exit and 348 days from announcement of activism to exit relative to activism without activist directors.\footnote{This is consistent with \textit{Affiliated director} having a shorter period from entry to announcement of activism.}
+However, we find smaller difference with \textit{Unaffiliated director} cases.\footnote{This is potentially associated with \textit{Unaffiliated director} cases having a higher likelihood of the target firm being acquired; see Table \ref{tbl:div_acq}.}
+While the estimated median holding period for other activism events is 639 days (i.e., about 1.8 years), the equivalent for \textit{Unaffiliated director} events is 731 days (i.e., about 2.0 years) and that for \textit{Affiliated director} events is 912 days (i.e., about 2.5 years).
+From announcement to exit, \textit{Affiliated director} activists hold the stock for 912 days (2.5 years) and for 655 days (1.8 years) from first appointment of an activist director.
 
 To put these statistics into perspective, it is helpful to consider some benchmarks.
 \citet{Cremers:2013vt} examine the holding period of various kinds of investors.
 They examine four categories of investors (banks, pension funds, investment companies, and others) and find that pension funds have the longest duration at 2 years.
 They also examine the holdings of some institutional investors and provide only one example of an investor with a duration greater than three years, namely the well-known long-term investor, Berkshire Hathaway, which had a duration of between 3 and 4 years during our sample period.
 Another reference point is provided by the \citet{Beyer:2014niri} survey of investor relation professionals, who consider $2.8$ years as a cutoff beyond which investors can be considered ``long-term'' investors.
-These benchmarks suggest the three-year holding period of activists getting representation on boards provides them with a relatively long investment horizon.
+These benchmarks suggest the holding period of activists getting representation on boards provides them with a relatively long investment horizon.
 
 \section{Stock returns} \label{sect:returns}
 We follow prior research in examining the impact of activism on stock returns, but examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
