@@ -160,28 +160,31 @@ rs <- dbDisconnect(pg)
 <<vote_func, include=FALSE>>=
 library(lubridate)
 
+
+
 get_reg_data <- function(vote_number) {
 
     ad_data <-
         ad_vote_data %>%
-        mutate(appointment_date = pmin(meetingdate, appointment_date),
-               start_date = appointment_date + make_difftime(day = (vote_number - 1) * 365),
-               end_date   = appointment_date + make_difftime(day = vote_number * 365)) %>%
-        filter(meetingdate >= start_date, meetingdate < end_date) %>%
-        select(-campaign_id, -appointment_date, -vote_num,
-               -start_date, -end_date)
+        mutate(appointment_date = pmin(meetingdate, appointment_date)) %>%
+        filter(vote_num == vote_number) %>%
+        select(-vote_num, -campaign_id)
 
     other_dirs <-
         director_votes %>%
-        setdiff(ad_data %>% select(-independent)) %>%
-        semi_join(ad_data, by="meetingid")
+        anti_join(ad_data, by="itemonagendaid") %>%
+        semi_join(ad_data, by="meetingid") %>%
+        mutate(appointment_date = as.Date(NA))
 
-    other_dirs %>%
+    reg_data <-
+        other_dirs %>%
         mutate(independent = NA) %>%
         dplyr::union(ad_data) %>%
         mutate(affiliated = coalesce(!independent, FALSE),
                independent = coalesce(independent, FALSE)) %>%
         mutate(meetingid = factor(meetingid))
+
+    return(reg_data)
 }
 @
 
