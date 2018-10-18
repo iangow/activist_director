@@ -59,3 +59,4 @@ source('code/create_iss_voting.R', echo=TRUE)
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 source('code/create_outcome_controls.R', echo=TRUE)
+source('code/create_activism_director_years.R', echo=TRUE)
