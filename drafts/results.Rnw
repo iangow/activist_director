@@ -27,21 +27,20 @@ Affiliated and unaffiliated activist directors who remain on their respective bo
 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine voting outcomes for activist directors.
-Voting in director elections provides a mechanism for  shareholders to communicate their satisfaction or dissatisfaction with directors' performance.
-We examine whether activist directors are regarded differently by shareholders by looking at voting outcomes in director elections following their appointment.
+Voting in director elections provides a mechanism for shareholders to communicate their satisfaction or dissatisfaction with directors' performance.
+We examine whether activist directors are regarded differently by shareholders by looking at voting outcomes in director elections upon or following appointment.
 Table \ref{tbl:voting} provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
 To control for various factors affecting shareholder support for directors at the time of the meeting, we include meeting fixed effects.
 Thus this analysis compare vote outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
-Columns 1 and 2 provides results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide restuls the second and third elections, respectively.
+Columns 1 and 2 provides results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for the second and third elections, respectively.
 
-The results in column 1 show that activist directors get significantly higher shareholder support than other directors: $13.527$ ($6.145$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
-Because ISS recommendations are known to affect shareholder votes, we include an indicator for a favorable recommendation from ISS for each director in the regression reported in column 2.
-The estimated coefficient of $44.656\%$ is consistent with ISS having a significant effect on vote outcomes.
-But, even controlling for ISS recommendations, there is significantly greater shareholder support for \emph{unaffiliated} directors, but no statistically significant coefficient on the indicator for \emph{affiliated} directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes. Therefore, including the ISS indicator may bias estimated coefficients.}
+The results in column 1 show that activist directors get significantly higher shareholder support than other directors: $21.903$ ($8.967$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
+Because ISS recommendations are understood to affect shareholder votes, we include an indicator for a favorable recommendation from ISS for each director in the regression reported in column 2.
+The estimated coefficient of $36.256\%$ is consistent with ISS having a significant effect on vote outcomes.
+But, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $16.967$ ($5.255$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes. Therefore, including the ISS indicator may bias estimated coefficients.}
 
-Interestingly, shareholder support for unaffiliated activist directors is slightly elevated even at the second election, though the apparent effect is much smaller (coef. $0.747\%$).
-Voting support for affiliated activist directors is indistinguishable from that for other directors in the first and second elections (estimated coefficients are much smaller and statistically indistinguishable from zero).
-The same is true for unaffiliated directors at the second election.
+Interestingly, shareholder support for activist directors is slightly elevated even at the second election, though the apparent effect is much smaller (coefs. $11.359\%$ [$10.725\%$] for unaffiliated [affiliated] directors).
+Voting support for activist directors is indistinguishable from that for other directors at the second election (estimated coefficients are much smaller and statistically indistinguishable from zero).
 
 \subsection{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointment.
