@@ -1,196 +1,160 @@
 library(dplyr, warn.conflicts = FALSE)
-library(RPostgreSQL)
+library(DBI)
 
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
-events <- dbGetQuery(pg, "
-                     WITH settlement_agreement AS (
-                     SELECT DISTINCT campaign_id::INT,
-                     to_date(regexp_replace(regexp_matches(settlement_agreement_special_exhibit_source, '\\d{1,2}-\\d{1,2}-\\d{4}', 'g')::text, '[{}]', '', 'g'), 'MM-DD-YYYY') AS settle_date
-                     FROM factset.sharkwatch
-                     ORDER BY campaign_id),
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
-                     standstill_agreement AS (
-                     SELECT DISTINCT campaign_id::INT,
-                     to_date(regexp_replace(regexp_matches(standstill_agreement_special_exhibit_source, '\\d{1,2}-\\d{1,2}-\\d{4}', 'g')::text, '[{}]', '', 'g'), 'MM-DD-YYYY') AS standstill_date
-                     FROM factset.sharkwatch
-                     ORDER BY campaign_id),
+activism_events <- tbl(pg, "activism_events")
+activist_directors <- tbl(pg, "activist_directors")
 
-                     before_remove_dups AS (
-                     SELECT DISTINCT a.campaign_id, a.permno, a.eff_announce_date, a.proxy_fight_went_the_distance, a.category, a.category_activist_director, a.affiliated,
-                     a.dissident_board_seats_wongranted_date AS appointment_date, b.settle_date, c.standstill_date, COALESCE(b.settle_date, c.standstill_date)::DATE AS any_settle_date
-                     FROM activist_director.activism_events AS a
-                     LEFT JOIN settlement_agreement AS b
-                     ON b.campaign_id=ANY(a.campaign_ids)
-                     LEFT JOIN standstill_agreement AS c
-                     ON c.campaign_id=ANY(a.campaign_ids)
-                     --WHERE a.activist_director
-                     ORDER BY campaign_id)
+ad_linked <-
+    activism_events %>%
+    mutate(campaign_id = unnest(campaign_ids)) %>%
+    inner_join(activist_directors, by = "campaign_id") %>%
+    group_by(campaign_ids) %>%
+    summarize(appointment_date = min(appointment_date, na.rm = TRUE),
+              won_date = min(dissident_board_seats_wongranted_date, na.rm = TRUE)) %>%
+    mutate(appointment_date = least(appointment_date, won_date)) %>%
+    select(-won_date)
 
-                     SELECT DISTINCT campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category, category_activist_director, affiliated, extract(year from eff_announce_date) AS year,
-                     min(appointment_date) As appointment_date, min(settle_date) AS settle_date, min(standstill_date) AS standstill_date, min(any_settle_date) AS any_settle_date
-                     FROM before_remove_dups
-                     GROUP BY campaign_id, permno, eff_announce_date, proxy_fight_went_the_distance, category, category_activist_director, affiliated
-                     ORDER BY campaign_id
-                     ")
+events <-
+    activism_events %>%
+    left_join(ad_linked, by = "campaign_ids") %>%
+    collect()
 
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsDaily.R")
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsMonthly.R")
 
-# Around Appointment Date
-ret.data.d <- getEventReturns(events$permno, events$appointment_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_appt")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(events, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
+
+merged <-
+    # Around Appointment Date
+    getEventReturns(events$permno, events$appointment_date,
+                    days.before=-1, days.after=1,
+                    label="ret_d_appt") %>%
+    rename(appointment_date = event_date) %>%
+    right_join(events, by = c("permno", "appointment_date"))
 
 # Around Settlement Date
-ret.data.d <- getEventReturns(events$permno, events$settle_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_sett")
-ret.data.d$settle_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "settle_date"), all = TRUE)
-
+merged <-
+    getEventReturns(events$permno, events$settle_date,
+                    days.before=-1, days.after=1,
+                    label="ret_d_sett") %>%
+    rename(settle_date = event_date) %>%
+    right_join(merged, by = c("permno", "settle_date"))
 
 # Around Standstill Date
-ret.data.d <- getEventReturns(events$permno, events$standstill_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_ss")
-ret.data.d$standstill_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "standstill_date"), all = TRUE)
-
+merged <-
+    getEventReturns(events$permno, events$standstill_date,
+                          days.before=-1, days.after=1,
+                          label="ret_d_ss") %>%
+    rename(standstill_date = event_date) %>%
+    right_join(merged, by = c("permno", "standstill_date"))
 
 # Around Any Settlement Date
-ret.data.d <- getEventReturns(events$permno, events$any_settle_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_any_sett")
-ret.data.d$any_settle_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "any_settle_date"), all = TRUE)
+merged <-
+    getEventReturns(events$permno, events$any_settle_date,
+                    days.before=-1, days.after=1,
+                    label="ret_d_any_sett") %>%
+    rename(any_settle_date = event_date) %>%
+    right_join(merged, by = c("permno", "any_settle_date"))
 
 # Around Any Announcement Date
-ret.data.d <- getEventReturns(events$permno, events$eff_announce_date,
-                              days.before=-1, days.after=1,
-                              label="ret_d_annc")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date"), all = TRUE)
-
-
-
-
-
-
+merged <-
+    getEventReturns(events$permno, events$eff_announce_date,
+                    days.before=-1, days.after=1,
+                    label="ret_d_annc") %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 # Before Announcement Date (Long-term, -12,0)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=-12, end.month=0,
-                                     label="ret_annc_m12p0")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$eff_announce_date,
+                           start.month=-12, end.month=0,
+                           label="ret_annc_m12p0") %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 # After Announcement Date (Long-term, 0,12)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=12,
-                                     label="ret_annc_m0p12")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$eff_announce_date,
+                           start.month=0, end.month=12,
+                           label="ret_annc_m0p12") %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 # After Announcement Date (Long-term, 0,24)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=24,
-                                     label="ret_annc_m0p24")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$eff_announce_date,
+                           start.month=0, end.month=24,
+                           label="ret_annc_m0p24") %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 # After Announcement Date (Long-term, 0,36)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$eff_announce_date,
-                                     start.month=0, end.month=36,
-                                     label="ret_annc_m0p36")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date"), all = TRUE)
-
-
-
-
+merged <-
+    getEventReturnsMonthly(events$permno, events$eff_announce_date,
+                           start.month=0, end.month=36,
+                           label="ret_annc_m0p36") %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 # Before Appointment Date (Long-term, -12,0)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$appointment_date,
-                                     start.month=-12, end.month=0,
-                                     label="ret_appt_m12p0")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$appointment_date,
+                           start.month=-12, end.month=0,
+                           label="ret_appt_m12p0") %>%
+    rename(appointment_date = event_date) %>%
+    right_join(merged, by = c("permno", "appointment_date"))
 
 # After Appointment Date (Long-term, 0,12)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$appointment_date,
-                                     start.month=0, end.month=12,
-                                     label="ret_appt_m0p12")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$appointment_date,
+                           start.month=0, end.month=12,
+                           label="ret_appt_m0p12") %>%
+    rename(appointment_date = event_date) %>%
+    right_join(merged, by = c("permno", "appointment_date"))
 
 # After Appointment Date (Long-term, 0,24)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$appointment_date,
-                                     start.month=0, end.month=24,
-                                     label="ret_appt_m0p24")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$appointment_date,
+                           start.month=0, end.month=24,
+                           label="ret_appt_m0p24")  %>%
+    rename(appointment_date = event_date) %>%
+    right_join(merged, by = c("permno", "appointment_date"))
 
 # After Appointment Date (Long-term, 0,36)
-ret.data.d <- getEventReturnsMonthly(events$permno, events$appointment_date,
-                                     start.month=0, end.month=36,
-                                     label="ret_appt_m0p36")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date"), all = TRUE)
+merged <-
+    getEventReturnsMonthly(events$permno, events$appointment_date,
+                           start.month=0, end.month=36,
+                           label="ret_appt_m0p36")  %>%
+    rename(appointment_date = event_date) %>%
+    right_join(merged, by = c("permno", "appointment_date"))
 
 # Before Appointment Date (Long-term, -12,0) - Breakdown_1 (-12,annc)
-subevents <- subset(events, eff_announce_date < appointment_date)
-ret.data.d <- getEventReturns(subevents$permno, subevents$appointment_date, subevents$eff_announce_date,
-                              days.before=-252, days.after=0,
-                              label="ret_appt_m12_annc")
-ret.data.d$appointment_date <- ret.data.d$event_date
-ret.data.d$eff_announce_date <- ret.data.d$end_event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "appointment_date", "eff_announce_date"), all = TRUE)
+subevents <-
+    events %>%
+    filter(eff_announce_date < appointment_date)
+
+merged <-
+    getEventReturns(subevents$permno,
+                    subevents$appointment_date,
+                    subevents$eff_announce_date,
+                    days.before=-252, days.after=0,
+                    label="ret_appt_m12_annc")  %>%
+    rename(appointment_date = event_date) %>%
+    right_join(merged, by = c("permno", "appointment_date"))
 
 # Before Appointment Date (Long-term, -12,0) - Breakdown_2 (annc, appt)
-ret.data.d <- getEventReturns(subevents$permno, subevents$eff_announce_date, subevents$appointment_date,
-                              days.before=0, days.after=0,
-                              label="ret_appt_annc_appt")
-ret.data.d$eff_announce_date <- ret.data.d$event_date
-ret.data.d$appointment_date <- ret.data.d$end_event_date
-ret.data.d$event_date <- NULL
-ret.data.d$end_event_date <- NULL
-merged <- merge(merged, ret.data.d, by = c("permno", "eff_announce_date", "appointment_date"), all = TRUE)
-
-
-
+merged <-
+    getEventReturns(subevents$permno, subevents$eff_announce_date,
+                    subevents$appointment_date,
+                    days.before=0, days.after=0,
+                    label="ret_appt_annc_appt")  %>%
+    rename(eff_announce_date = event_date) %>%
+    right_join(merged, by = c("permno", "eff_announce_date"))
 
 rs <- dbWriteTable(pg, c("activist_director", "event_returns"),
                    merged, overwrite=TRUE, row.names=FALSE)
 
-returns <- dbGetQuery(pg, "SELECT * FROM activist_director.event_returns")
+rs <- dbDisconnect(pg)

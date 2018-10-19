@@ -32,7 +32,7 @@ dissidents <-
     mutate(dissident = regexp_split_to_table(dissidents, '\\s+SharkWatch50\\?:\\s+(?:Yes|No|NO)')) %>%
     filter(dissident != "") %>%
     group_by(campaign_id) %>%
-    summarize(dissidents = array_agg(dissident)) %>%
+    summarize(dissidents = sql("array_agg(dissident ORDER BY dissident)")) %>%
     inner_join(sharkwatch) %>%
     select(campaign_id, dissidents)
 

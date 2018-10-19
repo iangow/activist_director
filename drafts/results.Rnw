@@ -106,7 +106,7 @@ Another reference point is provided by the \citet{Beyer:2014niri} survey of inve
 These benchmarks suggest the holding period of activists getting representation on boards provides them with a relatively long investment horizon.
 
 \section{Stock returns} \label{sect:returns}
-We follow prior research in examining the impact of activism on stock returns, but examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
+We follow prior research in examining the impact of activism on stock returns and examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
 
 We begin by looking at short-window returns around the announcement of activism.
 Because prior research has documented a run-up in the 10 days prior to the public announcement of activism and some drift thereafter, we follow \citet{Brav:2008eu} in using a window beginning 1 day before and ending 1 day after the announcement of activism.
