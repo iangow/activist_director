@@ -10,17 +10,17 @@ equilar_final <- tbl(pg, "equilar_final")
 
 company_years <-
     equilar_final %>%
-    distinct(permno, period)
+    distinct(company_id, period)
 
 company_directors <-
     equilar_final %>%
-    distinct(permno, executive_id, company_director_min_start,
+    distinct(company_id, executive_id, company_director_min_start,
              company_director_min_period, company_director_max_term)
 
 own_board <-
     company_directors %>%
-    left_join(company_years, by="permno") %>%
-    select(permno, executive_id,  period,  company_director_min_start, company_director_min_period,
+    left_join(company_years, by="company_id") %>%
+    select(company_id, executive_id,  period,  company_director_min_start, company_director_min_period,
            company_director_max_term) %>%
     mutate(start = least(company_director_min_start, company_director_min_period),
            firm_exists = TRUE) %>%
@@ -29,7 +29,7 @@ own_board <-
 
 own_boards_raw <-
     own_board %>%
-    group_by(permno, executive_id) %>%
+    group_by(company_id, executive_id) %>%
     arrange(period) %>%
     mutate(own_m3 = lag(own_board, 3L),
            own_m2 = lag(own_board, 2L),
@@ -97,7 +97,7 @@ all_company_director_years <-
     mutate(merge = TRUE) %>%
     inner_join(
         equilar_final %>%
-            distinct(executive_id, permno) %>%
+            distinct(executive_id, company_id) %>%
             mutate(merge=TRUE),
         by = "merge") %>%
     select(-merge)
@@ -106,16 +106,16 @@ count_other <-
     all_company_director_years %>%
     left_join(directorship_counts, by = c("year", "executive_id")) %>%
     left_join(own_board,
-              by = c("year", "executive_id", "permno")) %>%
+              by = c("year", "executive_id", "company_id")) %>%
     mutate(own_boards = coalesce(as.integer(own_board), 0L),
            total_boards = coalesce(as.integer(total_boards), 0L)) %>%
     mutate(other_boards = total_boards - own_boards) %>%
-    select(executive_id, permno, year, own_boards, total_boards,
+    select(executive_id, company_id, year, own_boards, total_boards,
            other_boards, inside_boards, outside_boards)
 
 count_others <-
     count_other %>%
-    group_by(permno, executive_id) %>%
+    group_by(company_id, executive_id) %>%
     arrange(year) %>%
     mutate(total_m3 = lag(total_boards, 3L),
            total_m2 = lag(total_boards, 2L),
@@ -140,7 +140,7 @@ rs <- dbExecute(pg, "DROP TABLE IF EXISTS equilar_career")
 
 equilar_career <-
     own_boards %>%
-    left_join(count_others, by = c("permno", "executive_id", "year")) %>%
+    left_join(count_others, by = c("company_id", "executive_id", "year")) %>%
     compute(name = "equilar_career", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE equilar_career OWNER TO activism")

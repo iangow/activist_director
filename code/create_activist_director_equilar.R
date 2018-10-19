@@ -111,13 +111,13 @@ match_4 <-
 
 match_a <-
     match_1 %>%
-    union(match_2 %>%
+    union_all(match_2 %>%
               anti_join(match_1,
                         by=c("campaign_id", "period", "first_name", "last_name")))
 
 match_b <-
     match_a %>%
-    union(match_3 %>%
+    union_all(match_3 %>%
               anti_join(match_a,
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     compute()
@@ -126,7 +126,7 @@ dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
     match_b %>%
-    union(match_4 %>%
+    union_all(match_4 %>%
               anti_join(match_b,
                         by=c("campaign_id", "period", "first_name", "last_name"))) %>%
     select(campaign_id, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
@@ -137,3 +137,5 @@ dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
                 'CREATED USING activist_director_equilar.R'")
 
 dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
+
+rs <- dbDisconnect(pg)

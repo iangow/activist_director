@@ -1,4 +1,4 @@
-\Sexpr{set_parent('../activist_directors.Rnw')}
+\Sexpr{set_parent('../activist_directors.Rnw')}x
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 <<packages, include=FALSE, cache=FALSE>>=
 library(DBI)
@@ -13,42 +13,77 @@ source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.
 
 pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
-equilar_all <- tbl(pg, sql("SELECT * FROM activist_director.equilar_all"))
+rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
-# Create Variables and Winsorize ----
-dir.data <-
-    equilar_all %>%
-    collect() %>%
-    mutate_at(vars(mv, btm, leverage, dividend,
-                   payout, roa, sale_growth, inst), function(x) winsor(x, trim=0.01))
+equilar_career <- tbl(pg, "equilar_career")
+equilar_type <- tbl(pg, "equilar_type")
+equilar_final <- tbl(pg, "equilar_final")
+outcome_controls <- tbl(pg, "outcome_controls")
 
-controls <- c("factor(year)", "factor(sic2)",
+company_financials <- tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials"))
+stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
+
+link_table <-
+    company_financials %>%
+    mutate(ncusip = substr(cusip, 1L, 8L)) %>%
+    inner_join(stocknames, by="ncusip") %>%
+    select(company_id, permno) %>%
+    distinct()
+
+outsider_status <-
+    equilar_final %>%
+    select(company_id, executive_id, period, insider_outsider_related)
+
+controls <- c("year", "sic2",
               "age", "female", "comp_committee", "audit_committee",
               "analyst", "inst", "size_return", "mv", "btm", "leverage",
               "dividend", "roa", "sale_growth")
 
+control_data <-
+    outcome_controls %>%
+    select(-age, -sic2) %>%
+    select(permno, datadate, one_of(controls)) %>%
+    rename(period = datadate)
+
+# Create Variables and Winsorize ----
+dir.data <-
+    equilar_career %>%
+    filter(own_board & !own_m1) %>%
+    inner_join(equilar_type, by = c("company_id", "executive_id")) %>%
+    inner_join(equilar_final, by = c("company_id", "executive_id", "period")) %>%
+    inner_join(control_data, by = c("period", "permno")) %>%
+    collect() %>%
+    mutate(affiliated = factor(affiliated,
+                               levels = c("non_activist", "affiliated", "unaffiliated")))
+
+
+reg.data <-
+    dir.data %>%
+    filter(insider_outsider_related == "Outsider") %>%
+    mutate_at(vars(sic2, year), factor)
+
 # Set up models
 lhs.t4.1 <- "other_p2"
-rhs.t4.1 <- paste(c("other_boards", "affiliated_director", "unaffiliated_director",
-                    controls), collapse=" + ")
-model.t4.1 <- paste(lhs.t4.1, "~", rhs.t4.1)
-
-reg.data <- dir.data %>% filter(outsider)
+rhs.t4<- paste(c("other_boards", "affiliated", controls), collapse=" + ")
+model.t4.1 <- paste(lhs.t4.1, "~", rhs.t4)
 fm.t4.c1 <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
-fm.t4.c1.se <- coeftest.cluster(reg.data, fm.t4.c1, cluster1="permno")
+fm.t4.c1.se <- coeftest.cluster(reg.data, fm.t4.c1, cluster1="company_id")
 
-reg.data <- dir.data %>% filter(director_first_years)
-fm.t4.c2  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
-fm.t4.c2.se <- coeftest.cluster(reg.data, fm.t4.c2, cluster1="permno")
+lhs.t4.2 <- "other_p3"
+model.t4.2 <- paste(lhs.t4.2, "~", rhs.t4)
+fm.t4.c2 <- lm(model.t4.2, data=reg.data, na.action="na.exclude")
+fm.t4.c2.se <- coeftest.cluster(reg.data, fm.t4.c2, cluster1="company_id")
 
-reg.data <- dir.data %>% filter(director_first_years & activism_firm)
-fm.t4.c5  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
-fm.t4.c5.se <- coeftest.cluster(reg.data, fm.t4.c5, cluster1="permno")
+lhs.t4.3 <- "other_p4"
+model.t4.3 <- paste(lhs.t4.3, "~", rhs.t4)
+fm.t4.c3 <- lm(model.t4.3, data=reg.data, na.action="na.exclude")
+fm.t4.c3.se <- coeftest.cluster(reg.data, fm.t4.c3, cluster1="company_id")
 
-reg.data <- dir.data %>% filter(director_first_years & activist_demand_firm)
-fm.t4.c6  <- lm(model.t4.1, data=reg.data, na.action="na.exclude")
-fm.t4.c6.se <- coeftest.cluster(reg.data, fm.t4.c6, cluster1="permno")
-rm(dir.data, reg.data)
+lhs.t4.4 <- "other_p5"
+model.t4.4 <- paste(lhs.t4.4, "~", rhs.t4)
+fm.t4.c4 <- lm(model.t4.4, data=reg.data, na.action="na.exclude")
+fm.t4.c4.se <- coeftest.cluster(reg.data, fm.t4.c4, cluster1="company_id")
+
 @
 % Career Consequences for Activist Directors: Other Directorships
 \begin{table}[ht]
@@ -56,9 +91,7 @@ rm(dir.data, reg.data)
 \label{tbl:career}
     \begin{minipage}[t]{\columnwidth}
     {\small
-The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+2}$, the number of directorships a director has with other firms in year $t+2$ (i.e., the year after the activism event, if any).
-Columns 1 and 2 present results for all independent directors and first-year independent directors;
-Columns 3 and 4 present results for firms with activism and activist demands for board seats, respectively.
+The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+s}$, the number of directorships a director has with other firms in year $t+s$ (i.e., $s$ years after appointment to a new board).
 All variables are defined in Appendix A.
 All regressions include industry and year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
@@ -69,18 +102,24 @@ All regressions include industry and year fixed-effects and robust standard erro
 # Tabulate results
 # Produce Excel file with results for Table
 library(stargazer)
-stargazer(fm.t4.c1, fm.t4.c2, fm.t4.c5, fm.t4.c6,
-          omit = c("Constant", "(factor.*)"),
-          column.labels =  c("All directors", "New directors", "Activism", "Activist demand"),
+stargazer(fm.t4.c1, fm.t4.c2, fm.t4.c3, fm.t4.c4,
+          omit = c("Constant", "sic2", "year"),
+          column.labels =  c("$\\textrm{Other boards}_{t+1}$",
+                             "$\\textrm{Other boards}_{t+2}$",
+                             "$\\textrm{Other boards}_{t+3}$",
+                             "$\\textrm{Other boards}_{t+4}$"),
           dep.var.caption = "",
           dep.var.labels.include = FALSE,
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
-          covariate.labels = c("Other boards", "Activist director, affiliated",
+          covariate.labels = c("$\\textrm{Other boards}_{t}$", "Activist director, affiliated",
                                "Activist director, unaffiliated", "Age", "Female",
                                "Comp. committee", "Audit committee", "Analyst", "Inst", "Size-adj. returns",
                                "Market value", "Book-to-market", "Leverage", "Dividend", "ROA", "Sales growth"),
-          se=list(fm.t4.c1.se[,2], fm.t4.c2.se[,2], fm.t4.c5.se[,2], fm.t4.c6.se[,2]))
+          se=list(fm.t4.c1.se[,2],
+                  fm.t4.c2.se[,2],
+                  fm.t4.c3.se[,2],
+                  fm.t4.c4.se[,2]))
 @
 \end{tabularx}
 \end{center}
