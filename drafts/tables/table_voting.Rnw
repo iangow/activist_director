@@ -199,6 +199,9 @@ source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.
 #### voting_p1 ~ activism
 reg.data <- get_reg_data(1L)
 
+# fm <- lm(vote_pct ~ factor(meetingid), data = reg.data)
+# anova(fm)
+
 fm_t0 <- lm(vote_pct * 100 ~ independent + affiliated + meetingid,
             data=reg.data, na.action="na.exclude")
 fm_t0_se <- coeftest.cluster(reg.data, fm_t0, cluster1="companyid")
