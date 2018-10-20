@@ -71,4 +71,4 @@ sql <- paste0("
 
 rs <- dbGetQuery(pg, sql)
 
-dbDisconnect(pg)
+rs <- dbDisconnect(pg)

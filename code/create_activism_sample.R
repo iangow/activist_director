@@ -19,11 +19,12 @@ msedelist <- tbl(pg, sql("SELECT * FROM crsp.msedelist"))
 permnos_all <-
     permnos %>%
     mutate(ncusip = substr(ncusip, 1L, 8L)) %>%
-    union(stocknames %>% select(permno, ncusip)) %>%
+    union_all(
+        stocknames %>%
+            select(permno, ncusip) %>%
+            distinct()) %>%
     left_join(stocknames %>% distinct(permno, permco), by="permno") %>%
     compute()
-
-activism_sample %>% count()
 
 dissidents <-
     sharkwatch %>%
@@ -229,4 +230,6 @@ activism_sample <-
            campaign_id = array_min(campaign_ids)) %>%
     compute(name = "activism_sample", temporary = FALSE)
 
-dbExecute(pg, "ALTER TABLE activism_sample OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE activism_sample OWNER TO activism")
+
+rs <- dbDisconnect(pg)
