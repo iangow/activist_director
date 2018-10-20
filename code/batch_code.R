@@ -29,7 +29,7 @@ pg_comment <- function(table, comment) {
     library(RPostgreSQL)
     pg <- dbConnect(PostgreSQL())
     sql <- paste0("COMMENT ON TABLE ", table, " IS '",
-                  comment, " ON ", Sys.time() , "'")
+                  comment, " ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "'")
     rs <- dbGetQuery(pg, sql)
     dbDisconnect(pg)
 }
@@ -39,9 +39,12 @@ source("code/import_activist_directors.R")
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
 
+source('code/create_event_returns.R', echo=TRUE)
+
 # Column 5
 source('code/create_activism_sample.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
+source('code/create_activist_demands.R', echo=TRUE)
 
 # This one takes a long time to run (~23 minutes)
 # source("code/create_activist_holdings.R", echo=TRUE)
@@ -55,4 +58,5 @@ source('code/create_equilar_type.R', echo=TRUE)
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
 source('code/create_outcome_controls.R', echo=TRUE)
-source('code/create_activism_director_years.R', echo=TRUE)
+source('code/create_ceo_outcomes.R', echo=TRUE)
+source('code/create_activist_director_years.R', echo=TRUE)
