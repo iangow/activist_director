@@ -47,7 +47,8 @@ source('code/create_activism_events.R', echo=TRUE)
 source('code/create_activist_demands.R', echo=TRUE)
 
 # This one takes a long time to run (~23 minutes)
-# source("code/create_activist_holdings.R", echo=TRUE)
+source("code/create_activist_holdings.R", echo=TRUE)
+source('code/create_inst.R', echo=TRUE)
 
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
