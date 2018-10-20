@@ -51,6 +51,7 @@ multiple_items <-
 # we should include for, against, withheld, and abstain in the denominator.
 single_items <-
     vavoteresults %>%
+    anti_join(multiple_items) %>%
     mutate(votes_cast = votedfor +
                if_else(!is.na(votedwithheld) && votedwithheld==votedagainst,
                        votedagainst,
@@ -63,7 +64,7 @@ single_items <-
 # Combine the two mutually exclusive datasets
 votes_cast <-
     multiple_items %>%
-    union(single_items) %>%
+    union_all(single_items) %>%
     left_join(multiple_items %>% mutate(contested = TRUE)) %>%
     mutate(contested = coalesce(contested, FALSE)) %>%
     ungroup() %>%
@@ -127,13 +128,13 @@ match_init1 <-
 
 match_a <-
     match_init3 %>%
-    union(
+    union_all(
         match_init2 %>%
             anti_join(match_init3))
 
 va_match <-
     match_a %>%
-    union(
+    union_all(
         match_init1 %>%
             anti_join(match_a)) %>%
     compute()
@@ -160,8 +161,6 @@ rs <- dbDisconnect(pg)
 <<vote_func, include=FALSE>>=
 library(lubridate)
 
-
-
 get_reg_data <- function(vote_number) {
 
     ad_data <-
@@ -179,7 +178,7 @@ get_reg_data <- function(vote_number) {
     reg_data <-
         other_dirs %>%
         mutate(independent = NA) %>%
-        dplyr::union(ad_data) %>%
+        union_all(ad_data) %>%
         mutate(affiliated = coalesce(!independent, FALSE),
                independent = coalesce(independent, FALSE)) %>%
         mutate(meetingid = factor(meetingid))
@@ -201,7 +200,7 @@ source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.
 reg.data <- get_reg_data(1L)
 
 fm_t0 <- lm(vote_pct * 100 ~ independent + affiliated + meetingid,
-                  data=reg.data, na.action="na.exclude")
+            data=reg.data, na.action="na.exclude")
 fm_t0_se <- coeftest.cluster(reg.data, fm_t0, cluster1="companyid")
 
 #### voting_p1 ~ activism (activist_director firms only)
