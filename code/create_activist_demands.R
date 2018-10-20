@@ -1,8 +1,9 @@
 # Sys.setenv(PGHOST="iangow.me", PGDATABASE="crsp")
 library(dplyr, warn.conflicts = FALSE)
-library(tidyr)
 library(RPostgreSQL)
 pg <- dbConnect(PostgreSQL())
+
+rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 demands_data <- dbGetQuery(pg, "WITH demand_outcome AS (
     SELECT DISTINCT campaign_id,
