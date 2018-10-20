@@ -235,10 +235,10 @@ fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 \caption{Director elections}
 \begin{minipage}[t]{\columnwidth}
 {\small
-This table presents regression results where the dependent variables are voting support for directors, activist directors (\textit{Activist director}) and affiliated directors (\textit{Affiliated director}), respectively.
-Periods $t$, $t+1$, and $t+2$ refer to the first, second, and third elections for a director upon or after appointment.
-Sample excludes contested elections, as vote support will be split between incumbent and challenger.
-Sample includes firm-years with and without activism.
+This table presents results of regressions where the dependent variable is voting support for directors.
+The sample comprises shareholder meetings where activist directors were up for election and includes all directors considered at such meetings.
+Periods $t$, $t+1$, and $t+2$ refer to the first, second, and third elections, respectively, for an activist director upon or after appointment.
+Sample excludes contested elections, where vote support will be split between incumbents and challengers.
 All columns include meeting fixed effects.
     \newline}
 \end{minipage}
