@@ -1,3 +1,4 @@
+#!/usr/bin/env Rscript
 # Program that captures the data steps for activist_director project
 
 library(RPostgreSQL)
