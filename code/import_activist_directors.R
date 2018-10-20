@@ -78,7 +78,8 @@ rs <- dbGetQuery(pg$con, "VACUUM activist_director.activist_directors")
 
 sql <- paste0("
               COMMENT ON TABLE activist_director.activist_directors IS
-              'CREATED USING import_activist_directors.R ON ", Sys.time() , "';")
+              'CREATED USING import_activist_directors.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
 
 rs <- dbGetQuery(pg$con, sql)
 

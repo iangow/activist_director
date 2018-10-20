@@ -156,4 +156,14 @@ merged <-
 rs <- dbWriteTable(pg, c("activist_director", "event_returns"),
                    merged, overwrite=TRUE, row.names=FALSE)
 
+sql <- "ALTER TABLE event_returns OWNER TO activism;"
+rs <- dbGetQuery(pg, sql)
+
+sql <- paste("
+             COMMENT ON TABLE event_returns IS
+             'CREATED USING create_event_returns.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
+
+
 rs <- dbDisconnect(pg)

@@ -213,8 +213,15 @@ SELECT * FROM match2")
 rs <- dbWriteTable(pg, c("activist_director", "demands"), demands_data,
              row.names = FALSE, overwrite = TRUE)
 
-rs <- dbGetQuery(pg, "ALTER TABLE activist_director.demands OWNER TO activism")
+rs <- dbGetQuery(pg, "ALTER TABLE demands OWNER TO activism")
 
+sql <- paste("
+  COMMENT ON TABLE demands IS
+             'CREATED USING create_activist_demands.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
+rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
+
+rs <- dbDisconnect(pg)
 
 # sharkwatch <- tbl(pg, sql("SELECT * FROM factset.sharkwatch"))
 #

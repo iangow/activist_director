@@ -133,9 +133,12 @@ activist_director_equilar <-
     arrange(company_id, executive_id) %>%
     compute(name = "activist_director_equilar", temporary=FALSE)
 
-dbGetQuery(pg, "COMMENT ON TABLE activist_director_equilar IS
-                'CREATED USING activist_director_equilar.R'")
-
 dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
+
+sql <- paste("
+  COMMENT ON TABLE activist_director_equilar IS
+             'CREATED USING create_activist_director_equilar ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)

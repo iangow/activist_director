@@ -144,3 +144,12 @@ equilar_career <-
     compute(name = "equilar_career", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE equilar_career OWNER TO activism")
+
+sql <- paste0("
+    COMMENT ON TABLE equilar_career IS
+              'CREATED USING create_equilar_career.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
+
+rs <- dbExecute(pg, sql)
+
+rs <- dbDisconnect(pg)

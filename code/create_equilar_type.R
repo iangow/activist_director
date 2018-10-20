@@ -57,3 +57,12 @@ equilar_type <-
     compute(name = "equilar_type", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE equilar_type OWNER TO activism")
+
+sql <- paste0("
+    COMMENT ON TABLE equilar_type IS
+              'CREATED USING create_equilar_type.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
+
+rs <- dbExecute(pg, sql)
+
+rs <- dbDisconnect(pg)

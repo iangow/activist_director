@@ -79,7 +79,7 @@ rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates_sw50")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.key_dates_sw50 IS
-    'CREATED USING import_key_dates.R ON ", Sys.time() , "';", sep="")
+    'CREATED USING import_key_dates.R ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbGetQuery(pg, sql)
 
 # Demand aggregation ----
@@ -118,7 +118,8 @@ rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates_nsw50")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.key_dates_nsw50 IS
-    'CREATED USING import_key_dates.R ON ", Sys.time() , "';", sep="")
+    'CREATED USING import_key_dates.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbGetQuery(pg, sql)
 
 # Demand aggregation ----
@@ -187,7 +188,7 @@ rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.key_dates IS
-    'CREATED USING import_key_dates.R ON ", Sys.time() , "';", sep="")
+    'CREATED USING import_key_dates.R ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbGetQuery(pg, sql)
 
 rs <- dbDisconnect(pg)

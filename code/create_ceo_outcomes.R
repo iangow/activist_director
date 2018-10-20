@@ -164,6 +164,12 @@ ceo_outcomes <-
     compute(name = "ceo_outcomes", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE ceo_outcomes OWNER TO activism")
-rs <- dbExecute(pg, "COMMENT ON TABLE ceo_outcomes IS 'CREATED WITH create_ceo_outcomes.R'")
+
+sql <- paste("
+  COMMENT ON TABLE ceo_outcomes IS
+             'CREATED USING create_ceo_outcomes.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
+rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
+
 
 rs <- dbDisconnect(pg)

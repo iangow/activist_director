@@ -47,18 +47,25 @@ activist_director_on_board <-
     mutate(on_board = coalesce(on_board, FALSE)) %>%
     distinct(permno, datadate, on_board)
 
-rs <- dbExecute(pg, "DROP TABLE IF EXISTS activist_director_years_new")
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS activist_director_years")
 
 activist_director_years <-
     activist_director_on_board %>%
     group_by(permno, datadate) %>%
     summarize(ad_on_board = bool_or(on_board)) %>%
     arrange(permno, datadate) %>%
-    compute(name = "activist_director_years_new", temporary=FALSE)
+    compute(name = "activist_director_years", temporary=FALSE)
 
-rs <- dbExecute(pg, "COMMENT ON TABLE activist_director_years_new IS
+rs <- dbExecute(pg, "COMMENT ON TABLE activist_director_years IS
                 'CREATED USING create_activist_director_years.R'")
 
-rs <- dbExecute(pg, "ALTER TABLE activist_director_years_new OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE activist_director_years OWNER TO activism")
+
+sql <- paste0("
+    COMMENT ON TABLE activist_director_years IS
+        'CREATED USING create_activist_director_years.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
+
+rs <- dbGetQuery(pg, sql)
 
 dbDisconnect(pg)

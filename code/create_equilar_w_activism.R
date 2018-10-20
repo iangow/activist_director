@@ -126,11 +126,14 @@ equilar_w_activism <-
     arrange(permno, executive_id, period) %>%
     collect()
 
-rs <- dbWriteTable(pg, c("activist_director", "equilar_w_activism"), equilar_w_activism, overwrite=TRUE, row.names=FALSE)
+rs <- dbWriteTable(pg, c("activist_director", "equilar_w_activism"),
+                   equilar_w_activism, overwrite=TRUE, row.names=FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.equilar_w_activism IS
-    'CREATED USING create_equilar_w_activism ON ", Sys.time() , "';", sep="")
+    'CREATED USING create_equilar_w_activism ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
+

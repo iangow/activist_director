@@ -118,3 +118,12 @@ equilar_final <-
     compute(name = "equilar_final", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE equilar_final OWNER TO activism")
+
+sql <- paste0("
+    COMMENT ON TABLE equilar_final IS
+              'CREATED USING create_equilar_final.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
+
+rs <- dbExecute(pg, sql)
+
+rs <- dbDisconnect(pg)

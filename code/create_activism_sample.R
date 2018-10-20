@@ -232,4 +232,11 @@ activism_sample <-
 
 rs <- dbExecute(pg, "ALTER TABLE activism_sample OWNER TO activism")
 
+sql <- paste0("
+    COMMENT ON TABLE activism_sample IS
+        'CREATED USING create_activism_sample.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
+
+rs <- dbExecute(pg, sql)
+
 rs <- dbDisconnect(pg)

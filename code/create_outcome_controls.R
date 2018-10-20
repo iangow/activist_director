@@ -324,7 +324,8 @@ rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER TO activism")
 rs <- dbExecute(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
 
 sql <- paste("COMMENT ON TABLE outcome_controls IS
-             'CREATED USING create_outcome_controls.R ON ", Sys.time() , "';", sep="")
+             'CREATED USING create_outcome_controls.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)

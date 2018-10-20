@@ -234,7 +234,8 @@ rs <- dbGetQuery(pg, sql)
 
 sql <- paste("
   COMMENT ON TABLE activist_director.activist_holdings IS
-    'CREATED USING create_activist_holdings.R ON ", Sys.time() , "';", sep="")
+    'CREATED USING create_activist_holdings.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
 
 dbDisconnect(pg)

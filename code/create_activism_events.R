@@ -67,8 +67,9 @@ sql <- paste0("
     ALTER TABLE activism_events OWNER TO activism;
 
     COMMENT ON TABLE activism_events IS
-        'CREATED USING create_activism_events.R ON ", Sys.time() , "';")
+        'CREATED USING create_activism_events.R ON ",
+              format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
 
-rs <- dbGetQuery(pg, sql)
+rs <- dbExecute(pg, sql)
 
 rs <- dbDisconnect(pg)
