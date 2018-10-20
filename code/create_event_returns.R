@@ -26,7 +26,6 @@ events <-
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsDaily.R")
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/getEventReturnsMonthly.R")
 
-
 merged <-
     # Around Appointment Date
     getEventReturns(events$permno, events$appointment_date,
