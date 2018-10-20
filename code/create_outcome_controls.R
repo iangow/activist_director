@@ -10,7 +10,7 @@ rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
 # Get all votes on directors that were not withdrawn and which have meaningful vote data
 
-activist_director.permnos <- tbl(pg, "permnos")
+permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
 activism_events <- tbl(pg, "activism_events")
 activist_director.inst <- tbl(pg, "inst")
 equilar_w_activism <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_activism"))
@@ -18,7 +18,6 @@ equilar_w_activism <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_act
 issvoting.compvote <- tbl(pg, sql("SELECT * FROM issvoting.compvote"))
 factset.sharkrepellent  <- tbl(pg, sql("SELECT * FROM factset.sharkrepellent"))
 factset.staggered_board  <- tbl(pg, sql("SELECT * FROM factset.staggered_board"))
-director_names <- tbl(pg, sql("SELECT * FROM issvoting.director_names"))
 
 funda <- tbl(pg, sql("SELECT * FROM comp.funda"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
@@ -170,7 +169,7 @@ sharkrepellent <-
            inst_percent, top_10_percent, majority, dual_class,
            company_name) %>%
     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(activist_director.permnos, by = "ncusip") %>%
+    inner_join(permnos, by = "ncusip") %>%
     inner_join(firm_years, by = "permno") %>%
     select(-gvkey) %>%
     filter(datadate < company_status_date | is.na(company_status_date),
@@ -209,7 +208,7 @@ without_agg <-
 staggered_board <-
     factset.staggered_board %>%
     mutate(ncusip = substr(cusip_9_digit, 1L, 8L)) %>%
-    inner_join(activist_director.permnos, by = "ncusip") %>%
+    inner_join(permnos, by = "ncusip") %>%
     inner_join(firm_years, by = "permno") %>%
     filter(between(datadate, beg_date, end_date)) %>%
     select(permno, datadate, staggered_board)
@@ -221,7 +220,7 @@ ibes <-
     mutate(analyst = numest, ncusip = cusip,
            fy_end = eomonth(statpers)) %>%
     select(ncusip, fy_end, analyst) %>%
-    inner_join(activist_director.permnos, by = "ncusip") %>%
+    inner_join(permnos, by = "ncusip") %>%
     inner_join(
         firm_years %>%
             mutate(fy_end = eomonth(datadate)),
@@ -252,7 +251,7 @@ equilar_w_permno <-
         equilar_hbs.company_financials %>%
             mutate(ncusip = substr(cusip, 1L, 8L)) %>%
             select(company_id, period, ncusip), by = "period") %>%
-    inner_join(activist_director.permnos, by = c("permno", "ncusip")) %>%
+    inner_join(permnos, by = c("permno", "ncusip")) %>%
     select(-ncusip, -company_id) %>%
     rename(datadate = period) %>%
     select(permno, datadate, everything()) %>%

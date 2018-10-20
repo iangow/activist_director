@@ -7,10 +7,11 @@ rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 key_dates <- tbl(pg, "key_dates")
 
-permnos <- tbl(pg, "permnos")
+
 activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
 
+permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
 activist_ciks <- tbl(pg, sql("SELECT * FROM factset.activist_ciks"))
 sharkwatch <- tbl(pg, sql("SELECT * FROM factset.sharkwatch"))
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))

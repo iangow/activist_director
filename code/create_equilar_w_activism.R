@@ -14,7 +14,8 @@ director_index <- tbl(pg, "director_index")
 activist_directors <- tbl(pg, "activist_directors")
 activist_director_equilar <- tbl(pg, "activist_director_equilar")
 activism_events <- tbl(pg, "activism_events")
-permnos <- tbl(pg, "permnos")
+
+permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
 
 # Pull together director characteristics
 equilar <-
@@ -137,3 +138,4 @@ sql <- paste("
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
+rs <- dbDisconnect(pg)
