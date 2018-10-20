@@ -44,17 +44,13 @@ source('code/create_activism_sample.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
 
 # This one takes a long time to run (~23 minutes)
-source("code/create_activist_holdings.R", echo=TRUE)
+# source("code/create_activist_holdings.R", echo=TRUE)
 
-# runSQL('code/create_first_voting.sql')
 source('code/create_activist_director_equilar.R', echo=TRUE)
 source('code/create_equilar_w_activism.R', echo=TRUE)
 source('code/create_equilar_final.R', echo=TRUE)
 source('code/create_equilar_career.R', echo=TRUE)
-runSQL('code/create_equilar_activism.sql')
-runSQL('code/create_equilar_all.sql')
-
-source('code/create_iss_voting.R', echo=TRUE)
+source('code/create_equilar_type.R', echo=TRUE)
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned

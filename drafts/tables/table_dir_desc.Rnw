@@ -17,7 +17,7 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
-equilar_all <- tbl(pg, "equilar_all")
+equilar_w_activism <- tbl(pg, "equilar_w_activism")
 
 censor_date <- "2017-12-31"
 
@@ -73,7 +73,7 @@ activist_director_stats <-cbind(activist_director_stats,
 activist_director_stats[,1] <- c("Unffiliated directors","Affiliated directors")
 
 all.dir.data <-
-    equilar_all %>%
+    equilar_w_activism %>%
     filter(!is.na(age)) %>%
     mutate(activist_director = if_else(activist_director, 'Activist director', NA),
            all_directors = as.character("All directors")) %>%
@@ -83,7 +83,7 @@ all.dir.data <-
     collect()
 
 act.dir.data <-
-    equilar_all %>%
+    equilar_w_activism %>%
     filter(!is.na(age),
            activist_director) %>%
     mutate(affiliated_director = if_else(affiliated_director,
@@ -96,11 +96,13 @@ act.dir.data <-
 
 # New Director Sample
 new.dir.data <-
-    equilar_all %>%
+    equilar_w_activism %>%
     filter(!is.na(age),
-           director_first_years) %>%
+           director_first_year) %>%
     mutate(new_directors = as.character("New directors")) %>%
     select(new_directors, everything()) %>%
+    mutate(category = if_else(category == "activist_demand_firm",
+                              "activism_firm", category)) %>%
     collect()
 
 new.dir.data$category <- as.factor(new.dir.data$category)
