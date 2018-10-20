@@ -67,7 +67,7 @@ compustat <-
     select(-linkdt, -linkenddt) %>%
     compute()
 
-rs <- dbExecute(pg, "DROP TABLE IF EXISTS inst_new")
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS inst")
 
 inst <-
     shares2 %>%
@@ -77,12 +77,12 @@ inst <-
     mutate(shares_outstanding = csho * 1000000.0) %>%
     mutate(inst = if_else(shares_outstanding > 0, shares/shares_outstanding, NA_real_)) %>%
     select(permno, datadate, period_of_report, shares, shares_outstanding, inst) %>%
-    compute(name = "inst_new", temporary = FALSE)
+    compute(name = "inst", temporary = FALSE)
 
-rs <- dbExecute(pg, "ALTER TABLE inst_new OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE inst OWNER TO activism")
 
 sql <- paste0("
-    COMMENT ON TABLE inst_new IS 'CREATED USING create_inst.R ON ",
+    COMMENT ON TABLE inst IS 'CREATED USING create_inst.R ON ",
               format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
 
 rs <- dbExecute(pg, sql)
