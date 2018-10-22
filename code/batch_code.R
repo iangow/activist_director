@@ -18,23 +18,6 @@ rs <- dbGetQuery(pg, "
     )")
 rs <- dbDisconnect(pg)
 
-runSQL <- function(sql_file) {
-    library(RPostgreSQL)
-    pg <- dbConnect(PostgreSQL())
-    sql <- paste(readLines(sql_file), collapse="\n")
-    rs <- dbGetQuery(pg, sql)
-    dbDisconnect(pg)
-}
-
-pg_comment <- function(table, comment) {
-    library(RPostgreSQL)
-    pg <- dbConnect(PostgreSQL())
-    sql <- paste0("COMMENT ON TABLE ", table, " IS '",
-                  comment, " ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "'")
-    rs <- dbGetQuery(pg, sql)
-    dbDisconnect(pg)
-}
-
 source("code/import_activist_directors.R")
 
 # Column 6
