@@ -1,8 +1,7 @@
 # Import Dataset from Google Drive ----
-library(dplyr)
 library(googlesheets)
 library(dplyr, warn.conflicts = FALSE)
-library(RPostgreSQL)
+library(DBI)
 
 # As a one-time thing per user and machine, you will need to run
 # library(googlesheets)
@@ -35,7 +34,7 @@ activist_directors_3 <-
     mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 3L)
 
-pg <- src_postgres()
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 campaign_ids <-
     tbl(pg, sql("SELECT * FROM factset.campaign_ids")) %>%
@@ -72,19 +71,19 @@ activist_directors <-
     distinct() %>%
     arrange(campaign_id, last_name, first_name)
 
-rs <- dbWriteTable(pg$con, c("activist_director", "activist_directors"),
+rs <- dbWriteTable(pg, c("activist_director", "activist_directors"),
                    activist_directors,
                    overwrite=TRUE, row.names=FALSE)
 
-rs <- dbGetQuery(pg$con, "ALTER TABLE activist_director.activist_directors OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE activist_director.activist_directors OWNER TO activism")
 
-rs <- dbGetQuery(pg$con, "VACUUM activist_director.activist_directors")
+rs <- dbExecute(pg, "VACUUM activist_director.activist_directors")
 
 sql <- paste0("
               COMMENT ON TABLE activist_director.activist_directors IS
               'CREATED USING import_activist_directors.R ON ",
               format(Sys.time(), "%Y-%m-%d %X %Z"), "';")
 
-rs <- dbGetQuery(pg$con, sql)
+rs <- dbExecute(pg, sql)
 
-dbDisconnect(pg$con)
+dbDisconnect(pg)
