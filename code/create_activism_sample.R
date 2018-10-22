@@ -7,15 +7,20 @@ rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 key_dates <- tbl(pg, "key_dates")
 
-
-activist_directors <- tbl(pg, "activist_directors")
-activism_events <- tbl(pg, "activism_events")
-
 permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
 activist_ciks <- tbl(pg, sql("SELECT * FROM factset.activist_ciks"))
 sharkwatch <- tbl(pg, sql("SELECT * FROM factset.sharkwatch"))
+dissidents <- tbl(pg, sql("SELECT * FROM factset.dissidents"))
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
 msedelist <- tbl(pg, sql("SELECT * FROM crsp.msedelist"))
+
+dissident_data <-
+    dissidents %>%
+    group_by(campaign_id) %>%
+    summarize(hedge_fund = bool_or(holder_type %in% c("Hedge Fund Company", "Investment Adviser")),
+              sharkwatch50 = bool_or(sharkwatch50 == "Yes"),
+              holder_types = sql("array_agg(holder_type ORDER BY holder_type)"),
+              dissidents = sql("array_agg(dissident ORDER BY dissident)"))
 
 permnos_all <-
     permnos %>%
@@ -27,23 +32,12 @@ permnos_all <-
     left_join(stocknames %>% distinct(permno, permco), by="permno") %>%
     compute()
 
-dissidents <-
-    sharkwatch %>%
-    mutate(dissidents = regexp_replace(dissident_group_with_sharkwatch50,
-                                       'Dissident (?:GROUP|Group): ', '', 'gi')) %>%
-    mutate(dissident = regexp_split_to_table(dissidents, '\\s+SharkWatch50\\?:\\s+(?:Yes|No|NO)')) %>%
-    filter(dissident != "") %>%
-    group_by(campaign_id) %>%
-    summarize(dissidents = sql("array_agg(dissident ORDER BY dissident)")) %>%
-    inner_join(sharkwatch) %>%
-    select(campaign_id, dissidents)
-
 sharkwatch_raw <-
     sharkwatch %>%
+    inner_join(dissident_data, by = "campaign_id") %>%
     mutate(eff_announce_date = least(announce_date, date_original_13d_filed),
            classified_board = classified_board=='Yes',
            s13d_filer = s13d_filer=='Yes',
-           sharkwatch50 = dissident_group_includes_sharkwatch50_member=='Yes',
            first_date = least(proxy_fight_announce_date, announce_date, date_original_13d_filed),
            last_date = greatest(meeting_date, end_date),
            proxy_fight = proxy_fight=='Yes',
@@ -75,11 +69,14 @@ sharkwatch_raw <-
     filter(country=='United States',
            state_of_incorporation != 'Non-U.S.',
            factset_industry != 'Investment Trusts/Mutual Funds',
-           s13d_filer=='Yes' | proxy_fight=='Yes' | holder_type != 'Corporation',
+           s13d_filer=='Yes' | proxy_fight=='Yes',
            campaign_status=='Closed',
            between(eff_announce_date, '2004-01-01', '2016-12-31'),
-           activism_type != '13D Filer - No Publicly Disclosed Activism') %>%
+           activism_type != '13D Filer - No Publicly Disclosed Activism',
+           hedge_fund) %>%
     select(campaign_id, cusip_9_digit, announce_date, synopsis_text,
+           dissidents,
+           hedge_fund,
            eff_announce_date, dissident_group,
            activism_type, primary_campaign_type, secondary_campaign_type,
            dissident_board_seats_sought,
@@ -88,7 +85,7 @@ sharkwatch_raw <-
            classified_board,
            campaign_status, stock_exchange_primary, primary_sic_code,
            s13d_filer, sharkwatch50,
-           holder_type, company_name, country, dissident_group_ownership_percent,
+           company_name, country, dissident_group_ownership_percent,
            dissident_group_ownership_percent_at_announcement,
            date_original_13d_filed, proxy_fight_announce_date,
            meeting_date, dissident_board_seats_wongranted_date, end_date, state_of_headquarters,
@@ -101,7 +98,6 @@ sharkwatch_raw <-
         activist_demand_old,
         settlement_agreement_special_exhibit_included, standstill_agreement_special_exhibit_included,
         concession_made, settled) %>%
-    left_join(dissidents) %>%
     compute()
 
 settlement_agreement <-
@@ -178,7 +174,6 @@ sharkwatch_agg <-
               campaign_status = sql("array_agg(DISTINCT campaign_status)"),
               campaign_types= sql("array_remove(array_cat(array_agg(primary_campaign_type),
                                      array_agg(secondary_campaign_type)), NULL)"),
-              holder_types = sql("array_agg(DISTINCT holder_type)"),
               company_names = sql("array_agg(DISTINCT company_name)"),
               countries = sql("array_agg(DISTINCT country)"),
               states_of_headquarters = sql("array_agg(DISTINCT state_of_headquarters)"),
