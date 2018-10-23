@@ -68,6 +68,7 @@ activist_directors <-
     mutate(independent = as.logical(independent)) %>%
     left_join(activism_events) %>%
     mutate(permno = coalesce(permno, permno_alt)) %>%
+    filter(!is.na(permno))
     distinct() %>%
     arrange(campaign_id, last_name, first_name)
 
