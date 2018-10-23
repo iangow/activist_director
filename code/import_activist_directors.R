@@ -16,12 +16,14 @@ gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
 activist_directors_1 <-
     gs_read(gs, ws = "activist_directors") %>%
     filter(!is.na(appointment_date)) %>%
+    filter(!is.na(independent)) %>%
     mutate(source = 1L)
 
 #### Sheet 2 ####
 activist_directors_2 <-
     gs_read(gs, ws = "2013-2015 + Extra") %>%
     filter(!is.na(appointment_date)) %>%
+    filter(!is.na(independent)) %>%
     mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 2L)
 
@@ -29,6 +31,7 @@ activist_directors_2 <-
 activist_directors_3 <-
     gs_read(gs, ws = "Extra2") %>%
     filter(!is.na(appointment_date)) %>%
+    filter(!is.na(independent)) %>%
     mutate(issuer_cik=as.integer(issuer_cik)) %>%
     mutate(source = 3L)
 
@@ -61,12 +64,12 @@ ad_3 <-
            retirement_date, independent, source, bio, issuer_cik)
 
 activist_directors <-
-    ad_1 %>%
-    union(ad_2) %>%
-    union(ad_3) %>%
+    bind_rows(ad_1, ad_2, ad_3) %>%
     mutate(independent = as.logical(independent)) %>%
     left_join(activism_events) %>%
-    mutate(permno = coalesce(permno, permno_alt))
+    mutate(permno = coalesce(permno, permno_alt)) %>%
+    distinct() %>%
+    arrange(campaign_id, last_name, first_name)
 
 rs <- dbWriteTable(pg$con, c("activist_director", "activist_directors"),
                    activist_directors,
