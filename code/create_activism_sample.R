@@ -69,11 +69,10 @@ sharkwatch_raw <-
     filter(country=='United States',
            state_of_incorporation != 'Non-U.S.',
            factset_industry != 'Investment Trusts/Mutual Funds',
-           s13d_filer=='Yes' | proxy_fight=='Yes',
+           s13d_filer=='Yes' | proxy_fight=='Yes' | hedge_fund,
            campaign_status=='Closed',
            between(eff_announce_date, '2004-01-01', '2016-12-31'),
-           activism_type != '13D Filer - No Publicly Disclosed Activism',
-           hedge_fund) %>%
+           activism_type != '13D Filer - No Publicly Disclosed Activism') %>%
     select(campaign_id, cusip_9_digit, announce_date, synopsis_text,
            dissidents,
            hedge_fund,
