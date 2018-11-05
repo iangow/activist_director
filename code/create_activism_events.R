@@ -12,6 +12,7 @@ activist_director <-
     activism_sample %>%
     mutate(link_campaign_id = unnest(campaign_ids)) %>%
     inner_join(activist_directors, by = c("link_campaign_id"="campaign_id")) %>%
+    distinct() %>%
     group_by(campaign_ids) %>%
     summarize(
         first_appointment_date = min(appointment_date, na.rm = TRUE),
@@ -24,6 +25,10 @@ activist_director <-
 rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activism_events")
 matched <-
     activism_sample %>%
+    # Fixing campaign_id==1027721875 to board_related (sharkwatch error)
+    mutate(dissident_board_seats_won = ifelse(campaign_id==1027721875, 1, dissident_board_seats_won),
+           dissident_board_seats_wongranted_date = ifelse(campaign_id==1027721875, '2009-03-31', dissident_board_seats_wongranted_date),
+           board_related = ifelse(campaign_id==1027721875, TRUE, board_related)) %>%
     left_join(activist_director, by = "campaign_ids") %>%
     mutate(activist_director = !is.na(dissident_board_seats_wongranted_date) |
                dissident_board_seats_won > 0 |
