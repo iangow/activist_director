@@ -98,7 +98,7 @@ act.dir.data <-
 new.dir.data <-
     equilar_w_activism %>%
     filter(!is.na(age),
-           director_first_year) %>%
+           new_director) %>%
     mutate(new_directors = as.character("New directors")) %>%
     select(new_directors, everything()) %>%
     mutate(category = if_else(category == "activist_demand_firm",
