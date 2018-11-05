@@ -23,12 +23,13 @@ source("code/import_activist_directors.R")
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
 
-source('code/create_event_returns.R', echo=TRUE)
-
 # Column 5
 source('code/create_activism_sample.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
 source('code/create_activist_demands.R', echo=TRUE)
+
+# Returns around activism events
+source('code/create_event_returns.R', echo=TRUE)
 
 # This one takes a long time to run (~23 minutes)
 source("code/create_activist_holdings.R", echo=TRUE)
