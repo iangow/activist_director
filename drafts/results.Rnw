@@ -6,24 +6,25 @@
 
 Table \ref{tbl:dir_chars} provides descriptive statistics for our sample of directors.
 Because we focus our analysis on activist directors in their first year, the appropriate comparison groups comprise directors in their first year on their respective boards.
-Of the 532,609 observations (director-firm-years) in our sample, 52,002 relate to new directors where there was no activism targeting the firm in the year of appointment.
-The average age of these directors is 62.68, 14\% of them are female, 61\% are appointed to committees in their first year, and 13\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management.
+Of the 594,300 observations (director-firm-years) in our sample, 57,423 relate to new directors where there was no activism targeting the firm in the year of appointment.
+The average age of these directors is 62.67, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management.
 See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
 An additionaal 1,376 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were demanded by, or granted to, activists.
 The average age of these directors is 60.65, 15\% of them are female, 55\% are appointed to committees in their first year, and 14\% are denoted as audit committee financial experts.
 
-We identify 1,318 activist directors (of our full sample of \Sexpr{dirs$all_dirs}) on Equilar; we find that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
+We identify 809 activist directors (of our full sample of \Sexpr{dirs$all_dirs}) on Equilar; we find that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
 % Actually some of the 678 directors were categorized as "activism" or "board demand" depending on when they were appointed as directors.
 
 In general, unaffiliated directors are similar to other new directors on most dimensions except that there is a noticeably smaller number who are female ($0.06$ versus $0.14$).
-However, affiliated directors (i.e., employees or principals of members of the activist group) appear different: they are younger (51 years of age), rarely female (just \emph{2\%} of affiliated activist directors are women).
-While activist directors appear more likely to become members of the compensation committee in their first year of service ($0.31$ versus $0.27$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.26$), especially affiliated directors ($0.22$), than non-activism new directors ($0.35$).
+However, affiliated directors (i.e., employees or principals of members of the activist group) appear different: they are younger (52 years of age), rarely female (just \emph{1\%} of affiliated activist directors are women).
+While activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.33$), especially affiliated directors ($0.25$), than non-activism new directors ($0.41$).
 
 Panel B of Table \ref{tbl:dir_chars} presents data on the tenure of activist directors.
-About $\Sexpr{prettyNum((383+249)/(979+666)*100, digits = 2)}\%$ of activist directors remain on their respective boards at the time of December 31, 2017.
-Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for 666 (979) days on average (i.e., they remained on the board for 1.8 years and 2.5 years respectively).\footnote{These numbers give the mean tenure statistics \emph{without} accounting for censoring.}
+About $\Sexpr{prettyNum((378+243)/(973+650)*100, digits = 2)}\%$ of activist directors remain on their respective boards at the time of December 31, 2017.
+Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for 616 (626) days in median (i.e., they remained on the board for 1.7 years).
+% \footnote{These numbers give the mean tenure statistics \emph{without} accounting for censoring.}
 In many cases, their departure was associated with the company being acquired, going private, or going bankrupt.
-Affiliated and unaffiliated activist directors who remain on their respective boards on December 31, 2017 have average tenures of 4.0 and 4.4 years, respectively.
+Affiliated and unaffiliated activist directors who remain on their respective boards on December 31, 2017 have median tenures of 3.2 years.
 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine voting outcomes for activist directors.
