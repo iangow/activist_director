@@ -24,6 +24,7 @@ merged <- collect(event_returns)
 rs <- dbDisconnect(pg)
 
 merged$affiliated <- as.factor(merged$affiliated)
+merged$affiliated_appt <- as.factor(merged$affiliated)
 @
 
 <<return_functions, include=FALSE, message=FALSE>>=
@@ -52,6 +53,7 @@ out.table <- function(data, lhs, rhs, caption="Some returns",
                         "Activist director" else
                         c("Other activism", "Activist director"),
            "affiliated" = c("Other activism", "Affiliated director", "Unaffiliated director"),
+           "affiliated_appt" = c("Affiliated director", "Unaffiliated director"),
            "activist_director" = c("Non-activist director", "Activist director"),
             "1" = c("Activist director"),
             levels(reg.data[, rhs]))
@@ -161,6 +163,7 @@ out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 % \clearpage
 <<return_data_prep_appt, cache=TRUE, dependson="ret_data_step", results='asis'>>=
 reg.data <- subset(merged, !is.na(ret_d_appt & permno!=66800)) # Drop Greenburg-AIG event
+rhs <- "affiliated_appt"
 @
 
 <<returns_panel_c, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
