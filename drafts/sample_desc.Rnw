@@ -43,7 +43,7 @@ Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each 
 \subsection{Other data}
 
 Data on divestitures and acquisitions as used in Table \ref{tbl:div_acq} come from Capital IQ and CRSP.
-In Tables \ref{tbl:selection} and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
+In Tables \ref{tbl:career}, \ref{tbl:selection} and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
 We calculate \textit{Analyst}, the number of analyst forecasts for each firm-year using data from IBES.
 We derive the proportion of the firm's outstanding stock held by institutions (\textit{Institutional}) using data from WhaleWisdom.
 Data on stock market performance come from CRSP.
