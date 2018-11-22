@@ -100,7 +100,8 @@ win_vars <- vars(bv, mv, btm, size_return, size_return_m1, leverage,
 # Update Data - Winsorization
 prob_activist_director <-
     prob_activist_director %>%
-    mutate_at(win_vars, win01)
+    mutate_at(win_vars, win01) %>%
+    mutate_at(c("year", "sic2"), as.factor)
 @
 
 \begin{table}[htb]
@@ -109,7 +110,7 @@ prob_activist_director <-
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
   {\small
-    All regressions in this table include the following controls measured for the prior fiscal year-end:
+    All regressions in this table include industry and year fixed effects and the following controls measured for the prior fiscal year-end:
     \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
     \textit{Institutional}, the proportion of the firms outstanding stock held by institutions;
     \textit{Size-adj. return}, twelve-month size-adjusted returns calculated as raw
@@ -155,7 +156,7 @@ Sample includes firm-years with and without activism.
 <<Table_3_panelA, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A
 rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-            num_directors outside_percent age tenure staggered_board"
+            num_directors outside_percent age tenure staggered_board sic2 year"
 
 reg.data <- as.data.frame(prob_activist_director)
 
@@ -171,12 +172,13 @@ stargazer(getFitted(t3.pa),
         dep.var.labels = c("Activism",
                             "Board demand",
                             "Activist director"),
-        covariate.labels = c("Analyst", "Inst","Size-adj. ret","Market value","Book-to-market",
-                              "Leverage","Payout","ROA","Sales growth",
+        covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
+                              "Leverage", "Payout", "ROA", "Sales growth",
                               "Num. directors", "Outside percent", "Age", "Tenure",
-                             "Staggered board"),
+                              "Staggered board"),
         se= getSEs(t3.pa),
         p= getPs(t3.pa),
+        omit=c("^sic", "^year", "^Constant"),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
        add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
@@ -229,6 +231,7 @@ stargazer(getFitted(t3.pb),
                              "Outside percent", "Age", "Tenure", "Staggered board"),
         se= getSEs(t3.pb),
         p=getPs(t3.pb),
+        omit=c("^sic", "^year", "^Constant"),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
        add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
