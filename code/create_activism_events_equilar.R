@@ -60,13 +60,14 @@ activism_events_mod <-
     select(campaign_id, eff_announce_date, permco, affiliated) %>%
     inner_join(equilar_final, by = "permco") %>%
     filter(between(eff_announce_date, period, lead_period)) %>%
-    select(campaign_id, company_id, period, affiliated)
+    select(campaign_id, company_id, period)
 
 rs <- dbExecute(pg, "DROP TABLE IF EXISTS activism_events_equilar")
 
 activism_events_equilar <-
     equilar_final %>%
     inner_join(activism_events_mod, by = c("company_id", "period")) %>%
+    select(company_id, period, campaign_id) %>%
     compute(name = "activism_events_equilar", temporary=FALSE)
 
 dbGetQuery(pg, "ALTER TABLE activism_events_equilar OWNER TO activism")
