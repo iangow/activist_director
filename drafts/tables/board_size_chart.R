@@ -1,3 +1,7 @@
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
+
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
+
 chart_data <- dbGetQuery(pg, "
 WITH num_directors AS (
     SELECT DISTINCT company_id, period, sum(own_board::INT) AS num_directors
