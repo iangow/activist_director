@@ -1,17 +1,10 @@
-library(DBI)
-library(dplyr, warn.conflicts = FALSE)
-
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-
-rs <- dbExecute(pg, "SET search_path TO activist_director, public")
-rs <- dbExecute(pg, "SET work_mem = '2GB'")
-
 # Create activist_director.equilar_type ----
 library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
+rs <- dbExecute(pg, "SET work_mem = '2GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 activism_events <- tbl(pg, "activism_events")
