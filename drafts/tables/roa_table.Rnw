@@ -358,9 +358,10 @@ sw_aff_roa_ffe.f <- cbind(
 % \begin{flushleft}
 {\small
 Table presents estimates of the impact of activism on return on assets over 5 years after the announcement of activism. The empirical approach follows that of \citet{Bebchuk:2013wi}.
-We regress return on assets on indicators for activism events in any of the three categories, including \textit{Board demand} and \textit{Activist director}, ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
+We regress return on assets on an indicator for an activism events ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
 We estimate three models. Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
-Models (A) and (B) add industry and firm fixed effects, respectively. Model (C) also adds firm fixed effects, as well as indicators for activist director appointments in years ranging from three years prior ($\textit{Activist director}_{t-3}$) to five years subsequent ($\textit{Activist director}_{t+5}$).
+Models (A) and (B) add industry and firm fixed effects, respectively.
+Model (C) also adds firm fixed effects, as well as indicators for affiliated and unaffiliated activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
 The quantities presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$. Numbers in parentheses are heteroskedasticity-robust standard errors. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
 % \end{flushleft}
@@ -399,23 +400,60 @@ print(xtable(getCoefs(sw_f), digit=3,
 \end{tabular}
 \small
 %\newpage
-\begin{tabularx}{\linewidth}{l*{3}{Y}}
+\begin{tabularx}{\linewidth}{l*{4}{Y}}
 \multicolumn{3}{l}{Number of observations with activism indicator equal to $1$} \\
 \hline
 <<table_roa_n_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
 # Observations
-sw_n <- as.data.frame(
-    rbind(
-        with(sw, table(year_m3, year_ad_m3))[2,],
-        with(sw, table(year_m2, year_ad_m2))[2,],
-        with(sw, table(year_m1, year_ad_m1))[2,],
-        with(sw, table(year_p0, year_ad_p0))[2,],
-        with(sw, table(year_p1, year_ad_p1))[2,],
-        with(sw, table(year_p2, year_ad_p2))[2,],
-        with(sw, table(year_p3, year_ad_p3))[2,],
-        with(sw, table(year_p4, year_ad_p4))[2,],
-        with(sw, table(year_p5, year_ad_p5))[2,]))
-names(sw_n) <- c("Activism","Activist director")
+fix_names <- function(df) {
+    colnames(df) = c("all", "Affiliated director", "Unaffiliated director")
+    df
+}
+
+
+sw_n <-
+    bind_rows(
+        sw %>%
+            summarize_at(vars(year_m3, year_aff_m3, year_naff_m3),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_m2, year_aff_m2, year_naff_m2),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_m1, year_aff_m1, year_naff_m1),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p0, year_aff_p0, year_naff_p0),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p1, year_aff_p1, year_naff_p2),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p2, year_aff_p2, year_naff_p2),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p3, year_aff_p3, year_naff_p3),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p4, year_aff_p4, year_naff_p4),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names(),
+        sw %>%
+            summarize_at(vars(year_p5, year_aff_p5, year_naff_p5),
+                         funs(sum(., na.rm = TRUE))) %>%
+            fix_names()) %>%
+    as_tibble() %>%
+    mutate(Activism = all - `Affiliated director`- `Unaffiliated director`) %>%
+    select(Activism, `Affiliated director`, `Unaffiliated director`) %>%
+    as.data.frame()
+
 row.names(sw_n) <- c("$\\textrm{Year}_{t-3}$",
                              "$\\textrm{Year}_{t-2}$",
                              "$\\textrm{Year}_{t-1}$",
