@@ -36,12 +36,16 @@ activist_directors_3 <-
 
 pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
+rs <- dbExecute(pg, "SET search_path TO activist_director, public")
+
+activism_sample <- tbl(pg, "activism_sample")
+
 campaign_ids <-
     tbl(pg, sql("SELECT * FROM factset.campaign_ids")) %>%
     collect()
 
 activism_events <-
-    tbl(pg, sql("SELECT * FROM activist_director.activism_sample")) %>%
+    activism_sample %>%
     select(campaign_id, permno, dissident_group, eff_announce_date) %>%
     rename(permno_alt = permno) %>%
     collect()
@@ -64,6 +68,7 @@ ad_3 <-
 
 activist_directors <-
     bind_rows(ad_1, ad_2, ad_3) %>%
+    mutate(permno = as.integer(permno)) %>%
     mutate(independent = as.logical(independent)) %>%
     left_join(activism_events) %>%
     mutate(permno = coalesce(permno, permno_alt)) %>%
