@@ -4,6 +4,11 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
 
+<<holdings_updated, include=FALSE>>=
+if(exists("holdings.updated")) opts_chunk$set(cache.extra=holdings.updated)
+@
+
+
 <<quantreg_libraries, cache=FALSE>>=
 library(survival)
 library(quantreg)

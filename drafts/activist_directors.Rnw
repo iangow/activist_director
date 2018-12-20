@@ -64,6 +64,7 @@ getComment <- function(table, schema) {
 }
 
 events.updated <- getComment("activism_events", "activist_director")
+holdings.updated <- getComment("activist_holdings", "activist_director")
 @
 
 % This code gets statistics to refer to in the document.
