@@ -1,4 +1,4 @@
-\Sexpr{set_parent('../activist_directors.Rnw')}x
+\Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 <<packages, include=FALSE, cache=FALSE>>=
 library(DBI)
@@ -55,7 +55,6 @@ dir.data <-
     collect() %>%
     mutate(affiliated = factor(affiliated,
                                levels = c("non_activist", "affiliated", "unaffiliated")))
-
 
 reg.data <-
     dir.data %>%
