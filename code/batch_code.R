@@ -40,6 +40,7 @@ source('code/create_equilar_w_activism.R', echo=TRUE)
 source('code/create_equilar_final.R', echo=TRUE)
 source('code/create_equilar_career.R', echo=TRUE)
 source('code/create_equilar_type.R', echo=TRUE)
+source('code/create_activism_events_equilar.R', echo=TRUE)
 
 # Column 7
 # Need CRSP, Compustat, IBES, director.percent_owned
