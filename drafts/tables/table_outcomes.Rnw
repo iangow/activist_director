@@ -10,7 +10,7 @@ library(car)
 library(stargazer)
 library(xtable)
 library(parallel)
-library(RPostgreSQL)
+library(DBI)
 library(psych)
 library(dplyr)
 @
@@ -34,10 +34,7 @@ source("outcome_functions.R")
 <<div_acq_data_step, dependson="winsorize">>=
 
 # Get data from PostgreSQL
-library(dplyr, warn.conflicts = FALSE)
-library(RPostgreSQL)
-
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
@@ -61,7 +58,7 @@ outcome_controls_mod <-
 delisting <-
     dsedelist %>%
     select(permno, dlstdt, dlstcd) %>%
-    mutate(delist = dlstcd > 100,
+    mutate(delist = dlstcd > 100L,
            merger = between(dlstcd, 200L, 399L),
            failure = between(dlstcd, 520L, 599L)) %>%
     select(-dlstcd)
@@ -74,10 +71,11 @@ permno_link <-
 
 spinoff <-
     wrds_keydev %>%
-     filter(keydeveventtypeid == 137,
-           keydevtoobjectroletypeid == 4,
+     filter(keydeveventtypeid == 137L,
+           keydevtoobjectroletypeid == 4L,
            !is.na(gvkey)) %>%
-    select(gvkey, announcedate)
+    select(gvkey, announcedate) %>%
+    compute()
 
 spinoff_linked <-
     spinoff %>%
@@ -99,10 +97,11 @@ spinoff_crsp <-
 
 divestiture <-
     wrds_keydev %>%
-     filter(keydeveventtypeid == 81,
-           keydevtoobjectroletypeid == 4,
+     filter(keydeveventtypeid == 81L,
+           keydevtoobjectroletypeid == 4L,
            !is.na(gvkey)) %>%
-    select(gvkey, announcedate)
+    select(gvkey, announcedate) %>%
+    compute()
 
 divestiture_linked <-
     divestiture %>%
@@ -115,10 +114,11 @@ divestiture_linked <-
 
 acquisition <-
     wrds_keydev %>%
-     filter(keydeveventtypeid == 81,
-           keydevtoobjectroletypeid == 3,
+     filter(keydeveventtypeid == 81L,
+           keydevtoobjectroletypeid == 3L,
            !is.na(gvkey)) %>%
-    select(gvkey, announcedate)
+    select(gvkey, announcedate) %>%
+    compute()
 
 acquisition_linked <-
     acquisition %>%
@@ -131,16 +131,20 @@ acquisition_linked <-
 
 divestiture_count <-
     outcome_controls_mod %>%
-    left_join(divestiture_linked) %>%
+    left_join(divestiture_linked, by = "permno") %>%
     mutate(divest_p2 = between(announcedate, datadate, datadate_p2),
            divest_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_divestiture_p2 = sum(as.integer(coalesce(divest_p2, FALSE))),
-              num_divestiture_p3 = sum(as.integer(coalesce(divest_p3, FALSE)))) %>%
+    summarize(num_divestiture_p2 =
+                  sum(as.integer(coalesce(divest_p2, FALSE)),
+                      na.rm = TRUE),
+              num_divestiture_p3 =
+                  sum(as.integer(coalesce(divest_p3, FALSE)),
+                      na.rm = TRUE)) %>%
     ungroup() %>%
     mutate(divestiture_p2 = num_divestiture_p2 > 0,
            divestiture_p3 = num_divestiture_p3 > 0) %>%
-compute()
+    compute()
 
 acquisition_count <-
     outcome_controls_mod %>%
@@ -148,8 +152,12 @@ acquisition_count <-
     mutate(acquisition_p2 = between(announcedate, datadate, datadate_p2),
            acquisition_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_acquisition_p2 = sum(as.integer(coalesce(acquisition_p2, FALSE))),
-              num_acquisition_p3 = sum(as.integer(coalesce(acquisition_p3, FALSE)))) %>%
+    summarize(num_acquisition_p2 =
+                  sum(as.integer(coalesce(acquisition_p2, FALSE)),
+                      na.rm = TRUE),
+              num_acquisition_p3 =
+                  sum(as.integer(coalesce(acquisition_p3, FALSE)),
+                      na.rm = TRUE)) %>%
     ungroup() %>%
     mutate(acquisition_p2 = num_acquisition_p2 > 0,
            acquisition_p3 = num_acquisition_p3 > 0) %>%
@@ -157,18 +165,22 @@ acquisition_count <-
 
 spinoff_count <-
     outcome_controls_mod %>%
-    left_join(spinoff_linked) %>%
+    left_join(spinoff_linked, by = "permno") %>%
     mutate(spinoff_p2 = between(announcedate, datadate, datadate_p2),
            spinoff_p3 = between(announcedate, datadate, datadate_p3)) %>%
     group_by(permno, datadate) %>%
-    summarize(num_spinoff_p2 = sum(as.integer(coalesce(spinoff_p2, FALSE))),
-              num_spinoff_p3 = sum(as.integer(coalesce(spinoff_p3, FALSE)))) %>%
+    summarize(num_spinoff_p2 =
+                  sum(as.integer(coalesce(spinoff_p2, FALSE)),
+                      na.rm = TRUE),
+              num_spinoff_p3 =
+                  sum(as.integer(coalesce(spinoff_p3, FALSE)),
+                      na.rm = TRUE)) %>%
     ungroup() %>%
     compute()
 
 delisting_data <-
     outcome_controls_mod %>%
-    left_join(delisting) %>%
+    left_join(delisting, by = "permno") %>%
     mutate(delist_p2 = delist & between(dlstdt, datadate, datadate_p2),
            delist_p3 = delist & between(dlstdt, datadate, datadate_p3),
            merger_p2 = merger & between(dlstdt, datadate, datadate_p2),
@@ -187,8 +199,6 @@ delisting_data <-
 
 winsor.vars <- unlist(strsplit(controls, "\\s+"))
 
-win_vars <- vars(winsor.vars)
-
 reg.data <-
     outcome_controls %>%
     inner_join(divestiture_count, by = c("permno", "datadate")) %>%
@@ -196,7 +206,7 @@ reg.data <-
     inner_join(spinoff_count, by = c("permno", "datadate")) %>%
     inner_join(delisting_data, by = c("permno", "datadate")) %>%
     collect() %>%
-    mutate_at(win_vars, win01) %>%
+    mutate_at(vars(winsor.vars), win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
                                 if_else(affiliated=="unaffiliated", "unaffiliated",
                                 if_else(affiliated=="activist_director", "unaffiliated",
@@ -259,7 +269,7 @@ rm(t6.pa)
 <<ceo_data_step>>=
 
 # Get data from PostgreSQL
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 ceo_outcomes <- tbl(pg, "ceo_outcomes")
 
@@ -272,8 +282,10 @@ reg.data <-
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated %in% c("unaffiliated", "activist_director"), "unaffiliated",
-                                        if_else(affiliated %in% c("activist_demand", "activism"), "z_other_activism",
+                                if_else(affiliated %in% c("unaffiliated", "activist_director"),
+                                        "unaffiliated",
+                                        if_else(affiliated %in% c("activist_demand", "activism"),
+                                                "z_other_activism",
                                                 "_none")))) %>%
     distinct() %>%
     as.data.frame()
@@ -321,7 +333,7 @@ stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 <<other_outcome_data_step, dependson="winsorize">>=
 
 # Get data from PostgreSQL
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='5GB'")
 
