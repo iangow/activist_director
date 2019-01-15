@@ -2,14 +2,14 @@
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<vote_packages, cache=FALSE, include=FALSE>>=
-library(RPostgreSQL)
+library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 @
 
 <<vote_data, include=FALSE>>=
 # Get data from database ----
-pg <- dbConnect(PostgreSQL())
-
+pg <- dbConnect(RPostgres::Postgres())
+rs <- dbExecute(pg, "SET work_mem = '3GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
 
 permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
@@ -124,13 +124,15 @@ match_init1 <-
     inner_join(director_votes_mod,
                by = c("permno", "upper_last_name", "initial1")) %>%
     select(campaign_id, appointment_date, last_name,
-           first_name, itemonagendaid)
+           first_name, itemonagendaid) %>%
+    compute()
 
 match_a <-
     match_init3 %>%
     union_all(
         match_init2 %>%
-            anti_join(match_init3))
+            anti_join(match_init3)) %>%
+    compute()
 
 va_match <-
     match_a %>%
