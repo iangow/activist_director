@@ -1,7 +1,8 @@
-library(RPostgreSQL)
+library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 library(stringr)
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
+
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 # Get data from activist director tables ----
@@ -14,13 +15,17 @@ ccmxpf_linktable <-
 gvkeys <- tbl(pg, sql("SELECT * FROM executive.gvkeys"))
 
 # Data from Equilar ----
-proxy_company <- tbl(pg, sql("SELECT * FROM executive.proxy_company"))
-proxy_management <-
-    tbl(pg, sql("SELECT * FROM executive.proxy_management"))
-proxy_management_calc <-
-    tbl(pg, sql("SELECT * FROM executive.proxy_management_calc"))
-executive <-
-    tbl(pg, sql("SELECT * FROM executive.executive"))
+
+get_equilar_table <- function(table) {
+    equilar_schema <- "executive_gsb"
+    tbl(pg, sql(paste0("SELECT * FROM ", equilar_schema, ".", table)))
+}
+
+
+proxy_company <- get_equilar_table("proxy_company")
+proxy_management <-  get_equilar_table("proxy_management")
+proxy_management_calc <-  get_equilar_table("proxy_management_calc")
+executive <-  get_equilar_table("executive")
 
 fy_ends <-
     proxy_company %>%
@@ -33,12 +38,12 @@ executive_names <-
 
 salary <-
     proxy_management %>%
-    select(fy_id, company_id, management_id, fiscal_year,
+    select(fy_id, company_id, management_id, fiscal_year_id,
            executive_id, comp_salary, title)
 
 total_comp <-
     proxy_management_calc %>%
-    filter(is_ceo | is_ceo_iss) %>%
+    filter(is_ceo) %>%
     select(fy_id, company_id, management_id, comp_total)
 
 combined_data <-
