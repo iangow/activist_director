@@ -8,23 +8,24 @@ library(stargazer)
 library(lmtest)
 library(sandwich)
 library(dplyr, warn.conflicts = FALSE)
+library(DBI)
 @
 
 <<ret_data_step, include=FALSE>>==
 ## PostgreSQL Connection
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 event_returns <- tbl(pg, "event_returns")
 
-merged <- collect(event_returns)
+merged <-
+    event_returns %>%
+    collect() %>%
+    mutate(affiliated = as.factor(affiliated),
+           affiliated_appt = as.factor(affiliated))
 
 rs <- dbDisconnect(pg)
-
-merged$affiliated <- as.factor(merged$affiliated)
-merged$affiliated_appt <- as.factor(merged$affiliated)
 @
 
 <<return_functions, include=FALSE, message=FALSE>>=
