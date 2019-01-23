@@ -65,7 +65,11 @@ matched <-
                     dissident_group_ownership_percent_at_announcement/100
 	                > 100 ~ 'big investment director',
                 activist_director ~ 'small investment director',
-	            TRUE ~ category_activist_director)) %>%
+	            TRUE ~ category_activist_director),
+	       hostile_resistance = case_when(
+	                poison_pill_post ~ TRUE,
+	                proxy_fight_went_the_distance ~ TRUE,
+	                TRUE ~ FALSE)) %>%
     compute(name = "activism_events", temporary = FALSE)
 
 sql <- paste0("
