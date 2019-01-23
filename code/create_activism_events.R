@@ -66,13 +66,8 @@ matched <-
 	                > 100 ~ 'big investment director',
                 activist_director ~ 'small investment director',
 	            TRUE ~ category_activist_director),
-	       hostile_resistance = case_when(
-	                poison_pill_post ~ TRUE,
-	                proxy_fight_went_the_distance ~ TRUE,
-	                TRUE ~ FALSE),
-           high_stake = case_when(
-               dissident_group_ownership_percent_at_announcement >= 10 ~ TRUE,
-               dissident_group_ownership_percent_at_announcement < 10 ~ FALSE)) %>%
+	       hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
+           high_stake = dissident_group_ownership_percent_at_announcement >= 10) %>%
     compute(name = "activism_events", temporary = FALSE)
 
 sql <- paste0("
