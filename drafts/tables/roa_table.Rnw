@@ -97,7 +97,7 @@ compustat <-
            bv = if_else(ceq > 0, log(ceq), NA),
            log_sale = if_else(sale > 0, log(sale), NA),
            mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
-           roa = if_else(lag(at)  > 0,  oibdp/lag(at), NA),
+           roa = if_else(lag(at)  > 0,  oancf/lag(at), NA),
            tobins_q = if_else(ceq > 0 & prcc_f * csho > 0 & dlc + dltt >= 0,
                             (prcc_f * csho + dlc + dltt) / (ceq + dlc + dltt), NA)) %>%
     select(gvkey, fyear, datadate, log_at, log_sale, bv, log_sale, mv, roa, tobins_q) %>%
