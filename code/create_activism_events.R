@@ -66,7 +66,7 @@ matched <-
 	                > 100 ~ 'big investment director',
                 activist_director ~ 'small investment director',
 	            TRUE ~ category_activist_director),
-	       hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
+	        hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
            high_stake = dissident_group_ownership_percent_at_announcement >= 10) %>%
     compute(name = "activism_events", temporary = FALSE)
 
