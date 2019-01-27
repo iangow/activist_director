@@ -101,7 +101,7 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs <- paste("affiliated year sic2", controls)
+rhs <- paste("affiliated_hostile year sic2", controls)
 
 trim <- function (x) {
     # Function removes spaces at end or beginning
@@ -114,7 +114,7 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
     data <-
         data %>%
-        mutate_at(c("year", "affiliated", "sic2"), as.factor)
+        mutate_at(c("year", "affiliated_hostile", "sic2"), as.factor)
 
     rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
 

@@ -37,6 +37,8 @@ matched <-
     mutate(elected = proxy_fight_went_the_distance=='Yes' & activist_director) %>%
     mutate(activist_demand = activist_demand_old |
             !is.na(first_board_demand_date)) %>%
+    mutate(hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
+           high_stake = dissident_group_ownership_percent_at_announcement >= 10) %>%
     mutate(category = case_when(
             activist_director ~ 'activist_director',
             activist_demand ~ 'activist_demand',
@@ -65,9 +67,19 @@ matched <-
                     dissident_group_ownership_percent_at_announcement/100
 	                > 100 ~ 'big investment director',
                 activist_director ~ 'small investment director',
-	            TRUE ~ category_activist_director),
-           hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
-           high_stake = dissident_group_ownership_percent_at_announcement >= 10) %>%
+	            TRUE ~ category_activist_director)) %>%
+    mutate(affiliated_hostile = case_when(
+               affiliated == 'affiliated' & hostile_resistance ~ 'affiliated_hostile',
+               affiliated == 'unaffiliated' & hostile_resistance ~ 'unaffiliated_hostile',
+               affiliated == 'affiliated' & !hostile_resistance ~ 'affiliated_nothostile',
+               affiliated == 'unaffiliated' & !hostile_resistance ~ 'unaffiliated_nothostile',
+               TRUE ~ category_activist_director),
+           affiliated_high_stake = case_when(
+               affiliated == 'affiliated' & high_stake ~ 'affiliated_high_stake',
+               affiliated == 'unaffiliated' & high_stake ~ 'unaffiliated_high_stake',
+               affiliated == 'affiliated' & !high_stake ~ 'affiliated_low_stake',
+               affiliated == 'unaffiliated' & !high_stake ~ 'unaffiliated_low_stake',
+               category_activist_director != 'activist_director' ~ category_activist_director)) %>%
     compute(name = "activism_events", temporary = FALSE)
 
 sql <- paste0("
