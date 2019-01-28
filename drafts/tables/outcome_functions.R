@@ -39,24 +39,25 @@ ols.model <- function(data, lhs, rhs, cluster1) {
 }
 
 make.fTest.table <- function(model.set, data) {
-    # require(parallel)
 
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        c(linearHypothesis(model, "affiliatedaffiliated - affiliatedunaffiliated",
+        c(linearHypothesis(model, "affiliated_hostileaffiliated_hostile - affiliated_hostileactivism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliatedaffiliated - affiliatedz_other_activism",
+          linearHypothesis(model, "affiliated_hostileunaffiliated_hostile - affiliated_hostileactivism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliatedunaffiliated - affiliatedz_other_activism",
+          linearHypothesis(model, "affiliated_hostileaffiliated_nothostile - affiliated_hostileactivism",
+                         vcov.=cov)[4][2,],
+          linearHypothesis(model, "affiliated_hostileunaffiliated_nothostile - affiliated_hostileactivism",
                          vcov.=cov)[4][2,])
     }
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
-    # temp <-  do.call(cbind, mclapply(t6.pa, FUN = fTest, mc.cores=4))
-    row.names(temp) <- c("Affiliated director = Unaffiliated director",
-                         "Affiliated director = Other activism",
-                         "Unaffiliated director = Other activism")
+    row.names(temp) <- c("Affiliated director, hostile = Other activism",
+                         "Unaffiliated director, hostile = Other activism",
+                         "Affiliated director, not hostile = Other activism",
+                         "Unaffiliated director, not hostile = Other activism")
     return(as.data.frame(temp))
 }
 
