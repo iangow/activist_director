@@ -43,21 +43,21 @@ make.fTest.table <- function(model.set, data) {
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        c(linearHypothesis(model, "affiliated_hostileaffiliated_hostile - affiliated_hostileactivism",
+        c(linearHypothesis(model, "affiliated_big_invaffiliated_big_inv - affiliated_big_invactivism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_hostileunaffiliated_hostile - affiliated_hostileactivism",
+          linearHypothesis(model, "affiliated_big_invunaffiliated_big_inv - affiliated_big_invactivism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_hostileaffiliated_nothostile - affiliated_hostileactivism",
+          linearHypothesis(model, "affiliated_big_invaffiliated_small_inv - affiliated_big_invactivism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_hostileunaffiliated_nothostile - affiliated_hostileactivism",
+          linearHypothesis(model, "affiliated_big_invunaffiliated_small_inv - affiliated_big_invactivism",
                          vcov.=cov)[4][2,])
     }
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
-    row.names(temp) <- c("Affiliated director, hostile = Other activism",
-                         "Unaffiliated director, hostile = Other activism",
-                         "Affiliated director, not hostile = Other activism",
-                         "Unaffiliated director, not hostile = Other activism")
+    row.names(temp) <- c("Affiliated director, big inv = Other activism",
+                         "Unaffiliated director, big inv = Other activism",
+                         "Affiliated director, small inv = Other activism",
+                         "Unaffiliated director, small inv = Other activism")
     return(as.data.frame(temp))
 }
 
@@ -102,7 +102,7 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs <- paste("affiliated_hostile year sic2", controls)
+rhs <- paste("affiliated_big_inv year sic2", controls)
 
 trim <- function (x) {
     # Function removes spaces at end or beginning
@@ -115,7 +115,7 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
     data <-
         data %>%
-        mutate_at(c("year", "affiliated_hostile", "sic2"), as.factor)
+        mutate_at(c("year", "affiliated_big_inv", "sic2"), as.factor)
 
     rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
 
