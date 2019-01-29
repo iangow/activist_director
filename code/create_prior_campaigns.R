@@ -5,15 +5,14 @@ pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET work_mem='8GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, factset")
 
-rs <- dbExecute(pg, "SET search_path TO factset")
-
-sharkwatch <- tbl(pg, "sharkwatch")
+sharkwatch <- tbl(pg, "activism_sample") %>% select(-sharkwatch50)
 dissidents <- tbl(pg, "dissidents")
 
 campaigns <-
     sharkwatch %>%
     inner_join(dissidents) %>%
-    select(dissident, campaign_id, announce_date) %>%
+    select(dissident, campaign_id, eff_announce_date) %>%
+    rename(announce_date = eff_announce_date) %>%
     distinct()
 
 recent_campaigns <-
@@ -24,6 +23,16 @@ recent_campaigns <-
                    announce_date.x - sql("interval '1 day'"))) %>%
     group_by(dissident, announce_date.x) %>%
     summarize(recent_campaigns = n()) %>%
+    rename(announce_date = announce_date.x)
+
+recent_three_years <-
+    campaigns %>%
+    inner_join(campaigns, by = "dissident") %>%
+    filter(between(announce_date.y,
+                   announce_date.x - sql("interval '3 years'"),
+                   announce_date.x - sql("interval '1 day'"))) %>%
+    group_by(dissident, announce_date.x) %>%
+    summarize(recent_three_years = n()) %>%
     rename(announce_date = announce_date.x)
 
 all_campaigns <-
@@ -37,6 +46,12 @@ rs <- dbExecute(pg, "DROP TABLE IF EXISTS prior_campaigns")
 prior_campaigns <-
     all_campaigns %>%
     inner_join(recent_campaigns, by = c("dissident", "announce_date")) %>%
+    inner_join(recent_three_years, by = c("dissident", "announce_date")) %>%
+    compute() %>%
+    rename(eff_announce_date = announce_date) %>%
+    mutate(recent_dummy = recent_campaigns > 2,
+           recent_three_dummy = recent_three_years > 5,
+           prior_dummy = prev_campaigns > 6) %>%
     compute(name = "prior_campaigns", temporary = FALSE,
             index = "dissident")
 
