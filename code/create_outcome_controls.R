@@ -307,8 +307,10 @@ outcome_controls <-
     compute() %>%
     left_join(controls_activism_years, by = c("permno", "datadate", "year")) %>%
     arrange(permno, datadate) %>%
-    mutate_at(vars(category, affiliated, affiliated_hostile, affiliated_high_stake,
-                   two_plus, early, big_investment, two_plus),
+    mutate_at(vars(category, affiliated,
+                   two_plus, early, big_investment,
+                   affiliated_hostile, affiliated_two_plus, affiliated_high_stake, affiliated_big_inv,
+                   affiliated_prior, affiliated_recent, affiliated_recent_three),
               funs(coalesce(., '_none'))) %>%
     mutate_at(vars(),
               funs(coalesce(., FALSE))) %>%

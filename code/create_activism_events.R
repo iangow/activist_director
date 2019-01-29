@@ -7,6 +7,7 @@ rs <- dbGetQuery(pg, "SET search_path TO activist_director")
 
 activism_sample <- tbl(pg, "activism_sample")
 activist_directors <- tbl(pg, "activist_directors")
+prior_campaigns <- tbl(pg, "prior_campaigns")
 
 activist_director <-
     activism_sample %>%
@@ -22,7 +23,24 @@ activist_director <-
     ungroup() %>%
     compute()
 
+prior_campaigns <-
+    activism_sample %>%
+    mutate(link_campaign_id = unnest(campaign_ids)) %>%
+    inner_join(prior_campaigns, by = c("link_campaign_id"="campaign_id")) %>%
+    distinct() %>%
+    group_by(campaign_ids) %>%
+    summarize(
+        prev_campaigns = max(prev_campaigns, na.rm = TRUE),
+        recent_campaigns = max(recent_campaigns, na.rm = TRUE),
+        recent_three_years = max(recent_three_years, na.rm = TRUE),
+        prior_dummy = any(prior_dummy, na.rm = TRUE),
+        recent_dummy = any(recent_dummy, na.rm = TRUE),
+        recent_three_dummy = any(recent_three_dummy, na.rm = TRUE)) %>%
+    ungroup() %>%
+    compute()
+
 rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activism_events")
+
 matched <-
     activism_sample %>%
     # Fixing campaign_id==1027721875 to board_related (sharkwatch error)
@@ -37,8 +55,10 @@ matched <-
     mutate(elected = proxy_fight_went_the_distance=='Yes' & activist_director) %>%
     mutate(activist_demand = activist_demand_old |
             !is.na(first_board_demand_date)) %>%
+    left_join(prior_campaigns, by = "campaign_ids") %>%
     mutate(hostile_resistance = poison_pill_post | proxy_fight_went_the_distance,
-           high_stake = dissident_group_ownership_percent_at_announcement >= 10) %>%
+           high_stake = dissident_group_ownership_percent_at_announcement >= 10,
+           big_inv = market_capitalization_at_time_of_campaign * dissident_group_ownership_percent_at_announcement/100 >= 100) %>%
     mutate(category = case_when(
             activist_director ~ 'activist_director',
             activist_demand ~ 'activist_demand',
@@ -62,11 +82,8 @@ matched <-
                 first_appointment_date - eff_announce_date > 180 ~ 'late',
                 TRUE ~ category_activist_director),
            big_investment = case_when(
-	            activist_director &
-                market_capitalization_at_time_of_campaign *
-                    dissident_group_ownership_percent_at_announcement/100
-	                > 100 ~ 'big investment director',
-                activist_director ~ 'small investment director',
+	            activist_director & big_inv ~ 'big investment director',
+                activist_director & !big_inv ~ 'small investment director',
 	            TRUE ~ category_activist_director)) %>%
     mutate(affiliated_hostile = case_when(
                affiliated == 'affiliated' & hostile_resistance ~ 'affiliated_hostile',
@@ -74,11 +91,41 @@ matched <-
                affiliated == 'affiliated' & !hostile_resistance ~ 'affiliated_nothostile',
                affiliated == 'unaffiliated' & !hostile_resistance ~ 'unaffiliated_nothostile',
                TRUE ~ category_activist_director),
+           affiliated_two_plus = case_when(
+               affiliated == 'affiliated' & num_activist_directors > 1 ~ 'affiliated_two_plus',
+               affiliated == 'unaffiliated' & num_activist_directors > 1 ~ 'unaffiliated_two_plus',
+               affiliated == 'affiliated' ~ 'affiliated_one',
+               affiliated == 'unaffiliated' ~ 'unaffiliated_one',
+               category_activist_director != 'activist_director' ~ category_activist_director),
            affiliated_high_stake = case_when(
                affiliated == 'affiliated' & high_stake ~ 'affiliated_high_stake',
                affiliated == 'unaffiliated' & high_stake ~ 'unaffiliated_high_stake',
                affiliated == 'affiliated' & !high_stake ~ 'affiliated_low_stake',
                affiliated == 'unaffiliated' & !high_stake ~ 'unaffiliated_low_stake',
+               category_activist_director != 'activist_director' ~ category_activist_director),
+           affiliated_big_inv = case_when(
+               affiliated == 'affiliated' & big_inv ~ 'affiliated_big_inv',
+               affiliated == 'unaffiliated' & big_inv ~ 'unaffiliated_big_inv',
+               affiliated == 'affiliated' & !big_inv ~ 'affiliated_small_inv',
+               affiliated == 'unaffiliated' & !big_inv ~ 'unaffiliated_small_inv',
+               category_activist_director != 'activist_director' ~ category_activist_director),
+           affiliated_prior = case_when(
+               affiliated == 'affiliated' & prior_dummy ~ 'affiliated_high_prior',
+               affiliated == 'unaffiliated' & prior_dummy ~ 'unaffiliated_high_prior',
+               affiliated == 'affiliated' & !prior_dummy ~ 'affiliated_small_prior',
+               affiliated == 'unaffiliated' & !prior_dummy ~ 'unaffiliated_small_prior',
+               category_activist_director != 'activist_director' ~ category_activist_director),
+           affiliated_recent = case_when(
+               affiliated == 'affiliated' & recent_dummy ~ 'affiliated_high_recent',
+               affiliated == 'unaffiliated' & recent_dummy ~ 'unaffiliated_high_recent',
+               affiliated == 'affiliated' & !recent_dummy ~ 'affiliated_small_recent',
+               affiliated == 'unaffiliated' & !recent_dummy ~ 'unaffiliated_small_recent',
+               category_activist_director != 'activist_director' ~ category_activist_director),
+           affiliated_recent_three = case_when(
+               affiliated == 'affiliated' & recent_three_dummy ~ 'affiliated_high_recent_three',
+               affiliated == 'unaffiliated' & recent_three_dummy ~ 'unaffiliated_high_recent_three',
+               affiliated == 'affiliated' & !recent_three_dummy ~ 'affiliated_small_recent_three',
+               affiliated == 'unaffiliated' & !recent_three_dummy ~ 'unaffiliated_small_recent_three',
                category_activist_director != 'activist_director' ~ category_activist_director)) %>%
     compute(name = "activism_events", temporary = FALSE)
 
