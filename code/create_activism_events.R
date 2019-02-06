@@ -90,6 +90,8 @@ matched <-
                affiliated == 'unaffiliated' & hostile_resistance ~ 'unaffiliated_hostile',
                affiliated == 'affiliated' & !hostile_resistance ~ 'affiliated_nothostile',
                affiliated == 'unaffiliated' & !hostile_resistance ~ 'unaffiliated_nothostile',
+               affiliated == 'activism' & hostile_resistance ~ 'activism_hostile',
+               affiliated == 'activism' & !hostile_resistance ~ 'activism_nothostile',
                TRUE ~ category_activist_director),
            affiliated_two_plus = case_when(
                affiliated == 'affiliated' & num_activist_directors > 1 ~ 'affiliated_two_plus',
@@ -102,30 +104,40 @@ matched <-
                affiliated == 'unaffiliated' & high_stake ~ 'unaffiliated_high_stake',
                affiliated == 'affiliated' & !high_stake ~ 'affiliated_low_stake',
                affiliated == 'unaffiliated' & !high_stake ~ 'unaffiliated_low_stake',
+               affiliated == 'activism' & high_stake ~ 'activism_high_stake',
+               affiliated == 'activism' & !high_stake ~ 'activism_low_stake',
                category_activist_director != 'activist_director' ~ category_activist_director),
            affiliated_big_inv = case_when(
                affiliated == 'affiliated' & big_inv ~ 'affiliated_big_inv',
                affiliated == 'unaffiliated' & big_inv ~ 'unaffiliated_big_inv',
                affiliated == 'affiliated' & !big_inv ~ 'affiliated_small_inv',
                affiliated == 'unaffiliated' & !big_inv ~ 'unaffiliated_small_inv',
+               affiliated == 'activism' & big_inv ~ 'activism_big_inv',
+               affiliated == 'activism' & !big_inv ~ 'activism_small_inv',
                category_activist_director != 'activist_director' ~ category_activist_director),
            affiliated_prior = case_when(
                affiliated == 'affiliated' & prior_dummy ~ 'affiliated_high_prior',
                affiliated == 'unaffiliated' & prior_dummy ~ 'unaffiliated_high_prior',
                affiliated == 'affiliated' & !prior_dummy ~ 'affiliated_small_prior',
                affiliated == 'unaffiliated' & !prior_dummy ~ 'unaffiliated_small_prior',
+               affiliated == 'activism' & prior_dummy ~ 'activism_high_prior',
+               affiliated == 'activism' & !prior_dummy ~ 'activism_small_prior',
                category_activist_director != 'activist_director' ~ category_activist_director),
            affiliated_recent = case_when(
                affiliated == 'affiliated' & recent_dummy ~ 'affiliated_high_recent',
                affiliated == 'unaffiliated' & recent_dummy ~ 'unaffiliated_high_recent',
                affiliated == 'affiliated' & !recent_dummy ~ 'affiliated_small_recent',
                affiliated == 'unaffiliated' & !recent_dummy ~ 'unaffiliated_small_recent',
+               affiliated == 'activism' & recent_dummy ~ 'activism_high_recent',
+               affiliated == 'activism' & !recent_dummy ~ 'activism_small_recent',
                category_activist_director != 'activist_director' ~ category_activist_director),
            affiliated_recent_three = case_when(
                affiliated == 'affiliated' & recent_three_dummy ~ 'affiliated_high_recent_three',
                affiliated == 'unaffiliated' & recent_three_dummy ~ 'unaffiliated_high_recent_three',
                affiliated == 'affiliated' & !recent_three_dummy ~ 'affiliated_small_recent_three',
                affiliated == 'unaffiliated' & !recent_three_dummy ~ 'unaffiliated_small_recent_three',
+               affiliated == 'activism' & recent_three_dummy ~ 'activism_high_recent_three',
+               affiliated == 'activism' & !recent_three_dummy ~ 'activism_small_recent_three',
                category_activist_director != 'activist_director' ~ category_activist_director)) %>%
     compute(name = "activism_events", temporary = FALSE)
 
