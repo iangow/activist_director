@@ -48,6 +48,7 @@ activism_events <-
     activism_sample %>%
     select(campaign_id, permno, dissident_group, eff_announce_date) %>%
     rename(permno_alt = permno) %>%
+    mutate(permno_alt = as.integer(permno_alt)) %>%
     collect()
 
 ad_1 <-
@@ -70,7 +71,7 @@ activist_directors <-
     bind_rows(ad_1, ad_2, ad_3) %>%
     mutate(permno = as.integer(permno)) %>%
     mutate(independent = as.logical(independent)) %>%
-    left_join(activism_events) %>%
+    left_join(activism_events, by = "campaign_id") %>%
     mutate(permno = coalesce(permno, permno_alt)) %>%
     filter(!is.na(permno)) %>%
     distinct() %>%
