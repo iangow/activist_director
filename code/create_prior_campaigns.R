@@ -45,11 +45,12 @@ rs <- dbExecute(pg, "DROP TABLE IF EXISTS prior_campaigns")
 
 prior_campaigns <-
     all_campaigns %>%
-    inner_join(recent_campaigns, by = c("dissident", "announce_date")) %>%
-    inner_join(recent_three_years, by = c("dissident", "announce_date")) %>%
+    left_join(recent_campaigns, by = c("dissident", "announce_date")) %>%
+    left_join(recent_three_years, by = c("dissident", "announce_date")) %>%
     compute() %>%
     rename(eff_announce_date = announce_date) %>%
-    mutate(recent_dummy = recent_campaigns > 2,
+    mutate(recent_campaigns = coalesce(recent_campaigns, 0),
+           recent_dummy = coalesce(recent_campaigns > 2, FALSE),
            recent_three_dummy = recent_three_years > 5,
            prior_dummy = prev_campaigns > 6) %>%
     compute(name = "prior_campaigns", temporary = FALSE,
