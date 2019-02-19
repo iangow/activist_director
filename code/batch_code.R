@@ -18,13 +18,14 @@ rs <- dbGetQuery(pg, "
     )")
 rs <- dbDisconnect(pg)
 
+source('code/create_activism_sample.R', echo=TRUE)
 source("code/import_activist_directors.R")
 
 # Column 6
 source('code/import_key_dates.R', echo=TRUE)
 
 # Column 5
-source('code/create_activism_sample.R', echo=TRUE)
+source('code/create_prior_campaigns.R', echo=TRUE)
 source('code/create_activism_events.R', echo=TRUE)
 source('code/create_activist_demands.R', echo=TRUE)
 
