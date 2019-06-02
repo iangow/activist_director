@@ -9,7 +9,7 @@ Because we focus our analysis on activist directors in their first year, the app
 Of the 594,300 observations (director-firm-years) in our sample, 57,423 relate to new directors where there was no activism targeting the firm in the year of appointment.
 The average age of these directors is 62.67, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management.
 See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
-An additionaal 1,376 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were demanded by, or granted to, activists.
+An additionaal 1,581 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were demanded by, or granted to, activists.
 The average age of these directors is 60.65, 15\% of them are female, 55\% are appointed to committees in their first year, and 14\% are denoted as audit committee financial experts.
 
 We identify 809 activist directors (of our full sample of \Sexpr{dirs$all_dirs}) on Equilar; we find that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
@@ -33,7 +33,7 @@ We examine whether activist directors are regarded differently by shareholders b
 Table \ref{tbl:voting} provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
 To control for the various factors affecting shareholder support for directors at the time of the meeting, we include meeting fixed effects.
 Thus this analysis compare vote outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
-Columns 1 and 2 provides results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for the second and third elections, respectively.
+Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for the second and third elections, respectively.
 
 The results in column 1 show that activist directors get significantly higher shareholder support than other directors: $3.479$ ($3.042$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
 These apparent effects are non-trivial: the inter-quartile range of voting support in our sample is $7.24\%$ and the within-meeting standard deviation is $6.77\%$.
@@ -43,7 +43,7 @@ But, even controlling for ISS recommendations, there is greater shareholder supp
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
 Interestingly, elevated shareholder support for activist directors is short-lived.
-In subsequent elections, shareholder support for activist directors is generally statistically indistinguishable from that of other directors as reported in columns 3 to 6.
+In subsequent elections, shareholder support for activist directors is generally statistically indistinguishable from that of other directors as reported in columns 3 to 6. 
 
 \subsection{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointment. It is possible that those directors appointed by or recruited by activist hedge funds may have different career outcomes from other directors. For example, in the case of unaffiliated activist directors, they may find more opportunities in other companies in the future.
@@ -65,16 +65,16 @@ Panel A of Table \ref{tbl:selection} reports the results of logistic regressions
 The first column looks at the probability of being targeted for any kind of activism event, the second column examines the determinants of an activist making demands for board representation, and the third column examines the determinants of an activist getting representation on a firm's board.\footnote{Note that, in contrast to our other analyses, for the purpose of this table, our activism indicators are \emph{not} mutually exclusive.
 That is, \textit{Activism} includes cases in any of the categories \textit{Non-board activism}, \textit{Board demand}, and \textit{Activist director}, while
 \textit{Board demand} includes cases of \textit{Activist director}, as well as cases where the board demands are not successful}
-Focusing on the first column of Panel A, we find that book-to-market is positively associated with activism, consistent with prior research \citep{Brav:2008eu} that find activists targeting undervalued firms.
+Focusing on Column 1 of Panel A, we find that book-to-market is positively associated with activism, consistent with prior research \citep{Brav:2008eu} that find activists targeting undervalued firms.
 Also, we find that size-adjusted return is negatively associated with being targeted by activists, consistent with activists targeting poorly performing firms.
 In addition, consistent with prior research, we find that smaller companies are more likely to be targeted.
 However, the positive association between the proportion of directors who are independent (\textit{Outside percent}) and activism is more difficult to explain in the same way, as this measure is suggested by some to be a proxy for \emph{good} governance \citep{Bhagat:2008jc}.
 One possible explanation is that a more independent board makes a firm more receptive to proposals from activists.
 
-Turning to the second column of Panel A of Table \ref{tbl:selection}, we see evidence that activists are more likely to target a firm with demands for board representation when a greater portion of the firm's shares are held by institutional investors, consistent with these investors being more open to supporting activists.
+Turning to Column 2 of Panel A of Table \ref{tbl:selection}, we see evidence that activists are more likely to target a firm with demands for board representation when a greater portion of the firm's shares are held by institutional investors, consistent with these investors being more open to supporting activists.
 Smaller firms are also more likely to be the target for board-related activism. In addition, we find that the board size is associated with the likelihood of being asked for board representation, consistent with the number of directors being a proxy for poor governance and activists targeting firms with worse governance \citep{Yermack:1996wv}.
 
-In the second column of Panel A, we additionally find that activists are more likely to gain a board seat when the payout is lower. We later examine whether these activist directors are more or less likely to be affilaited with activists in our next analysis in Panel B.
+In Column 3 of Panel A, we additionally find that activists are more likely to gain a board seat when the payout is lower. We later examine whether these activist directors are more or less likely to be affilaited with activists in our next analysis in Panel B.
 
 In Panel B of Table \ref{tbl:selection}, we focus on activism events in examining two questions.
 First, given that a firm has been targeted by activists, what are the factors that are associated with the activist demanding board seats?
@@ -161,11 +161,11 @@ These effects are economically significant, with the five-year increase in \text
 
 Looking at the incremental effect of getting an affiliated or an unaffiliated director on the board, we mostly do not detect a statistically significant effect; the incremental effects are statistically indistinguishable from zero.
 If an incremental effect does exist, our failure to detect it statistically may be attributed to multicollinearity between our activism indicators (in many cases, the activist director is appointed in the same year that the activist campaign commences) and a lack of power stemming from a smaller number of observations.
-However, we find some significant results for affiliated directors $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board.
+However, we find some significant results for affiliated directors $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist invervention.
 
 Having demonstrated an effect of activism on operating performance, we next turn to a range of other outcomes that activists often seek to influence more directly.
 The examples discussed above in Section \ref{sect:lit_review} suggest that activists often seek to influence corporate policy or decisions on a wide range of matters.
-The include matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
+They include matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
 
 \subsection{Divestiture and acquisitions} \label{sect:div_acq}
 The first set of outcomes we examine relate to mergers and acquisitions.
