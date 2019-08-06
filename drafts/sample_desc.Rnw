@@ -10,6 +10,7 @@ This provides us with \Sexpr{num_events} activism events.
 Note that our sample consists only of those events with no pending action and does not include activism consisting only of shareholder proposals submitted under Rule 14a-8.
 Table \ref{tbl:act_events} provides details of the number of activism events over our sample period.
 We divide the \Sexpr{num_events} activism events into three mutually exclusive categories: \textit{Activist director} events in which an activist won board representation (\Sexpr{act_dir} events), \textit{Board demand} events in which the activist sought, but did not win, board seats (\Sexpr{brd_dmd} events), and \textit{Non-board activism} events in which activists targeted the firm, but board representation was neither sought nor obtained (\Sexpr{act_only} events).
+We can see that more than 45\% of our activism sample involved some kind of demand for board representation by activists and that the activists ended up with at least one board seat in almost 50\% of these cases.
 
 \subsection{Activist directors}
 For each activism event in which SharkWatch indicated that the activist obtained board representation, we used proxy statements (DEF 14A) and current filings (Form 8-K, Item 5.02) to collect names of the directors who were appointed as a result of the activist campaign.
@@ -21,7 +22,7 @@ Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated}
 Of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as the result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 For illustration, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn is clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives'' Edward Bleier and Strauss Zelnick, are unaffiliated.
 Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
-We find that most directors are not appointed as the result of a shareholder vote: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board.
+We find that most directors are appointed as a result of settlement: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed as a result of shareholder votes.
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}
@@ -35,7 +36,7 @@ We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our 
 % For example, 3G Capital Management and 3G Capital Partners Ltd have different names, but further research confirmed that 3G Capital Partners Ltd is affiliated with 3G Capital Management.
 
 \subsection{Director characteristics}
-Data on on 532,609 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
+Data on on 594,300 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
 The Equilar database comprises directors of nearly every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
 For each director on a company's board, Equilar provides director-level information such as committee memberships, gender, age, etc.
 Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.

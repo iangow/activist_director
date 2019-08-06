@@ -98,10 +98,10 @@ ad_years <-
 dirs <-
     ad_years %>%
     summarize(all_dirs = n(),
-              affiliated = sum(as.integer(independent), na.rm = TRUE),
-              unaffiliated = sum(as.integer(!independent), na.rm = TRUE),
-              elected = sum(as.integer(elected), na.rm = TRUE),
-              settled = sum(as.integer(!elected), na.rm = TRUE)) %>%
+              affiliated = sum(as.integer(!independent), na.rm = TRUE),
+              unaffiliated = sum(as.integer(independent), na.rm = TRUE),
+              settled = sum(as.integer(!elected), na.rm = TRUE),
+              elected = sum(as.integer(elected), na.rm = TRUE)) %>%
     collect()
 
 num_events <- formatC(nrow(events), big.mark = ",")

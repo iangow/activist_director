@@ -171,6 +171,7 @@ sharkwatch_agg <-
               end_date = max(end_date, na.rm = TRUE),
               meeting_dates = sql("array_agg(DISTINCT meeting_date)"),
               date_original_13d_filed = min(date_original_13d_filed, na.rm = TRUE),
+              proxy_fight_announce_date = min(proxy_fight_announce_date, na.rm = TRUE),
               activism_types = sql("array_agg(DISTINCT activism_type)"),
               dissident_board_seats_won = max(dissident_board_seats_won, na.rm = TRUE),
               dissident_board_seats_sought = max(dissident_board_seats_sought, na.rm = TRUE),
