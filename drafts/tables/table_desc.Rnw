@@ -43,12 +43,13 @@ summ.dirs <-
     inner_join(activist_directors, by = "campaign_id") %>%
     filter(!is.na(appointment_date), !is.na(permno), !is.na(independent)) %>%
     mutate(year = date_part('year', eff_announce_date)) %>%
+    mutate(settled = !elected) %>%
     group_by(year) %>%
     summarize(activist_director = n(),
               affiliated = sum(as.integer(!independent), na.rm=TRUE),
               unaffiliated = sum(as.integer(independent), na.rm=TRUE),
               elected = sum(as.integer(elected), na.rm=TRUE),
-              settled = sum(as.integer(!elected), na.rm=TRUE)) %>%
+              settled = sum(as.integer(settled), na.rm=TRUE)) %>%
     arrange(year) %>%
     collect()
 

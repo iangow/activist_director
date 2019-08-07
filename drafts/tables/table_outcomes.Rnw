@@ -27,7 +27,7 @@ omits <- unlist(strsplit(controls, "\\s+"))
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
 <<outcome_functions, include=FALSE>>=
-source("outcome_functions.R")
+source("~/activist_director/drafts/tables/outcome_functions.R")
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
@@ -255,8 +255,8 @@ lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
 t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
-# row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism")
-row.labels <- NULL
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism")
+# row.labels <- NULL
 col.labels <- c("Acquisition", "Acquired", "Divestiture")
 names(summ) <- col.labels
 stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
@@ -319,9 +319,9 @@ lhs.vars <- list("ceo_turnover", "ceo_comp")
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
 col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
-#row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
-#                "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
-row.labels <- NULL
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
+                "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
+# row.labels <- NULL
 names(summ) <- col.labels
 stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 
@@ -342,7 +342,7 @@ rs <- dbExecute(pg, "SET work_mem='5GB'")
 outcome_controls <- tbl(pg, "outcome_controls")
 activist_director_years <- tbl(pg, "activist_director_years")
 outcomes <-
-    tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
+    tbl(pg, sql(paste0(readLines("~/activist_director/drafts/tables/other_outcomes.sql"), collapse="\n")))
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
@@ -372,7 +372,7 @@ rs <- dbDisconnect(pg)
 % Financing and investment
 \newpage
 \begin{table}[htb]
-\caption{Capital structure}
+\caption{Capital structure and payouts}
 \label{table:fin}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
@@ -393,9 +393,9 @@ Values in parentheses are standard errors clustered by firm.
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
 t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-#row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
-#                "$\\textrm{Dep. var.}_{t}$")
-row.labels <- NULL
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
+               "$\\textrm{Dep. var.}_{t}$")
+# row.labels <- NULL
 col.labels <- c("Cash", "Leverage", "Payout")
 summ <- make.fTest.table(t6.pd, reg.data)
 names(summ) <- col.labels
@@ -430,9 +430,9 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
-#row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
-#                "$\\textrm{Dep. var.}_{t}$")
-row.labels <- NULL
+row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
+               "$\\textrm{Dep. var.}_{t}$")
+# row.labels <- NULL
 col.labels <- c("$\\textrm{CapEx}$",
                 "$\\textrm{R\\&D}$",
                 "$\\textrm{Advertising}$")

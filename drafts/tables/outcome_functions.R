@@ -43,21 +43,18 @@ make.fTest.table <- function(model.set, data) {
     fTest <- function(model) {
         model <- model[[1]]
         cov <- coeftest.cluster(data, model, cluster1="permno", ret="cov")
-        c(linearHypothesis(model, "affiliated_prioraffiliated_high_prior - affiliated_prioractivism_high_prior",
+        c(linearHypothesis(model, "affiliatedaffiliated - affiliatedz_other_activism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_priorunaffiliated_high_prior - affiliated_prioractivism_high_prior",
+          linearHypothesis(model, "affiliatedunaffiliated - affiliatedz_other_activism",
                          vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_prioraffiliated_small_prior - affiliated_prioractivism_small_prior",
-                         vcov.=cov)[4][2,],
-          linearHypothesis(model, "affiliated_priorunaffiliated_small_prior - affiliated_prioractivism_small_prior",
+          linearHypothesis(model, "affiliatedaffiliated - affiliatedunaffiliated",
                          vcov.=cov)[4][2,])
     }
 
     temp <-  do.call(cbind, lapply(model.set, FUN = fTest))
-    row.names(temp) <- c("Affiliated, big prior = Other activism, big prior",
-                         "Unaffiliated, big prior = Other activism, big prior",
-                         "Affiliated, small prior = Other activism, small prior",
-                         "Unaffiliated, small prior = Other activism, small prior")
+    row.names(temp) <- c("Affiliated = Other activism",
+                         "Unaffiliated = Other activism",
+                         "Affiliated = Unaffiliated")
     return(as.data.frame(temp))
 }
 
@@ -102,7 +99,7 @@ xtable.mod <- function(summ) {
 }
 
 # RHS of models
-rhs <- paste("affiliated_prior year sic2", controls)
+rhs <- paste("affiliated year sic2", controls)
 
 trim <- function (x) {
     # Function removes spaces at end or beginning
@@ -115,7 +112,7 @@ get.model <- function(the.var, data, include.lag=FALSE, changes=FALSE, use.contr
 
     data <-
         data %>%
-        mutate_at(c("year", "affiliated_prior", "sic2"), as.factor)
+        mutate_at(c("year", "affiliated", "sic2"), as.factor)
 
     rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
 
