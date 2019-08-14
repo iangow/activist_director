@@ -17,12 +17,12 @@ For each activism event in which SharkWatch indicated that the activist obtained
 We also collected appointment dates and basic biographical details.
 We then examined subsequent SEC filings up to December 31, 2017 to determine whether and, if so when, each director subsequently left the board.
 We divide activist directors into two categories.
-The \textit{Affiliated} category comprises directors that we identified as employees or principals of the members of the activist group, and \textit{Unaffiliated} covers the remaining activist directors.
+The \textit{Affiliated} category comprises directors that we identified as employees or principals of members of the activist group, and \textit{Unaffiliated} covers the remaining activist directors.
 Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated} and \textit{Unaffiliated} directors.
 Of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as the result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 For illustration, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn is clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives'' Edward Bleier and Strauss Zelnick, are unaffiliated.
 Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
-We find that most directors are appointed as a result of settlement: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed as a result of shareholder votes.
+We find that most directors are appointed as a result of settlement: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed as a result of shareholder votes. \footnote{We consider both explicit settlement cases with public settlement agreements and implicit settlement cases without any public agreement. Of the 1,245 activist directors who were appointed following some kind of settlement, 941 activist directors were appointed following explicit settlement agreements and 304 activist directors were appointed without such explicit settlement agreement.}
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}
@@ -44,7 +44,7 @@ Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each 
 \subsection{Other data}
 
 Data on divestitures and acquisitions as used in Table \ref{tbl:div_acq} come from Capital IQ and CRSP.
-In Tables \ref{tbl:career}, \ref{tbl:selection} and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
+In Tables \ref{tbl:career}, \ref{tbl:selection}, and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
 We calculate \textit{Analyst}, the number of analyst forecasts for each firm-year using data from IBES.
 We derive the proportion of the firm's outstanding stock held by institutions (\textit{Institutional}) using data from WhaleWisdom.
 Data on stock market performance come from CRSP.

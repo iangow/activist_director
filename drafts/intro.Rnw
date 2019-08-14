@@ -10,8 +10,8 @@ Determinants and consequences
 % TODO: Add names of recent batch of RAs?
 % \subtitle{Preliminary draft}
 
-\author{Ian D. Gow\thanks{Ian D. Gow is at University of Melbourne, Suraj Srinivasan is at Harvard Business School, and Sa-Pyung Sean Shin is at Singapore Management Univeresity.
-We thank the Division of Research at Harvard Business School, University of Melbourne and Singapore Management University for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, and the Kellogg Accounting Research conference for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+\author{Ian D. Gow\thanks{Ian D. Gow is at University of Melbourne, Suraj Srinivasan is at Harvard Business School, and Sa-Pyung Sean Shin is at Singapore Management University.
+We thank the Division of Research at Harvard Business School, University of Melbourne, and Singapore Management University for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
 % \affil{Preliminary draft}
@@ -56,7 +56,7 @@ Prior research provides limited insight into the nature of these benefits.\footn
 However, given that activist directors rarely represent a majority of directors, the activists would still need to persuade other directors of the merits of any course of action and it is unclear why being in the board room is necessary to make their case.
 One possibility is that the optimal set of actions is not observable without access to private information.
 By gaining board representation, the activist director is able to provide advice that is contingent on a richer information set.
-Given the lack of strong theoretical predictions on the reasons for activists to seek board representation, studying the actions of firms with activist directors can provide new insight into these reasons, and also the effects of hedge fund activists.
+Given the lack of strong theoretical predictions on the reasons for activists to seek board representation, studying the actions of firms with activist directors provides new insight into these reasons, and also the effects of hedge fund activists.
 
 Hedge fund activism is not without its critics.
 Given the potentially greater influence that activists have when they get in the boardroom, by focusing on such cases, our paper aims to deepen our understanding of the effects of hedge fund activism.
@@ -70,15 +70,14 @@ Second, what impact do activists have when they get on the board?
 Does their impact differ from that of other cases of activism?
 Finally, is there evidence of short-termism?
 
-Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2016.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contests involving another corporation.}
+Our sample of \Sexpr{num_events} activism events comprises all activism events targeted at US companies from 2004 to 2016.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contest involving another corporation.}
 In each case, we code whether the activist made demands for board representation and whether the activist obtained seats on the board.
 We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} directors who were appointed to the board either through proxy fights or in response to activist demands.
 With regard to the first set of questions, we find, consistent with prior research, that activists tend to target firms with worse recent stock performance and ``value'' firms (i.e., those with low market-to-book ratios).
 Conditional on being targeted by activists, we also find that activists are more likely to demand or get board representation when the firm has more institutional ownership, smaller market capitalization, worse stock market performance, and lower dividend payout levels.
 We also find that firms with older directors are more likely to appoint activist directors.
 
-We describe the characteristics of activist directors and compare them with new directors appointed at other firms.\footnote{\citet*{Gow:2014vf} show that activism is often associated with departure of incumbent directors.}
-We find that activist director characteristics differ according to whether the director is affiliated with activists or not.
+We describe the characteristics of activist directors and find that activist director characteristics differ from new directors appointed at other firms, especially for the directors affiliated with activists.\footnote{\citet*{Gow:2014vf} show that activism is often associated with departure of incumbent directors.}
 Activist-affiliated directors (i.e., employees or principals of members of the activist group) are about 9 years younger than other activist directors and much less frequently female than unaffiliated activist directors, who are less frequently female than new directors in general.
 % TODO "Less likely" sounds like we have a p-value, which we don't. Perhaps we should to do this.
 Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly move into key board positions.
@@ -92,21 +91,20 @@ Consistent with prior research, we find significant risk-adjusted returns around
 We also find a positive market reaction at the appointment of activist directors, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement of from $2.0\%$ for affiliated directors and $1.5\%$ for unaffiliated directors.
 
 Operating performance improves after activism: return on assets increases by more than $1.7$ percentage points over the five years after announcement.
-We also find limited evidence of differential effects when \emph{affiliated} activist directors are appointed: an additional $2.4\%$ and $2.1\%$ percentage-point increase three and four years after announcement, respectively.
+We also find limited evidence of differential effects when \emph{activist-affiliated} directors are appointed: an additional $2.4\%$ and $2.1\%$ percentage-point increase three and four years after announcement, respectively.
 But a statistically signicant effect is not found in the fifth year after announcement (perhaps due to reduced sample size).
 
-In terms of underlying actions, we find evidence that activism is assoiciated with an increased probability of divestiture, decreased acquisition activity, higher probability of being acquired, higher payout, reduced cash holdings, higher CEO turnover, lower capital expenditure, and lower research and development.
+In terms of underlying actions, we find evidence that activism is associated with an increased probability of divestiture, decreased acquisition activity, higher probability of being acquired, higher payout, reduced cash holdings, higher CEO turnover, lower capital expenditure, and lower research and development.
 However, for most of these outcomes, we do not find evidence of activist directors being differentially associated with these outcomes than activism without board representation.
 
 Relative to other activism events, we do find that activist-director events are associated with a \emph{lower} probability of the firm being acquired, perhaps because acquisitions occur relatively soon after activism and consistent with board representation not being necessary to advocate for such transactions.
 We find that \emph{affiliated} activist directors are associated with higher payout levels,  with an economically significant coefficient equal to nearly 15\% of EBITDA, and lower R\&D spending.
-
 This suggests that, when activists get board representation, their impact is \emph{not} primarily about the ``ability of activists to force target firms into a takeover''  as prior research has found for hedge fund activism more generally \citep[362]{Greenwood:2009kh}.
 % This is consistent with board representation being an important mechanism for bringing about these kinds of changes.
 
 The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism.
 Overall, we find that activist directors are associated with significant strategic and operational actions by firms.
-While the observational data available to us do not permit unequivocal causal inferences, the associations we document appear consistent with hedge fund activists having an impact.
+While the observational data available to us do not permit causal inferences unequivocally, the associations we document appear consistent with hedge fund activists having an impact.
 
 However, even if given a causal interpretation, it is unclear whether all of these effects are beneficial to shareholders.
 For instance, while our evidence is consistent with activist directors playing a significant role in curbing expenditures on capital and research and development (R\&D), it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, underinvestment with a focus on the short term.
@@ -115,9 +113,9 @@ However, the relatively long-term holding period in cases where activists become
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
 Section \ref{sect:desc_stats} describes our data and descriptive statistics.
+Section \ref{sect:act_directors} describes our activist director sample and examines the voting outcomes and the career consequences of these activist directors.
 Section \ref{sect:selection} examines the circumstances in which activists seek and obtain board representation.
 Section \ref{sect:holding} examines the association with activist board representation and activist holding periods.
-Section \ref{sect:career} examines the career consquences of activist directors.
 Section \ref{sect:returns} examines stock returns for activism targets with and without board-related demands and
 for firm where activists get board representation.
 Section \ref{sect:outcomes} examines the association between activist directors and firm outcomes, such as operating performance, investment behavior and CEO incentives.
