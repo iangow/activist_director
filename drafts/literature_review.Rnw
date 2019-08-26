@@ -40,7 +40,7 @@ Few papers have focused on the phenomenon of activist directors.
 \citet*{Coffee:2018} hand-collect data from 475 settlement agreements entered into between 2000 and 2015 and involving appointment of activist directors.
 The focus of  \citet{Coffee:2018} is on an apparent pattern of ``information leakage'' associated with activist directors.
 \citet{Coffee:2018} find that, after appointment of activist directors, ``the stock price of the target corporation begins to anticipate future public disclosures, moving up or down prior to \dots the eventual public disclosure. Similarly, the bid-ask spread in the corporations' stock price widens.''
-Our paper draws on a larger sample of activist directors and focuses on the traits of activist directors, the circumstances in whcih activist directors seek or obtain board, and the effects on the firm itself.
+Our paper draws on a larger sample of activist directors and focuses on the traits of activist directors, the circumstances in whcih activist directors seek or obtain board, and the effects on the firm itself. Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases with public settlment agreements, we also consider implicit settlement cases where there were board seats given to the activists without any public agreement.
 
 Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focuses on settlement agreements whether or not an activist director is appointed.
 But \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including analysis of impact of activist directors on board size and analysis of shareholder support in subsequent director elections.
