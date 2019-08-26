@@ -14,26 +14,26 @@ Determinants and consequences
 We thank the Division of Research at Harvard Business School, University of Melbourne, and Singapore Management University for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
-% \affil{Preliminary draft}
-% This code gets the comment associated with the activist_director.activism_events
-% table. If it has changed, R knows to update the data.
 
 \singlespacing
 \begin{abstract}
-This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., those directors appointed in response to demands by activists.
-Using a sample of \Sexpr{num_events} activism events over the period 2004--2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors.
-We find that activists are more likely to gain board seats at smaller firms and those with weaker stock price performance.
-%We find that activist directors differ from other new directors in some respects.
-% I think this part of the paper is too undeveloped to warrant mentioning in the abstract.
-%
-Activists remain as shareholders longer when they have board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
+This paper examines the phenomenon of activist directors, i.e., directors appointed in response to demands by hedge fund activists.
+Using a sample of \Sexpr{num_events} activism events over the period 2004--2016, we find that activists seek or obtain board represetnation in 45\% of cases.
+
+We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors, with 650  \emph{affiliated} directors (principals or employees of the activist funds) and 973 unaffiliated directors.
+While unaffiliated activist directors are superficially similar to other new directors, affiliated activist directors are noticeably younger and more male.
+Activist directors get strong shareholder support, with 3.0-3.5 percentage points higher shareholder support in director elections than other new directors.
+Rather than suffering negative consequences for being an activist director, we find that unaffiliated activist directors hold more other board seats in subsequent years.
+
+We find that activists are more likely to gain board seats at firms with weaker stock price performance and higher institutional sharehioldings.
+
+Rather than finding evidence of
+Activists remain as shareholders longer in cases where  board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
+
 As in prior research, we find positive announcement-period returns of around 2.8--4.0\% when a firm is targeted by activists, and a 1.7 percentage-point increase in return on assets over the subsequent one to five years.
 We find that activist directors are associated with significant strategic and operational actions by firms.
-We find evidence of increased divestiture, decreased acquisition activity, higher probability of being acquired, lower cash balances, higher payout, greater leverage, % higher CEO turnover, lower CEO compensation,
-and reduced investment.
-With the exception of the probability of being acquired, these estimated effects are generally greater when activists obtain board representation, consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
-% Most of the F-stats are not significant.
-% Is there a loose way to state this? I gave more detail in the text when making this point.
+We find evidence of increased divestiture, decreased acquisition activity, higher probability of being acquired, lower cash balances, higher payout, greater leverage, and reduced investment.
+
 \end{abstract}
 \doublespacing
 
