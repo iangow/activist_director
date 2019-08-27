@@ -221,13 +221,11 @@ rs <- dbDisconnect(pg)
 \caption{Divestitures and acquisitions}
 \label{tbl:div_acq}
 \begin{minipage}[t]{\columnwidth}
-% \begin{flushleft}
 {\small
 Table presents regressions of outcome variables on firm-year level activism indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
 \textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
 \textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
-% and \textit{Failures} (500, 520-599).
 Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
 \textit{Total assets}, book value of total assets;
 \textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
@@ -247,7 +245,6 @@ Regressions include industry and year fixed effects and the following controls (
 All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
-% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<table_div_and_acq, dependson=c("outcome_functions", "div_acq_data_step"), results='asis'>>=
