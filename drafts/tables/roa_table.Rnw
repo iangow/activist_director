@@ -1,7 +1,7 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<load_libraries_roa, cache=FALSE, message=FALSE, include=FALSE>>=
+<<roa_load_libraries, cache=FALSE, message=FALSE, include=FALSE>>=
 library(lmtest)
 library(sandwich)
 library(car)
@@ -12,14 +12,14 @@ library(texreg)
 library(base)
 library(psych)
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
-library(RPostgreSQL)
+library(DBI)
 library(plm)
 library(dplyr, warn.conflicts = FALSE)
 @
 %
-<<table_roa_data_step>>=
+<<roa_data_step>>=
 # PostgreSQL Connection
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 rs <- dbExecute(pg, "SET work_mem = '8GB'")
 
@@ -227,7 +227,7 @@ sw <-
     mutate_at(vars("tobins_q", "roa"), win_01)
 @
 %
-<<make_rows>>=
+<<roa_make_rows>>=
 getCoefs <- function(table) {
 
     # Standard stars
@@ -256,7 +256,7 @@ getCoefs <- function(table) {
 }
 @
 %
-<<table_roa_est, dependson=c("table_roa_data_step")>>=
+<<roa_est, dependson=c("roa_data_step")>>=
 # Winsorization
 
 
@@ -372,7 +372,7 @@ The quantities presented in the table represent estimates of the impact of activ
  & \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Activism}} &
     \multicolumn{1}{c}{\textrm{Activism}} & \multicolumn{1}{c}{\textrm{Affiliated director}}
     & \multicolumn{1}{c}{\textrm{Unaffiliated director}}\\
-<<table_roa_f_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
+<<roa_f_table, dependson=c("roa_est", "roa_make_rows"), results='asis'>>=
 sw_f <- cbind(sw_roa.f, sw_roa_ffe.f, sw_aff_roa_ffe.f) #sw_roa_nad_ffe.f, sw_roa_ad_ffe.f)
 #coeff/qnorm(p-value/2)
 for (i in 1:5) {
@@ -402,7 +402,7 @@ print(xtable(getCoefs(sw_f), digit=3,
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 \multicolumn{3}{l}{Number of observations with activism indicator equal to $1$} \\
 \hline
-<<table_roa_n_table, dependson=c("table_roa_est", "make_rows"), results='asis'>>=
+<<roa_n_table, dependson=c("roa_est", "roa_make_rows"), results='asis'>>=
 # Observations
 fix_names <- function(df) {
     colnames(df) = c("all", "Affiliated director", "Unaffiliated director")
