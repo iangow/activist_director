@@ -1,7 +1,7 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, message=FALSE, cache=TRUE)}
 
-<<load_packages, include=FALSE, cache=FALSE>>=
+<<rets_load_packages, include=FALSE, cache=FALSE>>=
 library(xtable)
 library(doBy)
 library(stargazer)
@@ -11,9 +11,9 @@ library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 @
 
-<<ret_data_step, include=FALSE>>==
+<<rets_data_step, include=FALSE>>==
 ## PostgreSQL Connection
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
@@ -28,7 +28,7 @@ merged <-
 rs <- dbDisconnect(pg)
 @
 
-<<return_functions, include=FALSE, message=FALSE>>=
+<<rets_functions, include=FALSE, message=FALSE>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by ols.model function below.
 out.table <- function(data, lhs, rhs, caption="Some returns",
@@ -143,37 +143,35 @@ out.table <- function(data, lhs, rhs, caption="Some returns",
 }
 @
 
-%\begin{landscape}
-<<return_data_prep, dependson="ret_data_step", results='asis'>>=
+<<rets_data_prep, dependson="ret_data_step", results='asis'>>=
 reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
 rhs <- "affiliated"
 @
 
-<<returns_panel_a, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
+<<rets_panel_a, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel A: Days $-1$ to $+1$ around announcement of activism."
 lhs.vars <- c("ret_d_annc", "ret_d_annc_mkt", "ret_d_annc_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
-<<returns_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
+<<retss_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel B: Days $-1$ to $+1$ around announcement of settlement."
 lhs.vars <- c("ret_d_any_sett", "ret_d_any_sett_mkt", "ret_d_any_sett_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 @
 
-% \clearpage
-<<return_data_prep_appt, cache=TRUE, dependson="ret_data_step", results='asis'>>=
+<<rets_data_prep_appt, cache=TRUE, dependson="ret_data_step", results='asis'>>=
 reg.data <- subset(merged, !is.na(ret_d_appt & permno!=66800)) # Drop Greenburg-AIG event
 rhs <- "affiliated_appt"
 @
 
-<<returns_panel_c, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
+<<rets_panel_c, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
 caption <- "Panel C: Days $-1$ to $+1$ around announcement of appointment."
 lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 @
 
-<<returns_panel_d, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
+<<rets_panel_d, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
 caption <- "Panel D: Long-term returns around announcement of appointment."
 lhs.vars <- c("ret_appt_m12p0_sz", "ret_appt_m0p12_sz", "ret_appt_m0p24_sz",
               "ret_appt_m12_annc_sz", "ret_appt_annc_appt_sz")
@@ -181,5 +179,3 @@ out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 rm(reg.data)
 @
 \addtocounter{table}{1}
-% \clearpage
-%\end{landscape}
