@@ -1,7 +1,7 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<load_libraries, cache=FALSE, include=FALSE>>=
+<<outs_load_libraries, cache=FALSE, include=FALSE>>=
 # Yihui Xie recommends _not_ caching the loading of packages used
 # by several chunks.
 library(lmtest)
@@ -15,7 +15,7 @@ library(psych)
 library(dplyr)
 @
 
-<<winsorize>>=
+<<outs_winsorize>>=
 # Winsorize selected variables in a data frame
 win01 <- function(x) psych::winsor(x, trim=0.01)
 
@@ -26,12 +26,12 @@ omits <- unlist(strsplit(controls, "\\s+"))
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
-<<outcome_functions, include=FALSE>>=
+<<outs_functions, include=FALSE>>=
 source("outcome_functions.R")
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
-<<div_acq_data_step, dependson="winsorize">>=
+<<outs_div_acq_data, dependson="outs_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -247,7 +247,7 @@ Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_div_and_acq, dependson=c("outcome_functions", "div_acq_data_step"), results='asis'>>=
+<<outs_t_div_and_acq, dependson=c("outs_functions", "outs_div_acq_data"), results='asis'>>=
 lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
 t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
@@ -264,7 +264,7 @@ rm(t6.pa)
 \end{table}
 
 % Panel B - CEO turnover and compensation
-<<ceo_data_step>>=
+<<outs_ceo_data_step, dependson="outs_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -310,7 +310,7 @@ Values in parentheses are standard errors clustered by firm.
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
-<<table_ceo_turnover, dependson=c("outcome_functions", "ceo_data_step"), results='asis'>>=
+<<outs_ceo_turnover, dependson=c("outs_functions", "outs_ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp")
 
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
@@ -329,7 +329,7 @@ stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
 
-<<other_outcome_data_step, dependson="winsorize">>=
+<<outs_other_data_step, dependson="outs_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -386,7 +386,7 @@ Values in parentheses are standard errors clustered by firm.
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_cap_struct, dependson=c("outcome_functions", "other_outcome_data_step"), error=FALSE, results='asis'>>=
+<<outs_t_cap_struct, dependson=c("outs_functions", "outs_other_data_step"), error=FALSE, results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
 t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
@@ -422,7 +422,7 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 %\end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
-<<table_investment, dependson=c("outcome_functions", "other_outcome_data_step"), results='asis'>>=
+<<outs_t_inv, dependson=c("outs_functions", "outs_other_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
