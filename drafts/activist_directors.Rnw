@@ -24,6 +24,7 @@
 \geometry{margin=0.8in}
 %\geometry{letterpaper} % ... or a4paper or a5paper or ...
 
+\setlength{\parindent}{4em}
 % Paragraphs begin with empty line plus indent
 \edef\restoreparindent{\parindent=\the\parindent\relax}
 \usepackage{parskip}
