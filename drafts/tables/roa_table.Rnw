@@ -15,7 +15,6 @@ source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.
 library(RPostgreSQL)
 library(plm)
 library(dplyr, warn.conflicts = FALSE)
-# library(stringr)
 @
 %
 <<table_roa_data_step>>=
