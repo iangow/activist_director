@@ -144,7 +144,7 @@ out.table <- function(data, lhs, rhs, caption="Some returns",
 @
 
 %\begin{landscape}
-<<return_data_prep, cache=TRUE, dependson="ret_data_step", results='asis'>>=
+<<return_data_prep, dependson="ret_data_step", results='asis'>>=
 reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
 rhs <- "affiliated"
 @
@@ -178,6 +178,7 @@ caption <- "Panel D: Long-term returns around announcement of appointment."
 lhs.vars <- c("ret_appt_m12p0_sz", "ret_appt_m0p12_sz", "ret_appt_m0p24_sz",
               "ret_appt_m12_annc_sz", "ret_appt_annc_appt_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
+rm(reg.data)
 @
 \addtocounter{table}{1}
 % \clearpage
