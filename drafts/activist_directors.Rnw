@@ -24,7 +24,11 @@
 \geometry{margin=0.8in}
 %\geometry{letterpaper} % ... or a4paper or a5paper or ...
 
-\usepackage[parfill]{parskip}    % Paragraphs begin with empty line rather than indent
+% Paragraphs begin with empty line plus indent
+\edef\restoreparindent{\parindent=\the\parindent\relax}
+\usepackage{parskip}
+\restoreparindent
+
 \usepackage{paralist}
 \usepackage{dcolumn}
 \usepackage[hidelinks]{hyperref}
