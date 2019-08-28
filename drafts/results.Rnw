@@ -49,14 +49,17 @@ This is consistent wtih shareholders assessing directors' performance in the sam
 \subsection{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointment.
 It is possible that those directors appointed by or recruited by activist hedge funds may have different career outcomes from other directors.
-For example, in the case of unaffiliated activist directors, they may find more opportunities in other companies in the future.
-Table \ref{tbl:career} provides results from OLS regressions where the dependent variables are \textit{Other boards(t+1)} through \textit{Other boards(t+4)}, the number of board seats in other companies in year $t+1$ through the next four years based on data from Eqular.
-We separately examine affiliated and unaffiliated activist directors.
-We find that it is the affiliated directors who gain other directorships in particular.
-Holding other things constant, the affiliated directors gain 0.33 directorships in two years after their first appointment as can be found in Column 2.
-The results are possibly driven by other activist campaigns run by the activist hedge fund they are affilaited with; as these activist hedge funds win other board seats in future campaigns, the affiliated directors who still work for the hedge fund would be more likely to have another board seat in those companies.
-Additionally, we find that the unaffiliated directors also gain 0.11 to 0.14 directorships in three or four years after their appointment, respectively, as can be seen in Columns (3) and (4).
-Given that unaffiliated directors who left the board stayed with the board for about two years on average, the effect may come from their picking up another board seat after their departure.
+For example, in the case of unaffiliated activist directors, their experience might lead to more directorships in other companies in the future.
+Or being an activist director may ``taint'' a director and lead to fewer directorships.
+Table \ref{tbl:career} provides results from OLS regressions where the dependent variables are the number of board seats in other companies between one ($\textit{Other boards}_{t+1}$) and four ($\textit{Other boards}_{t+4}$) years after activism.
+In contrast, any ``taint'' that affiliated activist directors might experience more plausibly stems from being directly affiliated with the activist firm than from being an activist director.
+And future directorships likely stem from activism events engaged in by their affiliated firm where board seats are won.
+For these reasons, we examine affiliated and unaffiliated activist directors separately.
+
+We find that one and two years after appointment, affiliated directors have a higher number of other directorships (0.333 more in $t+2$, controlling for other factors).
+Additionally, we find that the unaffiliated directors also have 0.114 to 0.136 more other directorships in three or four years after their appointment, respectively, (see Columns 3 and 4).
+This appears consistent with unaffiliated activist directors having positive career effects from becoming an activist director.
+The two-year delay may stem from the limited ability of directors to add board seats in the short run given concerns about ``busy'' directors.
 
 \section{Activist target selection} \label{sect:selection}
 Prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book), and firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep*{Brav:2010gx}.
