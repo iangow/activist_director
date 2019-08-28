@@ -29,7 +29,7 @@ Affiliated and unaffiliated activist directors who remain on their respective bo
 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine voting outcomes for activist directors.
-Voting in director elections provides a mechanism for shareholders to communicate their satisfaction or dissatisfaction with directors' performance.
+Voting in director elections provides a mechanism for shareholders to communicate their satisfaction or dissatisfaction with each director's performance.
 We examine whether activist directors are regarded differently by shareholders by looking at voting outcomes in director elections upon or following appointment.
 Table 4 provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
 To control for the various factors affecting shareholder support for directors at the time of the meeting, we include meeting fixed effects.
@@ -157,7 +157,7 @@ For each firm-year $t$, we construct indicators for activism in year $t + s$ whe
 We estimate three models.
 Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
 Following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
-To examine a possible \emph{incremental} effect of an activist getting board representation, Model (C) refines model (B) by including indicators for activist director appointments in years ranging from three years prior ($\textit{Affilaited director}_{t-3}$ and $\textit{Unaffilaited director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
+To examine a possible \emph{incremental} effect of an activist getting board representation, Model (C) refines model (B) by including indicators for activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
 
 Table \ref{tbl:roa} presents results.
 The numbers presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
