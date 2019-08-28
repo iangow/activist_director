@@ -34,16 +34,17 @@ We examine whether activist directors are regarded differently by shareholders b
 Table 4 provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
 To control for the various factors affecting shareholder support for directors at the time of the meeting, we include meeting fixed effects.
 Thus this analysis compares voting outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
-Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for the second and third elections, respectively.
+Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for second (third) elections.
 
-The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.495$ ($3.042$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
+The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.497$ ($3.045$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
 These apparent effects are non-trivial: the inter-quartile range of voting support in our sample is $7.24\%$ and the within-meeting standard deviation is $6.77\%$.
 Because ISS recommendations are understood to affect shareholder votes, we include an indicator for a favorable recommendation from ISS for each director in the regression reported in Column 2.
-The estimated coefficient of $16.967\%$ is consistent with ISS having a significant effect on vote outcomes.
-However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.575$ ($2.139$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
+The estimated coefficient of $16.964\%$ is consistent with ISS having a significant effect on vote outcomes.
+However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.576$ ($2.141$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
-However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors. In subsequent elections following activism, shareholder support for activist directors is generally statistically indistinguishable from that of other directors (as reported in Columns 3 and 4 for one year following activism and Columns 5 and 6 for two years after activism event). It is possible that shareholders would assess their performance in the same way once they get on the board regardless of how they have become a director.
+However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections. Shareholder support for activist directors is generally statistically indistinguishable from that of other directors one (Columns 3 and 4) and two (Columns 5 and 6) years following activism.
+This is consistent wtih shareholders assessing directors' performance in the same way regardless of how they became a director.
 
 \subsection{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointment.
