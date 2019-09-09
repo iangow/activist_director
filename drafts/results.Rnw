@@ -78,7 +78,8 @@ One possible explanation is that a more independent board makes a firm more rece
 Turning to Column 2 of Panel A of Table \ref{tbl:selection}, we see evidence that activists are more likely to target a firm with demands for board representation when a greater portion of the firm's shares are held by institutional investors, consistent with these investors being more open to supporting activists.
 Smaller firms are also more likely to be the target for board-related activism. In addition, we find that the board size is associated with the likelihood of being asked for board representation, consistent with the number of directors being a proxy for poor governance and activists targeting firms with worse governance \citep{Yermack:1996wv}.
 
-In Column 3 of Panel A, we additionally find that activists are more likely to gain a board seat when the payout is lower, the institutional holding is higher, return is lower, the firm is smaler, the book-to-market ratio is higher, and the board size is bigger with a higher number of outside directors. We examine whether these activist directors are more or less likely to be affilaited with activists in our next analysis in Panel B.
+In Column 3 of Panel A, we additionally find that activists are more likely to gain a board seat when the payout is lower, the institutional holding is higher, return is lower, the firm is smaler, the book-to-market ratio is higher, and the board size is bigger with a higher number of outside directors.
+We examine whether these activist directors are more or less likely to be affiliated with activists in our next analysis in Panel B.
 
 In Panel B of Table \ref{tbl:selection}, we focus on activism events in examining two questions.
 First, given that a firm has been targeted by activists, what are the factors that are associated with the activist demanding board seats?
@@ -141,50 +142,55 @@ One issue with interpreting the returns for the activist director cases is that 
 % In general, we do not find non-zero risk-adjusted returns over either period for either category.
 
 \section{Firm outcomes} \label{sect:outcomes}
-While stock market reaction provides a useful measure for evaluating the impact of activists, it is not without issues.
+While stock market reactions are useful for evaluating the impact of activists, they are not without issues.
 First, we need to identify the time at which the market learned about the prospect of activist involvement.
 Second, we need the market to estimate the impact of activism in an unbiased manner and impound this estimate into price promptly.
-Finally, even if these difficulties are addressed, the stock market reaction does not provide insight into \emph{how} activists affect corporate policy and firm value.
+Finally, even if these difficulties are addressed, stock market reactions do not provide insight into \emph{how} activists affect corporate policy and firm value.
 
 In this section, we examine the impact of activists, especially activist directors, on a number of outcomes, with a focus on outcomes that are commonly sought by activists.
 
 \subsection{Profitability} \label{sect:roa}
 We first examine the association between activism and operating performance.
-Our empirical approach follows that of \citet{Bebchuk:2013wi}, which is a modification of the approach used in \citet{Brav:2008eu}.
+Our empirical approach follows that of \citet{Bebchuk:2013wi}, which is based on the the approach of \citet{Brav:2008eu}.
 Thus we measure operating performance as return on assets calculated as earnings before interest, taxes, depreciation, and amortization (Compustat item \texttt{oibdp}) divided by lagged total assets (\texttt{at}).
-For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$, where, for example, $\textit{Activist}_{t-3}$ takes the value $1$ for $t=2004$ and a given firm if an activism campaign began in 2007.
+For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$.
+For example, for an activism campaign that began in 2007, $\textit{Activist}_{t-3}$ takes the value $1$ for $t=2004$ and the target firm.
 
 We estimate three models.
 Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
-Following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
+Also following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
 To examine a possible \emph{incremental} effect of an activist getting board representation, Model (C) refines model (B) by including indicators for activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
 
 Table \ref{tbl:roa} presents results.
 The numbers presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
-In both models (A) with industry fixed effects and in models (B) and (C) with firm fixed effects, we find statistically significant increases in \textit{ROA} in all five years.
-These effects are economically significant, with the five-year increase in \textit{ROA} exceeding $2.1\%$ in both models.
+In both model (A) (with industry fixed effects) and model (B) (with firm fixed effects), we find statistically significant increases in \textit{ROA} in all five years.
+These effects are economically significant, with the five-year increase in \textit{ROA} of 3.3\% and 2.1\% in models (A) and (B) respectively.
 
-Looking at the incremental effect of getting an affiliated or an unaffiliated director on the board, we mostly do not detect a statistically significant effect; the incremental effects are statistically indistinguishable from zero.
+In model (C), we look at the incremental effect of having an activist director on the board.
+In general, the incremental effects are statistically indistinguishable from zero.
 If an incremental effect does exist, our failure to detect it statistically may be attributed to multicollinearity between our activism indicators (in many cases, the activist director is appointed in the same year that the activist campaign commences) and a lack of power stemming from a smaller number of observations.
-However, we find weakly significant results for affiliated directors in $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist invervention.
+An additional issue is that activist director appointments are plausibly endogenous with respect to firm performance even \emph{after} activism has commenced:
+Continued poor performance may lead to appointment of one or more actviist directors.
+Notwithstanding these challenges, we find weakly significant results for affiliated directors in $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist invervention.
 
 Having demonstrated an effect of activism on operating performance, we next turn to a range of other outcomes that activists often seek to influence more directly.
 The examples discussed above in Section \ref{sect:lit_review} suggest that activists often seek to influence corporate policy or decisions on a wide range of matters.
 They include matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
 
 \subsection{Divestiture and acquisitions} \label{sect:div_acq}
-The first set of outcomes we examine relate to mergers and acquisitions.
+The first set of outcomes we examine are those related to mergers and acquisitions.
 The examples discussed above suggest that one concern activists have is with excessive spending on acquisitions by target firms.
 Thus, the first outcome we consider is \textit{Acquisition}, an indicator for whether the firm completed any acquisitions in the two years after a given fiscal year.
-\citet{Greenwood:2009kh} suggest that announcement returns associated with activism ``are largely explained by the ability of activists to force target firms into a takeover.'' Thus one outcome we consider, \textit{Acquired}, is an indicator for whether the firm was acquired in the two years after a given fiscal year.
+\citet{Greenwood:2009kh} suggest that announcement returns associated with activism ``are largely explained by the ability of activists to force target firms into a takeover.''
+Thus the second outcome we consider, \textit{Acquired}, is an indicator for whether the firm was acquired in the two years after a given fiscal year.
 Finally, activists often urge firms to divest businesses.
 Thus our third outcome is \textit{Divestiture}, an indicator for whether the firm divested significant assets in the two years after a given fiscal year.
 We regress these indicators on industry and year dummies as well as the following controls (as described in Section \ref{sect:desc_stats}), \textit{Analyst}, \textit{Institutional}, \textit{Market value}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Outside percent}, \textit{Age}, \textit{Tenure}, and \textit{Staggered board}.
-% TODO Find out exactly what Divestiture measures.
 
 Table \ref{tbl:div_acq} presents these results.
 Examining the first column in Table \ref{tbl:div_acq}, we see the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.102$ and $-0.036$, respectively).
-On the other hand, activism of the forms \textit{Other activism} is positively associated with being acquired (coefs $0.128$), but we do not find evidence when an activist director is appointed (the difference between \textit{Affiliated director} and \textit{Other activism} and the difference between \textit{Unaffiliated director} and \textit{Other activism} are statistically significant at the $1\%$ level).
+While the coefficients on \textit{Affiliated director} and \textit{Unaffiliated director} are greater in magnitude, they are not statistically distinguishable from that on \textit{Other activism}.
+On the other hand, looking at the second column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$) (the differences in the activism coefficients  are statistically significant at the $1\%$ level).
 Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.121$).
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
 
