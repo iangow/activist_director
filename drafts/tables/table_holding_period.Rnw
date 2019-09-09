@@ -18,7 +18,7 @@ library(dplyr, warn.conflicts = FALSE)
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
 
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")

@@ -9,12 +9,12 @@ Because we focus our analysis on activist directors in their first year, the app
 Of the 594,300 observations (director-firm-years) in our sample, 56,455 relate to new directors where there was no activism targeting the firm in the year of appointment.
 The average age of these directors is 62.70, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management.
 See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
-Additional 1,560 observations relate to new directors where there was activist targeting the firm in the year of appointment, but board seats were not demanded by, nor granted to, activists.
-The average age of these directors is 61.15, 14\% of them are female, 73\% are appointed to committees in their first year, and 17\% are denoted as audit committee financial experts.
+And an additional 1,560 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were neither demanded by nor granted to activists.
+The average age of these directors is 61.15, 11\% of them are female, 74\% are appointed to committees in their first year, and 40\% are denoted as audit committee financial experts.
 These directors share the same chracteristics as other new directors.
 
-We identify 809 activist directors (of our full sample of \Sexpr{dirs$all_dirs}) on Equilar; we find that some activist directors leave within a year (e.g., if the firm is acquired or the director leaves the board in a short period of time) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
-% Actually some of the 678 directors were categorized as "activism" or "board demand" depending on when they were appointed as directors.
+From our full sample of \Sexpr{dirs$all_dirs}, we identify 809 activist directors on Equilar.
+One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
 
 In general, unaffiliated directors are similar to other new directors on most dimensions except that there is a noticeably smaller number who are female ($0.06$ versus $0.14$).
 However, affiliated directors (i.e., employees or principals of members of the activist group) appear different: they are younger (52 years of age), rarely female (just \emph{1\%} of affiliated activist directors are women).
@@ -109,37 +109,33 @@ While the estimated median holding period for other activism events is 790 days 
 The results suggest that activists would invest in the company for almost one more year if there is an affiliated director on the board.
 From announcement to exit, \textit{Affiliated director} activists hold the stock for 1,002 days (2.7 years) and for 744 days (2.0 years) from the first appointment of an activist director.
 
-To put these statistics into perspective, it is helpful to consider some benchmarks.
+Some benchmarks help to put these statistics into perspective.
 \citet{Cremers:2013vt} examine the holding period of various kinds of investors.
 They examine four categories of investors (banks, pension funds, investment companies, and others) and find that pension funds have the longest duration at 2 years.
 They also examine the holdings of some institutional investors and provide only one example of an investor with a duration greater than three years, namely the well-known long-term investor, Berkshire Hathaway, which had a duration of between 3 and 4 years during our sample period.
 Another reference point is provided by the \citet{Beyer:2014niri} survey of investor relation professionals, who consider $2.8$ years as a cutoff beyond which investors can be considered ``long-term'' investors.
-These benchmarks suggest the holding period of activists getting representation on boards provides them with a relatively long investment horizon.
+These benchmarks suggest that the holding period of activists getting representation on boards provides them with a relatively long investment horizon.
 
 \section{Stock returns} \label{sect:returns}
-We follow prior research in examining the impact of activism on stock returns and examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
+We follow prior research in studying the impact of activism on stock prices.
+We examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
 We begin by looking at short-window returns around the announcement of activism using a window beginning 1 day before and ending 1 day after the announcement of activism.
 For these short-window tests, we consider raw, market-adjusted, and size-adjusted returns ($R$, $R^{MKT}$, and $R^{SZ}$, respectively).
 Results are reported in Panel A of Table \ref{tbl:returns}.
 Consistent with prior research, \citep{Brav:2008eu}, we find significant announcement-period returns for activism events, with market-adjusted returns ranging from 3\% to 4\% for the three categories.
 Note that at the time of the announcement of activism, the market would not know which category the activism would ultimately fall into.
-We get very similar results when we consider returns windows such as $(-10, +10)$ days.
+We get very similar results when we consider returns over longer windows (e.g., $(-10, +10)$ days).
 
 In Panel B of Table \ref{tbl:returns}, we examine the market reaction around the settlement of activism events.
-Many activism campaigns end up in settlement, and its announcement return can show the investors' expectation and satisfaction with the settlement results.
-For 662 settlement cases we could identify, we find a positive and significant market reaction around the settlement dates, especially for the activist director (\textit{Affiliated director} and \textit{Unaffiliated director}) cases.
-It suggests that investors may have higher hopes for those cases where activist directors are appointed or nominated as a result of the settlement between the management and the activist.
+Many activism campaigns involvement settlements, and stock market reactions to settlement announcements provide insights into how investors' views on their effects.
+For the 662 settlements in our sample, we find a positive and significant market reaction around the settlement dates, especially for the activist director ($2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.8\%$, $p < 0.01$, for \textit{Unaffiliated director}) cases.
 
-In Panel C of Table \ref{tbl:returns}, we examine the market reaction around the appointment of activist director.
-We also find a positive and significant market reaction around this date, and the positive returns for \textit{Affiliated director} is slightly higher, suggesting that investors may have higher expectation with the hedge fund affiliated directors.
+In Panel C of Table \ref{tbl:returns}, we examine the market reaction around the appointment of activist directors.
+We find positive and significant market reactions to these events: $2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.6\%$, $p < 0.01$, for \textit{Unaffiliated director})
 
 In Panel D of Table \ref{tbl:returns}, we examine returns over the 12-month and 24-month periods from the appointment of activist directors.
-% Due to the greater importance of controlling for risk over longer periods, we also consider Fama-French abnormal returns, using both equal-weighted and value-weighted returns for the associated benchmark portfolios.
 We do not find positive returns for both \textit{Affiliated director} and \textit{Unaffiliated director}, which are in contrast to the short-term results.
 One issue with interpreting the returns for the activist director cases is that the director appointments generally occur well after the announcement of activism events.
-% Thus we consider longer-window returns for activist director cases beginning from the appointment of these directors to the board.
-% Results are reported in Panels E (12-month returns) and F (36-month returns) of Table \ref{tbl:returns}.
-% In general, we do not find non-zero risk-adjusted returns over either period for either category.
 
 \section{Firm outcomes} \label{sect:outcomes}
 While stock market reactions are useful for evaluating the impact of activists, they are not without issues.
@@ -223,7 +219,7 @@ Overall, the evidence in Table \ref{table:fin} provides fairly limited evidence 
 The most significant effect is on the level of payout in the case of affiliated directors.
 
 \subsection{Investment} \label{sect:investment}
-In this last section, we examine the association between activism and three areas of spending commonly regarded as investment: capital expenditures, research and development (R\&D), and advertising. Anecdotally, we see many activist investors asking for the reduction of such expenditure so we empirically test the effect here.
+In this last section, we examine the association between activism and three areas of spending commonly regarded as investment: capital expenditures, research and development (R\&D), and advertising. A number of activism events involve activist investors seeking the reduction of such expenditures and we examine this empirically here.
 We measure investment using the following proxies:
 \textit{CapEx}, measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets;
 \textit{R\&D}, measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets; and,
@@ -231,13 +227,13 @@ We measure investment using the following proxies:
 We regress these variables on their year-$t$ values, industry and year dummies, as well as controls used in other regressions (see Section \ref{sect:desc_stats}).
 
 Results are presented in Table \ref{tbl:invest}.
-We find negative associations between having affiliated activist directors and capital expenditure.
-In \textit{Affiliated director} cases, we find significant and negative effects on \textit{CapEx}.
-We also find a negative association with \textit{Affiliated director} and R\&D spending (coef. $-0.007$) in addition to \textit{Unaffiliated director} cases (coef. $-0.009$). The differences of coefficients from \textit{Other activism} are significant for both categories.
-In the case of advertisement spending, we do not find significant decreases for both \textit{Affiliated director} and \textit{Unaffiliated direcotr} cases.
+We find a negative association between  \textit{Affiliated director} and \textit{CapEx}.
+We also find negative associations between R\&D spending  and activist directors (coefs. $-0.007$ and $-0.009$ for \textit{Affiliated director} and \textit{Unaffiliated director}, respectively).
+The differences between these coefficients and that on \textit{Other activism} are weakly significant ($p < 0.10$) for both categories.
+In the case of advertising spending, we do not find significant associations for either \textit{Affiliated director} or \textit{Unaffiliated director}.
 
-Overall, the evidence in Table \ref{tbl:invest} is consistent with activist directors playing a significant role in curbing expenditures on capital investment and research and development (R\&D).
+Overall, the evidence in Table \ref{tbl:invest} is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
 However, it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, underinvestment and a focus on the short term.
 
-Based on the results on acquisitions, capital struecture, and investments above, we conclude that the activist directors are more interested in increasing shareholder value through conducting internal changes in corporate policites; they influence the target companies to take out more debt, cut off R\&D and Capex spending, and push the firms into divestiture, rather than pushing the target firms into an external market and sell as the corporate raiders have done decades ago.
-\footnote{We additionally examined whether having two or more activist directors would make a difference and find that CEO is more likely to leave, payout is more likely to increase, and R\&D expense is more likely to decrease following the appointment of two or more \textit{Affiliated directors}.}
+%Based on the results on acquisitions, capital structure, and investments above, we conclude that the activist directors are more interested in increasing shareholder value through conducting internal changes in corporate policies; they influence the target companies to take out more debt, cut off R\&D and Capex spending, and push the firms into divestiture, rather than pushing the target firms into an external market and sell as the corporate raiders have done decades ago.
+%\footnote{We additionally examined whether having two or more activist directors would make a difference and find that CEO is more likely to leave, payout is more likely to increase, and R\&D expense is more likely to decrease following the appointment of two or more \textit{Affiliated directors}.}
