@@ -195,7 +195,7 @@ Finally, divestitures are positively associated with activism whether or not the
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
 
 \subsection{CEO turnover and compensation} \label{sect:ceo}
-We next consider the association of activism with CEO turnover and compensation.
+We next consider the associations between activism and CEO turnover and compensation.
 We code the indicator \textit{CEO turnover} equal to $1$ if the CEO at the end of year $t$ is no longer CEO (and the company still exists) in year $t+2$.
 For total CEO pay, we regress total CEO compensation in year $t+2$ on controls, including CEO compensation in year $t$, and indicators for each category of activism.
 We regress these variables on their lagged (year $t$) values, industry and year dummies, as well as controls used in other regressions (see Section \ref{sect:desc_stats}).
@@ -209,18 +209,18 @@ Overall, while activism events are generally associated with higher likelihood o
 
 \subsection{Capital structure and payouts} \label{sect:financing}
 
-Among the most common demands activists make are requests for firms to reduce cash holdings, to increase leverage, and to increase the payment of dividends or the buybacks.
-In Table \ref{table:fin}, we examine the association between activism and measures of cash holding, leverage, and shareholder payout (dividends and share repurchases).
-As outcome variables, we consider \textit{Cash}, calculated as the ratio of total cash and short-term investments to the book value of total assets; \textit{Leverage}, measured as the ratio of book value of debt to the sum of the book value of debt and equity; and, \textit{Payout}, measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
-We regress these variables on their year-$t$ values, industry and year dummies, as well as controls used in other regressions (see Section \ref{sect:desc_stats}).
+Among the most common demands activists make are requests for firms to reduce cash holdings, to increase leverage, and to increase dividends or share buybacks.
+In Table \ref{table:fin}, we examine the association between activism and measures of cash holding (\textit{Cash}, calculated as the ratio of total cash and short-term investments to the book value of total assets), leverage (\textit{Leverage}, measured as the ratio of book value of debt to the sum of the book value of debt and equity); and shareholder payout (\textit{Payout}, measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$).
+We regress these three outcome variables on their year-$t$ values, industry and year dummies, as well as controls used in other regressions (see Section \ref{sect:desc_stats}).
 
 We find that having an activist director is not significantly associated with reduced cash holdings even though the coefficients are all negative across all categories of activism.
-Also, we find that leverage is positively associated with \textit{Affiliated director} (coef. $0.037$, $p < 0.10$) while the coefficients are all positive across all categories of activism.
+Also, we find that leverage is positively associated with \textit{Affiliated director} (coef. $0.037$, $p < 0.10$).
 Additionally, \textit{Affiliated director} (coef. $0.147$, $p < 0.01$) is associated with increased payout.
 Here, the difference in coefficient from \textit{Other activism} is positive and significant at 1$\%$, suggesting that affiliated activist director appointment is positively associated with higher payout than had there been no affiliated activist director appointment.
 Furthermore, the coefficient for \textit{Affiliated director} is significantly higher than the coefficient for \textit{Unaffiliated director} at 10\%.
-It is interesting to notice that the lower level of payout was associated with the higher likelihood of gaining a board seat for activists, especially for \textit{affiliated director}.
-Overall, the evidence in Table \ref{table:fin} points to activist directors being associated with the kinds of capital structure and payout changes demands frequently demanded by activists and the effect is especially significant for the level of payout in the case of affiliated directors.
+It is interesting to note that the lower level of payout was associated with the higher likelihood of gaining a board seat for activists, especially \textit{Affiliated director}.
+Overall, the evidence in Table \ref{table:fin} provides fairly limited evidence of activist directors being associated with the kinds of capital structure and payout changes demands frequently demanded by activists.
+The most significant effect is on the level of payout in the case of affiliated directors.
 
 \subsection{Investment} \label{sect:investment}
 In this last section, we examine the association between activism and three areas of spending commonly regarded as investment: capital expenditures, research and development (R\&D), and advertising. Anecdotally, we see many activist investors asking for the reduction of such expenditure so we empirically test the effect here.
