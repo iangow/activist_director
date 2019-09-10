@@ -17,7 +17,7 @@ From our full sample of \Sexpr{dirs$all_dirs}, we identify 809 activist director
 One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
 
 In general, unaffiliated directors are similar to other new directors on most dimensions except that there is a noticeably smaller number who are female ($0.06$ versus $0.14$).
-However, affiliated directors (i.e., employees or principals of members of the activist group) appear different: they are younger (52 years of age), rarely female (just \emph{1\%} of affiliated activist directors are women).
+However, affiliated directors (i.e., employees or principals of members of the activist group) appear to be different: they are younger (52 years of age), rarely female (just \emph{1\%} of affiliated activist directors are women).
 While activist directors appear more likely to become members of the compensation committee in their first year of service ($0.40$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.33$), especially affiliated directors ($0.25$), than non-activism new directors ($0.41$).
 
 Panel B of Table \ref{tbl:dir_chars} presents data on the tenure of activist directors.
@@ -43,7 +43,8 @@ The estimated coefficient of $16.964\%$ is consistent with ISS having a signific
 However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.576$ ($2.141$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
-However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections. Shareholder support for activist directors is generally statistically indistinguishable from that of other directors one (Columns 3 and 4) and two (Columns 5 and 6) years following activism.
+However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections.
+Shareholder support for activist directors is generally statistically indistinguishable from that of other directors one (Columns 3 and 4) and two (Columns 5 and 6) years following activism.
 This is consistent wtih shareholders assessing directors' performance in the same way regardless of how they became a director.
 
 \subsection{Career outcomes} \label{sect:career}
@@ -63,10 +64,10 @@ The two-year delay may stem from the limited ability of directors to add board s
 
 \section{Activist target selection} \label{sect:selection}
 Prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book), and firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep*{Brav:2010gx}.
-We apply this analysis to our sample and examine whether the factors that are associated with activists seeking, or getting, board representation differ from those associated with activism in general.
+We extend this analysis to our sample and examine whether the factors that are associated with activists seeking, or getting, board representation differ from those associated with activism in general.
 
 We first examine the circumstances in which firms find themselves as the targets of activists.
-Panel A of Table \ref{tbl:selection} reports the results of logistic regressions where the dependent variables are indicators for activism and the sample is the universe of firm-years meeting our sample requirements for the years 2004 to 2016.
+Panel A of Table \ref{tbl:selection} reports the results of logistic regressions where the dependent variables are indicators for activism.
 The first column looks at the probability of being targeted for any kind of activism event, the second column examines the determinants of an activist making demands for board representation, and the third column examines the determinants of an activist getting representation on a firm's board.\footnote{Note that, in contrast to our other analyses, for the purpose of this table, our activism indicators are \emph{not} mutually exclusive.
 That is, \textit{Activism} includes cases in any of the categories \textit{Non-board activism}, \textit{Board demand}, and \textit{Activist director}, while \textit{Board demand} includes cases of \textit{Activist director}, as well as cases where the board demands are not successful}.
 Focusing on Column 1 of Panel A, we find that book-to-market is positively associated with activism, consistent with prior research \citep{Brav:2008eu} that find activists targeting undervalued firms.
@@ -118,8 +119,8 @@ These benchmarks suggest that the holding period of activists getting representa
 
 \section{Stock returns} \label{sect:returns}
 We follow prior research in studying the impact of activism on stock prices.
-We examine whether stock market reactions to activism differ by the three categories of activism: \textit{Activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
-We begin by looking at short-window returns around the announcement of activism using a window beginning 1 day before and ending 1 day after the announcement of activism.
+We examine whether stock market reactions to activism differ by the three categories of activism: \textit{Other activism}, \textit{Affiliated director}, and \textit{Unaffiliated director}.
+We begin by looking at returns around the announcement of activism using windows beginning 1 day before and ending 1 day after the announcement of activism.
 For these short-window tests, we consider raw, market-adjusted, and size-adjusted returns ($R$, $R^{MKT}$, and $R^{SZ}$, respectively).
 Results are reported in Panel A of Table \ref{tbl:returns}.
 Consistent with prior research, \citep{Brav:2008eu}, we find significant announcement-period returns for activism events, with market-adjusted returns ranging from 3\% to 4\% for the three categories.
@@ -127,7 +128,7 @@ Note that at the time of the announcement of activism, the market would not know
 We get very similar results when we consider returns over longer windows (e.g., $(-10, +10)$ days).
 
 In Panel B of Table \ref{tbl:returns}, we examine the market reaction around the settlement of activism events.
-Many activism campaigns involvement settlements, and stock market reactions to settlement announcements provide insights into how investors' views on their effects.
+Many activism campaigns involve settlements, and stock market reactions to settlement announcements provide insights into how investors' views on their effects.
 For the 662 settlements in our sample, we find a positive and significant market reaction around the settlement dates, especially for the activist director ($2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.8\%$, $p < 0.01$, for \textit{Unaffiliated director}) cases.
 
 In Panel C of Table \ref{tbl:returns}, we examine the market reaction around the appointment of activist directors.
@@ -154,7 +155,7 @@ For example, for an activism campaign that began in 2007, $\textit{Activist}_{t-
 
 We estimate three models.
 Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
-Also following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
+Also, following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
 To examine a possible \emph{incremental} effect of an activist getting board representation, Model (C) refines model (B) by including indicators for activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
 
 Table \ref{tbl:roa} presents results.
