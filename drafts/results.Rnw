@@ -130,12 +130,14 @@ We get very similar results when we consider returns over longer windows (e.g., 
 In Panel B of Table \ref{tbl:returns}, we examine the market reaction around the settlement of activism events.
 Many activism campaigns involve settlements, and stock market reactions to settlement announcements provide insights into how investors' views on their effects.
 For the 662 settlements in our sample, we find a positive and significant market reaction around the settlement dates, especially for the activist director ($2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.8\%$, $p < 0.01$, for \textit{Unaffiliated director}) cases.
+It suggests that investors have high hopes for activist director nomination or appointment which is a result of the settlement between management and activist.
 
 In Panel C of Table \ref{tbl:returns}, we examine the market reaction around the appointment of activist directors.
-We find positive and significant market reactions to these events: $2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.6\%$, $p < 0.01$, for \textit{Unaffiliated director})
+The appointment can be a result of the settlement or the proxy voting.
+Similar to the settlement returns above, we find positive and significant market reactions to these events as well: $2.2\%$, $p < 0.01$, for \textit{Affiliated director} and $1.6\%$, $p < 0.01$, for \textit{Unaffiliated director}.
 
 In Panel D of Table \ref{tbl:returns}, we examine returns over the 12-month and 24-month periods from the appointment of activist directors.
-We do not find positive returns for both \textit{Affiliated director} and \textit{Unaffiliated director}, which are in contrast to the short-term results.
+We do not find positive returns for both \textit{Affiliated director} and \textit{Unaffiliated director}, which are in contrast to the short-term results above.
 One issue with interpreting the returns for the activist director cases is that the director appointments generally occur well after the announcement of activism events.
 
 \section{Firm outcomes} \label{sect:outcomes}
