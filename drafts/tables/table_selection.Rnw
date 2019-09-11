@@ -146,7 +146,7 @@ prob_activist_director <-
 Panel A presents logit regression where the dependent variables are indicators for
 being targeted for activism in any category
 (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
-being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2) and activists getting board seats (\textit{Activist director}, Column 3).
+being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
 Sample includes firm-years with and without activism.
     \newline}
 %  \end{flushleft}
@@ -196,7 +196,7 @@ rm(t3.pa)
         \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists.
+Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
   \newline}
 %  \end{flushleft}
   \end{minipage}
