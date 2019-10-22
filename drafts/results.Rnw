@@ -36,11 +36,11 @@ To control for the various factors affecting shareholder support for directors a
 Thus this analysis compares voting outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
 Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for second (third) elections.
 
-The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.497$ ($3.045$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
+The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.359$ ($3.008$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
 These apparent effects are non-trivial: the inter-quartile range of voting support in our sample is $7.24\%$ and the within-meeting standard deviation is $6.77\%$.
 Because ISS recommendations are understood to affect shareholder votes, we include an indicator for a favorable recommendation from ISS for each director in the regression reported in Column 2.
-The estimated coefficient of $16.964\%$ is consistent with ISS having a significant effect on vote outcomes.
-However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.576$ ($2.141$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
+The estimated coefficient of $16.694\%$ is consistent with ISS having a significant effect on vote outcomes.
+However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.439$ ($2.092$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
 However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections.
@@ -187,10 +187,10 @@ Thus our third outcome is \textit{Divestiture}, an indicator for whether the fir
 We regress these indicators on industry and year dummies as well as the following controls (as described in Section \ref{sect:desc_stats}), \textit{Analyst}, \textit{Institutional}, \textit{Market value}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Outside percent}, \textit{Age}, \textit{Tenure}, and \textit{Staggered board}.
 
 Table \ref{tbl:div_acq} presents these results.
-Examining the first column in Table \ref{tbl:div_acq}, we see the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.102$ and $-0.036$, respectively).
+Examining the first column in Table \ref{tbl:div_acq}, we see the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.098$ and $-0.037$, respectively).
 While the coefficients on \textit{Affiliated director} and \textit{Unaffiliated director} are greater in magnitude, they are not statistically distinguishable from that on \textit{Other activism}.
 On the other hand, looking at the second column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$) (the differences in the activism coefficients  are statistically significant at the $1\%$ level).
-Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.121$).
+Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.125$).
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
 
 \subsection{CEO turnover and compensation} \label{sect:ceo}
