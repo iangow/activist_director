@@ -14,7 +14,7 @@ The long-term shareholding combined with positive stock-price and operating perf
 
 Activist directors appear to be associated with significant strategic and operational changes in target firms.
 We find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced capital expenditure and R\&D spending.
-The estimated effects are generally greater when activists obtain board representation, especially with increases in payout and reduction in R\&D spending for affiliated directors, consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
+The estimated effects are greater when activists obtain board representation, especially with increases in payout and reduction in R\&D spending for affiliated directors, consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
 
 Our results do not allow us to conclude that these actions themselves are value-enhancing even if they are concomitant with better operating performance and stock returns. Moreover, the data available to us do not permit causal inferences. Despite these limitations, the range of associations that we document suggest that gaining board positions is an important mechanism that allows hedge fund activists to have an impact in ways that line up with the demands that they make of companies.
 
