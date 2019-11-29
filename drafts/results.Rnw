@@ -10,8 +10,7 @@ Of the 594,300 observations (director-firm-years) in our sample, 56,455 relate t
 The average age of these directors is 62.70, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management.
 See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
 Additionally, in our sample, 1,560 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were neither demanded by nor granted to activists.
-The average age of these directors is 61.15, 11\% of them are female, 74\% are appointed to committees in their first year, and 17\% are denoted as audit committee financial experts.
-These directors share the same chracteristics as other new directors.
+These directors share the same chracteristics as other new directors; the average age of these directors is 61.15, 11\% of them are female, 74\% are appointed to committees in their first year, and 17\% are denoted as audit committee financial experts.
 
 From our full sample of \Sexpr{dirs$all_dirs} activist directors hand-collected, we identify 809 of them on Equilar.
 One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
@@ -52,7 +51,7 @@ This is consistent wtih shareholders assessing directors' performance in the sam
 In this section, we examine the career outcomes of activist directors following their appointment.
 It is possible that those directors appointed by or recruited by activist hedge funds may have different career outcomes from other directors.
 For example, in the case of unaffiliated activist directors, their experience might lead to more directorships in other companies in the future.
-Or being an activist director may ``taint'' a director and lead to fewer directorships.
+Or being associated with activism may ``taint'' a director and lead to fewer directorships.
 In contrast, any ``taint'' that affiliated activist directors might experience more plausibly stems from being directly affiliated with the activist firm than from being an activist director.
 And future directorships likely stem from activism events engaged in by their affiliated firm where board seats are won.
 For these reasons, we examine affiliated and unaffiliated activist directors separately.
@@ -193,7 +192,7 @@ While the coefficients on \textit{Affiliated director} and \textit{Unaffiliated 
 On the other hand, looking at the second column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$) (the differences in the activism coefficients  are statistically significant at the $1\%$ level).
 Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.125$).
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
-While \citep[362]{Greenwood:2009kh} identifies the ``ability of activists to force target firms into a takeover'' as an important mechanism for generating returns, our finding suggests that their goal is not necessarily the case when activists get board representation.
+While \citet[362]{Greenwood:2009kh} identifies the ``ability of activists to force target firms into a takeover'' as an important mechanism for generating returns, our finding suggests that their goal is not necessarily the case when activists get board representation.
 
 \subsection{CEO turnover and compensation} \label{sect:ceo}
 We next consider the association between activism and CEO turnover and compensation.
