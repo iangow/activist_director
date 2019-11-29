@@ -36,11 +36,11 @@ To control for the various factors affecting shareholder support for directors a
 Thus this analysis compares voting outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
 Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for second (third) elections.
 
-The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.361$ ($3.010$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
+The results in Column 1 show that activist directors get significantly higher shareholder support than other directors: $3.36$ ($3.01$) percentage points higher in the case of unaffiliated (affiliated) activist directors.
 These apparent effects are non-trivial: the inter-quartile range of voting support in our sample is $7.24\%$ and the within-meeting standard deviation is $6.77\%$.
 Because ISS recommendations are understood to affect shareholder votes, we include an indicator for a favorable recommendation from ISS for each director in the regression reported in Column 2.
-The estimated coefficient of $16.694\%$ is consistent with ISS having a significant effect on vote outcomes.
-However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.440$ ($2.094$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
+The estimated coefficient of $16.69\%$ is consistent with ISS having a significant effect on vote outcomes.
+However, even controlling for ISS recommendations, there is greater shareholder support for both unaffiliated and affiliated directors: $2.44$ ($2.09$) percentage points higher in the case of unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly codetermined with vote outcomes.
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
 However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections.
