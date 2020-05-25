@@ -12,7 +12,7 @@ pg <- dbConnect(RPostgres::Postgres())
 rs <- dbExecute(pg, "SET work_mem = '3GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
 
-permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+permnos <- tbl(pg, "permnos")
 risk.vavoteresults <- tbl(pg, "vavoteresults")
 risk.issrec <- tbl(pg, "issrec")
 activist_directors <- tbl(pg, "activist_directors")

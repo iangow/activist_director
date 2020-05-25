@@ -139,7 +139,7 @@ holding_data <- dbGetQuery(pg, "
   cusips AS (
       SELECT DISTINCT cusip, period_of_report, gvkey
       FROM activist_holdings AS a
-      INNER JOIN factset.permnos AS b
+      INNER JOIN permnos AS b
       ON a.cusip=b.ncusip
       INNER JOIN crsp.ccmxpf_linktable AS c
       ON b.permno=c.lpermno
@@ -181,7 +181,7 @@ holding_data <- dbGetQuery(pg, "
         FROM activist_holdings_merged AS a
         LEFT JOIN activist_holdings_link AS b
         ON a.cusip=b.cusip AND a.period_of_report=b.period_of_report
-        LEFT JOIN factset.permnos AS c
+        LEFT JOIN permnos AS c
         ON a.cusip=c.ncusip
 
       UNION

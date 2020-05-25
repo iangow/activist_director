@@ -8,7 +8,7 @@ rs <- dbExecute(pg, "SET work_mem='10GB';")
 
 filings <- tbl(pg, "filings")
 filing_stock_records <- tbl(pg, "filing_stock_records")
-permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+permnos <- tbl(pg, "permnos")
 funda <- tbl(pg, sql("SELECT * FROM comp.funda"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
 

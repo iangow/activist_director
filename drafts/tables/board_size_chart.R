@@ -27,7 +27,7 @@ FINAL AS (
     FROM lead_lags AS a
     INNER JOIN equilar_hbs.company_financials AS b
     ON a.company_id=b.company_id
-    INNER JOIN factset.permnos AS c
+    INNER JOIN activist_director.permnos AS c
     ON substr(b.cusip,1,8)=c.ncusip
     INNER JOIN activist_director.outcome_controls AS d
     ON c.permno=d.permno AND a.period=d.datadate

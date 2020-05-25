@@ -15,7 +15,7 @@ activist_directors <- tbl(pg, "activist_directors")
 activist_director_equilar <- tbl(pg, "activist_director_equilar")
 activism_events <- tbl(pg, "activism_events")
 
-permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+permnos <- tbl(pg, "permnos")
 
 # Identify companies' first years + lag_period
 company_first_years <-

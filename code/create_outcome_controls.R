@@ -10,7 +10,7 @@ rs <- dbGetQuery(pg, "SET work_mem='8GB'")
 
 # Get all votes on directors that were not withdrawn and which have meaningful vote data
 
-permnos <- tbl(pg, sql("SELECT * FROM factset.permnos"))
+permnos <- tbl(pg, "permnos")
 activism_events <- tbl(pg, "activism_events")
 activist_director.inst <- tbl(pg, "inst")
 equilar_w_activism <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_activism"))
