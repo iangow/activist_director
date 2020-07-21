@@ -1,5 +1,5 @@
 # Import Dataset from Google Drive ----
-library(googlesheets)
+library(googlesheets4)
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 
@@ -9,29 +9,32 @@ library(DBI)
 # gs_auth(new_user = TRUE)
 # gs_ls()
 # to authorize googlesheets to access your Google Sheets.
-gs <- gs_key("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
+gs <- read_sheet("1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI")
 
 #### Sheet 1 ####
 activist_directors_1 <-
-    gs_read(gs, ws = "activist_directors") %>%
+    read_sheet("https://docs.google.com/spreadsheets/d/1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI", range="activist_directors") %>%
     filter(!is.na(appointment_date)) %>%
     filter(!is.na(independent)) %>%
+    mutate(announce_date=as.Date(announce_date),
+           issue_cik=as.integer(as.character(issuer_cik))) %>%
     mutate(source = 1L)
 
 #### Sheet 2 ####
 activist_directors_2 <-
-    gs_read(gs, ws = "2013-2015 + Extra") %>%
+    read_sheet("https://docs.google.com/spreadsheets/d/1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI", range="2013-2015 + Extra") %>%
     filter(!is.na(appointment_date)) %>%
     filter(!is.na(independent)) %>%
-    mutate(issuer_cik=as.integer(issuer_cik)) %>%
+    mutate(issuer_cik=as.integer(as.character(issuer_cik)),
+           bio=as.character(bio)) %>%
     mutate(source = 2L)
 
 #### Sheet 3 ####
 activist_directors_3 <-
-    gs_read(gs, ws = "Extra2") %>%
+    read_sheet("https://docs.google.com/spreadsheets/d/1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI", range="Extra2") %>%
     filter(!is.na(appointment_date)) %>%
     filter(!is.na(independent)) %>%
-    mutate(issuer_cik=as.integer(issuer_cik)) %>%
+    mutate(issue_cik=as.integer(as.character(issuer_cik))) %>%
     mutate(source = 3L)
 
 pg <- dbConnect(RPostgreSQL::PostgreSQL())
