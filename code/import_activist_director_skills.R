@@ -2,7 +2,7 @@ library(tidyverse)
 library(dplyr)
 library(readxl)
 
-activist_director_skills <- read_xlsx("~/dropbox/research/activism/activist_director/data/activist_director_skills.xlsx")
+activist_director_skills <- read_xlsx("~/activist_director/data/activist_director_skills.xlsx")
 names(activist_director_skills)[14] <- "_url_"
 names(activist_director_skills) <- tolower(names(activist_director_skills))
 
