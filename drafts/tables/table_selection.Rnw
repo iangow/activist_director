@@ -3,6 +3,8 @@
 
 <<selection_libraries, cache=FALSE, include=FALSE>>=
 require(stargazer)
+library(RPostgres)
+library(RPostgreSQL)
 library(dplyr, warn.conflicts = FALSE)
 @
 
@@ -69,6 +71,46 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
 
 outcome_controls <- tbl(pg, "outcome_controls")
+activism_events <- tbl(pg, "activism_events")
+activist_demands <- tbl(pg, "demands")
+activist_director_skills <- dbGetQuery(pg, "
+WITH SAMPLE AS (
+    SELECT DISTINCT b.campaign_ids, a.permno, a.first_name, a.last_name, a.independent,
+            academic, company_business, compensation, entrepreneurial,
+            finance_accounting, governance, government_policy, international, leadership,
+            legal, management, manufacturing, marketing,
+            outside_board, outside_executive, risk_management, scientific,
+            strategic_planning, sustainability, technology
+    FROM activist_director.activist_director_skills AS a
+    LEFT JOIN activist_director.demands AS b
+    ON a.campaign_id=any(b.campaign_ids)
+    ORDER BY permno, campaign_ids, last_name)
+
+SELECT permno, campaign_ids,
+      BOOL_OR(academic) AS academic,
+      BOOL_OR(company_business) AS company_business,
+      BOOL_OR(compensation) AS compensation,
+      BOOL_OR(entrepreneurial) AS entrepreneurial,
+      BOOL_OR(finance_accounting) AS finance_accounting,
+      BOOL_OR(governance) AS governance,
+      BOOL_OR(government_policy) AS government_policy,
+      BOOL_OR(international) AS international,
+      BOOL_OR(leadership) AS leadership,
+      BOOL_OR(legal) AS legal,
+      BOOL_OR(management) AS management,
+      BOOL_OR(manufacturing) AS manufacturing,
+      BOOL_OR(marketing) AS marketing,
+      BOOL_OR(outside_board) AS outside_board,
+      BOOL_OR(outside_executive) AS outside_executive,
+      BOOL_OR(risk_management) AS risk_management,
+      BOOL_OR(scientific) AS scientific,
+      BOOL_OR(strategic_planning) AS strategic_planning,
+      BOOL_OR(sustainability) AS sustainability,
+      BOOL_OR(technology) AS technology
+FROM SAMPLE
+GROUP BY permno, campaign_ids
+ORDER BY permno, campaign_ids
+")
 
 min_date <-
     outcome_controls %>%
@@ -90,6 +132,27 @@ prob_activist_director <-
     filter(datadate >= min_date_sql) %>%
     collect()
 
+prob_activist_demands <-
+  outcome_controls %>%
+  left_join(activism_events) %>%
+  left_join(activist_demands) %>%
+  mutate(category = coalesce(category, "_none"),
+       activism = coalesce(activism, FALSE),
+       activist_demand = coalesce(activist_demand, FALSE),
+       activist_director = coalesce(activist_director, FALSE),
+       affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
+#           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
+       analyst = coalesce(analyst, 0),
+       inst = coalesce(inst, 0)) %>%
+  filter(datadate >= min_date_sql) %>%
+  collect()
+
+activist_demands <- activist_demands %>% collect()
+
+prob_activist_director_skills <-
+    activist_demands %>%
+    left_join(activist_director_skills)
+
 rs <- dbDisconnect(pg)
 
 win01 <- function(x) psych::winsor(x, trim=0.01)
@@ -100,6 +163,11 @@ win_vars <- vars(bv, mv, btm, size_return, size_return_m1, leverage,
 # Update Data - Winsorization
 prob_activist_director <-
     prob_activist_director %>%
+    mutate_at(win_vars, win01) %>%
+    mutate_at(c("year", "sic2"), as.factor)
+
+prob_activist_demands <-
+    prob_activist_demands %>%
     mutate_at(win_vars, win01) %>%
     mutate_at(c("year", "sic2"), as.factor)
 @
@@ -238,6 +306,189 @@ stargazer(getFitted(t3.pb),
                         "\\textrm{Activism}",  "\\textrm{Activism}", "\\textrm{Activism}"),
                       c("Pseudo-$R^2$", getPseudoR2s(t3.pb))))
 rm(t3.pb)
+@
+\end{tabularx}
+\end{table}
+
+\newpage
+
+  \begin{table}[htb]
+    \caption{Activist directors and Activist demands}
+        \begin{minipage}[t]{\columnwidth}
+%    \begin{flushleft}
+  {\small
+Panel C presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
+  \newline}
+%  \end{flushleft}
+  \end{minipage}
+    \begin{tabularx}{6.5in}{l*{3}{Y}}
+     \multicolumn{3}{l}{Panel C: Activism, activist demands and activist director (activism only)} \\
+<<Table_3_panelA3, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+# Panel C
+# Subset on activism
+reg.data <-
+    prob_activist_demands %>%
+    filter(activism) %>%
+    mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
+    as.data.frame()
+
+rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+          num_directors outside_percent age tenure staggered_board sic2 year
+          strategy_demand merger_demand
+          block_merger_demand acquisition_demand
+          block_acquisition_demand divestiture_demand
+          payout_demand leverage_demand
+          reits_demand esg_demand
+          remove_director_demand add_indep_demand
+          remove_officer_demand remove_defense_demand
+          compensation_demand other_gov_demand"
+
+t3.pc <- list()
+t3.pc[[1]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="activist_demand", rhs=rhs.2, cluster1="permno")
+t3.pc[[2]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="activist_director", rhs=rhs.2, cluster1="permno")
+t3.pc[[3]] <- fit.model(data=subset(reg.data, activism),
+                  lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
+t3.pc[[4]] <- fit.model(data=subset(reg.data, activist_director),
+                  lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
+
+stargazer(getFitted(t3.pc),
+        dep.var.labels = c("Board demand",
+                           "Activist director",
+                           "Affiliated director",
+                           "Affiliated director"),
+        covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
+                             "Leverage", "Payout", "ROA", "Sales growth", "Num. directors",
+                             "Outside percent", "Age", "Tenure", "Staggered board",
+                              "strategy demand", "merger demand",
+                              "block merger demand", "acquisition demand",
+                              "block acquisition demand", "divestiture demand",
+                              "payout demand", "leverage demand",
+                              "reits demand", "esg demand",
+                              "remove director demand", "add indep demand",
+                              "remove officer demand", "remove defense demand",
+                              "compensation demand", "other gov demand"),
+        se= getSEs(t3.pc),
+        p=getPs(t3.pc),
+        omit=c("^sic", "^year", "^Constant"),
+       float=FALSE, align=TRUE, font.size="small",
+       keep.stat=c("n"), no.space=TRUE,
+       add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
+                        "\\textrm{Activism}",  "\\textrm{Activist Director}"),
+                      c("Pseudo-$R^2$", getPseudoR2s(t3.pc))))
+rm(t3.pc)
+@
+\end{tabularx}
+\end{table}
+
+
+
+\newpage
+
+  \begin{table}[htb]
+    \caption{Activist demands and Activist director skills}
+        \begin{minipage}[t]{\columnwidth}
+%    \begin{flushleft}
+  {\small
+Panel D presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
+  \newline}
+%  \end{flushleft}
+  \end{minipage}
+    \begin{tabularx}{6.5in}{l*{3}{Y}}
+     \multicolumn{3}{l}{Panel D: Activist demands and Activist director skills} \\
+<<Table_3_panelA4, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+# Panel D
+# Subset on activism
+reg.data <-
+    prob_activist_director_skills %>%
+    as.data.frame()
+
+rhs.3 <- "strategy_demand merger_demand
+          block_merger_demand acquisition_demand
+          block_acquisition_demand divestiture_demand
+          payout_demand leverage_demand
+          reits_demand remove_director_demand add_indep_demand
+          remove_officer_demand remove_defense_demand
+          compensation_demand other_gov_demand"
+
+t3.pd <- list()
+t3.pd[[1]] <- fit.model(data=reg.data, lhs="academic", rhs=rhs.3, cluster1="permno")
+t3.pd[[2]] <- fit.model(data=reg.data, lhs="company_business", rhs=rhs.3, cluster1="permno")
+t3.pd[[3]] <- fit.model(data=reg.data, lhs="compensation", rhs=rhs.3, cluster1="permno")
+t3.pd[[4]] <- fit.model(data=reg.data, lhs="entrepreneurial", rhs=rhs.3, cluster1="permno")
+t3.pd[[5]] <- fit.model(data=reg.data, lhs="finance_accounting", rhs=rhs.3, cluster1="permno")
+t3.pd[[6]] <- fit.model(data=reg.data, lhs="governance", rhs=rhs.3, cluster1="permno")
+t3.pd[[7]] <- fit.model(data=reg.data, lhs="government_policy", rhs=rhs.3, cluster1="permno")
+t3.pd[[8]] <- fit.model(data=reg.data, lhs="international", rhs=rhs.3, cluster1="permno")
+t3.pd[[9]] <- fit.model(data=reg.data, lhs="leadership", rhs=rhs.3, cluster1="permno")
+t3.pd[[10]] <- fit.model(data=reg.data, lhs="legal", rhs=rhs.3, cluster1="permno")
+t3.pd[[11]] <- fit.model(data=reg.data, lhs="management", rhs=rhs.3, cluster1="permno")
+t3.pd[[12]] <- fit.model(data=reg.data, lhs="manufacturing", rhs=rhs.3, cluster1="permno")
+t3.pd[[13]] <- fit.model(data=reg.data, lhs="marketing", rhs=rhs.3, cluster1="permno")
+t3.pd[[14]] <- fit.model(data=reg.data, lhs="outside_board", rhs=rhs.3, cluster1="permno")
+t3.pd[[15]] <- fit.model(data=reg.data, lhs="outside_executive", rhs=rhs.3, cluster1="permno")
+t3.pd[[16]] <- fit.model(data=reg.data, lhs="risk_management", rhs=rhs.3, cluster1="permno")
+t3.pd[[17]] <- fit.model(data=reg.data, lhs="scientific", rhs=rhs.3, cluster1="permno")
+t3.pd[[18]] <- fit.model(data=reg.data, lhs="strategic_planning", rhs=rhs.3, cluster1="permno")
+t3.pd[[19]] <- fit.model(data=reg.data, lhs="sustainability", rhs=rhs.3, cluster1="permno")
+t3.pd[[20]] <- fit.model(data=reg.data, lhs="technology", rhs=rhs.3, cluster1="permno")
+
+stargazer(getFitted(t3.pd),
+        covariate.labels = c("strategy demand", "merger demand",
+                              "block merger demand", "acquisition demand",
+                              "block acquisition demand", "divestiture demand",
+                              "payout demand", "leverage demand",
+                              "reits demand", "esg demand",
+                              "remove director demand", "add indep demand",
+                              "remove officer demand", "remove defense demand",
+                              "compensation demand", "other gov demand"),
+        se= getSEs(t3.pd),
+        p=getPs(t3.pd),
+        omit=c("^sic", "^year", "^Constant"),
+       float=FALSE, align=TRUE, font.size="small",
+       keep.stat=c("n"), no.space=TRUE,
+       add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pd))))
+rm(t3.pd)
+
+#############################################
+
+rhs.4 <- "academic company_business compensation entrepreneurial
+          finance_accounting governance government_policy
+          international leadership legal management manufacturing marketing
+          outside_board outside_executive risk_management
+          scientific strategic_planning sustainability technology"
+
+t3.pe <- list()
+t3.pe[[1]] <- fit.model(data=reg.data, lhs="strategy_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[2]] <- fit.model(data=reg.data, lhs="merger_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[3]] <- fit.model(data=reg.data, lhs="block_merger_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[4]] <- fit.model(data=reg.data, lhs="acquisition_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[5]] <- fit.model(data=reg.data, lhs="block_acquisition_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[6]] <- fit.model(data=reg.data, lhs="divestiture_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[7]] <- fit.model(data=reg.data, lhs="payout_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[8]] <- fit.model(data=reg.data, lhs="leverage_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[9]] <- fit.model(data=reg.data, lhs="reits_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[10]] <- fit.model(data=reg.data, lhs="remove_director_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[11]] <- fit.model(data=reg.data, lhs="add_indep_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[12]] <- fit.model(data=reg.data, lhs="remove_officer_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[13]] <- fit.model(data=reg.data, lhs="remove_defense_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[14]] <- fit.model(data=reg.data, lhs="compensation_demand", rhs=rhs.4, cluster1="permno")
+t3.pe[[15]] <- fit.model(data=reg.data, lhs="other_gov_demand", rhs=rhs.4, cluster1="permno")
+
+stargazer(getFitted(t3.pe),
+        covariate.labels = c("academic", "company business", "compensation", "entrepreneurial",
+                            "finance accounting", "governance", "government policy",
+                            "international", "leadership", "legal", "management", "manufacturing", "marketing",
+                            "outside board", "outside executive", "risk management",
+                            "scientific", "strategic planning", "sustainability", "technology"),
+        se= getSEs(t3.pe),
+        p=getPs(t3.pe),
+        omit=c("^sic", "^year", "^Constant"),
+       float=FALSE, align=TRUE, font.size="small",
+       keep.stat=c("n"), no.space=TRUE,
+       add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pe))))
+rm(t3.pe)
 @
 \end{tabularx}
 \end{table}
