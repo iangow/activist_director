@@ -429,6 +429,7 @@ print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 \newpage
 \begin{table}[htb]
@@ -444,6 +445,7 @@ print(xtable(skill_summ_sim, display=c("s", "f", "f", "f", "f", "f")),
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 \newpage
 \begin{table}[htb]

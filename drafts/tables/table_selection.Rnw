@@ -308,6 +308,7 @@ stargazer(getFitted(t3.pb),
 rm(t3.pb)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 
 \newpage
