@@ -24,6 +24,8 @@ rs <- dbExecute(pg, "SET work_mem = '5GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 activist_holdings <- tbl(pg, "activist_holdings")
+activism_events <- tbl(pg, sql("SELECT * FROM activist_director.activism_events"))
+activist_demands <- tbl(pg, sql("SELECT * FROM activist_director.demands"))
 
 activist_exit <-
     activist_holdings %>%
@@ -45,6 +47,42 @@ survival_data <-
     distinct() %>%
     collect() %>%
     as.data.frame()
+
+holding_period_by_demand <-
+    activism_events %>%
+    select(permno, eff_announce_date, campaign_ids) %>%
+    left_join(activist_demands) %>%
+    as.data.frame()
+
+survival_data_by_demand <-
+    survival_data %>%
+    left_join(holding_period_by_demand)
+
+survival_data_by_demand <-
+    survival_data_by_demand %>%
+    mutate(strategy_outcome=coalesce(strategy_outcome,FALSE),
+           merger_outcome=coalesce(merger_outcome,FALSE),
+           block_merger_outcome=coalesce(block_merger_outcome,FALSE),
+           acquisition_outcome=coalesce(acquisition_outcome,FALSE),
+           block_acquisition_outcome=coalesce(block_acquisition_outcome,FALSE),
+           divestiture_outcome=coalesce(divestiture_outcome,FALSE),
+           payout_outcome=coalesce(payout_outcome,FALSE),
+           leverage_outcome=coalesce(leverage_outcome,FALSE),
+           reits_outcome=coalesce(reits_outcome,FALSE),
+           board_seat_outcome=coalesce(board_seat_outcome,FALSE),
+           remove_director_outcome=coalesce(remove_director_outcome,FALSE),
+           add_indep_outcome=coalesce(add_indep_outcome,FALSE),
+           remove_officer_outcome=coalesce(remove_officer_outcome,FALSE),
+           remove_defense_outcome=coalesce(remove_defense_outcome,FALSE),
+           compensation_outcome=coalesce(compensation_outcome,FALSE),
+           other_gov_outcome=coalesce(other_gov_outcome,FALSE),
+           esg_outcome=coalesce(esg_outcome,FALSE),
+           any_outcome=merger_outcome | block_merger_outcome |
+                               acquisition_outcome | block_acquisition_outcome |
+                               divestiture_outcome | payout_outcome, leverage_outcome |
+                               remove_director_outcome | add_indep_outcome |
+                               remove_officer_outcome | remove_defense_outcome |
+                               compensation_outcome | other_gov_outcome)
 
 rs <- dbDisconnect(pg)
 @
@@ -73,6 +111,36 @@ summary2 <- summary.crq(quantreg2, taus=c(0.25, 0.5, 0.75))
 #### Exit since Appointment
 quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ affiliated - 1,
                  data=subset(survival_data, !is.na(first_appointment_date)),
+                 taus=c(0.25, 0.5, 0.75),
+                 na.action="na.omit",
+                 method="Portnoy")
+summary3 <- summary.crq(quantreg3, taus=c(0.25, 0.5, 0.75))
+@
+
+<<quantreg_analysis_by_demand, dependson="quantreg_data_step", include=FALSE>>=
+# data ready
+surv <- with(survival_data_by_demand,
+             Surv(as.numeric(exit_date - entry_date), exit, type='right'))
+
+#### Exit since Entry
+quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ strategy_demand + merger_demand + block_merger_demand + acquisition_demand + block_acquisition_demand + divestiture_demand + payout_demand + leverage_demand + remove_director_demand + add_indep_demand + remove_officer_demand + remove_defense_demand + compensation_demand + other_gov_demand,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data_by_demand,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
+
+#### Exit since Announcement
+quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ strategy_demand + merger_demand + block_merger_demand + acquisition_demand + block_acquisition_demand + divestiture_demand + payout_demand + leverage_demand + remove_director_demand + add_indep_demand + remove_officer_demand + remove_defense_demand + compensation_demand + other_gov_demand,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data_by_demand,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary2 <- summary.crq(quantreg2, taus=c(0.25, 0.5, 0.75))
+
+#### Exit since Appointment
+quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ strategy_demand + merger_demand + block_merger_demand + acquisition_demand + block_acquisition_demand + divestiture_demand + payout_demand + leverage_demand + remove_director_demand + add_indep_demand + remove_officer_demand + remove_defense_demand + compensation_demand + other_gov_demand,
+                 data=subset(survival_data_by_demand, !is.na(first_appointment_date)),
                  taus=c(0.25, 0.5, 0.75),
                  na.action="na.omit",
                  method="Portnoy")
@@ -196,5 +264,171 @@ print(xtable(panel2,
       NA.string = "")
 @
 \end{tabular}
+\addtocounter{table}{-1}
 \end{table}
+
+<<quantreg_analysis_by_demand_2, dependson="quantreg_data_step", include=FALSE>>=
+# data ready
+surv <- with(survival_data_by_demand,
+             Surv(as.numeric(exit_date - entry_date), exit, type='right'))
+
+#### Entry to Exit
+quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ affiliated*any_outcome,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data_by_demand,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
+summary1
+
+#### Announcement to Exit
+quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ affiliated*any_outcome,
+                 taus=c(0.25, 0.5, 0.75),
+                 data=survival_data_by_demand,
+                 na.action="na.omit",
+                 method="Portnoy")
+summary2 <- summary.crq(quantreg2, taus=c(0.25, 0.5, 0.75))
+
+#### Appointment to Exit
+quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ affiliated*any_outcome,
+                 data=subset(survival_data_by_demand, !is.na(first_appointment_date)),
+                 taus=c(0.25, 0.5, 0.75),
+                 na.action="na.omit",
+                 method="Portnoy")
+summary3 <- summary.crq(quantreg3, taus=c(0.25, 0.5, 0.75))
+@
+
+<<make_panels_2, dependson="quantreg_analysis", include=FALSE>>=
+getCoefs <- function(model) {
+
+    makeRow <- function(i) {
+
+        # Get the coefficients and SEs, calculate p-values
+        coef <- model[[2]][["coefficients"]][i, 1]
+        se   <- model[[2]][["coefficients"]][i, 4]
+        p    <- 1-pnorm(abs(coef/se))
+
+        # Standard stars
+        stars <- ifelse(p < 0.01, "^{***}",
+                        ifelse(p < 0.05, "^{**}",
+                               ifelse(p < 0.1, "^{*}", " ")))
+
+        # Add stars to coefficients, put parentheses around SEs
+        return(rbind(coef=paste0(formatC(coef, digits = 3, format="f"), stars),
+                     se=paste0("(",formatC(se, digits = 3, format="f"),")")))
+    }
+
+    # We have three coefficients we want to combine into a column and return
+    return(do.call("rbind", lapply(1:6, makeRow)))
+}
+
+getCoefs2 <- function(model) {
+
+    makeRow <- function(i) {
+
+        # Get the coefficients and SEs, calculate p-values
+        coef <- model[[2]][["coefficients"]][i, 1]
+        se   <- model[[2]][["coefficients"]][i, 4]
+        p    <- 1-pnorm(abs(coef/se))
+
+        # Standard stars
+        stars <- ifelse(p < 0.01, "^{***}",
+                        ifelse(p < 0.05, "^{**}",
+                               ifelse(p < 0.1, "^{*}", " ")))
+
+        # Add stars to coefficients, put parentheses around SEs
+        return(rbind(coef=paste0(formatC(coef, digits = 3, format="f"), stars),
+                     se=paste0("(",formatC(se, digits = 3, format="f"),")")))
+    }
+
+    # We have three coefficients we want to combine into a column and return
+    return(do.call("rbind", lapply(1:4, makeRow)))
+}
+
+# Get coefficients for each column
+col1 <- getCoefs(summary1)
+col2 <- getCoefs(summary2)
+col3 <- getCoefs2(summary3)
+col3 <- rbind(col3[1],col3[2],col3[3],col3[4],"","",
+              col3[5],col3[6],"","",col3[7],col3[8])
+
+# Combine columns into a table
+panel3 <- cbind(col1, col2, col3)
+
+# Names must be distinct, so spaces are a kluge to get this to work
+row.names(panel3) <- c("Intercept", "", "Affiliated director", " ", "Unaffiliated director", "  ",
+                       "Outcome Succ.", "   ", "Affiliated x Succ.", "    ", "Unaffiliated x Succ.", "     ")
+colnames(panel3) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
+
+# Make a second panel with statistics for estimated holding periods for
+# Activist director cases
+col1 <- rbind(summary1[[2]]$coefficients[1,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[2,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[2,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[3,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[3,1]+summary1[[2]]$coefficients[2,1])
+col2 <- rbind(summary2[[2]]$coefficients[1,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[2,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[2,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[3,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[3,1]+summary2[[2]]$coefficients[2,1])
+col3 <- rbind(summary3[[2]]$coefficients[1,1],
+              summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[3,1],
+              summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[2,1],
+              summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[2,1]+summary3[[2]]$coefficients[3,1]+summary3[[2]]$coefficients[4,1])
+col3 <- rbind(NA, NA, col3)
+panel4 <- cbind(col1, col2, col3)
+colnames(panel4) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
+row.names(panel4) <- c("Other activism x Not Succ.", "Other activism x Succ.",
+                       "Affiliated director x Not Succ.", "Affiliated director x Succ.",
+                       "Unaffiliated director x Not Succ.", "Unaffiliated director x Succ.")
+@
+\begin{table}[htb]
+  \caption{Activist holding periods by outcome}
+   \label{tbl:holdings_by_outcome}
+  \begin{minipage}[t]{\linewidth}
+%  \begin{flushleft}
+\tabularnewline
+Table presents results of censored median regression analysis of holding period (days) on activism category.
+\textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
+\textit{Annc--exit} refers to the time between announcement of activism and the exit date.
+\textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
+\newline
+% \end{flushleft}
+\end{minipage}
+% Following was copied from .tex output from stargazer.
+\begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} c }
+
+\multicolumn{2}{l}{Regression coefficients} \\
+\hline
+
+<<survival_panel3, dependson="make_panels_2", results='asis'>>=
+# Output the table
+library(xtable)
+print(xtable(panel3,
+             display=c("s", rep("f",(dim(panel3)[2])))),
+      include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+      size="small", type="latex", sanitize.text.function=function(x){x},
+      format.args = list(big.mark = ","))
+@
+\\
+\multicolumn{2}{l}{Implied median holding periods (days)} \\
+\hline
+\\
+<<survival_panel4, dependson="make_panels_2", results='asis'>>=
+# Output the table
+library(xtable)
+print(xtable(panel4,
+             display=c("s", rep("f",(dim(panel4)[2]))),
+             digits = 0),
+      include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+      size="small", type="latex", sanitize.text.function=function(x){x},
+      format.args = list(big.mark = ","),
+      NA.string = "")
+@
+\end{tabular}
+\end{table}
+
 \clearpage
