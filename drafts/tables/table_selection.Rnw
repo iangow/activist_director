@@ -314,9 +314,8 @@ rm(t3.pb)
 \newpage
 
   \begin{table}[htb]
-    \caption{Activist directors and Activist demands}
+    \caption{Activist directors and activist demands}
         \begin{minipage}[t]{\columnwidth}
-%    \begin{flushleft}
   {\small
 Panel C presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
   \newline}
@@ -350,23 +349,26 @@ t3.pc[[1]] <- fit.model(data=subset(reg.data, activism),
 t3.pc[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.2, cluster1="permno")
 t3.pc[[3]] <- fit.model(data=subset(reg.data, activism),
-                  lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
+                  lhs="unaffiliated_director", rhs=rhs.2, cluster1="permno")
 t3.pc[[4]] <- fit.model(data=subset(reg.data, activist_director),
                   lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
 
 stargazer(getFitted(t3.pc),
         dep.var.labels = c("Board demand",
                            "Activist director",
-                           "Affiliated director",
-                           "Affiliated director"),
-        covariate.labels = c("strategy demand", "merger demand",
-                              "block merger demand", "acquisition demand",
-                              "block acquisition demand", "divestiture demand",
-                              "payout demand", "leverage demand",
-                              "reits demand", "esg demand",
-                              "remove director demand", "add indep demand",
-                              "remove officer demand", "remove defense demand",
-                              "compensation demand", "other gov demand"),
+                           "Unaffiliated",
+                           "Affiliated"),
+        covariate.labels = c("Strategy", "Merger",
+                             "Block merger", "Acquisition",
+                             "Block acquisition",
+                             "Divestiture",
+                             "Payout", "Leverage",
+                             "REITs", "ESG",
+                             "Remove director",
+                             "Add director",
+                             "Remove officer",
+                             "Remove defense",
+                              "Compensation", "Other gov"),
         se=getSEs(t3.pc),
         p=getPs(t3.pc),
         keep=c("strategy_demand", "merger_demand",
@@ -379,11 +381,13 @@ stargazer(getFitted(t3.pc),
           "compensation_demand", "other_gov_demand"),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
-       add.lines=list(c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
-                        "\\textrm{Activism}",  "\\textrm{Activist Director}"),
+       add.lines=list(
+         c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
+                        "\\textrm{Activism}",  "\\textrm{Activist}"),
+         c("", "", "", "","\\textrm{director}"),
                       c("Controls", "\\textrm{Yes}", "\\textrm{Yes}",
-                        "\\textrm{Yes}", "\\textrm{Yes}"),
-                      c("Pseudo-$R^2$", getPseudoR2s(t3.pc))))
+                      "\\textrm{Yes}", "\\textrm{Yes}")),
+                      c("Pseudo-$R^2$", getPseudoR2s(t3.pc)))
 rm(t3.pc)
 @
 \end{tabularx}
