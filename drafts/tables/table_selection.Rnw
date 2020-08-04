@@ -317,7 +317,7 @@ rm(t3.pb)
     \caption{Activist directors and activist demands}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel C presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
+Panel C presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists. In Column 4, the sample only includes the firms with an activist director(s). The control variables from Panel B are included in all analyses.
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -349,15 +349,23 @@ t3.pc[[1]] <- fit.model(data=subset(reg.data, activism),
 t3.pc[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.2, cluster1="permno")
 t3.pc[[3]] <- fit.model(data=subset(reg.data, activism),
-                  lhs="unaffiliated_director", rhs=rhs.2, cluster1="permno")
+                  lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
 t3.pc[[4]] <- fit.model(data=subset(reg.data, activist_director),
                   lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
 
 stargazer(getFitted(t3.pc),
         dep.var.labels = c("Board demand",
                            "Activist director",
-                           "Unaffiliated",
+                           "Affiliated",
                            "Affiliated"),
+        keep=c("strategy_demand", "merger_demand",
+          "block_merger_demand", "acquisition_demand",
+          "block_acquisition_demand", "divestiture_demand",
+          "payout_demand", "leverage_demand",
+          "reits_demand", "esg_demand",
+          "remove_director_demand", "add_indep_demand",
+          "remove_officer_demand", "remove_defense_demand",
+          "compensation_demand", "other_gov_demand"),
         covariate.labels = c("Strategy", "Merger",
                              "Block merger", "Acquisition",
                              "Block acquisition",
@@ -368,17 +376,9 @@ stargazer(getFitted(t3.pc),
                              "Add director",
                              "Remove officer",
                              "Remove defense",
-                              "Compensation", "Other gov"),
+                             "Compensation", "Other gov"),
         se=getSEs(t3.pc),
         p=getPs(t3.pc),
-        keep=c("strategy_demand", "merger_demand",
-          "block_merger_demand", "acquisition_demand",
-          "block_acquisition_demand", "divestiture_demand",
-          "payout_demand", "leverage_demand",
-          "reits_demand", "esg_demand",
-          "remove_director_demand", "add_indep_demand",
-          "remove_officer_demand", "remove_defense_demand",
-          "compensation_demand", "other_gov_demand"),
        float=FALSE, align=TRUE, font.size="small",
        keep.stat=c("n"), no.space=TRUE,
        add.lines=list(
