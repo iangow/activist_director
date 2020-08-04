@@ -77,18 +77,18 @@ survival_data_by_demand <-
            compensation_outcome=coalesce(compensation_outcome,FALSE),
            other_gov_outcome=coalesce(other_gov_outcome,FALSE),
            esg_outcome=coalesce(esg_outcome,FALSE),
-           any_outcome=merger_outcome | block_merger_outcome |
+           any_outcome=(merger_outcome | block_merger_outcome |
                                acquisition_outcome | block_acquisition_outcome |
-                               divestiture_outcome | payout_outcome, leverage_outcome |
+                               divestiture_outcome | payout_outcome | leverage_outcome |
                                remove_director_outcome | add_indep_outcome |
                                remove_officer_outcome | remove_defense_outcome |
-                               compensation_outcome | other_gov_outcome,
-           any_demand=merger_demand | block_merger_demand |
+                               compensation_outcome | other_gov_outcome),
+           any_demand=(merger_demand | block_merger_demand |
                                acquisition_demand | block_acquisition_demand |
-                               divestiture_demand | payout_demand, leverage_demand |
+                               divestiture_demand | payout_demand | leverage_demand |
                                remove_director_demand | add_indep_demand |
                                remove_officer_demand | remove_defense_demand |
-                               compensation_demand | other_gov_demand)
+                               compensation_demand | other_gov_demand))
 
 rs <- dbDisconnect(pg)
 @
@@ -221,7 +221,8 @@ col1 <- rbind(summary1[[2]]$coefficients[1,1],
 col2 <- rbind(summary2[[2]]$coefficients[1,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[2,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[3,1])
-col3 <- rbind(summary3[[2]]$coefficients[1,1], summary3[[2]]$coefficients[2,1])
+col3 <- rbind(summary3[[2]]$coefficients[1,1],
+              summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[3,1])
 col3 <- rbind(NA, col3)
 panel2 <- cbind(col1, col2, col3)
 colnames(panel2) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
@@ -371,15 +372,15 @@ colnames(panel3) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm
 col1 <- rbind(summary1[[2]]$coefficients[1,1],
               summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1],
               summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[2,1],
-              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[2,1],
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[2,1]+summary1[[2]]$coefficients[5,1],
               summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[3,1],
-              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[3,1]+summary1[[2]]$coefficients[2,1])
+              summary1[[2]]$coefficients[1,1]+summary1[[2]]$coefficients[4,1]+summary1[[2]]$coefficients[3,1]+summary1[[2]]$coefficients[6,1])
 col2 <- rbind(summary2[[2]]$coefficients[1,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[2,1],
-              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[2,1],
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[2,1]+summary2[[2]]$coefficients[5,1],
               summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[3,1],
-              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[3,1]+summary2[[2]]$coefficients[2,1])
+              summary2[[2]]$coefficients[1,1]+summary2[[2]]$coefficients[4,1]+summary2[[2]]$coefficients[3,1]+summary2[[2]]$coefficients[6,1])
 col3 <- rbind(summary3[[2]]$coefficients[1,1],
               summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[3,1],
               summary3[[2]]$coefficients[1,1]+summary3[[2]]$coefficients[2,1],
