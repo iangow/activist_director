@@ -82,7 +82,13 @@ survival_data_by_demand <-
                                divestiture_outcome | payout_outcome, leverage_outcome |
                                remove_director_outcome | add_indep_outcome |
                                remove_officer_outcome | remove_defense_outcome |
-                               compensation_outcome | other_gov_outcome)
+                               compensation_outcome | other_gov_outcome,
+           any_demand=merger_demand | block_merger_demand |
+                               acquisition_demand | block_acquisition_demand |
+                               divestiture_demand | payout_demand, leverage_demand |
+                               remove_director_demand | add_indep_demand |
+                               remove_officer_demand | remove_defense_demand |
+                               compensation_demand | other_gov_demand)
 
 rs <- dbDisconnect(pg)
 @
@@ -198,7 +204,7 @@ getCoefs2 <- function(model) {
 col1 <- getCoefs(summary1)
 col2 <- getCoefs(summary2)
 col3 <- getCoefs2(summary3)
-col3 <- rbind("","",col3)
+col3 <- rbind(col3[1],col3[2],"","",col3[3],col3[4])
 
 # Combine columns into a table
 panel1 <- cbind(col1, col2, col3)
@@ -275,7 +281,7 @@ surv <- with(survival_data_by_demand,
 #### Entry to Exit
 quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ affiliated*any_outcome,
                  taus=c(0.25, 0.5, 0.75),
-                 data=survival_data_by_demand,
+                 data=subset(survival_data_by_demand,any_demand),
                  na.action="na.omit",
                  method="Portnoy")
 summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
@@ -284,14 +290,14 @@ summary1
 #### Announcement to Exit
 quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ affiliated*any_outcome,
                  taus=c(0.25, 0.5, 0.75),
-                 data=survival_data_by_demand,
+                 data=subset(survival_data_by_demand,any_demand),
                  na.action="na.omit",
                  method="Portnoy")
 summary2 <- summary.crq(quantreg2, taus=c(0.25, 0.5, 0.75))
 
 #### Appointment to Exit
 quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ affiliated*any_outcome,
-                 data=subset(survival_data_by_demand, !is.na(first_appointment_date)),
+                 data=subset(subset(survival_data_by_demand,any_demand), !is.na(first_appointment_date)),
                  taus=c(0.25, 0.5, 0.75),
                  na.action="na.omit",
                  method="Portnoy")
@@ -349,7 +355,7 @@ getCoefs2 <- function(model) {
 col1 <- getCoefs(summary1)
 col2 <- getCoefs(summary2)
 col3 <- getCoefs2(summary3)
-col3 <- rbind(col3[1],col3[2],col3[3],col3[4],"","",
+col3 <- rbind(col3[1],col3[2],"","",col3[3],col3[4],
               col3[5],col3[6],"","",col3[7],col3[8])
 
 # Combine columns into a table
