@@ -27,6 +27,21 @@ Affiliated (unaffiliated) directors who have left their respective boards, did s
 In many cases, their departure was associated with the company being acquired, going private, or going bankrupt.
 Affiliated and unaffiliated activist directors who remain on their respective boards as of December 31, 2017 have median tenures of 3.2 years.
 
+We additionally hand-collected data on director skills to compare activist directors with other directors.
+Publicly listed companies in the U.S. are required to describe the reasons for nominating their directors since the 2009 amendment to Regulation S-K (Adams et al., 2018).
+Taking advantage of the Regulation, Adams et al. (2018) identify 20 different kinds of skills by directors and find that director skills are an important part of the board composition and corporate governance of the firm.
+Following Adams et al. (2018) we also identified a skill set of each activist director.
+Panel C of Table 3 present the data.
+In general, activist directors have a fewer number of skills on average compared to the other directors; we find that activist directors have two skills on average while Adams et al.(2018) find three skills per director in their sample.
+Also, we find that the activist director skillset is particularly concentrated in one skill: \textit{finance and accounting}.
+We find that almost a half of the activist directors have the finance and accounting skill, which is significantly higher than 34\% of the directors having the skill in Adams et al.(2018).
+We also compared the numbers with the descriptive statistics from Adams et al.(2018), and the activist directors are less likely to have each skill across all categories other than \textit{finance and accounting}.
+
+In Panel D of Table 3, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may provide different types of skills.
+Affiliated directors are associated with a higher likelihood of having the finance and accounting and the governance skills, which is expected as these affiliated directors come from the activist hedge funds.
+On the other hand, unaffiliated directors are more likely to have international, leadership, manufacturing, marketing, and technology skills, which are based on their specific industry and business experience.
+Also, unaffiliated directors are more likely to have executive experience before which suggests that many of them are former or current executives.
+
 \subsection{Director elections: Voting outcomes}
 In this section, we examine voting outcomes for activist directors.
 Voting in director elections provides a mechanism for shareholders to communicate their satisfaction or dissatisfaction with each director's performance.
@@ -94,6 +109,13 @@ We also see evidence that activists are more likely to get board representation 
 In the last column, where we focus on the affiliated directors, we additionally see that payout is one of the most significant factors associated with having an activist director who is directly affiliated with the activist hedge fund.
 We later examine whether the activist director appointments, especiallly the affiliated directors, is followed by increases in payout.
 
+In Panel C of Table \ref{tbl:selection}, we also examine which types of demands are more likely to be associated with the demand for a board seat(s) and having an activist director (affiliated or unaffiliated).
+The results suggest that there are four types of demands that are more significantly associated with the demand for a board seat: Divestiture, Removing Directors, Removing Defenses, Compensation.
+These are the types of demands in which directors can exert their influence as a board member and bring out the outcomes more effectively.
+In terms of actually getting a board seat, the compensation demand is associated with a higher likelihood of having an activist director.
+The compensation demand is associated with 0.729\% increase in the likelihood of having an activist director.
+However, the demand may not be directly associated with what activist directors do as we will further examine in Section 8.
+
 \section{Activist holding periods} \label{sect:holding}
 We next examine whether having an activist director is associated with the length of time the activist holds the stock.
 Many argue that activist shareholders are opportunists only investing for a short period of time and leave.
@@ -117,6 +139,12 @@ They examine four categories of investors (banks, pension funds, investment comp
 They also examine the holdings of some institutional investors and provide only one example of an investor with a duration greater than three years, namely the well-known long-term investor, Berkshire Hathaway, which had a duration of between 3 and 4 years during our sample period.
 Another reference point is provided by the \citet{Beyer:2014niri} survey of investor relation professionals, who consider $2.8$ years as a cutoff beyond which investors can be considered ``long-term'' investors.
 These benchmarks suggest that activist investors are not necessarily short-term oriented and the holding period of activists getting representation on boards provides them with a relatively long investment horizon.
+
+We further examined whether or not activists successfully achieved their goals is associated with activist holding period and the results are presented in Table \ref{tbl:holdings} Panel B.
+In general, when affiliated directors are on board, the holding period for the activists is longer as we have shown above.
+We additionally find that, however, when any outcome is achieved during the campaign, that extended holding period gets almost erased.
+For example when affiliated directors are on the board, the activist holding period is longer by 275 days, but when they successfully bring out the results on their demands, it decreases by 185 days.
+This is likely because the activists already achieved their goals, so they happily exit earlier.
 
 \section{Stock returns} \label{sect:returns}
 We follow prior research in studying the impact of activism on stock prices.
