@@ -355,7 +355,6 @@ skill_summ_sim[2,] <- skill_summ_adams
 skill_summ_sim <- as.data.frame(t(skill_summ_sim))
 colnames(skill_summ_sim) <- c("activist_director","adams_2018")
 skill_summ_sim$diff <- skill_summ_sim$activist_director - skill_summ_sim$adams_2018
-skill_summ_sim$diff_pct <- (skill_summ_sim$activist_director - skill_summ_sim$adams_2018)/skill_summ_sim$adams_2018
 
 skill_summ_sim$p_value_act_vs_adams <-
     list(t.test(academic ~ activist_director, data=sim_director_skills)[3],
@@ -384,7 +383,7 @@ rownames(skill_summ_sim) <- c( "Academic", "Company business", "Compensation", "
                                "Leadership", "Legal", "Management", "Manufacturing", "Marketing",
                                "Outside board", "Outside executive", "Risk management",
                                "Scientific", "Strategic planning", "Sustainability", "Technology")
-colnames(skill_summ_sim) <- c("Activist director", "Adams 2018", "Diff.", "Diff.(%)", "P-value")
+colnames(skill_summ_sim) <- c("Activist director", "Adams 2018", "Diff.", "P-value")
 @
 
 \begin{table}[htb]
@@ -434,13 +433,13 @@ print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d
 \newpage
 \begin{table}[htb]
   \caption{Director characteristics}
-\begin{tabularx}{\linewidth}{l*{6}{Y}}
-\multicolumn{6}{l}{Panel C: Activist director skillsets: Activist directors}
+\begin{tabularx}{\linewidth}{l*{5}{Y}}
+\multicolumn{5}{l}{Panel C: Activist director skillsets: Activist directors}
 % \hline
 \\
 <<dir_desc_panel_C, dependson="dir_desc_table", results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(skill_summ_sim, display=c("s", "f", "f", "f", "f", "f")),
+print(xtable(skill_summ_sim, display=c("s", "f", "f", "f", "f")),
       include.rownames=TRUE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
