@@ -25,15 +25,11 @@ demands_data <- dbGetQuery(pg, "WITH demand_outcome AS (
     END AS payout_demand,
     CASE WHEN value_demands_followthroughsuccess ilike '%Block Merger/Agitate for Higher Price (Shareholder of Target)(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Block Merger/Agitate for Higher Price (Shareholder of Target)(No)%' THEN TRUE
-    WHEN primary_campaign_type ilike '%Vote/Activism Against a Merger%' THEN TRUE
-    WHEN secondary_campaign_type ilike '%Vote/Activism Against a Merger%' THEN TRUE
-    WHEN value_demands_followthroughsuccess IS NOT NULL OR governance_demands_followthroughsuccess IS NOT NULL OR primary_campaign_type IS NOT NULL OR secondary_campaign_type IS NOT NULL THEN FALSE
+    WHEN value_demands_followthroughsuccess IS NOT NULL OR governance_demands_followthroughsuccess IS NOT NULL THEN FALSE
     END AS block_merger_demand,
     CASE WHEN value_demands_followthroughsuccess ilike '%Potential Acquisition (Friendly and Unfriendly)(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Potential Acquisition (Friendly and Unfriendly)(No)%' THEN TRUE
-    WHEN primary_campaign_type ilike '%Hostile/Unsolicited Acquisition%' THEN TRUE
-    WHEN secondary_campaign_type ilike '%Hostile/Unsolicited Acquisition%' THEN TRUE
-    WHEN value_demands_followthroughsuccess IS NOT NULL OR governance_demands_followthroughsuccess IS NOT NULL OR primary_campaign_type IS NOT NULL OR secondary_campaign_type IS NOT NULL THEN FALSE
+    WHEN value_demands_followthroughsuccess IS NOT NULL OR governance_demands_followthroughsuccess IS NOT NULL THEN FALSE
     END AS acquisition_demand,
     CASE WHEN value_demands_followthroughsuccess ilike '%Separate Real Estate/Create REIT(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Separate Real Estate/Create REIT(No)%' THEN TRUE
