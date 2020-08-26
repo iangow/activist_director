@@ -339,7 +339,7 @@ rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
           block_acquisition_demand divestiture_demand
           payout_demand leverage_demand
           reits_demand esg_demand
-          remove_director_demand add_indep_demand
+          remove_director_demand
           remove_officer_demand remove_defense_demand
           compensation_demand other_gov_demand"
 
@@ -349,21 +349,21 @@ t3.pc[[1]] <- fit.model(data=subset(reg.data, activism),
 t3.pc[[2]] <- fit.model(data=subset(reg.data, activism),
                   lhs="activist_director", rhs=rhs.2, cluster1="permno")
 t3.pc[[3]] <- fit.model(data=subset(reg.data, activism),
-                  lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
-t3.pc[[4]] <- fit.model(data=subset(reg.data, activist_director),
+                  lhs="unaffiliated_director", rhs=rhs.2, cluster1="permno")
+t3.pc[[4]] <- fit.model(data=subset(reg.data, activism),
                   lhs="affiliated_director", rhs=rhs.2, cluster1="permno")
 
 stargazer(getFitted(t3.pc),
         dep.var.labels = c("Board demand",
                            "Activist director",
-                           "Affiliated",
+                           "Unaffiliated",
                            "Affiliated"),
         keep=c("strategy_demand", "merger_demand",
           "block_merger_demand", "acquisition_demand",
           "block_acquisition_demand", "divestiture_demand",
           "payout_demand", "leverage_demand",
           "reits_demand", "esg_demand",
-          "remove_director_demand", "add_indep_demand",
+          "remove_director_demand",
           "remove_officer_demand", "remove_defense_demand",
           "compensation_demand", "other_gov_demand"),
         covariate.labels = c("Strategy", "Merger",
@@ -373,7 +373,6 @@ stargazer(getFitted(t3.pc),
                              "Payout", "Leverage",
                              "REITs", "ESG",
                              "Remove director",
-                             "Add director",
                              "Remove officer",
                              "Remove defense",
                              "Compensation", "Other gov"),
@@ -383,8 +382,7 @@ stargazer(getFitted(t3.pc),
        keep.stat=c("n"), no.space=TRUE,
        add.lines=list(
          c("Sample", "\\textrm{Activism}", "\\textrm{Activism}",
-                        "\\textrm{Activism}",  "\\textrm{Activist}"),
-         c("", "", "", "","\\textrm{director}"),
+                        "\\textrm{Activism}",  "\\textrm{Activism}"),
                       c("Controls", "\\textrm{Yes}", "\\textrm{Yes}",
                       "\\textrm{Yes}", "\\textrm{Yes}")),
                       c("Pseudo-$R^2$", getPseudoR2s(t3.pc)))
