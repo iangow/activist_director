@@ -78,9 +78,12 @@ compustat <-
             log_at = if_else(at > 0, log(at), NA),
             payout = if_else(oibdp > 0, (dvc+prstkc-pstkrv)/oibdp, NA),
             bv = if_else(ceq > 0, log(ceq), NA),
-            mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
-            btm = if_else(prcc_f * csho > 0, ceq/(prcc_f * csho), NA),
+            mv = if_else(prcc_f * csho > 0, log(prcc_f*csho), NA),
+            btm = if_else(prcc_f * csho > 0, ceq/(prcc_f*csho), NA),
             leverage = if_else(dltt+dlc+ceq > 0, (dltt+dlc)/(dltt+dlc+ceq), NA),
+            book_leverage = if_else(at > 0, (dltt+dlc)/at, NA),
+            market_leverage = if_else(at-ceq+prcc_f*csho > 0, (dltt+dlc)/(at-ceq+prcc_f*csho), NA),
+            net_leverage = if_else(at > 0, (dltt+dlc-che)/at, NA),
             dividend = if_else(oibdp > 0, (dvc + dvp)/oibdp,
                         if_else(oibdp <= 0 & (dvc + dvp)==0, 0, NA)),
             cash = if_else(at > 0, che/at, NA),
@@ -299,8 +302,6 @@ controls_activism_years <-
     distinct() %>%
     arrange(permno, datadate)
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS outcome_controls")
-
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
@@ -318,15 +319,20 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    compute(name = "outcome_controls", temporary = FALSE)
+    as.data.frame()
 
-rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER TO activism")
+# Write data to PostgreSQL
+rs <- dbWriteTable(pg, c("activist_director", "outcome_controls"), outcome_controls,
+                   row.names = FALSE, overwrite = TRUE)
 
-rs <- dbExecute(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
+rs <- dbGetQuery(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
 
-sql <- paste("COMMENT ON TABLE outcome_controls IS
+rs <- dbExecute(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
+
+sql <- paste("
+  COMMENT ON TABLE activist_director.outcome_controls IS
              'CREATED USING create_outcome_controls.R ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
-rs <- dbExecute(pg, paste(sql, collapse="\n"))
+rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)

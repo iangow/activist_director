@@ -1,7 +1,7 @@
 WITH compustat AS (
     SELECT a.gvkey, a.datadate,
         sale, at, CASE WHEN at > 0 THEN log(at) END AS log_at,
-        ceq, che, ni, ib, oibdp, oiadp,
+        prcc_f, csho, ceq, che, ni, ib, oibdp, oiadp,
         COALESCE(dp,0) AS dp,
         COALESCE(dlc,0) AS dlc,
         COALESCE(dltt,0) AS dltt,
@@ -13,11 +13,6 @@ WITH compustat AS (
         COALESCE(dvp, 0) AS dvp,
         COALESCE(prstkc,0) AS prstkc,
         COALESCE(pstkrv,0) AS pstkrv,
-        COALESCE(acdo,0) AS acdo,
-        COALESCE(aldo,0) AS aldo,
-        COALESCE(sppe,0) AS sppe,
-        COALESCE(do_,0) AS do_,
-        COALESCE(COALESCE(acdo,0) + COALESCE(aldo,0),sppe, do_,0) AS disc_oper,
         siv, ivao + ivaeq AS iva, ppent, sret,
         CASE
             WHEN txfed IS NOT NULL THEN txfed + COALESCE(txs,0)
@@ -38,11 +33,13 @@ WITH compustat AS (
 
 compustat_w_lags AS (
     SELECT gvkey, datadate, at, che, dvc, prstkc, pstkrv, oibdp,
-        dltt, dlc, ceq, xrd, xad, capx,
+        dltt, dlc, ceq, prcc_f, csho, xrd, xad, capx,
         lag(at, 1) OVER w AS at_m1,
         lead(at, 1) OVER w AS at_p1,
         lead(che, 1) OVER w AS che_p1,
         lead(ceq, 1) OVER w AS ceq_p1,
+        lead(prcc_f, 1) OVER w AS prcc_f_p1,
+        lead(csho, 1) OVER w AS csho_p1,
         lead(dlc, 1) OVER w AS dlc_p1,
         lead(dltt, 1) OVER w AS dltt_p1,
         sum(oibdp) OVER p1 AS oibdp_cum_p1,
@@ -55,6 +52,8 @@ compustat_w_lags AS (
         lead(at, 2) OVER w AS at_p2,
         lead(che, 2) OVER w AS che_p2,
         lead(ceq, 2) OVER w AS ceq_p2,
+        lead(prcc_f, 2) OVER w AS prcc_f_p2,
+        lead(csho, 2) OVER w AS csho_p2,
         lead(dlc, 2) OVER w AS dlc_p2,
         lead(dltt, 2) OVER w AS dltt_p2,
         sum(oibdp) OVER p2 AS oibdp_cum_p2,
@@ -67,6 +66,8 @@ compustat_w_lags AS (
         lead(at, 3) OVER w AS at_p3,
         lead(che, 3) OVER w AS che_p3,
         lead(ceq, 3) OVER w AS ceq_p3,
+        lead(prcc_f, 3) OVER w AS prcc_f_p3,
+        lead(csho, 3) OVER w AS csho_p3,
         lead(dlc, 3) OVER w AS dlc_p3,
         lead(dltt, 3) OVER w AS dltt_p3,
         sum(oibdp) OVER p3 AS oibdp_cum_p3,
@@ -94,9 +95,20 @@ SELECT gvkey, datadate,
     CASE WHEN at > 0 THEN che_p1/at END AS cash_p1,
     CASE WHEN oibdp_cum_p1 > 0
         THEN (dvc_cum_p1 + prstkc_cum_p1 - pstkrv_cum_p1)/oibdp_cum_p1 END AS payout_p1,
+
     CASE WHEN dltt_p1 + dlc_p1 + ceq_p1 > 0
         THEN (dltt_p1 + dlc_p1)/(dltt_p1 + dlc_p1 + ceq_p1)
     END AS leverage_p1,
+    CASE WHEN at_p1 > 0
+        THEN (dltt_p1 + dlc_p1)/at_p1
+    END AS book_leverage_p1,
+    CASE WHEN at_p1-ceq_p1+prcc_f_p1*csho_p1 > 0
+        THEN (dltt_p1 + dlc_p1)/(at_p1-ceq_p1+prcc_f_p1*csho_p1)
+    END AS market_leverage_p1,
+    CASE WHEN at_p1 > 0
+        THEN (dltt_p1 + dlc_p1 - che_p1)/at_p1
+    END AS net_leverage_p1,
+
     CASE WHEN at > 0 THEN (xrd_cum_p1)/at END AS rnd_cum_p1,
     CASE WHEN at > 0 THEN (xad_cum_p1)/at END AS adv_cum_p1,
     CASE WHEN at > 0 THEN (capx_cum_p1)/at END AS capex_cum_p1,
@@ -104,10 +116,20 @@ SELECT gvkey, datadate,
     CASE WHEN at > 0 THEN che_p2/at END AS cash_p2,
     CASE WHEN oibdp_cum_p2 > 0
         THEN (dvc_cum_p2 + prstkc_cum_p2 - pstkrv_cum_p2)/oibdp_cum_p2 END AS payout_p2,
-    -- CASE WHEN dltt+dlc+ceq > 0 THEN (dltt+dlc)/(dltt+dlc+ceq) END AS lev,
+
     CASE WHEN dltt_p2 + dlc_p2 + ceq_p2 > 0
         THEN (dltt_p2 + dlc_p2)/(dltt_p2 + dlc_p2 + ceq_p2)
     END AS leverage_p2,
+    CASE WHEN at_p2 > 0
+        THEN (dltt_p2 + dlc_p2)/at_p2
+    END AS book_leverage_p2,
+    CASE WHEN at_p2-ceq_p2+prcc_f_p2*csho_p2 > 0
+        THEN (dltt_p2 + dlc_p2)/(at_p2-ceq_p2+prcc_f_p2*csho_p2)
+    END AS market_leverage_p2,
+    CASE WHEN at_p2 > 0
+        THEN (dltt_p2 + dlc_p2 - che_p2)/at_p2
+    END AS net_leverage_p2,
+
     CASE WHEN at > 0 THEN (xrd_cum_p2)/at END AS rnd_cum_p2,
     CASE WHEN at > 0 THEN (xad_cum_p2)/at END AS adv_cum_p2,
     CASE WHEN at > 0 THEN (capx_cum_p2)/at END AS capex_cum_p2,
@@ -115,9 +137,20 @@ SELECT gvkey, datadate,
     CASE WHEN at > 0 THEN che_p3/at END AS cash_p3,
     CASE WHEN oibdp_cum_p3 > 0
         THEN (dvc_cum_p3 + prstkc_cum_p3 - pstkrv_cum_p3)/oibdp_cum_p3 END AS payout_p3,
+
     CASE WHEN dltt_p3 + dlc_p3 + ceq_p3 > 0
         THEN (dltt_p3 + dlc_p3)/(dltt_p3 + dlc_p3 + ceq_p3)
     END AS leverage_p3,
+    CASE WHEN at_p3 > 0
+        THEN (dltt_p3 + dlc_p3)/at_p3
+    END AS book_leverage_p3,
+    CASE WHEN at_p3-ceq_p3+prcc_f_p3*csho_p3 > 0
+        THEN (dltt_p3 + dlc_p3)/(at_p3-ceq_p3+prcc_f_p3*csho_p3)
+    END AS market_leverage_p3,
+    CASE WHEN at_p3 > 0
+        THEN (dltt_p3 + dlc_p3 - che_p3)/at_p3
+    END AS net_leverage_p3,
+
     CASE WHEN at > 0 THEN (xrd_cum_p3)/at END AS rnd_cum_p3,
     CASE WHEN at > 0 THEN (xad_cum_p3)/at END AS adv_cum_p3,
     CASE WHEN at > 0 THEN (capx_cum_p3)/at END AS capex_cum_p3
