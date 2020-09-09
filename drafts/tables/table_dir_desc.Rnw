@@ -21,6 +21,7 @@ activist_directors <- tbl(pg, "activist_directors") %>%
 activism_events <- tbl(pg, "activism_events")
 equilar_w_activism <- tbl(pg, "equilar_w_activism")
 activist_director_skills <- tbl(pg, "activist_director_skills") %>% collect()
+ind_exp <- tbl(pg, "ind_exp") %>% collect()
 
 censor_date <- "2017-12-31"
 
@@ -80,7 +81,7 @@ all.dir.data <-
     filter(!is.na(age)) %>%
     mutate(activist_director = if_else(activist_director, 'Activist director', NA),
            all_directors = as.character("All directors")) %>%
-    select(all_directors, activist_director, age, female,
+    select(executive_id, company_id, all_directors, activist_director, age, female,
            any_committee, comp_committee, audit_committee,
            audit_committee_financial_expert) %>%
     collect()
@@ -92,7 +93,7 @@ act.dir.data <-
     mutate(affiliated_director = if_else(affiliated_director,
                                          'Affiliated director', 'Unaffiliated directors'),
            activist_director = as.character("Activist directors")) %>%
-    select(activist_director, affiliated_director, age, female,
+    select(executive_id, company_id, activist_director, affiliated_director, age, female,
            any_committee, comp_committee, audit_committee,
            audit_committee_financial_expert) %>%
     collect()
@@ -116,10 +117,11 @@ rs <- dbDisconnect(pg)
 @
 <<dir_desc_table, dependson="dir_desc_sample", results='asis'>>=
 # All Director Sample - Table
-col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
+col.names <- unlist(strsplit("Category, N, Age, Female, Ind exp., Comm., Comp comm.,
                              Audit comm., Fin. expert", ",\\s*"))
-sum.var.str <- "age female any_committee comp_committee audit_committee
-                            audit_committee_financial_expert"
+sum.var.str <- "age female prior_ind_exp
+                any_committee comp_committee audit_committee
+                audit_committee_financial_expert"
 
 sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
 
@@ -144,16 +146,19 @@ getTab <- function(cat, df) {
     df_new
 }
 
+all.dir.data <- all.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id"))
+new.dir.data <- new.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id"))
+act.dir.data <- act.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id"))
+
 tab.1 <- getTab("all_directors", all.dir.data)
 # New director sample - table
 tab.2 <- getTab("category", new.dir.data) %>%
     mutate(Category = as.character(Category))
-tab.3 <- getTab("activist_director", act.dir.data)
+tab.3 <- getTab("activist_director.x", act.dir.data)
 tab.4 <-
-    getTab("affiliated_director", act.dir.data) %>%
+    getTab("affiliated_director.x", act.dir.data) %>%
     arrange(desc(Category))
 tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
-
 
 # Director Skillsets
 skill_summ <- activist_director_skills %>%
@@ -411,7 +416,7 @@ Panel B presents data on all activist directors (i.e., no requirement for Equila
 \\
 <<dir_desc_panel_A, dependson="dir_desc_table", results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(tab, display=c("s", "s", "d", rep("f", 6))),
+print(xtable(tab, display=c("s", "s", "d", rep("f", 7))),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @

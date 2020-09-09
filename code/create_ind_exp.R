@@ -63,6 +63,20 @@ final <-
     select(company_id, executive_id, activist_director, affiliated_director, prior_ind_exp) %>%
     distinct()
 
+rs <- dbWriteTable(pg, c("activist_director", "ind_exp"),
+                   final, overwrite=TRUE, row.names=FALSE)
+
+sql <- "ALTER TABLE ind_exp OWNER TO activism;"
+rs <- dbGetQuery(pg, sql)
+
+sql <- paste("
+             COMMENT ON TABLE ind_exp IS
+             'CREATED USING create_ind_exp.R ON ",
+             format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
+
+rs <- dbDisconnect(pg)
+
 final %>% group_by(activist_director) %>% summarise(mean(prior_ind_exp))
 
 final %>% group_by(affiliated_director) %>% summarise(mean(prior_ind_exp))
