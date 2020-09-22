@@ -73,7 +73,7 @@ rs <- dbExecute(pg, "SET work_mem='3GB'")
 outcome_controls <- tbl(pg, "outcome_controls")
 activism_events <- tbl(pg, "activism_events")
 activist_demands <- tbl(pg, "demands")
-activist_director_skills <- dbGetQuery(pg, "
+activist_director_skills <- tbl(pg, sql("
 WITH SAMPLE AS (
     SELECT DISTINCT b.campaign_ids, a.permno, a.first_name, a.last_name, a.independent,
             academic, company_business, compensation, entrepreneurial,
@@ -110,7 +110,7 @@ SELECT permno, campaign_ids,
 FROM SAMPLE
 GROUP BY permno, campaign_ids
 ORDER BY permno, campaign_ids
-")
+"))
 
 min_date <-
     outcome_controls %>%
@@ -129,8 +129,7 @@ prob_activist_director <-
 #           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
            analyst = coalesce(analyst, 0),
            inst = coalesce(inst, 0)) %>%
-    filter(datadate >= min_date_sql) %>%
-    collect()
+    filter(datadate >= min_date_sql)
 
 prob_activist_demands <-
   outcome_controls %>%
@@ -144,14 +143,12 @@ prob_activist_demands <-
 #           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
        analyst = coalesce(analyst, 0),
        inst = coalesce(inst, 0)) %>%
-  filter(datadate >= min_date_sql) %>%
-  collect()
-
-activist_demands <- activist_demands %>% collect()
+  filter(datadate >= min_date_sql)
 
 prob_activist_director_skills <-
     activist_demands %>%
-    left_join(activist_director_skills)
+    left_join(activist_director_skills) %>%
+    collect()
 
 rs <- dbDisconnect(pg)
 
