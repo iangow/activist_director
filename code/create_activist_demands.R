@@ -1,11 +1,11 @@
 # Sys.setenv(PGHOST="iangow.me", PGDATABASE="crsp")
 library(dplyr, warn.conflicts = FALSE)
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+library(DBI)
+pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
-demands_data <- dbGetQuery(pg, "WITH demand_outcome AS (
+demands_data <- tbl(pg, sql("WITH demand_outcome AS (
     SELECT DISTINCT campaign_id,
     CASE WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(No)%' THEN TRUE
@@ -204,19 +204,19 @@ match2 AS (
     GROUP BY campaign_ids
     ORDER BY campaign_ids)
 
-SELECT * FROM match2")
+SELECT * FROM match2"))
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS demands")
 
-# Write data to PostgreSQL
-rs <- dbWriteTable(pg, c("activist_director", "demands"), demands_data,
-             row.names = FALSE, overwrite = TRUE)
+compute(demands_data, name = "demands",
+        temporary = FALSE)
 
-rs <- dbGetQuery(pg, "ALTER TABLE demands OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE demands OWNER TO activism")
 
 sql <- paste("
   COMMENT ON TABLE demands IS
              'CREATED USING create_activist_demands.R ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
-rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)
 
