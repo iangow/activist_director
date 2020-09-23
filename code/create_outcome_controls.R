@@ -309,17 +309,15 @@ outcome_controls <-
     filter(between(datadate, first_date, last_date)) %>%
     compute() %>%
     left_join(controls_activism_years, by = c("permno", "datadate", "year")) %>%
+    distinct() %>%
     arrange(permno, datadate) %>%
     mutate_at(vars(category, affiliated,
                    two_plus, early, big_investment,
                    affiliated_hostile, affiliated_two_plus, affiliated_high_stake, affiliated_big_inv,
                    affiliated_prior, affiliated_recent, affiliated_recent_three),
               funs(coalesce(., '_none'))) %>%
-    # mutate_at(vars(),
-    #          funs(coalesce(., FALSE))) %>%
     mutate(category_activist_director = if_else(activist_director, 'activist_director',
             if_else(activism, 'non_activist_director', '_none'))) %>%
-    # distinct() %>%
     arrange(permno, datadate) %>%
     compute(name = "outcome_controls", temporary = FALSE)
 
