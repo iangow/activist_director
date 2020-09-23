@@ -315,13 +315,13 @@ outcome_controls <-
                    affiliated_hostile, affiliated_two_plus, affiliated_high_stake, affiliated_big_inv,
                    affiliated_prior, affiliated_recent, affiliated_recent_three),
               funs(coalesce(., '_none'))) %>%
-    mutate_at(vars(),
-              funs(coalesce(., FALSE))) %>%
+    # mutate_at(vars(),
+    #          funs(coalesce(., FALSE))) %>%
     mutate(category_activist_director = if_else(activist_director, 'activist_director',
             if_else(activism, 'non_activist_director', '_none'))) %>%
-    distinct() %>%
+    # distinct() %>%
     arrange(permno, datadate) %>%
-    compute(name = "outcome_controls", tempoary = FALSE)
+    compute(name = "outcome_controls", temporary = FALSE)
 
 # Write data to PostgreSQL
 rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER to activism")
