@@ -302,6 +302,8 @@ controls_activism_years <-
     distinct() %>%
     arrange(permno, datadate)
 
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS outcome_controls")
+
 outcome_controls <-
     controls %>%
     filter(between(datadate, first_date, last_date)) %>%
@@ -319,20 +321,17 @@ outcome_controls <-
             if_else(activism, 'non_activist_director', '_none'))) %>%
     distinct() %>%
     arrange(permno, datadate) %>%
-    as.data.frame()
+    compute(name = "outcome_controls", tempoary = FALSE)
 
 # Write data to PostgreSQL
-rs <- dbWriteTable(pg, c("activist_director", "outcome_controls"), outcome_controls,
-                   row.names = FALSE, overwrite = TRUE)
+rs <- dbExecute(pg, "ALTER TABLE outcome_controls OWNER to activism")
 
-rs <- dbGetQuery(pg, "ALTER TABLE activist_director.outcome_controls OWNER TO activism")
-
-rs <- dbExecute(pg, "CREATE INDEX ON activist_director.outcome_controls (permno, datadate)")
+rs <- dbExecute(pg, "CREATE INDEX ON outcome_controls (permno, datadate)")
 
 sql <- paste("
   COMMENT ON TABLE activist_director.outcome_controls IS
              'CREATED USING create_outcome_controls.R ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
-rs <- dbGetQuery(pg, paste(sql, collapse="\n"))
+rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
 rs <- dbDisconnect(pg)
