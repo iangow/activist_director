@@ -410,8 +410,8 @@ Panel B presents data on all activist directors (i.e., no requirement for Equila
 \newline}
 % \end{flushleft}
 \end{minipage}
-\begin{tabularx}{\linewidth}{l*{7}{Y}}
-\multicolumn{7}{l}{Panel A: Director characteristics by activism classification}
+\begin{tabularx}{\linewidth}{l*{8}{Y}}
+\multicolumn{8}{l}{Panel A: Director characteristics by activism classification}
 % \hline
 \\
 <<dir_desc_panel_A, dependson="dir_desc_table", results='asis'>>=

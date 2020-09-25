@@ -1,5 +1,5 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+\Sexpr{opts_chunk$set(cache=FALSE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<outs_load_libraries, cache=FALSE, include=FALSE>>=
 # Yihui Xie recommends _not_ caching the loading of packages used
@@ -44,6 +44,8 @@ dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
 wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
 dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
+activist_demands <- tbl(pg, "demands") %>% as.data.frame()
+outcome_changes <- tbl(pg, "outcome_changes") %>% as.data.frame()
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -212,6 +214,22 @@ reg.data <-
                                 if_else(affiliated=="activist_director", "unaffiliated",
                                 if_else(affiliated=="activist_demand", "z_other_activism",
                                 if_else(affiliated=="activism", "z_other_activism", "_none")))))) %>%
+    left_join(activist_demands) %>%
+    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
+            merger_demand = coalesce(merger_demand, FALSE),
+            block_merger_demand = coalesce(block_merger_demand, FALSE),
+            acquisition_demand = coalesce(acquisition_demand, FALSE),
+            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
+            divestiture_demand = coalesce(divestiture_demand, FALSE),
+            payout_demand = coalesce(payout_demand, FALSE),
+            leverage_demand = coalesce(leverage_demand, FALSE),
+            remove_director_demand = coalesce(remove_director_demand, FALSE),
+            add_indep_demand = coalesce(add_indep_demand, FALSE),
+            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
+            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
+            compensation_demand = coalesce(compensation_demand, FALSE),
+            other_gov_demand = coalesce(other_gov_demand, FALSE),
+            esg_demand = coalesce(esg_demand, FALSE)) %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
@@ -249,6 +267,7 @@ Values in parentheses are standard errors clustered by firm.
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<outs_t_div_and_acq, dependson=c("outs_functions", "outs_div_acq_data"), results='asis'>>=
 lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
+# rhs <- paste("activist_director*block_acquisition_demand year sic2", controls)
 
 t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa, reg.data)
@@ -270,6 +289,7 @@ rm(t6.pa)
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 ceo_outcomes <- tbl(pg, "ceo_outcomes")
+activist_demands <- tbl(pg, "demands") %>% collect()
 
 winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
 
@@ -286,6 +306,22 @@ reg.data <-
                                                 "z_other_activism",
                                                 "_none")))) %>%
     distinct() %>%
+    left_join(activist_demands) %>%
+    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
+            merger_demand = coalesce(merger_demand, FALSE),
+            block_merger_demand = coalesce(block_merger_demand, FALSE),
+            acquisition_demand = coalesce(acquisition_demand, FALSE),
+            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
+            divestiture_demand = coalesce(divestiture_demand, FALSE),
+            payout_demand = coalesce(payout_demand, FALSE),
+            leverage_demand = coalesce(leverage_demand, FALSE),
+            remove_director_demand = coalesce(remove_director_demand, FALSE),
+            add_indep_demand = coalesce(add_indep_demand, FALSE),
+            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
+            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
+            compensation_demand = coalesce(compensation_demand, FALSE),
+            other_gov_demand = coalesce(other_gov_demand, FALSE),
+            esg_demand = coalesce(esg_demand, FALSE)) %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
@@ -312,6 +348,7 @@ Values in parentheses are standard errors clustered by firm.
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 <<outs_ceo_turnover, dependson=c("outs_functions", "outs_ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp")
+#rhs <- paste("activist_director*remove_officer_demand year sic2", controls)
 
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
@@ -340,13 +377,15 @@ outcome_controls <- tbl(pg, "outcome_controls")
 activist_director_years <- tbl(pg, "activist_director_years")
 outcomes <-
     tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
+activist_demands <- tbl(pg, "demands")
 
 # Winsorize changes
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
-winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
-                        paste0(lhs.vars, "_p1"), paste0(lhs.vars, "_p2"),
-                        paste0(lhs.vars, "_p3")))
 
+winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
+                        paste0(lhs.vars, "_p1"),
+                        paste0(lhs.vars, "_p2"),
+                        paste0(lhs.vars, "_p3")))
 win_vars <- vars(winsor.vars)
 
 reg.data <-
@@ -354,6 +393,22 @@ reg.data <-
     inner_join(outcomes, by = c("gvkey", "datadate")) %>%
     inner_join(activist_director_years, by = c("permno", "datadate")) %>%
     filter(firm_exists_p2) %>%
+    left_join(activist_demands) %>%
+    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
+            merger_demand = coalesce(merger_demand, FALSE),
+            block_merger_demand = coalesce(block_merger_demand, FALSE),
+            acquisition_demand = coalesce(acquisition_demand, FALSE),
+            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
+            divestiture_demand = coalesce(divestiture_demand, FALSE),
+            payout_demand = coalesce(payout_demand, FALSE),
+            leverage_demand = coalesce(leverage_demand, FALSE),
+            remove_director_demand = coalesce(remove_director_demand, FALSE),
+            add_indep_demand = coalesce(add_indep_demand, FALSE),
+            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
+            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
+            compensation_demand = coalesce(compensation_demand, FALSE),
+            other_gov_demand = coalesce(other_gov_demand, FALSE),
+            esg_demand = coalesce(esg_demand, FALSE)) %>%
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
@@ -389,6 +444,8 @@ Values in parentheses are standard errors clustered by firm.
 <<outs_t_cap_struct, dependson=c("outs_functions", "outs_other_data_step"), error=FALSE, results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
+# rhs <- paste("activist_director*leverage_demand year sic2", controls)
+
 t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                "$\\textrm{Dep. var.}_{t}$")
@@ -425,6 +482,8 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 <<outs_t_inv, dependson=c("outs_functions", "outs_other_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
+#rhs <- paste("activist_director*other_gov_demand year sic2", controls)
+
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
