@@ -129,7 +129,8 @@ prob_activist_director <-
 #           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
            analyst = coalesce(analyst, 0),
            inst = coalesce(inst, 0)) %>%
-    filter(datadate >= min_date_sql)
+    filter(datadate >= min_date_sql) %>%
+    collect()
 
 prob_activist_demands <-
   outcome_controls %>%
@@ -143,7 +144,8 @@ prob_activist_demands <-
 #           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
        analyst = coalesce(analyst, 0),
        inst = coalesce(inst, 0)) %>%
-  filter(datadate >= min_date_sql)
+  filter(datadate >= min_date_sql) %>%
+  collect()
 
 prob_activist_director_skills <-
     activist_demands %>%
