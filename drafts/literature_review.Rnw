@@ -39,6 +39,7 @@ Our paper draws on a larger sample of activist directors and focuses on the trai
 Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements whether or not an activist director is appointed.
 But \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including analysis of impact of activist directors on board size and analysis of shareholder support in subsequent director elections.
 Like us, \citet{Bebchuk:2017} examine the effect of activism on payout policy, being acquired, and operating performance, but with partitioning on settlements rather than activist directors.
+Our paper focuses on the characteristics and the role of a more comprehensive sample of activist directors and further examine their effects on activist investment, their own career consequences as well as their impact on firm outcomes.
 
 \subsection{Specialist outside directors}
 Our paper is also related to prior literature that examines the impact of specialist directors, such as financial experts, since activist directors are often associated with hedge funds or unaffiliated directors are selected for particular expertise.
