@@ -348,7 +348,7 @@ Values in parentheses are standard errors clustered by firm.
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 <<outs_ceo_turnover, dependson=c("outs_functions", "outs_ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp")
-#rhs <- paste("activist_director*remove_officer_demand year sic2", controls)
+# rhs <- paste("activist_director*remove_officer_demand year sic2", controls)
 
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb, reg.data)
@@ -482,7 +482,7 @@ Values in parentheses are standard errors clustered by firm. *** (**, *) indicat
 <<outs_t_inv, dependson=c("outs_functions", "outs_other_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
-#rhs <- paste("activist_director*other_gov_demand year sic2", controls)
+# rhs <- paste("activist_director*other_gov_demand year sic2", controls)
 
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pf, reg.data)

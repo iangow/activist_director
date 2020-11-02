@@ -203,8 +203,9 @@ row.names(panel2) <- c("Other activism", "Affiliated director", "Unaffiliated di
    \label{tbl:holdings}
   \begin{minipage}[t]{\linewidth}
 %  \begin{flushleft}
+\small
 \tabularnewline
-Table presents results of censored median regression analysis of holding period (days) on activism category.
+Panel A presents results of censored median regression analysis of holding period (days) on activism category.
 \textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
 \textit{Annc--exit} refers to the time between announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
@@ -212,6 +213,8 @@ Table presents results of censored median regression analysis of holding period 
 % \end{flushleft}
 \end{minipage}
 % Following was copied from .tex output from stargazer.
+Panel A: Activist holding periods \\
+\\
 \begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} c }
 
 \multicolumn{2}{l}{Regression coefficients} \\
@@ -362,12 +365,13 @@ row.names(panel4) <- c("Other activism x Not Succ.", "Other activism x Succ.",
                        "Unaffiliated director x Not Succ.", "Unaffiliated director x Succ.")
 @
 \begin{table}[htb]
-  \caption{Activist holding periods by outcome}
+  \caption{Activist holding periods}
    \label{tbl:holdings_by_outcome}
   \begin{minipage}[t]{\linewidth}
 %  \begin{flushleft}
 \tabularnewline
-Table presents results of censored median regression analysis of holding period (days) on activism category.
+\small
+Panel B presents results of censored median regression analysis of holding period (days) on activism category and outcomes.
 \textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
 \textit{Annc--exit} refers to the time between announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
@@ -375,6 +379,8 @@ Table presents results of censored median regression analysis of holding period 
 % \end{flushleft}
 \end{minipage}
 % Following was copied from .tex output from stargazer.
+Panel B: Activist holding periods by outcome \\
+\\
 \begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} c }
 
 \multicolumn{2}{l}{Regression coefficients} \\
