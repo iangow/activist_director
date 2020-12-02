@@ -213,7 +213,13 @@ reg.data <-
                                 if_else(affiliated=="unaffiliated", "unaffiliated",
                                 if_else(affiliated=="activist_director", "unaffiliated",
                                 if_else(affiliated=="activist_demand", "z_other_activism",
-                                if_else(affiliated=="activism", "z_other_activism", "_none")))))) %>%
+                                if_else(affiliated=="activism", "z_other_activism", "_none"))))),
+           activist_director = if_else(affiliated=="affiliated", TRUE,
+                                if_else(affiliated=="unaffiliated", TRUE,
+                                if_else(affiliated=="z_other_activism", FALSE, FALSE))),
+           other_activism = if_else(affiliated=="affiliated", FALSE,
+                                if_else(affiliated=="unaffiliated", FALSE,
+                                if_else(affiliated=="z_other_activism", TRUE, FALSE)))) %>%
     left_join(activist_demands) %>%
     mutate(strategy_demand = coalesce(strategy_demand, FALSE),
             merger_demand = coalesce(merger_demand, FALSE),
@@ -240,29 +246,14 @@ rs <- dbDisconnect(pg)
 \label{tbl:div_acq_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
-Table presents regressions of outcome variables on firm-year level activism indicators.
+Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
 \textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
 \textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
-Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
-\textit{Total assets}, book value of total assets;
-\textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
-\textit{Institutional},  proportion of the firm's outstanding stock held by institutions;
-\textit{Size-adj. ret}, twelve-month size-adjusted returns;
-\textit{Market value}, the value of market capitalization;
-\textit{Book-to-market}, market capitalization divided by the book value of common equity;
-\textit{Leverage}, ratio of debt to debt plus book value of common equity;
-\textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA;
-\textit{ROA}, EBITDA divided by the lagged total assets;
-\textit{Sales growth}, sales divided by lagged sales;
-\textit{Num. directors}, the number of directors on the board;
-\textit{Outside percent}, the percentage of outside directors;
-\textit{Age}, the average age of directors;
-\textit{Tenure}, the average tenure of directors;
-\textit{Staggered board}, indicator for staggered board.
-All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
+Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
 <<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
@@ -321,11 +312,11 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 
 t.pa <- list()
 
-rhs.1 <- "activist_director*block_merger_demand year sic2
+rhs.1 <- "activist_director*block_merger_demand other_activism year sic2
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
-rhs.2 <- "activist_director*block_acquisition_demand year sic2
+rhs.2 <- "activist_director*block_acquisition_demand other_activism year sic2
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
@@ -343,15 +334,17 @@ stargazer(getFitted(t.pa),
                              "Acquisition",
                              "Divestiture"),
           keep=c("activist_director",
-                 "block_merger_demand",
+                 "block_merger_demandTRUE",
+                 "block_acquisition_demandTRUE",
+                 "other_activism",
                  "activist_directorTRUE:block_merger_demandTRUE",
-                 "block_acquisition_demand",
                  "activist_directorTRUE:block_acquisition_demandTRUE"),
           covariate.labels = c("Activist director",
-                               "Block sale demand",
-                               "Activist director X Block sale demand",
-                               "Block acquisition demand",
-                               "Activist director X Block acquisition demand"),
+                                "Block merger demand",
+                                "Block acquisition demand",
+                                "Other activism",
+                                "Activist director x Block merger",
+                                "Activist director x Block acquisition"),
           se=getSEs(t.pa),
           p=getPs(t.pa),
           float=FALSE, align=TRUE, font.size="small",
@@ -386,11 +379,16 @@ reg.data.ceo <-
     collect() %>%
     mutate_at(win_vars, win01) %>%
     mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated %in% c("unaffiliated", "activist_director"),
-                                        "unaffiliated",
-                                        if_else(affiliated %in% c("activist_demand", "activism"),
-                                                "z_other_activism",
-                                                "_none")))) %>%
+                                if_else(affiliated=="unaffiliated", "unaffiliated",
+                                if_else(affiliated=="activist_director", "unaffiliated",
+                                if_else(affiliated=="activist_demand", "z_other_activism",
+                                if_else(affiliated=="activism", "z_other_activism", "_none"))))),
+           activist_director = if_else(affiliated=="affiliated", TRUE,
+                                if_else(affiliated=="unaffiliated", TRUE,
+                                if_else(affiliated=="z_other_activism", FALSE, FALSE))),
+           other_activism = if_else(affiliated=="affiliated", FALSE,
+                                if_else(affiliated=="unaffiliated", FALSE,
+                                if_else(affiliated=="z_other_activism", TRUE, FALSE)))) %>%
     distinct() %>%
     left_join(activist_demands) %>%
     mutate(strategy_demand = coalesce(strategy_demand, FALSE),
@@ -412,7 +410,7 @@ reg.data.ceo <-
 
 activist_director_years <- tbl(pg, "activist_director_years")
 outcome_controls <- tbl(pg, "outcome_controls")
-outcomes <- tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
+outcomes <- tbl(pg, sql(paste0(readLines("~/activist_director/drafts/tables/other_outcomes.sql"), collapse="\n")))
 activist_demands <- tbl(pg, "demands")
 
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
@@ -450,22 +448,30 @@ reg.data <-
                                 if_else(affiliated=="unaffiliated", "unaffiliated",
                                 if_else(affiliated=="activist_director", "unaffiliated",
                                 if_else(affiliated=="activist_demand", "z_other_activism",
-                                if_else(affiliated=="activism", "z_other_activism", "_none")))))) %>%
+                                if_else(affiliated=="activism", "z_other_activism", "_none"))))),
+           activist_director = if_else(affiliated=="affiliated", TRUE,
+                                if_else(affiliated=="unaffiliated", TRUE,
+                                if_else(affiliated=="z_other_activism", FALSE, FALSE))),
+           other_activism = if_else(affiliated=="affiliated", FALSE,
+                                if_else(affiliated=="unaffiliated", FALSE,
+                                if_else(affiliated=="z_other_activism", TRUE, FALSE)))) %>%
     as.data.frame()
 
 rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Other outcomes and demand}
+\caption{Other outcomes by activist demand}
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
-Table presents regressions of variables on firm-year level activism categorical variables.
+Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
-$\textrm{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
-Controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
+\textit{Leverage} is measured as the ratio of book value of debt to the sum of the book value of debt and equity.
+\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
+Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
@@ -488,39 +494,40 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 t.pb <- list()
 
 # CEO Turnover
-rhs.1 <- "activist_director*remove_officer_demand year sic2
+rhs.1 <- "activist_director*remove_officer_demand other_activism factor(year) factor(sic2)
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
-        num_directors outside_percent staggered_board"
+        num_directors outside_percent staggered_board ceo_turnover"
 
 t.pb[[1]] <- fit.model(data=reg.data.ceo,
                        lhs="ceo_turnover_p2", rhs=rhs.1, cluster1="permno")
 
 # Leverage, Payout, and R&D
-rhs.2 <- "activist_director*leverage_demand year sic2
+rhs.2 <- "activist_director*leverage_demand other_activism year sic2
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
-rhs.3 <- "activist_director*payout_demand year sic2
+rhs.3 <- "activist_director*payout_demand other_activism year sic2
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
-rhs.4 <- "activist_director*other_gov_demand year sic2
+rhs.4 <- "activist_director*other_gov_demand other_activism year sic2
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
-        num_directors outside_percent staggered_board"
+        num_directors outside_percent staggered_board rnd_cum"
 
 t.pb[[2]] <- fit.model(data=reg.data,
                        lhs="leverage_p2", rhs=rhs.2, cluster1="permno")
 t.pb[[3]] <- fit.model(data=reg.data,
                        lhs="payout_p2", rhs=rhs.3, cluster1="permno")
 t.pb[[4]] <- fit.model(data=reg.data,
-                       lhs="rnd_cum", rhs=rhs.4, cluster1="permno")
+                       lhs="rnd_cum_p2", rhs=rhs.4, cluster1="permno")
 
 stargazer(getFitted(t.pb),
           dep.var.labels = c("CEO Exit",
                              "Leverage",
                              "Payout",
                              "R\\&D"),
-          keep=c("activist_director",
+          keep=c("other_activism",
+                 "activist_director",
                  "remove_officer_demand",
                  "activist_directorTRUE:remove_officer_demandTRUE",
                  "leverage_demand",
@@ -531,13 +538,14 @@ stargazer(getFitted(t.pb),
                  "activist_directorTRUE:other_gov_demandTRUE"),
           covariate.labels = c("Activist director",
                                "Remove officer demand",
-                               "Activist director x Remove officer demand",
                                "Leverage demand",
-                               "Activist director x Leverage demand",
                                "Payout demand",
-                               "Activist director x Payout demand",
                                "Other governance demand",
-                               "Activist director x Other governance demand"),
+                               "Other activism",
+                               "Activist director x Remove officer",
+                               "Activist director x Leverage",
+                               "Activist director x Payout",
+                               "Activist director x Other governance"),
           se=getSEs(t.pb),
           p=getPs(t.pb),
           float=FALSE, align=TRUE, font.size="small",

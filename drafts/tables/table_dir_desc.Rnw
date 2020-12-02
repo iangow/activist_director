@@ -405,6 +405,8 @@ $N$ refers to the number of observations.
 Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively.
 Panel A includes all directors, with \textit{Activist directors} relating to activist directors in their first year on their respective boards.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
+Panel C presents data on activist director skillsets with activist directors in Column 1 and the simulated sample of directors from Adams et al.(2018) in Column 2. The difference between activist director sample and Adams et al.(2018) sample is reported in Column 3 with its p-value reported in Column 4.
+Panel D presents data on activist director skillsets with affiliated directors in Column 2 and unaffiliated directors in Column 3. The difference between affiliated and unaffiliated directors is reported in Column 4 with its p-value reported in Column 5.
 \textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
 \textit{Tenure (adjusted)} is estimated median tenure for directors accounting for censoring.
 \newline}

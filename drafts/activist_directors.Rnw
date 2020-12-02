@@ -183,4 +183,7 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_outcomes, child='tables/table_outcomes.Rnw'>>=
 @
 
+<<table_outcomes_x, child='tables/table_outcomes_x.Rnw'>>=
+@
+
 \end{document}
