@@ -277,7 +277,7 @@ skill_summ_sim
 # Merge with activist_director.activist_directors
 library(RPostgreSQL)
 drv <- dbDriver("PostgreSQL")
-pg <- dbConnect(drv, host='iangow.me', port='5432', dbname='crsp')
+pg <- dbConnect(drv)
 
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 

@@ -1,0 +1,3 @@
+PGPORT=5432
+PGHOST=iangow.me
+PGDATABASE=crsp

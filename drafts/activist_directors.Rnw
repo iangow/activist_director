@@ -44,7 +44,6 @@
 \bibliographystyle{kluwer} % , chicago, kluwer
 
 <<check_pg, cache=FALSE, include=FALSE>>=
-Sys.setenv(PGPORT=5432L)
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 
