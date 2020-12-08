@@ -14,7 +14,7 @@ We can see from the sample descriptive statistics that more than 45\% of our act
 
 \subsection{Activist directors}
 For each activism event in which SharkWatch indicated that the activist obtained board representation, we used proxy statements (DEF 14A) and current report filings (Form 8-K, Item 5.02) to collect names of the directors who were appointed as a result of the activist campaign.
-We also collected appointment dates and basic biographical details.
+We also collected their appointment dates and basic biographical details.
 We then examined subsequent SEC filings up to December 31, 2017 to determine whether and, if so when, each director subsequently left the board.
 We divide these activist directors into two categories.
 The \textit{Affiliated} category comprises directors that we identified as employees or principals of members of the activist group, and \textit{Unaffiliated} covers the remaining activist directors who tend to be industry experts.
@@ -43,7 +43,6 @@ For each director on a company's board, Equilar provides director-level informat
 Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.
 
 \subsection{Other data}
-
 In Tables \ref{tbl:career}, \ref{tbl:selection}, and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
 We calculate \textit{Analyst}, the number of analyst forecasts for each firm-year using data from IBES.
 We derive the proportion of the firm's outstanding stock held by institutions (\textit{Institutional}) using data from WhaleWisdom.
@@ -61,5 +60,4 @@ From Equilar, we get the following variables: \textit{Num. directors}, the numbe
 \textit{Age}, the average age of directors on the board;
 \textit{Tenure}, the average years of directorship on the board; and,
 \textit{Staggered board}, an indicator for a classified board.
-%All controls are winsorized at the $1\%$ and $99\%$ levels.
-
+% Note that all controls are winsorized at the $1\%$ and $99\%$ levels.

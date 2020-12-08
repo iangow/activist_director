@@ -390,6 +390,7 @@ stargazer(getFitted(t3.pc),
 rm(t3.pc)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 
 \newpage
@@ -443,7 +444,7 @@ stargazer(getFitted(t3.pd),
                 "block_merger_demand", "acquisition_demand",
                 "block_acquisition_demand", "divestiture_demand",
                 "payout_demand", "leverage_demand",
-                "reits_demand", "esg_demand",
+                "reits_demand",
                 "remove_director_demand",
                 "remove_officer_demand", "remove_defense_demand",
                 "compensation_demand", "other_gov_demand"),
@@ -452,7 +453,7 @@ stargazer(getFitted(t3.pd),
                              "Block acquisition",
                              "Divestiture",
                              "Payout", "Leverage",
-                             "REITs", "ESG",
+                             "REITs",
                              "Remove director",
                              "Remove officer",
                              "Remove defense",

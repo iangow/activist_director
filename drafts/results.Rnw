@@ -17,7 +17,7 @@ One reason we do not match all directors to Equilar is that some activist direct
 We then divide these 809 activist directors into two groups and identify 460 \textit{unaffiliated} and 349 \textit{affiliated} directors.
 
 In general, unaffiliated directors are similar to other new directors on most dimensions except that there is a noticeably smaller number who are female ($0.06$ versus $0.14$).
-However, affiliated directors (i.e., employees or principals of members of the activist group) appear to be different: they are younger (52 years of age), rarely female (just \emph{1\%} of affiliated activist directors are women).
+However, affiliated directors (i.e., employees or principals of members of the activist group) appear to be more different: they are younger (52 years of age) and rarely female (just \emph{1\%} of affiliated activist directors are women).
 While activist directors appear more likely to become members of the compensation committee in their first year of service ($0.40$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.33$), especially affiliated directors ($0.25$), than non-activism new directors ($0.41$).
 
 Panel B of Table \ref{tbl:dir_chars} presents data on the tenure of activist directors.
@@ -32,15 +32,15 @@ Publicly listed companies in the U.S. are required to describe the reasons for n
 Taking advantage of the Regulation, Adams et al. (2018) identify 20 different kinds of skills by directors and find that director skills are an important part of the board composition and corporate governance of the firm.
 Following Adams et al. (2018) we also identified a skill set of each activist director.
 Panel C of Table 3 present the data.
-In general, activist directors have a fewer number of skills on average compared to the other directors; we find that activist directors have two skills on average while Adams et al.(2018) find three skills per director in their sample.
+In general, activist directors have a fewer number of skills on average compared to other directors; we find that activist directors have two skills on average while Adams et al.(2018) find three skills per director in their sample.
 Also, we find that the activist director skillset is particularly concentrated in one skill: \textit{finance and accounting}.
 We find that almost a half of the activist directors have the finance and accounting skill, which is significantly higher than 34\% of the directors having the skill in Adams et al.(2018).
 We also compared the numbers with the descriptive statistics from Adams et al.(2018), and the activist directors are less likely to have each skill across all categories other than \textit{finance and accounting}.
 
-In Panel D of Table 3, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may provide different types of skills.
+In Panel D of Table 3, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may contribute different types of skills.
 Affiliated directors are associated with a higher likelihood of having the finance and accounting and the governance skills, which is expected as these affiliated directors come from the activist hedge funds.
-On the other hand, unaffiliated directors are more likely to have international, leadership, manufacturing, marketing, and technology skills, which are based on their specific industry and business experience they bring into the target firms.
-Also, unaffiliated directors are more likely to have executive experience before which suggests that many of them are former or current executives.
+On the other hand, unaffiliated directors are more likely to have international, manufacturing, marketing, and technology skills, which are based on their specific industry and business experience they bring into the target firms.
+Also, unaffiliated directors are more likely to have leadership or executive experience before, which suggests that many of them are former or current executives.
 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine voting outcomes for activist directors.
@@ -59,7 +59,7 @@ However, even controlling for ISS recommendations, there is greater shareholder 
 So inclusion of the ISS indicator plausibly provides a downwardly biased estimate of shareholder support for activist directors.}
 
 However, elevated shareholder support for activist directors is short-lived and the shareholders consider the activist directors as the same as other directors in subsequent elections.
-Shareholder support for activist directors is generally statistically indistinguishable from that of other directors one (Columns 3 and 4) and two (Columns 5 and 6) years following activism as can be seen by insignificant coefficients for both unaffiliated and affiliated directors.
+Shareholder support for activist directors is statistically indistinguishable from that of other directors one (Columns 3 and 4) and two (Columns 5 and 6) years following activism as can be seen by insignificant coefficients for both unaffiliated and affiliated directors.
 This is consistent wtih shareholders assessing directors' performance in the same way regardless of how they became a director.
 
 \subsection{Career outcomes} \label{sect:career}
@@ -110,10 +110,9 @@ In the last column, where we focus on the affiliated directors, we additionally 
 We later examine whether the activist director appointments, especiallly the affiliated directors, is followed by increases in payout.
 
 In Panel C of Table \ref{tbl:selection}, we also examine which types of demands are more likely to be associated with the demand for a board seat(s) and having an activist director (affiliated or unaffiliated).
-The results suggest that there are four types of demands that are more significantly associated with the demand for a board seat: Divestiture, Removing Directors, Removing Defenses, Compensation.
+The results suggest that there are four types of demands that are more significantly associated with the demand for a board seat: \textit{Divestiture}, \textit{Removing Directors}, \textit{Removing Defenses}, \textit{Compensation}.
 These are the types of demands in which directors can exert their influence as a board member and bring out the outcomes more effectively.
 In terms of actually getting a board seat, the compensation demand is associated with a higher likelihood of having an activist director.
-The compensation demand is associated with 0.729\% increase in the likelihood of having an activist director.
 However, the demand may not be directly associated with what activist directors do as we will further examine in Section 8.
 
 \section{Activist holding periods} \label{sect:holding}
@@ -143,7 +142,7 @@ These benchmarks suggest that activist investors are not necessarily short-term 
 We further examined whether or not activists successfully achieved their goals is associated with activist holding period and the results are presented in Table \ref{tbl:holdings} Panel B.
 In general, when affiliated directors are on board, the holding period for the activists is longer as we have shown above.
 We additionally find that, however, when any outcome is achieved during the campaign, that extended holding period gets almost erased.
-For example, when affiliated directors are on the board, the activist holding period is longer by 275 days, but when they successfully bring out the results on their demands, it decreases by 185 days.
+For example, when affiliated directors are on the board, the activist holding period is longer by 340 days, but when they successfully bring out the results on their demands, it decreases by 158 days.
 This is likely because the activists have already achieved their goals, so they happily exit earlier.
 
 \section{Stock returns} \label{sect:returns}
@@ -158,12 +157,12 @@ We get very similar results when we consider returns over longer windows (e.g., 
 
 In Panel B of Table \ref{tbl:returns}, we examine the market reaction around the settlement of activism events.
 Many activism campaigns involve settlements, and stock market reactions to settlement announcements provide insights into how investors view on their effects.
-For the 662 settlements in our sample, we find a positive and significant market reaction around the settlement dates, especially for the ones that result in activist directors ($1.9\%$, $p < 0.01$, for \textit{Affiliated director} and $1.9\%$, $p < 0.01$, for \textit{Unaffiliated director}) cases.
+For the 662 settlements in our sample, we find a positive and significant market reaction around the settlement dates, especially for the ones that result in activist directors (market-adjusted returns of $1.9\%$, $p < 0.01$, for \textit{Affiliated director} and $1.9\%$, $p < 0.01$, for \textit{Unaffiliated director}).
 It suggests that investors have high hopes for activist director nomination or appointment which is a result of the settlement between management and activist.
 
 In Panel C of Table \ref{tbl:returns}, we examine the market reaction around the appointment of activist directors.
 The appointment can be a result of the settlement or the proxy voting.
-Similar to the settlement returns above, we find positive and significant market reactions to these events as well: $2.1\%$, $p < 0.01$, for \textit{Affiliated director} and $1.5\%$, $p < 0.01$, for \textit{Unaffiliated director}.
+Similar to the settlement returns above, we find positive and significant market reactions to these events as well: market-adjusted returns of $2.0\%$, $p < 0.01$, for \textit{Affiliated director} and $1.5\%$, $p < 0.01$, for \textit{Unaffiliated director}.
 
 In Panel D of Table \ref{tbl:returns}, we examine returns over the 12-month and 24-month periods from the appointment of activist directors.
 We do not find positive returns for both \textit{Affiliated director} and \textit{Unaffiliated director}, which are in contrast to the short-term results above.
@@ -192,7 +191,7 @@ To examine a possible \emph{incremental} effect of an activist getting board rep
 Table \ref{tbl:roa} presents results.
 The numbers presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
 In both model (A) (with industry fixed effects) and model (B) (with firm fixed effects), we find statistically significant increases in \textit{ROA} in all five years.
-These effects are economically significant, with the five-year increase in \textit{ROA} of 3.3\% and 2.1\% in models (A) and (B) respectively.
+These effects are economically significant, with the five-year increase in \textit{ROA} of 3.3\% and 1.8\% in models (A) and (B) respectively.
 
 In model (C), we look at the incremental effect of having an activist director on the board.
 In general, the incremental effects are statistically indistinguishable from zero.
@@ -200,7 +199,7 @@ If an incremental effect does exist, our failure to detect it statistically may 
 An additional issue is that activist director appointments are plausibly endogenous with respect to firm performance even \emph{after} activism has commenced; continued poor performance may lead to appointment of one or more activist directors.
 Notwithstanding these challenges, we find weakly significant results for affiliated directors in $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist invervention.
 
-Having demonstrated an effect of activism on operating performance, we next turn to a range of other outcomes that activists often seek to influence more directly.
+Having demonstrated the effect of activism on operating performance, we next turn to a range of other outcomes that activists often seek to influence more directly.
 The examples discussed in Section \ref{sect:lit_review} suggest that activists often seek to influence corporate policy or decisions on a wide range of matters.
 They include matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
 
@@ -215,10 +214,10 @@ Thus our third outcome is \textit{Divestiture}, an indicator for whether the fir
 We regress these indicators on industry and year dummies as well as the following controls (as described in Section \ref{sect:desc_stats}), \textit{Analyst}, \textit{Institutional}, \textit{Market value}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Outside percent}, \textit{Age}, \textit{Tenure}, and \textit{Staggered board}.
 
 Table \ref{tbl:div_acq} presents these results.
-Examining the first column in Table \ref{tbl:div_acq}, we see the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.098$ and $-0.037$, respectively).
+Examining the first column in Table \ref{tbl:div_acq}, we see the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.099$ and $-0.038$, respectively).
 While the coefficients on \textit{Affiliated director} and \textit{Unaffiliated director} are greater in magnitude, they are not statistically distinguishable from that on \textit{Other activism}.
 On the other hand, looking at the second column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$) (the differences in the activism coefficients  are statistically significant at the $1\%$ level).
-Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.125$).
+Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.126$).
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
 While \citet[362]{Greenwood:2009kh} identifies the ``ability of activists to force target firms into a takeover'' as an important mechanism for generating returns, our finding suggests that their goal is not necessarily the case when activists get board representation.
 
@@ -243,7 +242,7 @@ We regress these three outcome variables on their year-$t$ values, industry and 
 
 We find that having an activist director is not significantly associated with reduced cash holdings even though the coefficients are all negative across all categories of activism.
 However, we find that leverage is positively associated with \textit{Affiliated director} (coef. $0.037$, $p < 0.10$).
-Additionally, \textit{Affiliated director} (coef. $0.148$, $p < 0.01$) is associated with increased payout, which suggests that having an affiliated director on the board is associated with a 14.8 percentage point increase in the payout ratio in two years following activism.
+Additionally, \textit{Affiliated director} (coef. $0.150$, $p < 0.01$) is associated with increased payout, which suggests that having an affiliated director on the board is associated with a 15 percentage point increase in the payout ratio in two years following activism.
 Here, the difference in coefficient from \textit{Other activism} is positive and significant at 1$\%$, suggesting that affiliated activist director appointment is significantly associated with higher payout than had there been no affiliated activist director appointment.
 Furthermore, the coefficient for \textit{Affiliated director} is significantly higher than the coefficient for \textit{Unaffiliated director} at 10\%.
 It is interesting to note that the lower level of payout was associated with the higher likelihood of gaining a board seat for activists, especially \textit{Affiliated director}.
