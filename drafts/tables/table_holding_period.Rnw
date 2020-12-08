@@ -17,15 +17,15 @@ library(dplyr, warn.conflicts = FALSE)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-
+readRenviron("../../.Renviron")
 pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
 activist_holdings <- tbl(pg, "activist_holdings")
-activism_events <- tbl(pg, sql("SELECT * FROM activist_director.activism_events"))
-activist_demands <- tbl(pg, sql("SELECT * FROM activist_director.demands"))
+activism_events <- tbl(pg, "activism_events")
+activist_demands <- tbl(pg, "demands")
 
 activist_exit <-
     activist_holdings %>%
