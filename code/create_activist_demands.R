@@ -1,4 +1,3 @@
-# Sys.setenv(PGHOST="iangow.me", PGDATABASE="crsp")
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 pg <- dbConnect(RPostgres::Postgres())
