@@ -38,17 +38,3 @@ Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements wh
 But \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including analysis of impact of activist directors on board size and analysis of shareholder support in subsequent director elections.
 Like us, \citet{Bebchuk:2017} examine the effect of activism on payout policy, being acquired, and operating performance, but with partitioning on settlements rather than activist directors.
 Our paper focuses on the characteristics and the role of a more comprehensive sample of activist directors and further examine their effects on activist investment, their own career consequences as well as their impact on firm outcomes.
-
-\subsection{Specialist outside directors}
-Our paper is also related to prior literature that examines the impact of specialist directors, such as financial experts, since activist directors are often associated with hedge funds or unaffiliated directors are selected for particular expertise.
-% Order by year?
-DeFond, Hann, and Hu (2005) find a positive stock price reaction when directors with accounting expertise are appointed to the audit committee.
-\citet*{BurakGuner:2008dw} find evidence consistent with bankers influencing financing and investing decisions, but perhaps in ways that reflect conflicts of interests.
-%\citet*{Fahlenbrach:2010iy} find the appointment of outside directors who are CEOs of other firms is associated with positive announcement returns relative to non-CEO outside directors.
-\citet*{Huang:2014gs} find that firms with investment bankers on their boards make more acquisitions and experience higher takeover announcement returns and pay lower premiums than other firms.
-%\citet*{Kim:2014fm} find that the average tenure of directors is positively associated with firm acquisition performance and negatively associated with excess CEO compensation.
-
-Overall, this literature shows that directors can bring specific expertise to boards and firms appear to use this expertise.
-Our paper adds to the literature by examining a different class of specialist directors that are not voluntarily invited by the boards that they join.
-Even in cases that do not involve a proxy fight, activist directors join boards as a result of a negotiated outcome between the activist and the incumbent board and management.
-Given that activist directors join the board for a specific activist purpose, their role on the board is likely to be different from that of other directors.
