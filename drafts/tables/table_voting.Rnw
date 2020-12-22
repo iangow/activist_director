@@ -167,6 +167,7 @@ get_reg_data <- function(vote_number) {
 
     ad_data <-
         ad_vote_data %>%
+        mutate(appointment_date = as.Date(appointment_date)) %>%
         mutate(appointment_date = pmin(meetingdate, appointment_date)) %>%
         filter(vote_num == vote_number) %>%
         select(-vote_num, -campaign_id)
