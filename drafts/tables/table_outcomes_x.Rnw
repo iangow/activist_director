@@ -27,7 +27,7 @@ omits <- unlist(strsplit(controls, "\\s+"))
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
 <<outs_x_functions, include=FALSE>>=
-source("outcome_functions_x.R")
+source("outcome_functions.R")
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
