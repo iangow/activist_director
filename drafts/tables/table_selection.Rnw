@@ -3,8 +3,7 @@
 
 <<selection_libraries, cache=FALSE, include=FALSE>>=
 require(stargazer)
-library(RPostgres)
-library(RPostgreSQL)
+library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 @
 
@@ -65,7 +64,7 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 
 <<selection_data, include=FALSE>>=
 # PostgreSQL Connection
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgreSQL::PostgreSQL())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
@@ -110,7 +109,7 @@ SELECT permno, campaign_ids,
 FROM SAMPLE
 GROUP BY permno, campaign_ids
 ORDER BY permno, campaign_ids
-")) %>% as.tbl()
+"))
 
 min_date <-
     outcome_controls %>%
@@ -134,7 +133,6 @@ prob_activist_director <-
 
 prob_activist_demands <-
   outcome_controls %>%
-  left_join(activism_events) %>%
   left_join(activist_demands) %>%
   mutate(category = coalesce(category, "_none"),
        activism = coalesce(activism, FALSE),
@@ -148,10 +146,9 @@ prob_activist_demands <-
   collect()
 
 prob_activist_director_skills <-
-    as.data.frame(activist_demands) %>%
-    left_join(as.data.frame(activist_director_skills)) %>%
-    unique() %>%
-    as_tibble() %>%
+    activist_demands %>%
+    left_join(activist_director_skills) %>%
+    distinct() %>%
     collect()
 
 rs <- dbDisconnect(pg)
