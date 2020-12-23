@@ -582,11 +582,11 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 t.pc <- list()
 
 # Leverage, Payout, and R&D
-rhs.1 <- "affiliated*leverage_demand factor(year) factor(sic2)
+rhs.1 <- "affiliated*payout_demand factor(year) factor(sic2)
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
-rhs.2 <- "affiliated*payout_demand factor(year) factor(sic2)
+rhs.2 <- "affiliated*leverage_demand factor(year) factor(sic2)
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board"
 
@@ -598,14 +598,14 @@ rhs.4 <- "affiliated*other_gov_demand factor(year) factor(sic2)
         analyst inst size_return log_at mv btm leverage payout roa sale_growth
         num_directors outside_percent staggered_board rnd_cum"
 
-t.pc[[1]] <- fit.model(data=reg.data, lhs="leverage_p2", rhs=rhs.1, cluster1="permno")
-t.pc[[2]] <- fit.model(data=reg.data, lhs="payout_p2", rhs=rhs.2, cluster1="permno")
+t.pc[[1]] <- fit.model(data=reg.data, lhs="payout_p2", rhs=rhs.1, cluster1="permno")
+t.pc[[2]] <- fit.model(data=reg.data, lhs="leverage_p2", rhs=rhs.2, cluster1="permno")
 t.pc[[3]] <- fit.model(data=reg.data, lhs="capex_cum_p2", rhs=rhs.3, cluster1="permno")
 t.pc[[4]] <- fit.model(data=reg.data, lhs="rnd_cum_p2", rhs=rhs.4, cluster1="permno")
 
 stargazer(getFitted(t.pc),
-          dep.var.labels = c("Leverage",
-                             "Payout",
+          dep.var.labels = c("Payout",
+                             "Leverage",
                              "Capex",
                              "R\\&D"),
           keep=c("affiliated",
@@ -613,14 +613,14 @@ stargazer(getFitted(t.pc),
                  "payout_demand",
                  "other_gov_demand"),
           covariate.labels = c("Affiliated director", "Unaffiliated director", "Other activism",
-                               "Leverage demand",
                                "Payout demand",
+                               "Leverage demand",
                                "Other governance demand",
-                               "Affiliated x Leverage demand",
-                               "Unaffiliated x Leverage demand",
-                               "Other activism x Leverage demand",
                                "Affiliated x Payout demand",
                                "Unaffiliated x Payout demand",
+                               "Other activism x Payout demand",
+                               "Affiliated x Leverage demand",
+                               "Unaffiliated x Leverage demand",
                                "Other activism x Leverage demand",
                                "Affiliated x Other demand",
                                "Unaffiliated x Other demand",
