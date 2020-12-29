@@ -15,7 +15,6 @@ activism_events <- tbl(pg, "activism_events")
 activist_director.inst <- tbl(pg, "inst")
 equilar_w_activism <- tbl(pg, sql("SELECT * FROM activist_director.equilar_w_activism"))
 
-issvoting.compvote <- tbl(pg, sql("SELECT * FROM issvoting.compvote"))
 factset.sharkrepellent  <- tbl(pg, sql("SELECT * FROM factset.sharkrepellent"))
 factset.staggered_board  <- tbl(pg, sql("SELECT * FROM factset.staggered_board"))
 
