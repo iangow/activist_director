@@ -306,6 +306,83 @@ stargazer(getFitted(t3.pb),
 rm(t3.pb)
 @
 \end{tabularx}
+\end{table}
+
+\newpage
+
+  \begin{table}[htb]
+    \caption{Activist demands and target selection}
+    \label{tbl:demand}
+        \begin{minipage}[t]{\columnwidth}
+  {\small
+This table presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch). Multiple demands can be made for each activism event. Demand over Success reports the probability of activist demand being met by the boards successfully. The control variables from Panel B are included in all analyses. Sample includes firm-years with activism.
+  \newline}
+%  \end{flushleft}
+  \end{minipage}
+    \begin{tabularx}{5in}{l*{3}{Y}}
+     \multicolumn{3}{l}{Panel A: Activist demands and success rates} \\
+<<Table_3_demand, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+# Panel A
+# Subset on activism
+reg.data <-
+    prob_activist_demands %>%
+    filter(activism) %>%
+    mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
+    as.data.frame()
+
+demand_summ <- reg.data %>%
+    summarise(
+              board_seat_demand = sum(board_seat_demand, na.rm=TRUE),
+              merger_demand = sum(merger_demand, na.rm=TRUE),
+      strategy_demand = sum(strategy_demand, na.rm=TRUE),
+              payout_demand = sum(payout_demand, na.rm=TRUE),
+              other_gov_demand = sum(other_gov_demand, na.rm=TRUE),
+              divestiture_demand = sum(divestiture_demand, na.rm=TRUE),
+              compensation_demand = sum(compensation_demand, na.rm=TRUE),
+              block_merger_demand = sum(block_merger_demand, na.rm=TRUE),
+              remove_defense_demand = sum(remove_defense_demand, na.rm=TRUE),
+              acquisition_demand = sum(acquisition_demand, na.rm=TRUE),
+              leverage_demand = sum(leverage_demand, na.rm=TRUE),
+              add_indep_demand = sum(add_indep_demand, na.rm=TRUE),
+              remove_director_demand = sum(remove_director_demand, na.rm=TRUE),
+              remove_officer_demand = sum(remove_officer_demand, na.rm=TRUE),
+              esg_demand = sum(esg_demand, na.rm=TRUE),
+              block_acquisition_demand = sum(block_acquisition_demand, na.rm=TRUE),
+              reits_demand = sum(reits_demand, na.rm=TRUE))
+
+demand_summ[2,] <- reg.data %>%
+    summarise(
+              board_seat_outcome = sum(board_seat_outcome, na.rm=TRUE),
+              merger_outcome = sum(merger_outcome, na.rm=TRUE),
+      strategy_outcome = sum(strategy_outcome, na.rm=TRUE),
+              payout_outcome = sum(payout_outcome, na.rm=TRUE),
+              other_gov_outcome = sum(other_gov_outcome, na.rm=TRUE),
+              divestiture_outcome = sum(divestiture_outcome, na.rm=TRUE),
+              compensation_outcome = sum(compensation_outcome, na.rm=TRUE),
+              block_merger_outcome = sum(block_merger_outcome, na.rm=TRUE),
+              remove_defense_outcome = sum(remove_defense_outcome, na.rm=TRUE),
+              acquisition_outcome = sum(acquisition_outcome, na.rm=TRUE),
+              leverage_outcome = sum(leverage_outcome, na.rm=TRUE),
+              add_indep_outcome = sum(add_indep_outcome, na.rm=TRUE),
+              remove_director_outcome = sum(remove_director_outcome, na.rm=TRUE),
+              remove_officer_outcome = sum(remove_officer_outcome, na.rm=TRUE),
+              esg_outcome = sum(esg_outcome, na.rm=TRUE),
+              block_acquisition_outcome = sum(block_acquisition_outcome, na.rm=TRUE),
+              reits_outcome = sum(reits_outcome, na.rm=TRUE))
+
+demand_summ[3,] <- demand_summ[2,]/demand_summ[1,]
+demand_summ <- t(demand_summ) %>% as.data.frame()
+colnames(demand_summ) <- c("Demand", "Success", "Success rate")
+rownames(demand_summ) <- c( "Board seat", "Merger", "Strategy", "Payout",
+                            "Other gov.", "Divestiture", "Compensation",
+                            "Block merger", "Remove defense", "Acquisition",
+                            "Leverage", "Add ind. dir.", "Remove director",
+                            "Remove officer", "ESG", "Block acquisition", "REITs")
+print(xtable(demand_summ, display=c("s", "d", "d", "f")),
+      include.rownames=TRUE, only.contents=TRUE,
+      format.args = list(big.mark = ","))
+@
+\end{tabularx}
 \addtocounter{table}{-1}
 \end{table}
 
@@ -315,12 +392,12 @@ rm(t3.pb)
     \caption{Activist target selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel C presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists. In Column 4, the sample only includes the firms with an activist director(s). The control variables from Panel B are included in all analyses. Sample includes firm-years with activism.
+Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists. In Column 4, the sample only includes the firms with an activist director(s). The control variables from Panel B are included in all analyses. Sample includes firm-years with activism.
   \newline}
 %  \end{flushleft}
   \end{minipage}
     \begin{tabularx}{5in}{l*{3}{Y}}
-     \multicolumn{3}{l}{Panel C: Activism, activist demands, and activist directors} \\
+     \multicolumn{3}{l}{Panel B: Activism, activist demands, and activist directors} \\
 <<Table_3_panelA3, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel C
 # Subset on activism
@@ -390,83 +467,83 @@ rm(t3.pc)
 \addtocounter{table}{-1}
 \end{table}
 
-\newpage
-  \begin{table}[htb]
-    \caption{Activist target selection}
-        \begin{minipage}[t]{\columnwidth}
-  {\small
-Panel D presents logit regression where the dependent variables are indicators for activist director skill of finance and accounting (\textit{Finance accounting}, Column 1), management (\textit{Management}, Column 2), company business (\textit{Company business}, Column 3), and legal (\textit{Legal}, Column 4). The control variables from Panel B are included in all analyses. Sample includes firm-years with activist directors.
-  \newline}
-%  \end{flushleft}
-  \end{minipage}
-    \begin{tabularx}{5in}{l*{3}{Y}}
-     \multicolumn{3}{l}{Panel D: Activist demands and activist director skills} \\
-<<Table_3_panelA4, dependson=c("selection_functions", "selection_data"), results='asis'>>=
-# Panel D
-# Subset on activism
-reg.data <-
-    prob_activist_director %>%
-    filter(activist_director) %>%
-    select(-permno) %>%
-    inner_join(prob_activist_director_skills) %>%
-    collect()
-
-rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-          num_directors outside_percent age tenure staggered_board sic2 year
-          strategy_demand merger_demand
-          block_merger_demand acquisition_demand
-          block_acquisition_demand divestiture_demand
-          payout_demand leverage_demand
-          reits_demand esg_demand
-          remove_director_demand
-          remove_officer_demand remove_defense_demand
-          compensation_demand other_gov_demand"
-
-t3.pd <- list()
-t3.pd[[1]] <- fit.model(data=reg.data,
-                  lhs="finance_accounting", rhs=rhs.2, cluster1="permno")
-t3.pd[[2]] <- fit.model(data=reg.data,
-                  lhs="management", rhs=rhs.2, cluster1="permno")
-t3.pd[[3]] <- fit.model(data=reg.data,
-                  lhs="company_business", rhs=rhs.2, cluster1="permno")
-t3.pd[[4]] <- fit.model(data=reg.data,
-                  lhs="legal", rhs=rhs.2, cluster1="permno")
-
-stargazer(getFitted(t3.pd),
-        dep.var.labels = c("Finance accounting",
-                           "Mangement",
-                           "Company business",
-                           "Legal"),
-        keep=c("strategy_demand", "merger_demand",
-                "block_merger_demand", "acquisition_demand",
-                "block_acquisition_demand", "divestiture_demand",
-                "payout_demand", "leverage_demand",
-                "reits_demand",
-                "remove_director_demand",
-                "remove_officer_demand", "remove_defense_demand",
-                "compensation_demand", "other_gov_demand"),
-        covariate.labels = c("Strategy", "Merger",
-                             "Block merger", "Acquisition",
-                             "Block acquisition",
-                             "Divestiture",
-                             "Payout", "Leverage",
-                             "REITs",
-                             "Remove director",
-                             "Remove officer",
-                             "Remove defense",
-                             "Compensation", "Other gov"),
-        se=getSEs(t3.pd),
-        p=getPs(t3.pd),
-       float=FALSE, align=TRUE, font.size="small",
-       keep.stat=c("n"), no.space=TRUE,
-       add.lines=list(
-          c("Sample", "\\textrm{Activist}", "\\textrm{Activist}",
-                        "\\textrm{Activist}", "\\textrm{Activist}"),
-          c("", "\\textrm{Directors}", "\\textrm{Directors}",
-                "\\textrm{Directors}", "\\textrm{Directors}"),
-          c("Controls", "\\textrm{Yes}", "\\textrm{Yes}",
-                        "\\textrm{Yes}", "\\textrm{Yes}")))
-rm(t3.pd)
-@
-\end{tabularx}
-\end{table}
+% \newpage
+%   \begin{table}[htb]
+%     \caption{Activist target selection}
+%         \begin{minipage}[t]{\columnwidth}
+%   {\small
+% Panel D presents logit regression where the dependent variables are indicators for activist director skill of finance and accounting (\textit{Finance accounting}, Column 1), management (\textit{Management}, Column 2), company business (\textit{Company business}, Column 3), and legal (\textit{Legal}, Column 4). The control variables from Panel B are included in all analyses. Sample includes firm-years with activist directors.
+%   \newline}
+% %  \end{flushleft}
+%   \end{minipage}
+%     \begin{tabularx}{5in}{l*{3}{Y}}
+%      \multicolumn{3}{l}{Panel D: Activist demands and activist director skills} \\
+% <<Table_3_panelA4, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+% # Panel D
+% # Subset on activism
+% reg.data <-
+%     prob_activist_director %>%
+%     filter(activist_director) %>%
+%     select(-permno) %>%
+%     inner_join(prob_activist_director_skills) %>%
+%     collect()
+%
+% rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+%           num_directors outside_percent age tenure staggered_board sic2 year
+%           strategy_demand merger_demand
+%           block_merger_demand acquisition_demand
+%           block_acquisition_demand divestiture_demand
+%           payout_demand leverage_demand
+%           reits_demand esg_demand
+%           remove_director_demand
+%           remove_officer_demand remove_defense_demand
+%           compensation_demand other_gov_demand"
+%
+% t3.pd <- list()
+% t3.pd[[1]] <- fit.model(data=reg.data,
+%                   lhs="finance_accounting", rhs=rhs.2, cluster1="permno")
+% t3.pd[[2]] <- fit.model(data=reg.data,
+%                   lhs="management", rhs=rhs.2, cluster1="permno")
+% t3.pd[[3]] <- fit.model(data=reg.data,
+%                   lhs="company_business", rhs=rhs.2, cluster1="permno")
+% t3.pd[[4]] <- fit.model(data=reg.data,
+%                   lhs="legal", rhs=rhs.2, cluster1="permno")
+%
+% stargazer(getFitted(t3.pd),
+%         dep.var.labels = c("Finance accounting",
+%                            "Mangement",
+%                            "Company business",
+%                            "Legal"),
+%         keep=c("strategy_demand", "merger_demand",
+%                 "block_merger_demand", "acquisition_demand",
+%                 "block_acquisition_demand", "divestiture_demand",
+%                 "payout_demand", "leverage_demand",
+%                 "reits_demand",
+%                 "remove_director_demand",
+%                 "remove_officer_demand", "remove_defense_demand",
+%                 "compensation_demand", "other_gov_demand"),
+%         covariate.labels = c("Strategy", "Merger",
+%                              "Block merger", "Acquisition",
+%                              "Block acquisition",
+%                              "Divestiture",
+%                              "Payout", "Leverage",
+%                              "REITs",
+%                              "Remove director",
+%                              "Remove officer",
+%                              "Remove defense",
+%                              "Compensation", "Other gov"),
+%         se=getSEs(t3.pd),
+%         p=getPs(t3.pd),
+%        float=FALSE, align=TRUE, font.size="small",
+%        keep.stat=c("n"), no.space=TRUE,
+%        add.lines=list(
+%           c("Sample", "\\textrm{Activist}", "\\textrm{Activist}",
+%                         "\\textrm{Activist}", "\\textrm{Activist}"),
+%           c("", "\\textrm{Directors}", "\\textrm{Directors}",
+%                 "\\textrm{Directors}", "\\textrm{Directors}"),
+%           c("Controls", "\\textrm{Yes}", "\\textrm{Yes}",
+%                         "\\textrm{Yes}", "\\textrm{Yes}")))
+% rm(t3.pd)
+% @
+% \end{tabularx}
+% \end{table}
