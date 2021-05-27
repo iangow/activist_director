@@ -257,11 +257,11 @@ However, it is unclear whether this reflects curtailment of excessive investment
 % Second, we need the market to estimate the impact of activism in an unbiased manner and impound this estimate into price promptly.
 % Finally, even if these difficulties are addressed, stock market reactions do not provide insight into \emph{how} activists affect corporate policy and firm value.
 
-\section{Operating and Market Performance} \label{sect:roa}
+\section{Operating and Market Performance} \label{sect:perf}
 In this section, we examine whether the changes brought about by activist directors have any indication of operating and market performance improvement.
 We first look at the operating performance, return on assets in particular.
 
-\subsection{Return on assets}
+\subsection{Return on assets} \label{sect:roa}
 Our empirical approach follows that of \citet{Bebchuk:2013wi}, which is based on the the approach of \citet{Brav:2008eu}.
 Thus we measure operating performance as return on assets calculated as earnings before interest, taxes, depreciation, and amortization (Compustat item \texttt{oibdp}) divided by lagged total assets (\texttt{at}).
 For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$.
