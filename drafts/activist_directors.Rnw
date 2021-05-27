@@ -167,19 +167,19 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_career, child='tables/table_career.Rnw'>>=
 @
 
-<<table_selection, child='tables/table_selection.Rnw'>>=
-@
-
 <<table_holding_period, child='tables/table_holding_period.Rnw'>>=
 @
 
-<<table_returns, child='tables/table_returns.Rnw'>>=
+<<table_selection, child='tables/table_selection.Rnw'>>=
+@
+
+<<table_outcomes_x, child='tables/table_outcomes_x.Rnw'>>=
 @
 
 <<roa_table, child='tables/roa_table.Rnw'>>=
 @
 
-<<table_outcomes_x, child='tables/table_outcomes_x.Rnw'>>=
+<<table_returns, child='tables/table_returns.Rnw'>>=
 @
 
 \end{document}
