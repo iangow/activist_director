@@ -1,15 +1,14 @@
-library(RPostgreSQL)
+library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
-rs <- dbGetQuery(pg, "SET work_mem='8GB'")
-rs <- dbGetQuery(pg, "SET search_path TO activist_director, equilar_hbs")
+rs <- dbExecute(pg, "SET work_mem='8GB'")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
-
-company_financials <- tbl(pg, "company_financials")
-director_index <- tbl(pg, "director_index")
+company_financials <- tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials"))
+director_index <- tbl(pg, sql("SELECT * FROM equilar_hbs.director_index"))
 
 activist_directors <- tbl(pg, "activist_directors")
 
@@ -18,15 +17,12 @@ permcos <-
     stocknames %>%
     select(permno, permco) %>%
     distinct() %>%
-    arrange(permno, permco) %>%
     compute()
 
 permnos <-
     stocknames %>%
     select(permno, permco, ncusip) %>%
-    # rename(cusip = ncusip) %>%
     distinct() %>%
-    arrange(permno, permco) %>%
     compute()
 
 equilar <-
@@ -36,12 +32,11 @@ equilar <-
     rename(period = fye) %>%
     mutate(ncusip = substr(cusip, 1L, 8L)) %>%
     rename(start_date = date_start) %>%
-    mutate(first_name = sql("(director.parse_name(director_name)).first_name"),
-           last_name = sql("(director.parse_name(director_name)).last_name")) %>%
+    mutate(first_name = sql("(parse_name(director_name)).first_name"),
+           last_name = sql("(parse_name(director_name)).last_name")) %>%
     select(company_id, executive_id, director_name, period,
            first_name, last_name, start_date, cusip) %>%
     rename(director = director_name) %>%
-    arrange(company_id, executive_id, period) %>%
     compute()
 
 equilar_w_permnos <-
@@ -54,7 +49,6 @@ first_name_years <-
     equilar %>%
     group_by(company_id, executive_id) %>%
     summarize(period = min(period, na.rm = TRUE)) %>%
-    arrange(company_id, executive_id) %>%
     compute()
 
 equilar_final <-
@@ -81,7 +75,6 @@ activist_directors_mod <-
     mutate(first1 = substr(first_name_l, 1L, 1L),
            first2 = substr(first_name_l, 1L, 2L)) %>%
     inner_join(permcos) %>%
-    arrange(permco, appointment_date) %>%
     compute()
 
 match_1 <-
@@ -113,27 +106,31 @@ match_a <-
     match_1 %>%
     union_all(match_2 %>%
               anti_join(match_1,
-                        by=c("campaign_id", "period", "first_name", "last_name")))
+                        by=c("campaign_id", "first_name", "last_name")))
 
 match_b <-
     match_a %>%
     union_all(match_3 %>%
               anti_join(match_a,
-                        by=c("campaign_id", "period", "first_name", "last_name"))) %>%
+                        by=c("campaign_id", "first_name", "last_name"))) %>%
     compute()
 
-dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director_equilar")
+match_c <-
+  match_b %>%
+  union_all(match_4 %>%
+              anti_join(match_b,
+                        by=c("campaign_id", "first_name", "last_name"))) %>%
+  compute()
+
+dbExecute(pg, "DROP TABLE IF EXISTS activist_director_equilar")
 
 activist_director_equilar <-
-    match_b %>%
-    union_all(match_4 %>%
-              anti_join(match_b,
-                        by=c("campaign_id", "period", "first_name", "last_name"))) %>%
-    select(campaign_id, first_name, last_name, company_id, executive_id, appointment_date, retirement_date, independent) %>%
-    arrange(company_id, executive_id) %>%
+    match_c %>%
+    select(campaign_id, first_name, last_name, company_id,
+           executive_id, appointment_date, retirement_date, independent) %>%
     compute(name = "activist_director_equilar", temporary=FALSE)
 
-dbGetQuery(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
+dbExecute(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
 
 sql <- paste("
   COMMENT ON TABLE activist_director_equilar IS
@@ -141,4 +138,4 @@ sql <- paste("
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
-rs <- dbDisconnect(pg)
+# rs <- dbDisconnect(pg)
