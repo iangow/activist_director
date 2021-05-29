@@ -172,4 +172,4 @@ sql <- paste("
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
-# rs <- dbDisconnect(pg)
+rs <- dbDisconnect(pg)
