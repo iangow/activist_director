@@ -30,12 +30,14 @@ company_first_years <-
     window_order(period) %>%
     mutate(lag_period = lag(period),
            first_period_company = min(period, na.rm = TRUE),
-           firm_first_year = period==first_period_company)
+           firm_first_year = period==first_period_company) %>%
+    compute()
 
 # Bring in activist directors matched with Equilar
 activist_directors_mod <-
     activist_directors %>%
-    inner_join(activist_director_equilar) %>%
+    inner_join(activist_director_equilar,
+               by = c("campaign_id", "first_name", "last_name")) %>%
     select(-source, -bio, -issuer_cik)
 
 # Pull together director characteristics
@@ -80,9 +82,9 @@ director_first_years <-
     director_index %>%
     left_join(company_first_years,
               by = c("company_id", "period")) %>%
-    left_join(activist_director_equilar,
+    left_join(activist_directors_mod,
               by = c("company_id", "executive_id")) %>%
-    select(-campaign_id, -first_name, -last_name, -retirement_date, -independent) %>%
+    select(-campaign_id, -first_name, -last_name) %>%
     mutate(date_start = coalesce(appointment_date, date_start)) %>%
     mutate(first_period_director = min(period)) %>%
     select(-appointment_date) %>%

@@ -161,7 +161,7 @@ activist_director_equilar <-
   inner_join(activism_events_equilar, by = "campaign_id") %>%
   inner_join(activist_directors) %>%
   select(campaign_id, first_name, last_name, company_id,
-         executive_id, appointment_date, retirement_date, independent) %>%
+         executive_id) %>%
   compute(name = "activist_director_equilar", temporary=FALSE)
 
 dbExecute(pg, "ALTER TABLE activist_director_equilar OWNER TO activism")
