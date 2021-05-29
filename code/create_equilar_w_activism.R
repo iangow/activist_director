@@ -1,10 +1,11 @@
-library(RPostgreSQL)
+library(DBI)
 library(dplyr, warn.conflicts = FALSE)
+library(dbplyr) # For window_order
 
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
-rs <- dbGetQuery(pg, "SET work_mem='8GB'")
-rs <- dbGetQuery(pg, "SET search_path TO activist_director, equilar_hbs")
+rs <- dbExecute(pg, "SET work_mem='8GB'")
+rs <- dbExecute(pg, "SET search_path TO activist_director, equilar_hbs")
 
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
 
@@ -22,19 +23,19 @@ company_first_years <-
     company_financials %>%
     select(company_id, fye) %>%
     rename(period = fye) %>%
+    # Here distinct() eliminates three rows; seems to be garbage.
     distinct() %>%
     compute() %>%
     group_by(company_id) %>%
-    arrange(period) %>%
+    window_order(period) %>%
     mutate(lag_period = lag(period),
            first_period_company = min(period, na.rm = TRUE),
            firm_first_year = period==first_period_company)
 
-# Bring in activist directors matched with equilar
+# Bring in activist directors matched with Equilar
 activist_directors_mod <-
     activist_directors %>%
     inner_join(activist_director_equilar) %>%
-    arrange(company_id, executive_id, appointment_date) %>%
     select(-source, -bio, -issuer_cik)
 
 # Pull together director characteristics
@@ -45,7 +46,7 @@ equilar <-
     mutate(tenure_calc = (period - date_start)/365.25,
            female = gender=='F',
            male = gender=='M') %>%
-    mutate(parsed_name = sql("director.parse_name(director_name)")) %>%
+    mutate(parsed_name = parse_name(director_name)) %>%
     mutate(first_name = sql("(parsed_name).first_name"),
            last_name = sql("(parsed_name).first_name")) %>%
     select(company_id, executive_id, period, director_name,
@@ -60,7 +61,6 @@ equilar <-
     rename(director = director_name,
            audit_committee_financial_expert = is_audit_cmte_spec)  %>%
     distinct() %>%
-    arrange(company_id, executive_id, period) %>%
     compute()
 
 # Match Equilar to PERMCOs
@@ -73,7 +73,6 @@ equilar_permnos <-
     inner_join(stocknames, by = "permno") %>%
     select(company_id, period, permno, permco) %>%
     distinct() %>%
-    arrange(permno, period) %>%
     compute()
 
 # Identify directors' first years
@@ -92,10 +91,13 @@ director_first_years <-
     group_by(executive_id, company_id) %>%
     mutate(first_period_director = min(period, na.rm = TRUE)) %>%
     mutate(new_director = (between(date_start, lag_period, period))
-                        | (is.na(lag_period) & date_start > sql("period - interval '12 months'"))
-                        | (first_period_director==period & first_period_company==period & is.na(date_start))) %>%
-    select(company_id, executive_id, period, firm_first_year, date_start, new_director) %>%
-    arrange(executive_id, company_id, period)
+                        | (is.na(lag_period) & date_start >
+                             sql("period - interval '12 months'"))
+                        | (first_period_director==period &
+                             first_period_company==period &
+                             is.na(date_start))) %>%
+    select(company_id, executive_id, period, firm_first_year, date_start,
+           new_director)
 
 # Classify directors' first years on Equilar based on whether
 # they were appointed during an activism event or shortly thereafter
@@ -109,14 +111,16 @@ equilar_activism_match <-
     summarize(sharkwatch50 = bool_or(sharkwatch50),
               activism_firm = bool_or(activism),
               activist_demand_firm = bool_or(activist_demand),
-              activist_director_firm = bool_or(activist_director)) %>%
-    arrange(permno, executive_id, period)
+              activist_director_firm = bool_or(activist_director),
+              .groups = "drop")
 
 director_first_years_plus <-
     director_first_years %>%
     left_join(equilar_activism_match,
               by = c("company_id", "executive_id", "period")) %>%
     select(-date_start, -permno)
+
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS equilar_w_activism")
 
 equilar_w_activism <-
     equilar %>%
@@ -138,18 +142,12 @@ equilar_w_activism <-
                                 activism_firm ~ "activism_firm",
                                 TRUE ~ "_none")) %>%
     distinct() %>%
-    arrange(permno, executive_id, period) %>%
-    collect()
+    compute(name = "equilar_w_activism", temporary = FALSE)
 
-rs <- dbGetQuery(pg, "DROP TABLE IF EXISTS activist_director.equilar_w_activism")
-
-rs <- dbWriteTable(pg, c("activist_director", "equilar_w_activism"),
-                   equilar_w_activism, overwrite=TRUE, row.names=FALSE)
-
-rs <- dbExecute(pg, "ALTER TABLE activist_director.equilar_w_activism OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE equilar_w_activism OWNER TO activism")
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.equilar_w_activism IS
+  COMMENT ON TABLE equilar_w_activism IS
     'CREATED USING create_equilar_w_activism ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
