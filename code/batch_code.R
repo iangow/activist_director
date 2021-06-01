@@ -1,23 +1,31 @@
 #!/usr/bin/env Rscript
 # Program that captures the data steps for activist_director project
 
-library(RPostgreSQL)
-pg <- dbConnect(PostgreSQL())
+library(DBI)
+pg <- dbConnect(RPostgres::Postgres())
 
-rs <- dbGetQuery(pg, "
-    CREATE SCHEMA IF NOT EXISTS activist_director;
+rs <- dbExecute(pg, "CREATE SCHEMA IF NOT EXISTS activist_director")
+rs <- dbExecute(pg, "ALTER SCHEMA activist_director OWNER TO activism")
 
-    ALTER SCHEMA activist_director OWNER TO activism;")
-
-rs <- dbGetQuery(pg, "
-    DROP AGGREGATE IF EXISTS product(double precision);
-
+rs <- dbExecute(pg, "DROP AGGREGATE IF EXISTS product(double precision)")
+rs <- dbExecute(pg, "
     CREATE AGGREGATE product(double precision) (
         SFUNC=float8mul,
         STYPE=float8
     )")
+
+rs <- dbExecute(pg, "CREATE OR REPLACE FUNCTION array_min(an_array integer[])
+    RETURNS integer AS
+    $BODY$
+        WITH unnested AS (
+            SELECT UNNEST(an_array) AS ints)
+        SELECT min(ints)
+        FROM unnested
+    $BODY$ LANGUAGE sql;")
+
 rs <- dbDisconnect(pg)
 
+source('code/create_permnos.R', echo=TRUE)
 source('code/create_activism_sample.R', echo=TRUE)
 source("code/import_activist_directors.R")
 
