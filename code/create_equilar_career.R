@@ -20,7 +20,7 @@ company_directors <-
 own_board <-
     company_directors %>%
     left_join(company_years, by="company_id") %>%
-    select(company_id, executive_id,  period,  company_director_min_start, company_director_min_period,
+    select(company_id, executive_id,  period, company_director_min_start, company_director_min_period,
            company_director_max_term) %>%
     mutate(start = least(company_director_min_start, company_director_min_period),
            firm_exists = TRUE) %>%
@@ -116,7 +116,7 @@ count_other <-
 count_others <-
     count_other %>%
     group_by(company_id, executive_id) %>%
-    arrange(year) %>%
+    window_order(year) %>%
     mutate(total_m3 = lag(total_boards, 3L),
            total_m2 = lag(total_boards, 2L),
            total_m1 = lag(total_boards, 1L),
