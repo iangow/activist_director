@@ -7,17 +7,16 @@ library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 library(survival)
 library(quantreg)
+library(zoo)
 @
 
 \begin{landscape}
 <<dir_desc_sample, message=FALSE, echo=FALSE, results='asis'>>=
 # PostgreSQL connection #
-pg <- dbConnect(PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
-activist_directors <- tbl(pg, "activist_directors") %>%
-                          mutate(appointment_date = as.Date(appointment_date),
-                                retirement_date = as.Date(retirement_date))
+activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
 equilar_w_activism <- tbl(pg, "equilar_w_activism")
 activist_director_skills <- tbl(pg, "activist_director_skills") %>% collect()
@@ -57,6 +56,7 @@ quantreg1 <- crq(surv_est ~ activist_affiliate,
                  data=surv_data,
                  na.action="na.omit",
                  method="Portnoy")
+
 summary1 <- summary.crq(quantreg1, taus=c(0.25, 0.5, 0.75))
 
 activist_director_stats <-
@@ -116,27 +116,28 @@ levels(new.dir.data$category) <- c("New directors: No activism",
                                    "New directors: Activist director")
 
 # Additional Variables
-board_experience <- equilar_final %>%
+board_experience <-
+    equilar_final %>%
     select(executive_id, company_id, date_start) %>%
-    arrange(executive_id, date_start) %>% distinct()
+    distinct()
 
 board_exp_by_period <-
     equilar_final %>%
-        select(executive_id, company_id, period) %>%
-        left_join(board_experience, by="executive_id") %>%
-        filter(date_start < period, company_id.x!=company_id.y) %>%
-        mutate(company_id=company_id.x) %>%
-        select(-company_id.x, -company_id.y) %>%
-        distinct() %>%
-        group_by(executive_id, company_id, period) %>%
-        summarise(board_exp=count(date_start)) %>%
-        arrange(executive_id, company_id,period) %>%
-        distinct() %>%
-        collect()
+    select(executive_id, company_id, period) %>%
+    left_join(board_experience, by = "executive_id") %>%
+    filter(date_start < period, company_id.x != company_id.y) %>%
+    mutate(company_id=company_id.x) %>%
+    select(-company_id.x, -company_id.y) %>% distinct() %>%
+    group_by(executive_id, company_id, period) %>%
+    summarise(board_exp=count(date_start), .groups = "drop") %>%
+    arrange(executive_id, company_id, period) %>%
+    collect()
 
-tenure_experience <- equilar_final %>%
+tenure_experience <-
+    equilar_final %>%
     select(executive_id, company_id, date_start, company_director_max_term) %>%
-    arrange(executive_id, date_start) %>% distinct()
+    arrange(executive_id, date_start) %>%
+    distinct()
 
 tenure_exp_by_period <-
     equilar_final %>%
@@ -144,7 +145,35 @@ tenure_exp_by_period <-
         left_join(tenure_experience, by="executive_id") %>%
         filter(date_start < period, company_id.x!=company_id.y) %>%
         mutate(company_id = company_id.x,
-               tenure = pmax(0, pmin(period, company_director_max_term, na.rm=TRUE)-date_start, na.rm=TRUE)) %>%
+               tenure = pmax(0, pmin(period,
+                                     company_director_max_term, na.rm=TRUE) -
+                               date_start, na.rm=TRUE)) %>%
+        select(-company_id.x, -company_id.y) %>%
+        distinct() %>%
+        group_by(executive_id, company_id, period) %>%
+        summarise(board_exp=count(tenure),
+                  avg_tenure=mean(tenure)/365.25,
+                  sum_tenure=sum(tenure, na.rm=TRUE)/365.25,
+                  .groups = "drop") %>%
+        arrange(executive_id, period) %>%
+        distinct() %>%
+        collect()
+
+# Board Experience
+tenure_experience <- equilar_final %>%
+    select(executive_id, company_id, date_start, company_director_max_term) %>%
+    arrange(executive_id, date_start) %>% distinct()
+
+# Board Experience by Period
+tenure_exp_by_period <-
+    equilar_final %>%
+        select(executive_id, company_id, period) %>%
+        left_join(tenure_experience, by="executive_id") %>%
+        filter(date_start < period, company_id.x!=company_id.y) %>%
+        mutate(company_id = company_id.x,
+               tenure = pmax(0, pmin(period,
+                                     company_director_max_term, na.rm=TRUE) -
+                               date_start, na.rm=TRUE)) %>%
         select(-company_id.x, -company_id.y) %>%
         distinct() %>%
         group_by(executive_id, company_id, period) %>%
@@ -155,8 +184,18 @@ tenure_exp_by_period <-
         distinct() %>%
         collect()
 
+# Earliest Board Experience by Period
+board_experience <-
+    tenure_exp_by_period %>%
+    group_by(executive_id, company_id) %>%
+    mutate(period=min(period)) %>%
+    inner_join(tenure_exp_by_period) %>%
+    select(-period) %>%
+    collect()
+
 rs <- dbDisconnect(pg)
 @
+
 <<dir_desc_table, dependson="dir_desc_sample", results='asis'>>=
 # All Director Sample - Table
 col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
@@ -171,12 +210,12 @@ getTab <- function(cat, df) {
 
     means <-
         df %>%
-        group_by_(cat) %>%
+        group_by_at(cat) %>%
         summarize_at(vars(sum.vars), function(x) mean(x, na.rm = TRUE))
 
     count <-
         df %>%
-        group_by_(cat) %>%
+        group_by_at(cat) %>%
         count()
 
     df_new <-
@@ -188,297 +227,153 @@ getTab <- function(cat, df) {
     df_new
 }
 
-# Board Experience
-tenure_experience <- equilar_final %>%
-    select(executive_id, company_id, date_start, company_director_max_term) %>%
-    arrange(executive_id, date_start) %>% distinct()
+all_dir_data <-
+    all.dir.data %>%
+    left_join(ind_exp, by = c("executive_id", "company_id")) %>%
+    left_join(tenure_exp_by_period) %>%
+    distinct()
 
-# Board Experience by Period
-tenure_exp_by_period <-
-    equilar_final %>%
-        select(executive_id, company_id, period) %>%
-        left_join(tenure_experience, by="executive_id") %>%
-        filter(date_start < period, company_id.x!=company_id.y) %>%
-        mutate(company_id = company_id.x,
-               tenure = pmax(0, pmin(period, company_director_max_term, na.rm=TRUE)-date_start, na.rm=TRUE)) %>%
-        select(-company_id.x, -company_id.y) %>%
-        distinct() %>%
-        group_by(executive_id, company_id, period) %>%
-        summarise(board_exp=count(tenure),
-                  avg_tenure=mean(tenure)/365.25,
-                  sum_tenure=sum(tenure, na.rm=TRUE)/365.25) %>%
-        arrange(executive_id, period) %>%
-        distinct() %>%
-        collect()
+new_dir_data <-
+    new.dir.data %>%
+    left_join(ind_exp, by = c("executive_id", "company_id")) %>%
+    left_join(tenure_exp_by_period) %>%
+    distinct()
 
-# Earliest Board Experience by Period
-board_experience <- tenure_exp_by_period %>%
-                      group_by(executive_id, company_id) %>%
-                      mutate(period=min(period)) %>%
-                      inner_join(tenure_exp_by_period) %>%
-                      select(-period) %>% collect()
+act_dir_data <-
+    act.dir.data %>%
+    left_join(ind_exp, by = c("executive_id", "company_id")) %>%
+    left_join(board_experience) %>%
+    distinct()
 
-all.dir.data <- all.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id")) %>% left_join(tenure_exp_by_period) %>% distinct()
-new.dir.data <- new.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id")) %>% left_join(tenure_exp_by_period) %>% distinct()
-act.dir.data <- act.dir.data %>% left_join(ind_exp, by=c("executive_id","company_id")) %>% left_join(board_experience) %>% distinct()
-
-tab.1 <- getTab("all_directors", all.dir.data)
+tab.1 <- getTab("all_directors", all_dir_data)
 # New director sample - table
-tab.2 <- getTab("category", new.dir.data) %>%
+tab.2 <- getTab("category", new_dir_data) %>%
     mutate(Category = as.character(Category))
-tab.3 <- getTab("activist_director.x", act.dir.data)
+tab.3 <- getTab("activist_director.x", act_dir_data)
 tab.4 <-
-    getTab("affiliated_director.x", act.dir.data) %>%
+    getTab("affiliated_director.x", act_dir_data) %>%
     arrange(desc(Category))
 tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 
-
-# Another Desc. Table
+# Another Descriptive Table
 col.names <- unlist(strsplit("Category, N, Ind exp., Board exp. (firms), Avg. tenure (years), Board exp. (years)", ",\\s*"))
 sum.var.str <- "prior_ind_exp board_exp avg_tenure sum_tenure"
 
 sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
 
-tab2.1 <- getTab("all_directors", all.dir.data)
 # New director sample - table
-tab2.2 <- getTab("category", new.dir.data) %>%
-    mutate(Category = as.character(Category))
-tab2.3 <- getTab("activist_director.x", act.dir.data)
-tab2.4 <-
-    getTab("affiliated_director.x", act.dir.data) %>%
-    arrange(desc(Category))
-tab2 <- bind_rows(tab2.1, tab2.2, tab2.3, tab2.4)
+#    arrange(desc(Category))
+tab2 <- bind_rows(getTab("all_directors", all_dir_data),
+                  getTab("category", new_dir_data) %>%
+                    mutate(Category = as.character(Category)),
+                  getTab("activist_director.x", act_dir_data),
+                  getTab("affiliated_director.x", act_dir_data))
+@
 
+<<skill_summ, dependson="dir_desc_sample", results='asis'>>=
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+
+activist_director_skills <- tbl(pg, "activist_director_skills")
 
 # Director Skillsets
-skill_summ <- activist_director_skills %>%
-    summarise(academic = mean(academic, na.rm=TRUE),
-              company_business = mean(company_business, na.rm=TRUE),
-              compensation = mean(compensation, na.rm=TRUE),
-              entrepreneurial = mean(entrepreneurial, na.rm=TRUE),
-              finance_accounting = mean(finance_accounting, na.rm=TRUE),
-              governance = mean(governance, na.rm=TRUE),
-              government_policy = mean(government_policy, na.rm=TRUE),
-              international = mean(international, na.rm=TRUE),
-              leadership = mean(leadership, na.rm=TRUE),
-              legal = mean(legal, na.rm=TRUE),
-              management = mean(management, na.rm=TRUE),
-              manufacturing = mean(manufacturing, na.rm=TRUE),
-              marketing = mean(marketing, na.rm=TRUE),
-              outside_board = mean(outside_board, na.rm=TRUE),
-              outside_executive = mean(outside_executive, na.rm=TRUE),
-              risk_management = mean(risk_management, na.rm=TRUE),
-              scientific = mean(scientific, na.rm=TRUE),
-              strategic_planning = mean(strategic_planning, na.rm=TRUE),
-              sustainability = mean(sustainability, na.rm=TRUE),
-              technology = mean(technology, na.rm=TRUE),
-              num_skills = mean(num_skills, na.rm=TRUE))
+skill_summ_raw <-
+    activist_director_skills %>%
+    filter(!is.na(independent)) %>%
+    select(academic:num_skills) %>%
+    summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
+    collect()
 
-skill_summ_affiliated <- activist_director_skills %>% filter(!independent) %>%
-    summarise(academic = mean(academic, na.rm=TRUE),
-              company_business = mean(company_business, na.rm=TRUE),
-              compensation = mean(compensation, na.rm=TRUE),
-              entrepreneurial = mean(entrepreneurial, na.rm=TRUE),
-              finance_accounting = mean(finance_accounting, na.rm=TRUE),
-              governance = mean(governance, na.rm=TRUE),
-              government_policy = mean(government_policy, na.rm=TRUE),
-              international = mean(international, na.rm=TRUE),
-              leadership = mean(leadership, na.rm=TRUE),
-              legal = mean(legal, na.rm=TRUE),
-              management = mean(management, na.rm=TRUE),
-              manufacturing = mean(manufacturing, na.rm=TRUE),
-              marketing = mean(marketing, na.rm=TRUE),
-              outside_board = mean(outside_board, na.rm=TRUE),
-              outside_executive = mean(outside_executive, na.rm=TRUE),
-              risk_management = mean(risk_management, na.rm=TRUE),
-              scientific = mean(scientific, na.rm=TRUE),
-              strategic_planning = mean(strategic_planning, na.rm=TRUE),
-              sustainability = mean(sustainability, na.rm=TRUE),
-              technology = mean(technology, na.rm=TRUE),
-              num_skills = mean(num_skills, na.rm=TRUE))
+skill_summ_affiliated <-
+  activist_director_skills %>%
+  filter(!independent) %>%
+  select(academic:num_skills) %>%
+  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
+  collect()
 
-skill_summ_unaffiliated <- activist_director_skills %>% filter(independent) %>%
-    summarise(academic = mean(academic, na.rm=TRUE),
-              company_business = mean(company_business, na.rm=TRUE),
-              compensation = mean(compensation, na.rm=TRUE),
-              entrepreneurial = mean(entrepreneurial, na.rm=TRUE),
-              finance_accounting = mean(finance_accounting, na.rm=TRUE),
-              governance = mean(governance, na.rm=TRUE),
-              government_policy = mean(government_policy, na.rm=TRUE),
-              international = mean(international, na.rm=TRUE),
-              leadership = mean(leadership, na.rm=TRUE),
-              legal = mean(legal, na.rm=TRUE),
-              management = mean(management, na.rm=TRUE),
-              manufacturing = mean(manufacturing, na.rm=TRUE),
-              marketing = mean(marketing, na.rm=TRUE),
-              outside_board = mean(outside_board, na.rm=TRUE),
-              outside_executive = mean(outside_executive, na.rm=TRUE),
-              risk_management = mean(risk_management, na.rm=TRUE),
-              scientific = mean(scientific, na.rm=TRUE),
-              strategic_planning = mean(strategic_planning, na.rm=TRUE),
-              sustainability = mean(sustainability, na.rm=TRUE),
-              technology = mean(technology, na.rm=TRUE),
-              num_skills = mean(num_skills, na.rm=TRUE))
+skill_summ_unaffiliated <-
+  activist_director_skills %>%
+  filter(independent) %>%
+  select(academic:num_skills) %>%
+  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
+  collect()
 
-skill_summ[2,] <- skill_summ_affiliated
-skill_summ[3,] <- skill_summ_unaffiliated
-skill_summ <- as.data.frame(t(skill_summ))
-colnames(skill_summ) <- c("activist_director","affiliated", "unaffiliated")
+skill_vars <-
+    activist_director_skills %>%
+    select(academic:technology) %>% # num_skills
+    colnames()
 
-# T-Test
-library(zoo)
-skill_summ$diff_affil_unaffil <- skill_summ$unaffiliated - skill_summ$affiliated
-skill_summ$diff_p_value_affil_unaffil <- list(t.test(academic ~ independent, data=activist_director_skills)[3],
-                                            t.test(company_business ~ independent, data=activist_director_skills)[3],
-                                            t.test(compensation ~ independent, data=activist_director_skills)[3],
-                                            t.test(entrepreneurial ~ independent, data=activist_director_skills)[3],
-                                            t.test(finance_accounting ~ independent, data=activist_director_skills)[3],
-                                            t.test(governance ~ independent, data=activist_director_skills)[3],
-                                            t.test(government_policy ~ independent, data=activist_director_skills)[3],
-                                            t.test(international ~ independent, data=activist_director_skills)[3],
-                                            t.test(leadership ~ independent, data=activist_director_skills)[3],
-                                            t.test(legal ~ independent, data=activist_director_skills)[3],
-                                            t.test(management ~ independent, data=activist_director_skills)[3],
-                                            t.test(manufacturing ~ independent, data=activist_director_skills)[3],
-                                            t.test(marketing ~ independent, data=activist_director_skills)[3],
-                                            t.test(outside_board ~ independent, data=activist_director_skills)[3],
-                                            t.test(outside_executive ~ independent, data=activist_director_skills)[3],
-                                            t.test(risk_management ~ independent, data=activist_director_skills)[3],
-                                            t.test(scientific ~ independent, data=activist_director_skills)[3],
-                                            t.test(strategic_planning ~ independent, data=activist_director_skills)[3],
-                                            t.test(sustainability ~ independent, data=activist_director_skills)[3],
-                                            t.test(technology ~ independent, data=activist_director_skills)[3],
-                                            t.test(num_skills ~ independent, data=activist_director_skills)[3])
-rownames(skill_summ) <- c( "Academic", "Company business", "Compensation", "Entrepreneurial",
-                               "Finance and Accounting", "Governance", "Government policy", "International",
-                               "Leadership", "Legal", "Management", "Manufacturing", "Marketing",
-                               "Outside board", "Outside executive", "Risk management",
-                               "Scientific", "Strategic planning", "Sustainability", "Technology", "Num. Skills")
-colnames(skill_summ) <- c("Activist director", "Affiliated", "Unaffiliated", "Diff.", "P-value")
+skill_summ_labels <- c("Academic", "Company business", "Compensation",
+                       "Entrepreneurial", "Finance and accounting",
+                       "Governance", "Government policy", "International",
+                       "Leadership", "Legal", "Management", "Manufacturing",
+                       "Marketing", "Outside board", "Outside executive",
+                       "Risk management", "Scientific", "Strategic planning",
+                       "Sustainability", "Technology")
 
-# Simulation Study 0.075, 0.253, 0.082, 0.023, 0.340, 0.201, 0.089, 0.291, 0.287, 0.049, 0.383, 0.088, 0.113, 0.130, 0.234, 0.060, 0.014, 0.199, 0.016, 0.140
-academic <- ifelse(runif(29209) <= 0.075, TRUE, FALSE)
-company_business <- ifelse(runif(29209) <= 0.253, TRUE, FALSE)
-compensation <- ifelse(runif(29209) <= 0.082, TRUE, FALSE)
-entrepreneurial <- ifelse(runif(29209) <= 0.023, TRUE, FALSE)
-finance_accounting <- ifelse(runif(29209) <= 0.340, TRUE, FALSE)
-governance <- ifelse(runif(29209) <= 0.201, TRUE, FALSE)
-government_policy <- ifelse(runif(29209) <= 0.089, TRUE, FALSE)
-international <- ifelse(runif(29209) <= 0.291, TRUE, FALSE)
-leadership <- ifelse(runif(29209) <= 0.287, TRUE, FALSE)
-legal <- ifelse(runif(29209) <= 0.049, TRUE, FALSE)
-management <- ifelse(runif(29209) <= 0.383, TRUE, FALSE)
-manufacturing <- ifelse(runif(29209) <= 0.088, TRUE, FALSE)
-marketing <- ifelse(runif(29209) <= 0.113, TRUE, FALSE)
-outside_board <- ifelse(runif(29209) <= 0.130, TRUE, FALSE)
-outside_executive <- ifelse(runif(29209) <= 0.234, TRUE, FALSE)
-risk_management <- ifelse(runif(29209) <= 0.060, TRUE, FALSE)
-scientific <- ifelse(runif(29209) <= 0.014, TRUE, FALSE)
-strategic_planning <- ifelse(runif(29209) <= 0.199, TRUE, FALSE)
-sustainability <- ifelse(runif(29209) <= 0.016, TRUE, FALSE)
-technology <- ifelse(runif(29209) <= 0.140, TRUE, FALSE)
+t_test_fun <- function(df, var) {
+  formula <- as.formula(paste(var, "~ independent"))
+  t.test(formula, data = df)[3]
+}
 
-sim_director_skills_0 <- data.frame(academic, company_business, compensation, entrepreneurial,
-                   finance_accounting, governance, government_policy, international,
-                   leadership, legal, management, manufacturing, marketing,
-                   outside_board, outside_executive, risk_management,
-                   scientific, strategic_planning, sustainability, technology)
-sim_director_skills_0$affiliated <- FALSE
-sim_director_skills_0$unaffiliated <- FALSE
-sim_director_skills_0$activist_director <- FALSE
+skill_summ <-
+  tibble(Skill = c(skill_summ_labels, "Num. Skills"),
+         `Activist director` = t(skill_summ_raw)[, 1],
+         Affiliated = t(skill_summ_affiliated)[, 1],
+         Unaffiliated = t(skill_summ_unaffiliated)[, 1]) %>%
+  mutate(`Diff.` = Unaffiliated - Affiliated,
+         `P-value` = unlist(lapply(c(skill_vars, "num_skills"),
+                                   function(x) t_test_fun(activist_director_skills, x))))
 
-activist_director_skills$affiliated <- !activist_director_skills$independent
-activist_director_skills$unaffiliated <- activist_director_skills$independent
-activist_director_skills$activist_director <- !is.na(activist_director_skills$independent)
+# Simulation Study
+skill_probs <- c(0.075, 0.253, 0.082, 0.023, 0.340, 0.201, 0.089,
+                 0.291, 0.287, 0.049, 0.383, 0.088, 0.113, 0.130,
+                 0.234, 0.060, 0.014, 0.199, 0.016, 0.140)
 
-sim_director_skills_1 <- activist_director_skills %>%
-                select(academic, company_business, compensation, entrepreneurial,
-                       finance_accounting, governance, government_policy, international,
-                       leadership, legal, management, manufacturing, marketing,
-                       outside_board, outside_executive, risk_management,
-                       scientific, strategic_planning, sustainability, technology,
-                       activist_director, affiliated, unaffiliated) %>%
-                as.data.frame()
+set_names <- function(df) {
+  colnames(df) <- skill_vars
+  df
+}
 
-sim_director_skills <- rbind(sim_director_skills_0, sim_director_skills_1)
+sim_director_skills_0 <-
+  bind_cols(lapply(skill_probs, function(x) runif(29209) <= x)) %>%
+  set_names() %>%
+  mutate(affiliated = FALSE,
+         unaffiliated = FALSE,
+         activist_director = FALSE)
 
-skill_summ_sim <- sim_director_skills %>% filter(activist_director) %>%
-    summarise(academic = mean(academic, na.rm=TRUE),
-              company_business = mean(company_business, na.rm=TRUE),
-              compensation = mean(compensation, na.rm=TRUE),
-              entrepreneurial = mean(entrepreneurial, na.rm=TRUE),
-              finance_accounting = mean(finance_accounting, na.rm=TRUE),
-              governance = mean(governance, na.rm=TRUE),
-              government_policy = mean(government_policy, na.rm=TRUE),
-              international = mean(international, na.rm=TRUE),
-              leadership = mean(leadership, na.rm=TRUE),
-              legal = mean(legal, na.rm=TRUE),
-              management = mean(management, na.rm=TRUE),
-              manufacturing = mean(manufacturing, na.rm=TRUE),
-              marketing = mean(marketing, na.rm=TRUE),
-              outside_board = mean(outside_board, na.rm=TRUE),
-              outside_executive = mean(outside_executive, na.rm=TRUE),
-              risk_management = mean(risk_management, na.rm=TRUE),
-              scientific = mean(scientific, na.rm=TRUE),
-              strategic_planning = mean(strategic_planning, na.rm=TRUE),
-              sustainability = mean(sustainability, na.rm=TRUE),
-              technology = mean(technology, na.rm=TRUE))
+sim_director_skills <-
+  activist_director_skills %>%
+  collect() %>%
+  mutate(affiliated = !independent,
+         unaffiliated = independent,
+         activist_director = !is.na(independent)) %>%
+  bind_rows(sim_director_skills_0)
 
-skill_summ_adams <- sim_director_skills %>% filter(!activist_director) %>%
-    summarise(academic = mean(academic, na.rm=TRUE),
-              company_business = mean(company_business, na.rm=TRUE),
-              compensation = mean(compensation, na.rm=TRUE),
-              entrepreneurial = mean(entrepreneurial, na.rm=TRUE),
-              finance_accounting = mean(finance_accounting, na.rm=TRUE),
-              governance = mean(governance, na.rm=TRUE),
-              government_policy = mean(government_policy, na.rm=TRUE),
-              international = mean(international, na.rm=TRUE),
-              leadership = mean(leadership, na.rm=TRUE),
-              legal = mean(legal, na.rm=TRUE),
-              management = mean(management, na.rm=TRUE),
-              manufacturing = mean(manufacturing, na.rm=TRUE),
-              marketing = mean(marketing, na.rm=TRUE),
-              outside_board = mean(outside_board, na.rm=TRUE),
-              outside_executive = mean(outside_executive, na.rm=TRUE),
-              risk_management = mean(risk_management, na.rm=TRUE),
-              scientific = mean(scientific, na.rm=TRUE),
-              strategic_planning = mean(strategic_planning, na.rm=TRUE),
-              sustainability = mean(sustainability, na.rm=TRUE),
-              technology = mean(technology, na.rm=TRUE))
+skill_summ_sim_raw <-
+    sim_director_skills %>%
+    filter(activist_director) %>%
+    select(academic:technology) %>%
+    summarise_all(~ mean(., na.rm=TRUE))
 
-skill_summ_sim[2,] <- skill_summ_adams
-skill_summ_sim <- as.data.frame(t(skill_summ_sim))
-colnames(skill_summ_sim) <- c("activist_director","adams_2018")
-skill_summ_sim$diff <- skill_summ_sim$activist_director - skill_summ_sim$adams_2018
+skill_summ_adams <-
+    sim_director_skills %>%
+    filter(!activist_director) %>%
+    select(academic:technology) %>%
+    summarise_all(~ mean(., na.rm=TRUE))
 
-skill_summ_sim$p_value_act_vs_adams <-
-    list(t.test(academic ~ activist_director, data=sim_director_skills)[3],
-          t.test(company_business ~ activist_director, data=sim_director_skills)[3],
-          t.test(compensation ~ activist_director, data=sim_director_skills)[3],
-          t.test(entrepreneurial ~ activist_director, data=sim_director_skills)[3],
-          t.test(finance_accounting ~ activist_director, data=sim_director_skills)[3],
-          t.test(governance ~ activist_director, data=sim_director_skills)[3],
-          t.test(government_policy ~ activist_director, data=sim_director_skills)[3],
-          t.test(international ~ activist_director, data=sim_director_skills)[3],
-          t.test(leadership ~ activist_director, data=sim_director_skills)[3],
-          t.test(legal ~ activist_director, data=sim_director_skills)[3],
-          t.test(management ~ activist_director, data=sim_director_skills)[3],
-          t.test(manufacturing ~ activist_director, data=sim_director_skills)[3],
-          t.test(marketing ~ activist_director, data=sim_director_skills)[3],
-          t.test(outside_board ~ activist_director, data=sim_director_skills)[3],
-          t.test(outside_executive ~ activist_director, data=sim_director_skills)[3],
-          t.test(risk_management ~ activist_director, data=sim_director_skills)[3],
-          t.test(scientific ~ activist_director, data=sim_director_skills)[3],
-          t.test(strategic_planning ~ activist_director, data=sim_director_skills)[3],
-          t.test(sustainability ~ activist_director, data=sim_director_skills)[3],
-          t.test(technology ~ activist_director, data=sim_director_skills)[3])
+t_test_fun <- function(df, var) {
+  formula <- as.formula(paste(var, "~ activist_director"))
+  t.test(formula, data = df)[3]
+}
 
-rownames(skill_summ_sim) <- c( "Academic", "Company business", "Compensation", "Entrepreneurial",
-                               "Finance and Accounting", "Governance", "Government policy", "International",
-                               "Leadership", "Legal", "Management", "Manufacturing", "Marketing",
-                               "Outside board", "Outside executive", "Risk management",
-                               "Scientific", "Strategic planning", "Sustainability", "Technology")
-colnames(skill_summ_sim) <- c("Activist director", "Adams 2018", "Diff.", "P-value")
+skill_summ_sim <-
+  tibble(Skill = skill_summ_labels,
+         `Activist director` = t(skill_summ_sim_raw)[, 1],
+          `Adams et al. (2018)` = t(skill_summ_adams)[, 1]) %>%
+  mutate(`Diff.` = `Activist director` - `Adams et al. (2018)`,
+         `P-value` = unlist(lapply(skill_vars, function(x) t_test_fun(sim_director_skills, x))))
+rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
@@ -504,14 +399,14 @@ Panel B presents data on all activist directors (i.e., no requirement for Equila
 \multicolumn{8}{l}{Panel A: Director characteristics by activism classification}
 % \hline
 \\
-<<dir_desc_panel_A, dependson="dir_desc_table", results='asis'>>=
+<<dir_desc_panel_A, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(tab, display=c("s", "s", "d", rep("f", 6))),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
 \\
-<<dir_desc_panel_A2, dependson="dir_desc_table", results='asis'>>=
+<<dir_desc_panel_A2, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(tab2, display=c("s", "s", "d", rep("f", 4))),
       include.rownames=FALSE, only.contents=TRUE,
@@ -523,7 +418,7 @@ print(xtable(tab2, display=c("s", "s", "d", rep("f", 4))),
 \multicolumn{6}{l}{Panel B: Activist director tenure}
 % \hline
 \\
-<<dir_desc_panel_B, dependson="dir_desc_table", results='asis'>>=
+<<dir_desc_panel_B, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d", "d")),
       include.rownames=FALSE, only.contents=TRUE,
@@ -540,18 +435,19 @@ print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel C presents data on activist director skillsets with activist directors in Column 1 and the simulated sample of directors from Adams et al.(2018) in Column 2. The difference between activist director sample and Adams et al.(2018) sample is reported in Column 3 with its p-value reported in Column 4.
+Panel C presents data on activist director skill sets with activist directors in Column 1 and the simulated sample of directors from \citet{Adams:2018vf} in Column 2.
+The difference between activist director sample and \citet{Adams:2018vf} sample is reported in Column 3 with its p-value reported in Column 4.
 \newline}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{5}{l}{Panel C: Activist director skillsets: Activist directors}
+\multicolumn{5}{l}{Panel C: Activist director skill sets: Activist directors}
 % \hline
 \\
-<<dir_desc_panel_C, dependson="dir_desc_table", results='asis'>>=
+<<dir_desc_panel_C, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(skill_summ_sim, display=c("s", "f", "f", "f", "f")),
-      include.rownames=TRUE, only.contents=TRUE,
+print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
+      include.rownames = FALSE, only.contents = TRUE,
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
@@ -565,7 +461,8 @@ print(xtable(skill_summ_sim, display=c("s", "f", "f", "f", "f")),
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel D presents data on activist director skillsets with affiliated directors in Column 2 and unaffiliated directors in Column 3. The difference between affiliated and unaffiliated directors is reported in Column 4 with its p-value reported in Column 5.
+Panel D presents data on activist director skill sets with affiliated directors in Column 2 and unaffiliated directors in Column 3.
+The difference between affiliated and unaffiliated directors is reported in Column 4 with its p-value reported in Column 5.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -573,10 +470,10 @@ Panel D presents data on activist director skillsets with affiliated directors i
 \multicolumn{6}{l}{Panel D: Activist director skillsets: Affiliated vs. Unaffiliated}
 % \hline
 \\
-<<dir_desc_panel_D, dependson="dir_desc_table", results='asis'>>=
+<<dir_desc_panel_D, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(skill_summ, display=c("s", "f", "f", "f", "f", "f")),
-      include.rownames=TRUE, only.contents=TRUE,
+print(xtable(skill_summ, display=c("s", "s", "f", "f", "f", "f", "f")),
+      include.rownames = FALSE, only.contents = TRUE,
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
