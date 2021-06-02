@@ -21,7 +21,7 @@ equilar <-
            is_chair, is_vice_chair, is_lead, cusip) %>%
     mutate(year = date_part('year', period),
            sic2 = substr(sic, 1L, 2L),
-           names = sql("director.parse_name(director_name)")) %>%
+           names = sql("parse_name(director_name)")) %>%
     mutate(first_name = sql('(names).first_name'),
            last_name = sql('(names).last_name'),
            tenure_calc = (period - date_start)/365.25,
