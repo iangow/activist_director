@@ -19,7 +19,6 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 activist_directors <- tbl(pg, "activist_directors")
 activism_events <- tbl(pg, "activism_events")
 equilar_w_activism <- tbl(pg, "equilar_w_activism")
-activist_director_skills <- tbl(pg, "activist_director_skills") %>% collect()
 ind_exp <- tbl(pg, "ind_exp") %>% collect()
 equilar_final <- tbl(pg, "equilar_final")
 
@@ -274,33 +273,34 @@ tab2 <- bind_rows(getTab("all_directors", all_dir_data),
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
-activist_director_skills <- tbl(pg, "activist_director_skills")
+activist_director_skills <-
+  tbl(pg, "activist_director_skills") %>%
+  collect()
+
+rs <- dbDisconnect(pg)
 
 # Director Skillsets
 skill_summ_raw <-
     activist_director_skills %>%
     filter(!is.na(independent)) %>%
     select(academic:num_skills) %>%
-    summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
-    collect()
+    summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE)))
 
 skill_summ_affiliated <-
   activist_director_skills %>%
   filter(!independent) %>%
   select(academic:num_skills) %>%
-  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
-  collect()
+  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE)))
 
 skill_summ_unaffiliated <-
   activist_director_skills %>%
   filter(independent) %>%
   select(academic:num_skills) %>%
-  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE))) %>%
-  collect()
+  summarise(across(everything(), ~ mean(as.integer(.), na.rm=TRUE)))
 
 skill_vars <-
     activist_director_skills %>%
-    select(academic:technology) %>% # num_skills
+    select(academic:technology) %>%
     colnames()
 
 skill_summ_labels <- c("Academic", "Company business", "Compensation",
@@ -318,62 +318,48 @@ t_test_fun <- function(df, var) {
 
 skill_summ <-
   tibble(Skill = c(skill_summ_labels, "Num. Skills"),
+         skill_var = c(skill_vars, "num_skills"),
          `Activist director` = t(skill_summ_raw)[, 1],
          Affiliated = t(skill_summ_affiliated)[, 1],
          Unaffiliated = t(skill_summ_unaffiliated)[, 1]) %>%
   mutate(`Diff.` = Unaffiliated - Affiliated,
          `P-value` = unlist(lapply(c(skill_vars, "num_skills"),
-                                   function(x) t_test_fun(activist_director_skills, x))))
+                                   function(x) t_test_fun(activist_director_skills, x)))) %>%
+  select(-skill_var)
 
 # Simulation Study
-skill_probs <- c(0.075, 0.253, 0.082, 0.023, 0.340, 0.201, 0.089,
-                 0.291, 0.287, 0.049, 0.383, 0.088, 0.113, 0.130,
-                 0.234, 0.060, 0.014, 0.199, 0.016, 0.140)
+adams_data <- tibble(skill_var = skill_vars,
+                    `Adams et al. (2018)` = c(0.075, 0.253, 0.082, 0.023, 0.340,
+                                              0.201, 0.089, 0.291, 0.287, 0.049,
+                                              0.383, 0.088, 0.113, 0.130, 0.234,
+                                              0.060, 0.014, 0.199, 0.016, 0.140))
 
-set_names <- function(df) {
-  colnames(df) <- skill_vars
-  df
-}
+t_test_adams <- function(df, skill) {
 
-sim_director_skills_0 <-
-  bind_cols(lapply(skill_probs, function(x) runif(29209) <= x)) %>%
-  set_names() %>%
-  mutate(affiliated = FALSE,
-         unaffiliated = FALSE,
-         activist_director = FALSE)
+  data <-
+    activist_director_skills %>%
+    select(!!skill) %>%
+    pull() %>%
+    na.omit()
 
-sim_director_skills <-
-  activist_director_skills %>%
-  collect() %>%
-  mutate(affiliated = !independent,
-         unaffiliated = independent,
-         activist_director = !is.na(independent)) %>%
-  bind_rows(sim_director_skills_0)
+  adams_avg <-
+    adams_data %>%
+    filter(skill_var == !!skill) %>%
+    pull(2)
 
-skill_summ_sim_raw <-
-    sim_director_skills %>%
-    filter(activist_director) %>%
-    select(academic:technology) %>%
-    summarise_all(~ mean(., na.rm=TRUE))
+  binom.test(x = sum(data), n = length(data), p = adams_avg)$p.value
 
-skill_summ_adams <-
-    sim_director_skills %>%
-    filter(!activist_director) %>%
-    select(academic:technology) %>%
-    summarise_all(~ mean(., na.rm=TRUE))
-
-t_test_fun <- function(df, var) {
-  formula <- as.formula(paste(var, "~ activist_director"))
-  t.test(formula, data = df)[3]
 }
 
 skill_summ_sim <-
   tibble(Skill = skill_summ_labels,
-         `Activist director` = t(skill_summ_sim_raw)[, 1],
-          `Adams et al. (2018)` = t(skill_summ_adams)[, 1]) %>%
+         skill_var = skill_vars,
+         `Activist director` = t(skill_summ_raw %>% select(-num_skills))[, 1]) %>%
+  inner_join(adams_data, by = "skill_var") %>%
   mutate(`Diff.` = `Activist director` - `Adams et al. (2018)`,
-         `P-value` = unlist(lapply(skill_vars, function(x) t_test_fun(sim_director_skills, x))))
-rs <- dbDisconnect(pg)
+         `P-value` = unlist(lapply(skill_vars, function(x) t_test_adams(activist_director_skills, x)))) %>%
+  select(-skill_var)
+
 @
 
 \begin{table}[htb]
