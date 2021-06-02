@@ -202,75 +202,78 @@ prob_activist_demands <-
 \addtocounter{table}{-1}
 \end{table}
 
-\newpage
-
-  \begin{table}[htb]
-    \caption{Activist target selection}
-            \begin{minipage}[t]{\columnwidth}
-%    \begin{flushleft}
-  {\small
-Panel A presents logit regression where the dependent variables are indicators for
-being targeted for activism in any category
-(\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
-being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
-Sample includes firm-years with and without activism.
-    \newline}
-%  \end{flushleft}
-  \end{minipage}
-\begin{tabularx}{5in}{l*{3}{Y}}
-\multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
-<<Table_3_panelA, dependson=c("selection_functions", "selection_data"), results='asis'>>=
-# Panel A
-rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-            num_directors outside_percent age tenure staggered_board sic2 year"
-
-reg.data <- as.data.frame(prob_activist_director)
-
-t3.pa <- list()
-t3.pa[[1]] <- fit.model(data = reg.data,
-                  lhs="activism", rhs=rhs.1, cluster1="permno")
-t3.pa[[2]] <- fit.model(data = reg.data,
-                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
-t3.pa[[3]] <- fit.model(data = reg.data,
-                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
-
-stargazer(getFitted(t3.pa),
-        dep.var.labels = c("Activism",
-                            "Board demand",
-                            "Activist director"),
-        covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
-                              "Leverage", "Payout", "ROA", "Sales growth",
-                              "Num. directors", "Outside percent", "Age", "Tenure",
-                              "Staggered board"),
-        se=getSEs(t3.pa),
-        p= getPs(t3.pa),
-        omit=c("^sic", "^year", "^Constant"),
-       float=FALSE, align=TRUE, font.size="small",
-       keep.stat=c("n"), no.space=TRUE,
-       add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
-
-rm(t3.pa)
-@
-\end{tabularx}
-\addtocounter{table}{-1}
-\end{table}
-
-\newpage
+% \newpage
+%
+%   \begin{table}[htb]
+%     \caption{Activist target selection}
+%             \begin{minipage}[t]{\columnwidth}
+% %    \begin{flushleft}
+%   {\small
+% Panel A presents logit regression where the dependent variables are indicators for
+% being targeted for activism in any category
+% (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
+% being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
+% Sample includes firm-years with and without activism.
+%     \newline}
+% %  \end{flushleft}
+%   \end{minipage}
+% \begin{tabularx}{5in}{l*{3}{Y}}
+% \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
+% <<Table_3_panelA, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+% # Panel A
+% rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+%             num_directors outside_percent age tenure staggered_board sic2 year"
+%
+% reg.data <- as.data.frame(prob_activist_director)
+%
+% t3.pa <- list()
+% t3.pa[[1]] <- fit.model(data = reg.data,
+%                   lhs="activism", rhs=rhs.1, cluster1="permno")
+% t3.pa[[2]] <- fit.model(data = reg.data,
+%                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")
+% t3.pa[[3]] <- fit.model(data = reg.data,
+%                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
+%
+% stargazer(getFitted(t3.pa),
+%         dep.var.labels = c("Activism",
+%                             "Board demand",
+%                             "Activist director"),
+%         covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
+%                               "Leverage", "Payout", "ROA", "Sales growth",
+%                               "Num. directors", "Outside percent", "Age", "Tenure",
+%                               "Staggered board"),
+%         se=getSEs(t3.pa),
+%         p= getPs(t3.pa),
+%         omit=c("^sic", "^year", "^Constant"),
+%        float=FALSE, align=TRUE, font.size="small",
+%        keep.stat=c("n"), no.space=TRUE,
+%        add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
+%
+% rm(t3.pa)
+% @
+% \end{tabularx}
+% \addtocounter{table}{-1}
+% \end{table}
+%
+% \newpage
 
   \begin{table}[htb]
     \caption{Activist target selection}
         \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists. Sample includes firm-years with activism only.
+Table presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists. Sample includes firm-years with activism only.
   \newline}
 %  \end{flushleft}
   \end{minipage}
     \begin{tabularx}{6.5in}{l*{3}{Y}}
-     \multicolumn{3}{l}{Panel B: Activism, board demand and activist director (activism only)} \\
+     % \multicolumn{3}{l}\\ {Panel B: Activism, board demand and activist director (activism only)} \\
 <<Table_3_panelA2, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel B
 # Subset on activism
+rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+          num_directors outside_percent age tenure staggered_board sic2 year"
+
 reg.data <-
     prob_activist_director %>%
     filter(activism) %>%
@@ -315,7 +318,7 @@ rm(t3.pb)
     \label{tbl:demand}
         \begin{minipage}[t]{\columnwidth}
   {\small
-This table presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch). Multiple demands can be made for each activism event. Demand over Success reports the probability of activist demand being met by the boards successfully. The control variables from Panel B are included in all analyses. Sample includes firm-years with activism.
+Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch). Multiple demands can be made for each activism event. Demand over Success reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -389,10 +392,10 @@ print(xtable(demand_summ, display=c("s", "d", "d", "f")),
 \newpage
 
   \begin{table}[htb]
-    \caption{Activist target selection}
+    \caption{Activist demands and target selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 3), conditional on the firm being targeted by activists. In Column 4, the sample only includes the firms with an activist director(s). The control variables from Panel B are included in all analyses. Sample includes firm-years with activism.
+Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated and unaffiliated directors getting board seats (\textit{Affiliated director}, Column 3, \textit{Unaffiliated director}, Column 4), conditional on the firm being targeted by activists. The control variables from Table 7 are included in all analyses. Sample includes firm-years with activism.
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -464,7 +467,7 @@ stargazer(getFitted(t3.pc),
 rm(t3.pc)
 @
 \end{tabularx}
-\addtocounter{table}{-1}
+% \addtocounter{table}{-1}
 \end{table}
 
 % \newpage

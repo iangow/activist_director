@@ -258,6 +258,7 @@ Values in parentheses are standard errors clustered by firm.
 }
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
+\multicolumn{3}{l}{Panel A: Divestitures and acquisitions by activist demand} \\
 <<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
@@ -312,6 +313,7 @@ stargazer(getFitted(t.pa),
 rm(t.pa)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 
 \newpage
@@ -417,7 +419,7 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Other outcomes by activist demand}
+\caption{Activism Outcomes by Demand}
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
@@ -434,6 +436,7 @@ Values in parentheses are standard errors clustered by firm.
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
+\multicolumn{3}{l}{Panel B: CEO Turnover and Compensation by activist demand} \\
 <<outs_x_t_ceo, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
@@ -484,6 +487,7 @@ stargazer(getFitted(t.pb),
 rm(t.pb)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 
 
@@ -549,7 +553,7 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Other outcomes by activist demand}
+\caption{Activism Outcomes by Demand}
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
@@ -566,6 +570,7 @@ Values in parentheses are standard errors clustered by firm.
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
+\multicolumn{3}{l}{Panel C: Other outcomes by activist demand} \\
 <<outs_x_t_lev_and_pay, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
 # Functions to extract fitted models, etc. from list of lists
 # constructed by fit.model function below.
