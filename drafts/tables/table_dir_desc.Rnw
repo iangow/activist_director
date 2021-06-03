@@ -300,7 +300,7 @@ skill_summ_unaffiliated <-
 
 skill_vars <-
     activist_director_skills %>%
-    select(academic:technology) %>%
+    select(academic:num_skills) %>%
     colnames()
 
 skill_summ_labels <- c("Academic", "Company business", "Compensation",
@@ -309,7 +309,7 @@ skill_summ_labels <- c("Academic", "Company business", "Compensation",
                        "Leadership", "Legal", "Management", "Manufacturing",
                        "Marketing", "Outside board", "Outside executive",
                        "Risk management", "Scientific", "Strategic planning",
-                       "Sustainability", "Technology")
+                       "Sustainability", "Technology", "Number of skills")
 
 t_test_fun <- function(df, var) {
   formula <- as.formula(paste(var, "~ independent"))
@@ -317,13 +317,13 @@ t_test_fun <- function(df, var) {
 }
 
 skill_summ <-
-  tibble(Skill = c(skill_summ_labels, "Num. Skills"),
-         skill_var = c(skill_vars, "num_skills"),
+  tibble(Skill = c(skill_summ_labels),
+         skill_var = skill_vars,
          `Activist director` = t(skill_summ_raw)[, 1],
          Affiliated = t(skill_summ_affiliated)[, 1],
          Unaffiliated = t(skill_summ_unaffiliated)[, 1]) %>%
   mutate(`Diff.` = Unaffiliated - Affiliated,
-         `P-value` = unlist(lapply(c(skill_vars, "num_skills"),
+         `P-value` = unlist(lapply(c(skill_vars),
                                    function(x) t_test_fun(activist_director_skills, x)))) %>%
   select(-skill_var)
 
@@ -332,7 +332,8 @@ adams_data <- tibble(skill_var = skill_vars,
                     `Adams et al. (2018)` = c(0.075, 0.253, 0.082, 0.023, 0.340,
                                               0.201, 0.089, 0.291, 0.287, 0.049,
                                               0.383, 0.088, 0.113, 0.130, 0.234,
-                                              0.060, 0.014, 0.199, 0.016, 0.140))
+                                              0.060, 0.014, 0.199, 0.016, 0.140,
+                                              3.07))
 
 t_test_adams <- function(df, skill) {
 
@@ -347,19 +348,21 @@ t_test_adams <- function(df, skill) {
     filter(skill_var == !!skill) %>%
     pull(2)
 
-  binom.test(x = sum(data), n = length(data), p = adams_avg)$p.value
-
+  if (skill != "num_skills") {
+    binom.test(x = sum(data), n = length(data), p = adams_avg)$p.value
+  } else {
+    poisson.test(x = sum(data), T = length(data), r = adams_avg)$p.value
+  }
 }
 
 skill_summ_sim <-
   tibble(Skill = skill_summ_labels,
          skill_var = skill_vars,
-         `Activist director` = t(skill_summ_raw %>% select(-num_skills))[, 1]) %>%
+         `Activist director` = t(skill_summ_raw)[, 1]) %>%
   inner_join(adams_data, by = "skill_var") %>%
   mutate(`Diff.` = `Activist director` - `Adams et al. (2018)`,
          `P-value` = unlist(lapply(skill_vars, function(x) t_test_adams(activist_director_skills, x)))) %>%
   select(-skill_var)
-
 @
 
 \begin{table}[htb]
