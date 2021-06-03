@@ -327,7 +327,8 @@ skill_summ <-
                                    function(x) t_test_fun(activist_director_skills, x)))) %>%
   select(-skill_var)
 
-# Simulation Study
+# Adams et al. (2018) data. Source: Table 3 and footnote to Figure 2
+# (last number)
 adams_data <- tibble(skill_var = skill_vars,
                     `Adams et al. (2018)` = c(0.075, 0.253, 0.082, 0.023, 0.340,
                                               0.201, 0.089, 0.291, 0.287, 0.049,
