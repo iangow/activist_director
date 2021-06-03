@@ -18,3 +18,11 @@
 - \section, \subsection, and \subsubsection have the obvious meanings.
 - Note that there is a file papers.bib in the list of files to the right that this pulls bibliographic information
 from.
+
+## Data
+
+### Google Sheets
+
+- [Activist directors](https://docs.google.com/spreadsheets/d/1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI/edit#gid=271850810)
+- [`missing_permnos`](https://docs.google.com/spreadsheets/d/1yGJtmSLy1hGT4Od1whGJB9SbghCEfpwjkrbsSwqMpAY/edit#gid=0)
+- [`key_dates`](https://docs.google.com/spreadsheets/d/1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk/edit#gid=1796687034)
