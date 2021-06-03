@@ -336,7 +336,7 @@ adams_data <- tibble(skill_var = skill_vars,
                                               0.060, 0.014, 0.199, 0.016, 0.140,
                                               3.07))
 
-t_test_adams <- function(df, skill) {
+t_test_adams <- function(skill) {
 
   data <-
     activist_director_skills %>%
@@ -362,7 +362,7 @@ skill_summ_sim <-
          `Activist director` = t(skill_summ_raw)[, 1]) %>%
   inner_join(adams_data, by = "skill_var") %>%
   mutate(`Diff.` = `Activist director` - `Adams et al. (2018)`,
-         `P-value` = unlist(lapply(skill_vars, function(x) t_test_adams(activist_director_skills, x)))) %>%
+         `P-value` = unlist(lapply(skill_vars, t_test_adams))) %>%
   select(-skill_var)
 @
 
