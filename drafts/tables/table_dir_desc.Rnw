@@ -415,23 +415,23 @@ print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
-\addtocounter{table}{-1}
 \end{table}
 \newpage
 \begin{table}[htb]
-  \caption{Director characteristics}
+  \caption{Director skills}
+    \label{tbl:dir_skills}
   \begin{minipage}[t]{\columnwidth}
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents descriptive statistics for directors.
-Panel C presents data on activist director skill sets with activist directors in Column 1 and the simulated sample of directors from \citet{Adams:2018vf} in Column 2.
+This table presents data on director skills sets.
+Panel A presents data on activist director skill sets with activist directors in Column 1 and data from \citet{Adams:2018vf} in Column 2.
 The difference between activist director sample and \citet{Adams:2018vf} sample is reported in Column 3 with its p-value reported in Column 4.
 \newline}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{5}{l}{Panel C: Activist director skill sets: Activist directors}
+\multicolumn{5}{l}{Panel A: All activist directors}
 % \hline
 \\
 <<dir_desc_panel_C, cache=FALSE, results='asis'>>=
@@ -445,19 +445,19 @@ print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
 \end{table}
 \newpage
 \begin{table}[htb]
-  \caption{Director characteristics}
+  \caption{Director skill sets}
   \begin{minipage}[t]{\columnwidth}
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents descriptive statistics for directors.
-Panel D presents data on activist director skill sets with affiliated directors in Column 2 and unaffiliated directors in Column 3.
+This table presents data on director skills sets.
+Panel B presents data on activist director skill sets with affiliated directors in Column 2 and unaffiliated directors in Column 3.
 The difference between affiliated and unaffiliated directors is reported in Column 4 with its p-value reported in Column 5.
 \newline}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{6}{Y}}
-\multicolumn{6}{l}{Panel D: Activist director skillsets: Affiliated vs. Unaffiliated}
+\multicolumn{6}{l}{Panel B: Affiliated versus unaffiliated activist directors}
 % \hline
 \\
 <<dir_desc_panel_D, cache=FALSE, results='asis'>>=
