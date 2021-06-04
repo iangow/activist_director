@@ -4,8 +4,9 @@ pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 
-demands_data <- tbl(pg, sql("WITH demand_outcome AS (
-    SELECT DISTINCT campaign_id,
+activism_events <- tbl(pg, "activism_events")
+
+demand_outcome <- tbl(pg, sql("SELECT DISTINCT campaign_id,
     CASE WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(Yes)%' THEN TRUE
     WHEN value_demands_followthroughsuccess ilike '%Breakup Company, Divest Assets/Divisions(No)%' THEN TRUE
     WHEN value_demands_followthroughsuccess IS NOT NULL OR governance_demands_followthroughsuccess IS NOT NULL THEN FALSE
@@ -150,64 +151,19 @@ demands_data <- tbl(pg, sql("WITH demand_outcome AS (
     FROM factset.sharkwatch
     WHERE campaign_id IS NOT NULL
     AND (governance_demands_followthroughsuccess != '' OR value_demands_followthroughsuccess != '')
-    ORDER BY campaign_id),
+    ORDER BY campaign_id")) %>%
+  compute()
 
-match1 AS (
-    SELECT DISTINCT campaign_ids, b.*
-        FROM activist_director.activism_events AS a
-    INNER JOIN demand_outcome AS b
-    ON b.campaign_id = ANY(a.campaign_ids)
-    ORDER BY campaign_ids),
-
-match2 AS (
-    SELECT DISTINCT campaign_ids,
-    --activism demand
-    bool_or(strategy_demand) AS strategy_demand,
-    bool_or(merger_demand) AS merger_demand,
-    bool_or(block_merger_demand) AS block_merger_demand,
-    bool_or(acquisition_demand) AS acquisition_demand,
-    bool_or(block_acquisition_demand) AS block_acquisition_demand,
-    bool_or(divestiture_demand) AS divestiture_demand,
-    bool_or(payout_demand) AS payout_demand,
-    bool_or(leverage_demand) AS leverage_demand,
-    bool_or(reits_demand) AS reits_demand,
-
-    bool_or(board_seat_demand) AS board_seat_demand,
-    bool_or(remove_director_demand) AS remove_director_demand,
-    bool_or(add_indep_demand) AS add_indep_demand,
-    bool_or(remove_officer_demand) AS remove_officer_demand,
-    bool_or(remove_defense_demand) AS remove_defense_demand,
-    bool_or(compensation_demand) AS compensation_demand,
-    bool_or(other_gov_demand) AS other_gov_demand,
-    bool_or(esg_demand) AS esg_demand,
-    --activism outcome
-    bool_or(strategy_outcome) AS strategy_outcome,
-    bool_or(merger_outcome) AS merger_outcome,
-    bool_or(block_merger_outcome) AS block_merger_outcome,
-    bool_or(acquisition_outcome) AS acquisition_outcome,
-    bool_or(block_acquisition_outcome) AS block_acquisition_outcome,
-    bool_or(divestiture_outcome) AS divestiture_outcome,
-    bool_or(payout_outcome) AS payout_outcome,
-    bool_or(leverage_outcome) AS leverage_outcome,
-    bool_or(reits_outcome) AS reits_outcome,
-
-    bool_or(board_seat_outcome) AS board_seat_outcome,
-    bool_or(remove_director_outcome) AS remove_director_outcome,
-    bool_or(add_indep_outcome) AS add_indep_outcome,
-    bool_or(remove_officer_outcome) AS remove_officer_outcome,
-    bool_or(remove_defense_outcome) AS remove_defense_outcome,
-    bool_or(compensation_outcome) AS compensation_outcome,
-    bool_or(other_gov_outcome) AS other_gov_outcome,
-    bool_or(esg_outcome) AS esg_outcome
-    FROM match1
-    GROUP BY campaign_ids
-    ORDER BY campaign_ids)
-
-SELECT * FROM match2"))
 rs <- dbExecute(pg, "DROP TABLE IF EXISTS demands")
 
-compute(demands_data, name = "demands",
-        temporary = FALSE)
+demands <-
+  activism_events %>%
+  select(campaign_ids) %>%
+  mutate(campaign_id = unnest(campaign_ids)) %>%
+  inner_join(demand_outcome, by = "campaign_id") %>%
+  group_by(campaign_ids) %>%
+  summarize(across(matches("_(demand|outcome)$"), ~ bool_or(.))) %>%
+  compute(name = "demands", temporary = FALSE)
 
 rs <- dbExecute(pg, "ALTER TABLE demands OWNER TO activism")
 

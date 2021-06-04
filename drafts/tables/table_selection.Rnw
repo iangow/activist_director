@@ -5,6 +5,7 @@
 require(stargazer)
 library(DBI)
 library(dplyr, warn.conflicts = FALSE)
+library(xtable)
 @
 
 <<selection_functions, include=FALSE>>=
@@ -64,7 +65,7 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 
 <<selection_data, include=FALSE>>=
 # PostgreSQL Connection
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
@@ -72,44 +73,22 @@ rs <- dbExecute(pg, "SET work_mem='3GB'")
 outcome_controls <- tbl(pg, "outcome_controls")
 activism_events <- tbl(pg, "activism_events")
 activist_demands <- tbl(pg, "demands")
-activist_director_skills <- tbl(pg, sql("
-WITH SAMPLE AS (
-    SELECT DISTINCT b.campaign_ids, a.permno, a.first_name, a.last_name, a.independent,
-            academic, company_business, compensation, entrepreneurial,
-            finance_accounting, governance, government_policy, international, leadership,
-            legal, management, manufacturing, marketing,
-            outside_board, outside_executive, risk_management, scientific,
-            strategic_planning, sustainability, technology
-    FROM activist_director.activist_director_skills AS a
-    LEFT JOIN activist_director.demands AS b
-    ON a.campaign_id=any(b.campaign_ids)
-    ORDER BY permno, campaign_ids, last_name)
+activist_director_skills <- tbl(pg, "activist_director_skills")
 
-SELECT permno, campaign_ids,
-      BOOL_OR(academic) AS academic,
-      BOOL_OR(company_business) AS company_business,
-      BOOL_OR(compensation) AS compensation,
-      BOOL_OR(entrepreneurial) AS entrepreneurial,
-      BOOL_OR(finance_accounting) AS finance_accounting,
-      BOOL_OR(governance) AS governance,
-      BOOL_OR(government_policy) AS government_policy,
-      BOOL_OR(international) AS international,
-      BOOL_OR(leadership) AS leadership,
-      BOOL_OR(legal) AS legal,
-      BOOL_OR(management) AS management,
-      BOOL_OR(manufacturing) AS manufacturing,
-      BOOL_OR(marketing) AS marketing,
-      BOOL_OR(outside_board) AS outside_board,
-      BOOL_OR(outside_executive) AS outside_executive,
-      BOOL_OR(risk_management) AS risk_management,
-      BOOL_OR(scientific) AS scientific,
-      BOOL_OR(strategic_planning) AS strategic_planning,
-      BOOL_OR(sustainability) AS sustainability,
-      BOOL_OR(technology) AS technology
-FROM SAMPLE
-GROUP BY permno, campaign_ids
-ORDER BY permno, campaign_ids
-"))
+link_table <-
+  activism_events %>%
+  select(campaign_ids) %>%
+  mutate(campaign_id = unnest(campaign_ids)) %>%
+  distinct() %>%
+  compute()
+
+skills <-
+  activist_director_skills %>%
+  inner_join(link_table, by = "campaign_id") %>%
+  select(-skillset_bio, -last_name, -first_name, -campaign_id, -num_skills) %>%
+  group_by(campaign_ids) %>%
+  summarize(across(-campaign_ids, bool_or)) %>%
+  compute()
 
 min_date <-
     outcome_controls %>%
@@ -125,7 +104,6 @@ prob_activist_director <-
            activist_demand = coalesce(activist_demand, FALSE),
            activist_director = coalesce(activist_director, FALSE),
            affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
-#           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
            analyst = coalesce(analyst, 0),
            inst = coalesce(inst, 0)) %>%
     filter(datadate >= min_date_sql) %>%
@@ -139,7 +117,6 @@ prob_activist_demands <-
        activist_demand = coalesce(activist_demand, FALSE),
        activist_director = coalesce(activist_director, FALSE),
        affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
-#           hedge_fund = sql("'Hedge Fund Company' = any(holder_types)"),
        analyst = coalesce(analyst, 0),
        inst = coalesce(inst, 0)) %>%
   filter(datadate >= min_date_sql) %>%
@@ -147,7 +124,7 @@ prob_activist_demands <-
 
 prob_activist_director_skills <-
     activist_demands %>%
-    left_join(activist_director_skills) %>%
+    left_join(skills, by = "campaign_ids") %>%
     distinct() %>%
     collect()
 
@@ -202,61 +179,6 @@ prob_activist_demands <-
 \addtocounter{table}{-1}
 \end{table}
 
-% \newpage
-%
-%   \begin{table}[htb]
-%     \caption{Activist target selection}
-%             \begin{minipage}[t]{\columnwidth}
-% %    \begin{flushleft}
-%   {\small
-% Panel A presents logit regression where the dependent variables are indicators for
-% being targeted for activism in any category
-% (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
-% being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
-% Sample includes firm-years with and without activism.
-%     \newline}
-% %  \end{flushleft}
-%   \end{minipage}
-% \begin{tabularx}{5in}{l*{3}{Y}}
-% \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
-% <<Table_3_panelA, dependson=c("selection_functions", "selection_data"), results='asis'>>=
-% # Panel A
-% rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
-%             num_directors outside_percent age tenure staggered_board sic2 year"
-%
-% reg.data <- as.data.frame(prob_activist_director)
-%
-% t3.pa <- list()
-% t3.pa[[1]] <- fit.model(data = reg.data,
-%                   lhs="activism", rhs=rhs.1, cluster1="permno")
-% t3.pa[[2]] <- fit.model(data = reg.data,
-%                   lhs="activist_demand", rhs=rhs.1, cluster1="permno")
-% t3.pa[[3]] <- fit.model(data = reg.data,
-%                   lhs="activist_director", rhs=rhs.1, cluster1="permno")
-%
-% stargazer(getFitted(t3.pa),
-%         dep.var.labels = c("Activism",
-%                             "Board demand",
-%                             "Activist director"),
-%         covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
-%                               "Leverage", "Payout", "ROA", "Sales growth",
-%                               "Num. directors", "Outside percent", "Age", "Tenure",
-%                               "Staggered board"),
-%         se=getSEs(t3.pa),
-%         p= getPs(t3.pa),
-%         omit=c("^sic", "^year", "^Constant"),
-%        float=FALSE, align=TRUE, font.size="small",
-%        keep.stat=c("n"), no.space=TRUE,
-%        add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
-%
-% rm(t3.pa)
-% @
-% \end{tabularx}
-% \addtocounter{table}{-1}
-% \end{table}
-%
-% \newpage
-
   \begin{table}[htb]
     \caption{Activist target selection}
         \begin{minipage}[t]{\columnwidth}
@@ -277,8 +199,7 @@ rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
 reg.data <-
     prob_activist_director %>%
     filter(activism) %>%
-    mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
-    as.data.frame()
+    mutate(unaffiliated_director = affiliated == "unaffiliated")
 
 t3.pb <- list()
 t3.pb[[1]] <- fit.model(data=subset(reg.data, activism),
