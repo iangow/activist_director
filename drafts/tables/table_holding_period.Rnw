@@ -17,7 +17,7 @@ library(dplyr, warn.conflicts = FALSE)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-readRenviron("../../.Renviron")
+# readRenviron("../../.Renviron")
 pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")
@@ -45,38 +45,19 @@ survival_data <-
     select(activist_name, permno, exit, entry_date, eff_announce_date,
            first_appointment_date, exit_date, affiliated) %>%
     distinct() %>%
-    collect() %>%
-    as.data.frame()
+    collect()
 
 holding_period_by_demand <-
     activism_events %>%
     select(permno, eff_announce_date, campaign_ids) %>%
     left_join(activist_demands) %>%
-    as.data.frame()
+    collect()
 
 survival_data_by_demand <-
     survival_data %>%
-    left_join(holding_period_by_demand)
-
-survival_data_by_demand <-
-    survival_data_by_demand %>%
-    mutate(strategy_outcome=coalesce(strategy_outcome,FALSE),
-           merger_outcome=coalesce(merger_outcome,FALSE),
-           block_merger_outcome=coalesce(block_merger_outcome,FALSE),
-           acquisition_outcome=coalesce(acquisition_outcome,FALSE),
-           block_acquisition_outcome=coalesce(block_acquisition_outcome,FALSE),
-           divestiture_outcome=coalesce(divestiture_outcome,FALSE),
-           payout_outcome=coalesce(payout_outcome,FALSE),
-           leverage_outcome=coalesce(leverage_outcome,FALSE),
-           reits_outcome=coalesce(reits_outcome,FALSE),
-           board_seat_outcome=coalesce(board_seat_outcome,FALSE),
-           remove_director_outcome=coalesce(remove_director_outcome,FALSE),
-           add_indep_outcome=coalesce(add_indep_outcome,FALSE),
-           remove_officer_outcome=coalesce(remove_officer_outcome,FALSE),
-           remove_defense_outcome=coalesce(remove_defense_outcome,FALSE),
-           compensation_outcome=coalesce(compensation_outcome,FALSE),
-           other_gov_outcome=coalesce(other_gov_outcome,FALSE),
-           esg_outcome=coalesce(esg_outcome,FALSE),
+    left_join(holding_period_by_demand,
+              by = c("permno", "eff_announce_date")) %>%
+    mutate(across(strategy_outcome:esg_outcome, ~ coalesce(., FALSE)),
            any_outcome=(merger_outcome | block_merger_outcome |
                                acquisition_outcome | block_acquisition_outcome |
                                divestiture_outcome | payout_outcome | leverage_outcome |
@@ -215,7 +196,7 @@ Panel A presents results of censored median regression analysis of holding perio
 % Following was copied from .tex output from stargazer.
 Panel A: Activist holding periods \\
 \\
-\begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} c }
+\begin{tabular}{lD{.}{.}{-1} D{.}{.}{-1} D{.}{.}{-1} c }
 
 \multicolumn{2}{l}{Regression coefficients} \\
 \hline
@@ -336,7 +317,9 @@ panel3 <- cbind(col1, col2, col3)
 
 # Names must be distinct, so spaces are a kluge to get this to work
 row.names(panel3) <- c("Intercept", "", "Affiliated director", " ", "Unaffiliated director", "  ",
-                       "Outcome Succ.", "   ", "Affiliated x Succ.", "    ", "Unaffiliated x Succ.", "     ")
+                       "Success", "   ",
+                       "Affiliated $\\times$ Success", "    ", "Unaffiliated $\\times$ Success", "     ")
+
 colnames(panel3) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
 
 # Make a second panel with statistics for estimated holding periods for
@@ -360,9 +343,9 @@ col3 <- rbind(summary3[[2]]$coefficients[1,1],
 col3 <- rbind(NA, NA, col3)
 panel4 <- cbind(col1, col2, col3)
 colnames(panel4) <- c("\\textrm{Entry--exit}", "\\textrm{Annc--exit}", "\\textrm{Appt--exit}")
-row.names(panel4) <- c("Other activism x Not Succ.", "Other activism x Succ.",
-                       "Affiliated director x Not Succ.", "Affiliated director x Succ.",
-                       "Unaffiliated director x Not Succ.", "Unaffiliated director x Succ.")
+row.names(panel4) <- c("Other activism $\\times$ Not success", "Other activism $\\times$ Success",
+                       "Affiliated director $\\times$ Not success", "Affiliated director $\\times$ Success",
+                       "Unaffiliated director $\\times$ Not success", "Unaffiliated director $\\times$ Success")
 @
 \begin{table}[htb]
   \caption{Activist holding periods}
@@ -381,7 +364,7 @@ Panel B presents results of censored median regression analysis of holding perio
 % Following was copied from .tex output from stargazer.
 Panel B: Activist holding periods by outcome \\
 \\
-\begin{tabular}{@{\extracolsep{1pt}}lD{.}{.}{-3} D{.}{.}{-3} D{.}{.}{-3} c }
+\begin{tabular}{lD{.}{.}{-1} D{.}{.}{0} D{.}{.}{0} }
 
 \multicolumn{2}{l}{Regression coefficients} \\
 \hline
