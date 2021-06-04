@@ -19,7 +19,6 @@ library(dplyr, warn.conflicts = FALSE)
 %
 <<roa_data_step>>=
 # PostgreSQL Connection
-readRenviron("../../.Renviron")
 pg <- dbConnect(RPostgres::Postgres())
 rs <- dbExecute(pg, "SET search_path TO activist_director, public")
 rs <- dbExecute(pg, "SET work_mem = '8GB'")

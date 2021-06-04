@@ -17,7 +17,6 @@ library(dplyr, warn.conflicts = FALSE)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE>>=
-# readRenviron("../../.Renviron")
 pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")

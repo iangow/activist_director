@@ -44,7 +44,6 @@
 \bibliographystyle{kluwer} % , chicago, kluwer
 
 <<check_pg, cache=FALSE, include=FALSE>>=
-readRenviron(".Renviron")
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 

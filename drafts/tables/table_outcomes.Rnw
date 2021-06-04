@@ -34,7 +34,6 @@ source("outcome_functions.R")
 <<outs_div_acq_data, dependson="outs_winsorize">>=
 
 # Get data from PostgreSQL
-readRenviron("../../.Renviron")
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
