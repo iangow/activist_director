@@ -26,20 +26,20 @@ Affiliated (unaffiliated) directors who have left their respective boards, did s
 In many cases, their departure was associated with the company being acquired, going private, or going bankrupt.
 Affiliated and unaffiliated activist directors who remain on their respective boards as of December 31, 2017 have median tenures of 3.2 years.
 
-We additionally hand-collected data on director skills to compare activist directors with other directors.
-Publicly listed companies in the U.S. are required to describe the reasons for nominating their directors since the 2009 amendment to Regulation S-K (Adams et al., 2018).
-Taking advantage of the Regulation, Adams et al. (2018) identify 20 different kinds of skills by directors and find that director skills are an important part of the board composition and corporate governance of the firm.
-Following Adams et al. (2018) we also identified a skill set of each activist director.
-Panel C of Table \ref{tbl:dir_chars} present the data.
-In general, activist directors have a fewer number of skills on average compared to other directors; we find that activist directors have two skills on average while Adams et al.(2018) find three skills per director in their sample.
-Also, we find that the activist director skillset is particularly concentrated in one skill: \textit{finance and accounting}.
-We find that almost a half of the activist directors have the finance and accounting skill, which is significantly higher than 34\% of the directors having the skill in Adams et al.(2018).
-We also compared the numbers with the descriptive statistics from Adams et al.(2018), and the activist directors are less likely to have each skill across all categories other than \textit{finance and accounting}.
+We additionally compare the skills of activist directors with other directors.
+Since a 2009 amendment to Regulation S-K, publicly listed companies in the U.S. have been required to describe the reasons for nominating directors \citep{Adams:2018vf}.
+Using these data, \citet{Adams:2018vf} identify 20 different kinds of skills by directors and find that director skills are an important feature of firms' board composition and corporate governance.
+Following the approach of \citet{Adams:2018vf} and hand-collected datam, we identified the skill set of each activist director.
+Panel A of Table \ref{tbl:dir_skills} presents the data.
+In general, activist directors have fewer skill sets compared to other directors; we find that the mean number of skill sets of activist directors is two while \citet{Adams:2018vf} find three skill sets per director in their sample.
+Also, activist director stand out with regard to the \textit{Finance and accounting} skill set.
+We find that 48\% of activist directors have the finance and accounting skill, which is significantly higher than the 34\% for directors in \citet{Adams:2018vf}.
+We also compared the numbers with the descriptive statistics from \citet{Adams:2018vf}, and the activist directors are less likely to have each skill across all categories other than \textit{Finance and accounting}.
 
-In Panel D of Table \ref{tbl:dir_chars}, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may contribute different types of skills.
-Affiliated directors are associated with a higher likelihood of having the finance and accounting and the governance skills, which is expected as these affiliated directors come from the activist hedge funds.
-On the other hand, unaffiliated directors are more likely to have international, manufacturing, marketing, and technology skills, which are based on their specific industry and business experience they bring into the target firms.
-Also, unaffiliated directors are more likely to have leadership or executive experience before, which suggests that many of them are former or current executives.
+In Panel B of Table \ref{tbl:dir_skills}, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may contribute different types of skills.
+Affiliated directors are associated with a higher likelihood of having \textit{Finance and accounting} and \textit{Governance} skill sets, which is expected as these affiliated directors come from the activist hedge funds.
+On the other hand, unaffiliated directors are more likely to have \textit{International}, \textit{Manufacturing}, \textit{Marketing}, and \textit{Technology} skill sets, which consistent with thes directors bring specific industry or business experience to the targeted firms.
+Also, unaffiliated directors are more likely to have \textit{Leadership} or \textit{Outside executive} skill sets, as many of them are former or current executives.
 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine whether activist directors are regarded differently by shareholders by looking at voting outcomes in director elections upon or following appointment.

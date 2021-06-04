@@ -1,4 +1,6 @@
-library(googlesheets)
+library(googlesheets4)
+library(DBI)
+library(dplyr, warn.conflicts = FALSE)
 
 # Functions ----
 # Fix Cusips
@@ -26,117 +28,125 @@ convert_logical <- function(vec) {
 
 # Get data from Google Sheets ----
 # Get PERMNO-CIK data
-key='1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
-gs <- gs_key(key)
+key <- '1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk'
 
 #### Sharkwatch 50 ####
 # Import Dataset from Google Drive ----
 key_dates_sw50 <-
-    gs %>% gs_read(ws = "sw50_2004_2012",
-                   col_types = paste(c("cDccDl", rep("c", 39)), collapse="")) %>%
+    key %>%
+    read_sheet(sheet = "sw50_2004_2012",
+               col_types = paste(c("cDccDl", rep("c", 39)), collapse="")) %>%
     mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
     select(-etc) %>%
     mutate(gid = "sw50_2004_2012")
 
 # SHARKWATCH50 2012
-
 key_dates_2012 <-
-    gs %>%
-    gs_read_csv(ws = "sw_2012",
-                col_types = paste(c("cDccDl", rep("c", 38)), collapse="")) %>%
+    key %>%
+    read_sheet(sheet = "sw_2012",
+               col_types = paste(c("cDccDl", rep("c", 38)), collapse="")) %>%
     mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
-    mutate(gid = "sw_2012")
+    mutate(gid = "sw_2012") %>%
+    mutate(across(c(third_other, support_management, no_outcome,
+                    multiple_outcome), as.logical))
 
 key_dates_sw50 <- bind_rows(key_dates_sw50, key_dates_2012)
 
 key_dates_2013 <-
-    gs %>%
-    gs_read_csv(ws = "sw_2013",
+    key %>%
+    read_sheet(sheet = "sw_2013",
                 col_types = paste(c("cDccDl", rep("c", 38)), collapse="")) %>%
     mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
-    mutate(gid = "sw_2013")
+    mutate(gid = "sw_2013") %>%
+    mutate(across(c(growth_strategy, vote_for_dissident_proposal,
+                    support_management, third_other, no_outcome,
+                    multiple_outcome), as.logical))
 
 key_dates_sw50 <- bind_rows(key_dates_sw50, key_dates_2013)
 rm(key_dates_2013)
 
 #### Non-Sharkwatch 50 ####
 key_dates_nsw50 <-
-    gs %>%
-    gs_read_csv(ws = "non_sw50") %>%
+    key %>%
+    read_sheet(sheet = "non_sw50") %>%
     mutate_at(vars(one_of(get_booleans(.))), convert_logical) %>%
     mutate(gid = "non_sw50")
 
 # Use PostgreSQL to reshape the data ----
-library(RPostgreSQL)
 
-pg <- dbConnect(PostgreSQL())
-rs <- dbWriteTable(pg, c("activist_director", "key_dates_sw50"),
+
+pg <- dbConnect(RPostgres::Postgres())
+
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+
+rs <- dbWriteTable(pg, "key_dates_sw50",
                    key_dates_sw50, overwrite=TRUE, row.names=FALSE)
-rs <- dbGetQuery(pg, "
-    ALTER TABLE activist_director.key_dates_sw50 OWNER TO activism")
 
-rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates_sw50")
+rs <- dbExecute(pg, "ALTER TABLE key_dates_sw50 OWNER TO activism")
+
+rs <- dbExecute(pg, "VACUUM key_dates_sw50")
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.key_dates_sw50 IS
+  COMMENT ON TABLE key_dates_sw50 IS
     'CREATED USING import_key_dates.R ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
-rs <- dbGetQuery(pg, sql)
+rs <- dbExecute(pg, sql)
 
 # Demand aggregation ----
-sw50_data <- dbGetQuery(pg, "
-    SELECT cusip_9_digit, announce_date, dissident_group, event_date, gid,
-        bool_or(board_representation) AS board_demand,
-        bool_or(dividend_repurchase) AS payout,
-        bool_or(focus_spin_off) AS divest,
-        bool_or(sell_company
-                OR take_control_private) AS sell_company,
-        bool_or(strategic_alternatives
-                OR growth_strategy
-                OR against_deal_acquirer
-                OR against_deal_target) AS strategic_alternatives,
-        bool_or(operational_efficiency
-                OR capital_restructure) AS operational_efficiency,
-        bool_or(compensation) AS ceo_comp,
-        bool_or(governance_general
-                OR poison_pill
-                OR oust_ceo_director
-                OR withhold_votes
-                OR board_restructuring
-                OR more_disclosure
-                OR separate_chairman_ceo) AS governance
-    FROM activist_director.key_dates_sw50
-    WHERE event_date IS NOT NULL
-    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date, gid")
+key_dates_sw50 <- tbl(pg, "key_dates_sw50")
 
-rs <- dbWriteTable(pg, c("activist_director", "key_dates_nsw50"),
-                   as.data.frame(key_dates_nsw50), overwrite=TRUE, row.names=FALSE)
+rs <- dbExecute(pg, "DROP TABLE IF EXISTS key_dates_nsw50")
 
-rs <- dbGetQuery(pg, "
-    ALTER TABLE activist_director.key_dates_nsw50 OWNER TO activism")
+key_dates_sw50 <-
+  key_dates_sw50 %>%
+  filter(!is.na(event_date)) %>%
+  group_by(cusip_9_digit, announce_date, dissident_group, event_date, gid) %>%
+  summarize(board_demand = any(board_representation),
+             payout = any(dividend_repurchase),
+             divest = any(focus_spin_off),
+             sell_company = any(sell_company | take_control_private),
+             strategic_alternatives = any(strategic_alternatives
+                     | growth_strategy
+                     | against_deal_acquirer
+                     | against_deal_target),
+             operational_efficiency = any(operational_efficiency
+                     | capital_restructure),
+             ceo_comp = any(compensation),
+             governance = any(governance_general
+                     | poison_pill
+                     | oust_ceo_director
+                     | withhold_votes
+                     | board_restructuring
+                     | more_disclosure
+                     | separate_chairman_ceo),
+            .groups = "drop") %>%
+  compute(name = "key_dates_nsw50", temporary = FALSE)
 
-rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates_nsw50")
+rs <- dbExecute(pg, "ALTER TABLE key_dates_nsw50 OWNER TO activism")
+
+rs <- dbExecute(pg, "VACUUM key_dates_nsw50")
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.key_dates_nsw50 IS
+  COMMENT ON TABLE key_dates_nsw50 IS
     'CREATED USING import_key_dates.R ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
-rs <- dbGetQuery(pg, sql)
+rs <- dbExecute(pg, sql)
 
 # Demand aggregation ----
-nsw50_data <- dbGetQuery(pg, "
-    SELECT cusip_9_digit, announce_date, dissident_group, event_date, gid,
-        bool_or(board_rep) AS board_demand,
-        bool_or(payout) AS payout,
-        bool_or(divest) AS divest,
-        bool_or(sell_company) AS sell_company,
-        bool_or(strategic_alt) AS strategic_alternatives,
-        bool_or(oper_efficiency) AS operational_efficiency,
-        bool_or(ceo_comp) AS ceo_comp,
-        bool_or(governance) AS governance
-    FROM activist_director.key_dates_nsw50
-    WHERE event_date IS NOT NULL
-    GROUP BY cusip_9_digit, announce_date, dissident_group, event_date, gid
-")
+key_dates_nsw50 <- tbl(pg, "key_dates_nsw50")
+
+nsw50_data <-
+    key_dates_nsw50 %>%
+    filter(!is.na(event_date)) %>%
+    group_by(cusip_9_digit, announce_date, dissident_group, event_date, gid) %>%
+    summarize(board_demand = bool_or(board_rep),
+              payout =bool_or(payout),
+              divest = bool_or(divest),
+              sell_company = bool_or(sell_company),
+              strategic_alternatives = bool_or(strategic_alt),
+              operational_efficiency = bool_or(oper_efficiency),
+              ceo_comp = bool_or(ceo_comp),
+              governance = bool_or(governance)) %>%
+  collect()
 
 key_dates <- rbind(nsw50_data, sw50_data)
 
@@ -177,17 +187,16 @@ rs <- dbGetQuery(pg, "
 
 # Delete temporary tables
 dbGetQuery(pg, "
-    DROP TABLE activist_director.key_dates_long;
-    DROP TABLE activist_director.key_dates_nsw50;
-    DROP TABLE activist_director.key_dates_sw50;")
+    DROP TABLE key_dates_long;
+    DROP TABLE key_dates_nsw50;
+    DROP TABLE key_dates_sw50;")
 
-rs <- dbGetQuery(pg, "
-    ALTER TABLE activist_director.key_dates OWNER TO activism")
+rs <- dbGetQuery(pg, "ALTER TABLE key_dates OWNER TO activism")
 
-rs <- dbGetQuery(pg, "VACUUM activist_director.key_dates")
+rs <- dbGetQuery(pg, "VACUUM key_dates")
 
 sql <- paste("
-  COMMENT ON TABLE activist_director.key_dates IS
+  COMMENT ON TABLE key_dates IS
     'CREATED USING import_key_dates.R ON ", format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbGetQuery(pg, sql)
 
