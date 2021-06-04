@@ -220,7 +220,7 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Divestitures and acquisitions by activist demand}
+\caption{Activism outcomes by demand}
 \label{tbl:div_acq_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
@@ -231,39 +231,39 @@ Table presents regressions of outcome variables on firm-year level activism indi
 Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
+\newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
 \multicolumn{3}{l}{Panel A: Divestitures and acquisitions by activist demand} \\
 <<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
 t.pa <- list()
-rhs.1 <- c("affiliated*block_merger_demand", controls)
-rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - block_merger_demand")
+rhs.1 <- c("affiliated*block_acquisition_demand", controls)
+rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - block_acquisition_demand")
 t.pa[[1]] <- fit.model(data=reg.data, lhs="acquisition_p2", rhs=rhs.1, cluster1="permno")
-t.pa[[2]] <- fit.model(data=reg.data, lhs="merger_p2", rhs=rhs.1, cluster1="permno")
+t.pa[[2]] <- fit.model(data=reg.data, lhs="divestiture_p2", rhs=rhs.1, cluster1="permno")
 
-rhs.2 <- c("affiliated*block_acquisition_demand", controls)
-rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - block_acquisition_demand")
-t.pa[[3]] <- fit.model(data=reg.data, lhs="acquisition_p2", rhs=rhs.2, cluster1="permno")
-t.pa[[4]] <- fit.model(data=reg.data, lhs="divestiture_p2", rhs=rhs.2, cluster1="permno")
+rhs.2 <- c("affiliated*block_merger_demand", controls)
+rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - block_merger_demand")
+# t.pa[[3]] <- fit.model(data=reg.data, lhs="acquisition_p2", rhs=rhs.2, cluster1="permno")
+t.pa[[3]] <- fit.model(data=reg.data, lhs="merger_p2", rhs=rhs.2, cluster1="permno")
 
 stargazer(t.pa,
           dep.var.labels.include = FALSE,
           column.labels = c("Acquisition",
-                             "Acquired",
-                             "Acquisition",
-                             "Divestiture"),
-          omit = c(controls, "affiliated_none"),
+                            "Divestiture",
+                            # "Acquisition",
+                            "Acquired"),
+          omit = c(controls, "affiliated_none","affiliatedaffiliated:block_acquisition_demandTRUE"),
           covariate.labels = c(
               "Affiliated director",
               "Unaffiliated director",
               "Other activism",
+              # "Affiliated director $\\times$ Block acquisition",
+              "Unaffiliated director $\\times$ Block acquisition",
+              "Other activism $\\times$ Block acquisition",
               "Affiliated director $\\times$ Block merger",
               "Unaffiliated director $\\times$ Block merger",
-              "Other activism $\\times$ Block merger",
-              "Affiliated director $\\times$ Block acquisition",
-              "Unaffiliated director $\\times$ Block acquisition",
-              "Other activism $\\times$ Block acquisition"
+              "Other activism $\\times$ Block merger"
           ),
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
@@ -338,7 +338,7 @@ $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year
 Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
+\newline}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
@@ -439,7 +439,7 @@ $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year
 Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:div_acq_x}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
+\newline}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
