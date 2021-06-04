@@ -177,27 +177,29 @@ It is not easy to link the activism demands with specific outcomes, so we focus 
 The first set of outcomes we examine are those related to mergers and acquisitions.
 The examples discussed in Section 2 suggest that one major concern activists have is with excessive spending on acquisitions by target firms.
 Thus, the first outcome we consider is \textit{Acquisition}, an indicator for whether the firm completed any acquisitions in the two years after a given fiscal year.
+Also, activists often urge firms to divest businesses.
+So our second outcome is \textit{Divestiture}, an indicator for whether the firm divested significant assets in the two years after a given fiscal year.
 \citet{Greenwood:2009kh} suggest that announcement returns associated with activism ``are largely explained by the ability of activists to force target firms into a takeover.''
-Therefore, the second outcome we consider, \textit{Acquired}, is an indicator for whether the firm was acquired in the two years after a given fiscal year.
-Finally, activists often urge firms to divest businesses.
-So our third outcome is \textit{Divestiture}, an indicator for whether the firm divested significant assets in the two years after a given fiscal year.
+Therefore, the third outcome we consider, \textit{Acquired}, is an indicator for whether the firm was acquired in the two years after a given fiscal year.
 We regress these indicators on industry and year dummies as well as the following controls (as described in Section \ref{sect:desc_stats}), \textit{Analyst}, \textit{Institutional}, \textit{Market value}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Outside percent}, \textit{Age}, \textit{Tenure}, and \textit{Staggered board}.
 
-Table \ref{tbl:div_acq} presents these results.
-Examining the first column in Table \ref{tbl:div_acq}, we see that the demand to block acquisition is not significantly associated with acquisitions by the target. However, once we interact the demand to block acquisition with the activist director dummies, the coefficient is negative and significant for the interaction term between \textit{Unaffiliated director} and \textit{Block acquisition demand}.
+Table \ref{tbl:div_acq} Panel A presents these results.
+Examining the first column, we see that the interaction effect between the demand to block acquisition and the activist director dummies is negative and significant.
+The coefficient for the interaction term between \textit{Unaffiliated director} and \textit{Block acquisition demand} suggests that having an unaffiliated director with a demand to block acquisition is associated with a 64.4 percentage point lower likelihood of seeing an acquisition within two years following activism.
 This suggests that the presence of unaffiliated directors helps the activists achieve the goal of blocking acquisition by the target firm.
 Note that this is not the only results we see.
 Even though the activists did not make an explicit demand to block acquisition, we still see the associated effect of lower acquisition behaviors by the target firms following activism.
-We find that the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.099$ and $-0.038$, respectively).
+We find that the two categories of activism, \textit{Unaffiliated director} and \textit{Other activism}, are associated with lower probability of acquisitions (coefs. $-0.096$ and $-0.039$, respectively).
 
-Looking at the second column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$).\footnote{The differences in the activism coefficients are statistically significant at the $1\%$ level).}
-That is, while \citet[362]{Greenwood:2009kh} have found that the most of hedge fund activism returns are coming from pushing the companies into mergers, we infer that that is not the main goal activists have in mind when they get on the board.
-We also identify that we are more likely to see the activists blocking any mergers with the target when we see them having an activist director(s).
-Note that it is natural to see a positive and significant coefficient for the indicator, \textit{Block merger demand} as the activists would only demand for such block when there are merger talks announced or speculated.
-However, the negative and significant coefficients for the interaction terms between activist director indicators and block merger demand indicator suggest that the activists are successful at blocking mergers, not pushing for mergers, when they have a board seat(s).
-
-Finally, divestitures are generally positively associated with activism whether or not there is an activist director appointment (coefs. $0.062$ to $0.126$).
+Additionally, divestitures are generally positively associated with activism whether or not there is an activist director appointment (coefs. $0.075$ to $0.122$).
 The effect is especially stronger for the cases where the activists have made the demand to block acquisition.
+The coefficient for the interaction term between \textit{Unaffiliated director} and \textit{Block acquisition demand} suggests that having an unaffiliated director with a demand to block acquisition is associated with a 49.8 percentage point higher likelihood of seeing a divestiture within two years following activism.
+
+Looking at the third column, only activism \emph{not} involving activist directors is associated with a higher likelihood of being acquired (coef. on \textit{Other activism} of $0.128$).\footnote{The differences in the activism coefficients are statistically significant at the $1\%$ level).}
+That is, while \citet[362]{Greenwood:2009kh} have found that the most of hedge fund activism returns are coming from pushing the companies into mergers, we infer that that is not the main goal activists have in mind when they get on the board.
+We also identify that we are more likely to see the activists blocking any mergers with the target when an activist director is on board.
+The negative and significant coefficients for the interaction terms between activist director indicators and block merger demand indicator suggest that the activists are successful at blocking mergers, not pushing for mergers, when they have a board seat(s).
+
 Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with higher likelihood of cutting down acquisition activities and increasing divestitures while other activism events result in higher likelihood of selling the business entirely.
 While \citet[362]{Greenwood:2009kh} identifies the ``ability of activists to force target firms into a takeover'' as an important mechanism for generating returns, our finding suggests that their goal is not necessarily the case when activists get board representation.
 
@@ -207,10 +209,10 @@ We code the indicator \textit{CEO turnover} equal to $1$ if the CEO at the end o
 For total \textit{CEO pay}, we regress total CEO compensation in year $t+2$ on controls, including indicators for each category of activism.
 We regress these variables on their lagged (year $t$) values, industry and year dummies, as well as the controls used in other regressions (see Section \ref{sect:desc_stats}).
 
-Results of our analysis are presented in Table \ref{tbl:ceo}.
-First of all, activist demands themselves are not associated with actual outcomes; we do not find that the demand for removal of officer (most likely a CEO) and the compensation-related demand are associated with any changes in CEO turnover and compensation, respectively.
-The interaction effect of having an affiliated or unaffiliated director is also not associated with the higher likelihood of CEO turnover nor CEO compensation change.
-However, we do find positive associations between CEO turnover and both \textit{Affiliated director} (coef. $0.184$, $p < 0.01$) and \textit{Unaffiliated director} (coef. $0.178$, $p < 0.01$), which suggest that having an affiliated or an unaffiliated director is associated with a 18.4 and 17.8 percentage point higher likelihood of a CEO leaving the company within two years of activism, respsectively.
+Results of our analysis are presented in Table \ref{tbl:ceo} Panel B.
+First of all, we do not find that the demand for removal of officer (most likely a CEO) and the compensation-related demand are associated with any changes in CEO turnover and compensation, respectively.
+While the coefficients are all positive, the interaction effects of having an affiliated or unaffiliated director are not significantly associated with the higher likelihood of CEO turnover nor CEO compensation change.
+However, we do find positive associations between CEO turnover and both \textit{Affiliated director} (coef. $0.184$, $p < 0.01$) and \textit{Unaffiliated director} (coef. $0.178$, $p < 0.01$), which suggest that having an affiliated or an unaffiliated director is associated with a 18.4 or 17.8 percentage point higher likelihood of a CEO leaving the company within two years of activism, respectively.
 The coefficient is also positive and significant for \textit{Other activism}.
 These results suggest that having an activist director has stronger effects on CEO turnover than asking for CEO turnover at the start of activist campaigns itself.
 % However, there is no significant difference between the coefficients on \textit{Affiliated director} or \textit{Unaffiliated director} and \textit{Other activism}.
@@ -218,32 +220,33 @@ On the other hand, we do not find significant associations between CEO compensat
 % Overall, while activism events are generally associated with higher likelihood of CEO turnover we do not find evidence that it is incrementally more significant when there are activist directors on board.
 
 \subsection{Capital structure, payouts, and investments} \label{sect:financing}
-Among the most common demands activists make are requests for firms to increase leverage, to increase dividends or share buybacks, and to reduce spending on excess investment.
-In Table \ref{table:fin}, we examine the association between activism and leverage (\textit{Leverage}, measured as the ratio of book value of debt to the sum of the book value of debt and equity) and shareholder payout (\textit{Payout}, measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$).
+Among the most common demands activists make are requests for firms to increase leverage and to increase dividends or share buybacks.
+In Table \ref{table:fin} Panel C, we examine the association between activism and leverage (\textit{Leverage}, measured as the ratio of book value of debt to the sum of the book value of debt and equity) and shareholder payout (\textit{Payout}, measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$).
 A number of activism events involve activist investors seeking the reduction of excess expenditures and thus we also examine the association between activism and two areas of spending commonly regarded as investment: capital expenditures (CapEx) and research and development (R\&D).
 We measure investment using the following proxies:
 \textit{CapEx}, measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets;
 \textit{R\&D}, measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
 We regress these four outcome variables on their year-$t$ values to control for the baseline levels as well as industry and year dummies, and the controls used in other regressions (see Section \ref{sect:desc_stats}).
 
-Results are presented in Table \ref{tbl:fin}.
-First of all, we find that the demand for increased payout by activists is associated with increased payout. The coefficient for \textit{Payout demand} is $0.331$ ($p < 0.01$), which suggests that the demand for increased payout is associated with a 33.1 percentage point increase in the payout ratio in two years following activism.
-Also, having an affiliated director is associated with an additional 12.0 percentage point increase in the payout ratio (coef. $0.120$, $p < 0.01$).
-Here, the difference in coefficient from \textit{Other activism} is positive and significant at $1\%$, suggesting that affiliated activist director appointment is significantly associated with higher payout than had there been no affiliated activist director appointment.
-While we do not find a significant interaction effect between activist dummies and the demand for increased payout, this still shows a strong effect of having an activist director on payout changes at the target firms.
+Results are presented in Table \ref{tbl:fin} Panel C.
+First, we find that having an affiliated director is associated with an additional 12.0 percentage point increase in the payout ratio (coef. $0.120$, $p < 0.01$).
+Here, the differences in the coefficient from \textit{Unaffiliated director} and \textit{Other activism} are positive and significant, suggesting that affiliated activist director appointment is significantly associated with higher payout than had there been no affiliated activist director appointment.
+While we do not find a significant interaction effect between affiliated activist dummy and the demand for increased payout, this still shows a strong effect of having an activist director on payout changes at the target firms.
 For example, asking for increased payout and having an affiliated director at the target firm would be associated with a 34.5 percentage point increase in the payout ratio in two years following activism.
 It is interesting to note that the lower level of payout was associated with the higher likelihood of gaining a board seat for activists, especially \textit{Affiliated director}.
 We can infer that one of the most important \emph{implicit} agenda of the activist directors (especially the affiliated directors) might be to increase payouts to shareholders, which include the hedge fund activists themselves.
+Additionally, we find positive and significant coefficients for the demand for increased payout and the other two types of activism.
+This shows that the demand for increased payout is generally associated with higher payout ratio in the two years following activism.
 
 For leverage, we find a positive and weakly significant coefficient for \textit{Affiliated director} (coef. $0.039$, $p < 0.10$).
 Furthermore, the coefficient for \textit{Affiliated director} is significantly higher than the coefficient for \textit{Unaffiliated director} at 10\%, which implies that the affiliated directors pay a particular attention to increasing the leverage level when they get inside the boardroom even more so that the unaffiliated directors.
 However, we do not find any significant associations between the demand for increased leverage or having activist directors and the changes in leverage following activism.
-While the evidence in Table \ref{table:fin} provides general evidence of activist directors being associated with the kinds of capital structure and payout changes demands frequently demanded by activists, the effect is especially more significant for the payout increase in the cases with affiliated directors.
+While the evidence in Columns 1 and 2 provides general evidence of activist directors being associated with the kinds of capital structure and payout changes demands frequently demanded by activists, the effect is especially more significant for the payout increase in the cases with affiliated directors.
 
-In Columns 3 and 4 we turn our attention to \textit{CapEx} and \textit{R\&D}.
+In Columns 3 and 4 of Table 10 Panel C, we turn our attention to \textit{CapEx} and \textit{R\&D}.
 We cannot identify specific demands made by activists due to data limitation; therefore, we generally look at the demand for "other governance" issues that would include many issues related to governance.
-Though we do not find a negative association between \textit{Affiliated director} and \textit{CapEx}, we do find that the interaction between \textit{Affiliated director} and \textit{Other governance demand} is negatively associated with capital expenditure in two years of activism.
-The coefficient of $-0.032$ ($p < 0.05$) suggests that the capital expenditure decreases by 3.2 percentage points in two years.
+Though we do not find a negative association between \textit{Affiliated director} and \textit{CapEx}, we do find that the interaction between \textit{Affiliated director} and \textit{Other governance demand} is negatively associated with capital expenditure in the two years following activism.
+The coefficient of $-0.025$ ($p < 0.05$) suggests that the capital expenditure decreases by 2.5 percentage points in two years.
 We also find negative associations between R\&D spending and activist directors (coefs. $-0.007$ and $-0.009$ for \textit{Affiliated director} and \textit{Unaffiliated director}, respectively).
 Note that the differences between these coefficients and that on \textit{Other activism} are weakly significant ($p < 0.10$) for both categories.
 Overall, the evidence is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
