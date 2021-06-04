@@ -6,12 +6,12 @@ library(stringr)
 gs_key <- "1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI"
 skills <-
     read_sheet(gs_key, sheet = "skills", na = "NA",
-               col_types = "iccDiDliccicDccc")
-names(skills) <- tolower(names(skills))
+               col_types = "iccDiDliccicDccc") %>%
+    select(campaign_id, first_name, last_name, skillset_bio, independent)
 
 regexes <- list(
     "academic" = "academia|academic|dean|doctorate|education|faculty|graduate|masters|phd|ph.d|ph d|professor|school environment",
-    "company_business" = "all aspects of our industry|chief executive officer of our|chief executive officer of the company|company’s business|executive of our|executive of the company|experience with the company|historical insight|historical knowledge|history of the operation|history with our company|in-depth knowledge of|industry-specific perspective|industry experience|industry knowledge|inner workings|insider’s perspective|internal operation|knowledge of all aspects of the company|knowledge of the|knowledge of the history|officer of our|officer of the company|president of our|president of the company|the company’s chief|understanding of our business|working with the company",
+    "company_business" = "all aspects of our industry|chief executive officer of our|chief executive officer of the company|company['’]s business|executive of our|executive of the company|experience with the company|historical insight|historical knowledge|history of the operation|history with our company|in-depth knowledge of|industry-specific perspective|industry experience|industry knowledge|inner workings|insider['’]s perspective|internal operation|knowledge of all aspects of the company|knowledge of the|knowledge of the history|officer of our|officer of the company|president of our|president of the company|the company['’]s chief|understanding of our business|working with the company",
     "compensation" = "compensation",
     "entrepreneurial" = "entrepreneur|entrepreneurial|entrepreneurship|evaluating business|innovative idea",
     "finance_accounting" = "accountant|accounting and|accounting experience|accounting principles|and accounting|auditing|banking|capital markets|capital structure|corporate finance|experience in accounting|experience in finance|expertise in finance|finance experience|finance industry|finance matters|financial accounting|financial acumen|financial background|financial experience|financial expert|financial expertise|financial field|financial foundation|financial management|financial matters|financial reporting|financial services|investment|securities|understanding of finance",

@@ -323,7 +323,7 @@ skill_summ <-
          Affiliated = t(skill_summ_affiliated)[, 1],
          Unaffiliated = t(skill_summ_unaffiliated)[, 1]) %>%
   mutate(`Diff.` = Unaffiliated - Affiliated,
-         `P-value` = unlist(lapply(c(skill_vars),
+         `$p$-value` = unlist(lapply(c(skill_vars),
                                    function(x) t_test_fun(activist_director_skills, x)))) %>%
   select(-skill_var)
 
@@ -362,7 +362,7 @@ skill_summ_sim <-
          `Activist director` = t(skill_summ_raw)[, 1]) %>%
   inner_join(adams_data, by = "skill_var") %>%
   mutate(`Diff.` = `Activist director` - `Adams et al. (2018)`,
-         `P-value` = unlist(lapply(skill_vars, t_test_adams))) %>%
+         `$p$-value` = unlist(lapply(skill_vars, t_test_adams))) %>%
   select(-skill_var)
 @
 
@@ -410,15 +410,16 @@ print(xtable(tab2, display=c("s", "s", "d", rep("f", 4))),
 \\
 <<dir_desc_panel_B, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d", "d")),
-      include.rownames=FALSE, only.contents=TRUE,
+print(xtable(activist_director_stats,
+             display = c("s", "s", "d", "d", "d", "d", "d", "d")),
+      include.rownames = FALSE, only.contents = TRUE,
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
 \end{table}
 \newpage
 \begin{table}[htb]
-  \caption{Director skills}
+  \caption{Director skill sets}
     \label{tbl:dir_skills}
   \begin{minipage}[t]{\columnwidth}
 %  \begin{flushleft}
@@ -426,7 +427,7 @@ print(xtable(activist_director_stats, display=c("s", "s", "d", "d", "d", "d", "d
 {\small
 This table presents data on director skills sets.
 Panel A presents data on activist director skill sets with activist directors in Column 1 and data from \citet{Adams:2018vf} in Column 2.
-The difference between activist director sample and \citet{Adams:2018vf} sample is reported in Column 3 with its p-value reported in Column 4.
+The difference between our activist director sample and the \citet{Adams:2018vf} sample is reported in Column 3 and its $p$-value is reported in Column 4.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -438,6 +439,7 @@ The difference between activist director sample and \citet{Adams:2018vf} sample 
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
       include.rownames = FALSE, only.contents = TRUE,
+      sanitize.text.function = function(x) x,
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
@@ -452,7 +454,7 @@ print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
 {\small
 This table presents data on director skills sets.
 Panel B presents data on activist director skill sets with affiliated directors in Column 2 and unaffiliated directors in Column 3.
-The difference between affiliated and unaffiliated directors is reported in Column 4 with its p-value reported in Column 5.
+The difference between affiliated and unaffiliated directors is reported in Column 4 and its $p$-value is reported in Column 5.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -464,6 +466,7 @@ The difference between affiliated and unaffiliated directors is reported in Colu
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(skill_summ, display=c("s", "s", "f", "f", "f", "f", "f")),
       include.rownames = FALSE, only.contents = TRUE,
+      sanitize.text.function = function(x) x,
       format.args = list(big.mark = ","))
 @
 \end{tabularx}
