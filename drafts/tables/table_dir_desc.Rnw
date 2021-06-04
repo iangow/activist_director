@@ -309,7 +309,7 @@ skill_summ_labels <- c("Academic", "Company business", "Compensation",
                        "Leadership", "Legal", "Management", "Manufacturing",
                        "Marketing", "Outside board", "Outside executive",
                        "Risk management", "Scientific", "Strategic planning",
-                       "Sustainability", "Technology", "Number of skills")
+                       "Sustainability", "Technology", "Number of skill sets")
 
 t_test_fun <- function(df, var) {
   formula <- as.formula(paste(var, "~ independent"))
@@ -425,7 +425,7 @@ print(xtable(activist_director_stats,
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents data on director skills sets.
+This table presents data on director skill sets.
 Panel A presents data on activist director skill sets with activist directors in Column 1 and data from \citet{Adams:2018vf} in Column 2.
 The difference between our activist director sample and the \citet{Adams:2018vf} sample is reported in Column 3 and its $p$-value is reported in Column 4.
 \newline}
@@ -452,7 +452,7 @@ print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents data on director skills sets.
+This table presents data on director skill sets.
 Panel B presents data on activist director skill sets with affiliated directors in Column 2 and unaffiliated directors in Column 3.
 The difference between affiliated and unaffiliated directors is reported in Column 4 and its $p$-value is reported in Column 5.
 \newline}
