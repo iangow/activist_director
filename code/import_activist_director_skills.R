@@ -46,18 +46,6 @@ pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
-activist_director_skills_orig <-
-    tbl(pg, "activist_director_skills") %>%
-    collect() %>%
-    mutate(campaign_id = as.integer(campaign_id),
-           appointment_date = as.Date(appointment_date),
-           permno = as.integer(permno),
-           retirement_date = as.Date(retirement_date),
-           source = as.integer(source),
-           issuer_cik = as.character(issuer_cik),
-           permno_alt = as.integer(permno_alt),
-           eff_announce_date = as.Date(eff_announce_date))
-
 rs <- dbWriteTable(pg, "activist_director_skills", activist_director_skills,
                    overwrite = TRUE, row.names = FALSE)
 
