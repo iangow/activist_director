@@ -4,20 +4,22 @@
 <<outs_load_libraries, cache=FALSE, include=FALSE>>=
 # Yihui Xie recommends _not_ caching the loading of packages used
 # by several chunks.
-library(lmtest)
-library(sandwich)
-library(car)
 library(stargazer)
 library(xtable)
-library(parallel)
 library(DBI)
-library(psych)
-library(dplyr)
+library(car)
+library(dplyr, warn.conflicts = FALSE)
+library(lfe)
 @
 
 <<outs_winsorize>>=
 # Winsorize selected variables in a data frame
-win01 <- function(x) psych::winsor(x, trim=0.01)
+win01 <- function(x, prob = 0.01, p_low = prob, p_high = 1 - prob) {
+  cuts <- quantile(x, probs = c(p_low, p_high), type = 2, na.rm = TRUE)
+  x[x < cuts[1]] <- cuts[1]
+  x[x > cuts[2]] <- cuts[2]
+  x
+}
 
 controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
                   "num_directors outside_percent staggered_board log_at")
@@ -25,9 +27,114 @@ controls <- paste("analyst inst size_return mv btm leverage payout roa sale_grow
 omits <- unlist(strsplit(controls, "\\s+"))
 @
 
-\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_functions.R'))}
 <<outs_functions, include=FALSE>>=
-source("outcome_functions.R")
+# Simple regressions ----
+combineVars <- function(vars) {
+    paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
+}
+
+ols.model <- function(data, lhs, rhs, cluster1) {
+    model <- paste0(paste0(lhs, " ~ ", combineVars(rhs)), " | 0 | 0 | permno")
+    felm(formula(model), data=data)
+}
+
+make.fTest.table <- function(model.set) {
+
+    fTest <- function(model) {
+        c(linearHypothesis(model, "affiliatedaffiliated - affiliatedz_other_activism")[4][2,],
+          linearHypothesis(model, "affiliatedunaffiliated - affiliatedz_other_activism")[4][2,],
+          linearHypothesis(model, "affiliatedaffiliated - affiliatedunaffiliated")[4][2,])
+    }
+
+    temp <- as.data.frame(bind_cols(lapply(model.set, fTest)))
+    row.names(temp) <- c("Affiliated = Other activism",
+                         "Unaffiliated = Other activism",
+                         "Affiliated = Unaffiliated")
+    return(temp)
+}
+
+# Function to prepare a table of F-test p-values for
+# inclusion by stargazer.
+convertToLines <- function(ftable) {
+    if(is.null(ftable)) return(NULL)
+
+    # Convert the data frame to a list of rows
+    temp <- split(ftable, rownames(ftable))
+
+    # Convert a row from a data frame into a vector
+    convertLine <- function(line) {
+        c(rownames(line),
+          formatC(unlist(line), format="f", digits=3))
+    }
+
+    # Make a header for the F-test portion of the table
+    first.row <- list("", "F-tests for equal coefficients (p-values)", "\\hline")
+    return(c(first.row, lapply(temp, convertLine), ""))
+}
+
+stargazer.mod <- function(model.set, col.labels, row.labels, omits, ftable=NULL) {
+    stargazer(model.set,
+              dep.var.labels=col.labels,
+              covariate.labels=row.labels,
+              align=TRUE, float=FALSE, no.space=TRUE,
+              omit=c("^sic", "^year", "^Constant", omits),
+              keep.stat=c("n", "adj.rsq"),
+              omit.table.layout="n",
+              font.size="small",
+              add.lines=convertToLines(ftable))
+}
+
+xtable.mod <- function(summ) {
+    print(xtable(summ, digits=3,
+                 display=c("s", rep("f",(dim(summ)[2])))),
+          include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+          size="footnotesize", type="latex",
+          sanitize.text.function=function(x) x,
+          format.args = list(big.mark = ","))
+}
+
+# RHS of models
+rhs <- paste("affiliated year sic2", controls)
+
+trim <- function (x) {
+    # Function removes spaces at end or beginning
+    # And removes multiple spaces
+    x <- gsub("^\\s+|\\s+$", "", x)
+    x <- gsub("\\s+", " ", x)
+}
+
+get.model <- function(the.var, data, include.lag = FALSE,
+                      changes = FALSE, use.controls = FALSE) {
+
+    data <-
+        data %>%
+        mutate_at(c("year", "affiliated", "sic2"), as.factor)
+
+    rhs <- trim(paste(rhs, if(include.lag) "lagged.var", if(use.controls) controls))
+
+    if (include.lag) {
+        data <- mutate_(data, lagged.var = the.var)
+
+        # Exclude lagged LHS from RHS if already there.
+        rhs <- paste(setdiff(unlist(strsplit(rhs, "\\s+")), the.var), collapse=" ")
+    }
+    if (include.lag) {
+        lhs <- paste0(the.var,"_p2")
+    } else if (changes) {
+        lhs <- paste0("(", the.var,"_p2 - ", the.var, ")")
+    } else {
+        lhs <- the.var
+    }
+
+    ols.model(data=data, lhs=lhs, rhs=rhs)
+}
+
+fix_affiliated <- function(x) {
+    case_when(x == "affiliated" ~ "affiliated",
+              x %in% c("unaffiliated", "activist_director") ~ "unaffiliated",
+              x %in% c("activist_demand", "activism") ~ "z_other_activism",
+              TRUE ~ "_none")
+}
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
@@ -39,13 +146,14 @@ pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
 
-outcome_controls <- tbl(pg, "outcome_controls")
 dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
 wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
 dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
-activist_demands <- tbl(pg, "demands") %>% as.data.frame()
-outcome_changes <- tbl(pg, "outcome_changes") %>% as.data.frame()
+
+outcome_controls <- tbl(pg, "outcome_controls")
+activist_demands <- tbl(pg, "demands")
+outcome_changes <- tbl(pg, "outcome_changes")
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -207,30 +315,11 @@ reg.data <-
     inner_join(acquisition_count, by = c("permno", "datadate")) %>%
     inner_join(spinoff_count, by = c("permno", "datadate")) %>%
     inner_join(delisting_data, by = c("permno", "datadate")) %>%
+    left_join(activist_demands, by = "campaign_ids") %>%
     collect() %>%
-    mutate_at(vars(winsor.vars), win01) %>%
-    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated=="unaffiliated", "unaffiliated",
-                                if_else(affiliated=="activist_director", "unaffiliated",
-                                if_else(affiliated=="activist_demand", "z_other_activism",
-                                if_else(affiliated=="activism", "z_other_activism", "_none")))))) %>%
-    left_join(activist_demands) %>%
-    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
-            merger_demand = coalesce(merger_demand, FALSE),
-            block_merger_demand = coalesce(block_merger_demand, FALSE),
-            acquisition_demand = coalesce(acquisition_demand, FALSE),
-            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
-            divestiture_demand = coalesce(divestiture_demand, FALSE),
-            payout_demand = coalesce(payout_demand, FALSE),
-            leverage_demand = coalesce(leverage_demand, FALSE),
-            remove_director_demand = coalesce(remove_director_demand, FALSE),
-            add_indep_demand = coalesce(add_indep_demand, FALSE),
-            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
-            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
-            compensation_demand = coalesce(compensation_demand, FALSE),
-            other_gov_demand = coalesce(other_gov_demand, FALSE),
-            esg_demand = coalesce(esg_demand, FALSE)) %>%
-    as.data.frame()
+    mutate(across(ends_with("_demand"), ~ coalesce(., FALSE)),
+           affiliated = fix_affiliated(affiliated),
+           across(all_of(winsor.vars), win01))
 
 rs <- dbDisconnect(pg)
 @
@@ -267,10 +356,9 @@ Values in parentheses are standard errors clustered by firm.
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<outs_t_div_and_acq, dependson=c("outs_functions", "outs_div_acq_data"), results='asis'>>=
 lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
-# rhs <- paste("activist_director*block_acquisition_demand year sic2", controls)
 
 t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
-summ <- make.fTest.table(t6.pa, reg.data)
+summ <- make.fTest.table(t6.pa)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism")
 # row.labels <- NULL
 col.labels <- c("Acquisition", "Acquired", "Divestiture")
@@ -289,40 +377,18 @@ rm(t6.pa)
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 ceo_outcomes <- tbl(pg, "ceo_outcomes")
-activist_demands <- tbl(pg, "demands") %>% collect()
+activist_demands <- tbl(pg, "demands")
 
 winsor.vars <- c(unlist(strsplit(controls, "\\s+")), "ceo_comp", "ceo_comp_p2")
 
-win_vars <- vars(winsor.vars)
-
 reg.data <-
     ceo_outcomes %>%
-    collect() %>%
-    mutate_at(win_vars, win01) %>%
-    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated %in% c("unaffiliated", "activist_director"),
-                                        "unaffiliated",
-                                        if_else(affiliated %in% c("activist_demand", "activism"),
-                                                "z_other_activism",
-                                                "_none")))) %>%
     distinct() %>%
-    left_join(activist_demands) %>%
-    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
-            merger_demand = coalesce(merger_demand, FALSE),
-            block_merger_demand = coalesce(block_merger_demand, FALSE),
-            acquisition_demand = coalesce(acquisition_demand, FALSE),
-            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
-            divestiture_demand = coalesce(divestiture_demand, FALSE),
-            payout_demand = coalesce(payout_demand, FALSE),
-            leverage_demand = coalesce(leverage_demand, FALSE),
-            remove_director_demand = coalesce(remove_director_demand, FALSE),
-            add_indep_demand = coalesce(add_indep_demand, FALSE),
-            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
-            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
-            compensation_demand = coalesce(compensation_demand, FALSE),
-            other_gov_demand = coalesce(other_gov_demand, FALSE),
-            esg_demand = coalesce(esg_demand, FALSE)) %>%
-    as.data.frame()
+    left_join(activist_demands, by = "campaign_ids") %>%
+    collect() %>%
+    mutate(across(ends_with("_demand"), ~ coalesce(., FALSE)),
+           affiliated = fix_affiliated(affiliated),
+           across(all_of(winsor.vars), win01))
 
 rs <- dbDisconnect(pg)
 @
@@ -351,7 +417,7 @@ lhs.vars <- list("ceo_turnover", "ceo_comp")
 # rhs <- paste("activist_director*remove_officer_demand year sic2", controls)
 
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-summ <- make.fTest.table(t6.pb, reg.data)
+summ <- make.fTest.table(t6.pb)
 col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                 "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
@@ -386,37 +452,17 @@ winsor.vars <- unique(c(unlist(strsplit(controls, "\\s+")), lhs.vars,
                         paste0(lhs.vars, "_p1"),
                         paste0(lhs.vars, "_p2"),
                         paste0(lhs.vars, "_p3")))
-win_vars <- vars(winsor.vars)
 
 reg.data <-
     outcome_controls %>%
     inner_join(outcomes, by = c("gvkey", "datadate")) %>%
     inner_join(activist_director_years, by = c("permno", "datadate")) %>%
     filter(firm_exists_p2) %>%
-    left_join(activist_demands) %>%
-    mutate(strategy_demand = coalesce(strategy_demand, FALSE),
-            merger_demand = coalesce(merger_demand, FALSE),
-            block_merger_demand = coalesce(block_merger_demand, FALSE),
-            acquisition_demand = coalesce(acquisition_demand, FALSE),
-            block_acquisition_demand = coalesce(block_acquisition_demand, FALSE),
-            divestiture_demand = coalesce(divestiture_demand, FALSE),
-            payout_demand = coalesce(payout_demand, FALSE),
-            leverage_demand = coalesce(leverage_demand, FALSE),
-            remove_director_demand = coalesce(remove_director_demand, FALSE),
-            add_indep_demand = coalesce(add_indep_demand, FALSE),
-            remove_officer_demand = coalesce(remove_officer_demand, FALSE),
-            remove_defense_demand = coalesce(remove_defense_demand, FALSE),
-            compensation_demand = coalesce(compensation_demand, FALSE),
-            other_gov_demand = coalesce(other_gov_demand, FALSE),
-            esg_demand = coalesce(esg_demand, FALSE)) %>%
+    left_join(activist_demands, by = "campaign_ids") %>%
     collect() %>%
-    mutate_at(win_vars, win01) %>%
-    mutate(affiliated = if_else(affiliated=="affiliated", "affiliated",
-                                if_else(affiliated=="unaffiliated", "unaffiliated",
-                                if_else(affiliated=="activist_director", "unaffiliated",
-                                if_else(affiliated=="activist_demand", "z_other_activism",
-                                if_else(affiliated=="activism", "z_other_activism", "_none")))))) %>%
-    as.data.frame()
+    mutate(across(ends_with("_demand"), ~ coalesce(., FALSE)),
+           affiliated = fix_affiliated(affiliated),
+           across(all_of(winsor.vars), win01))
 
 rs <- dbDisconnect(pg)
 @
@@ -451,7 +497,7 @@ row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism"
                "$\\textrm{Dep. var.}_{t}$")
 # row.labels <- NULL
 col.labels <- c("Cash", "Leverage", "Payout")
-summ <- make.fTest.table(t6.pd, reg.data)
+summ <- make.fTest.table(t6.pd)
 names(summ) <- col.labels
 stargazer.mod(t6.pd, col.labels, row.labels, omits, summ)
 
@@ -485,7 +531,7 @@ lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
 # rhs <- paste("activist_director*other_gov_demand year sic2", controls)
 
 t6.pf <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
-summ <- make.fTest.table(t6.pf, reg.data)
+summ <- make.fTest.table(t6.pf)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                "$\\textrm{Dep. var.}_{t}$")
 # row.labels <- NULL
