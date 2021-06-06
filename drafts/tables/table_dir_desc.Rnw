@@ -21,6 +21,7 @@ activism_events <- tbl(pg, "activism_events")
 equilar_w_activism <- tbl(pg, "equilar_w_activism")
 ind_exp <- tbl(pg, "ind_exp") %>% collect()
 equilar_final <- tbl(pg, "equilar_final")
+equilar_career <- tbl(pg, "equilar_career")
 
 censor_date <- "2017-12-31"
 
@@ -82,7 +83,7 @@ all.dir.data <-
     mutate(activist_director = if_else(activist_director, 'Activist director', NA),
            all_directors = as.character("All directors")) %>%
     select(executive_id, company_id, all_directors, activist_director, age, female,
-           any_committee, comp_committee, audit_committee,
+           any_committee, comp_committee, audit_committee, period,
            audit_committee_financial_expert) %>%
     collect()
 
@@ -94,7 +95,7 @@ act.dir.data <-
                                          'Affiliated director', 'Unaffiliated directors'),
            activist_director = as.character("Activist directors")) %>%
     select(executive_id, company_id, activist_director, affiliated_director, age, female,
-           any_committee, comp_committee, audit_committee,
+           any_committee, comp_committee, audit_committee, period,
            audit_committee_financial_expert) %>%
     collect()
 
@@ -115,6 +116,11 @@ levels(new.dir.data$category) <- c("New directors: No activism",
                                    "New directors: Activist director")
 
 # Additional Variables
+other_boards <-
+    equilar_career %>%
+    select(executive_id, company_id, period, other_boards) %>%
+    distinct()
+
 board_experience <-
     equilar_final %>%
     select(executive_id, company_id, date_start) %>%
@@ -148,37 +154,14 @@ tenure_exp_by_period <-
                                      company_director_max_term, na.rm=TRUE) -
                                date_start, na.rm=TRUE)) %>%
         select(-company_id.x, -company_id.y) %>%
+        left_join(other_boards) %>%
         distinct() %>%
         group_by(executive_id, company_id, period) %>%
         summarise(board_exp=count(tenure),
                   avg_tenure=mean(tenure)/365.25,
                   sum_tenure=sum(tenure, na.rm=TRUE)/365.25,
+                  other_boards=mean(other_boards),
                   .groups = "drop") %>%
-        arrange(executive_id, period) %>%
-        distinct() %>%
-        collect()
-
-# Board Experience
-tenure_experience <- equilar_final %>%
-    select(executive_id, company_id, date_start, company_director_max_term) %>%
-    arrange(executive_id, date_start) %>% distinct()
-
-# Board Experience by Period
-tenure_exp_by_period <-
-    equilar_final %>%
-        select(executive_id, company_id, period) %>%
-        left_join(tenure_experience, by="executive_id") %>%
-        filter(date_start < period, company_id.x!=company_id.y) %>%
-        mutate(company_id = company_id.x,
-               tenure = pmax(0, pmin(period,
-                                     company_director_max_term, na.rm=TRUE) -
-                               date_start, na.rm=TRUE)) %>%
-        select(-company_id.x, -company_id.y) %>%
-        distinct() %>%
-        group_by(executive_id, company_id, period) %>%
-        summarise(board_exp=count(tenure),
-                  avg_tenure=mean(tenure)/365.25,
-                  sum_tenure=sum(tenure, na.rm=TRUE)/365.25) %>%
         arrange(executive_id, period) %>%
         distinct() %>%
         collect()
@@ -255,8 +238,8 @@ tab.4 <-
 tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
 
 # Another Descriptive Table
-col.names <- unlist(strsplit("Category, N, Ind exp., Board exp. (firms), Avg. tenure (years), Board exp. (years)", ",\\s*"))
-sum.var.str <- "prior_ind_exp board_exp avg_tenure sum_tenure"
+col.names <- unlist(strsplit("Category, N, Ind. exp., Board exp., Other boards, Avg. tenure, Total tenure", ",\\s*"))
+sum.var.str <- "prior_ind_exp board_exp other_boards avg_tenure sum_tenure"
 
 sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
 
@@ -376,8 +359,9 @@ skill_summ_sim <-
 This table presents descriptive statistics for directors.
 Panel A presents data on directors matched to Equilar.
 $N$ refers to the number of observations.
-\textit{Age} refers to mean age of directors in each category.
-Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, and being designated a financial expert of the audit committee, respectively.
+\textit{Age} refers to mean age of directors.
+Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert}, and \textit{Ind. exp.} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, being designated a financial expert of the audit committee, and having served on another board in the same industry, respectively.
+Values for \textit{Other boards}, \textit{Board exp.}, \textit{Avg. tenure}, and \textit{Total tenure} refer to means of the number of other boards served at the time, the number of boards served prior to appointment, the number of years a director served in other boards on average, and the total number of years a director served in other boards.
 Panel A includes all directors, with \textit{Activist directors} relating to activist directors in the first year on their respective boards.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
@@ -398,7 +382,7 @@ print(xtable(tab, display=c("s", "s", "d", rep("f", 6))),
 \\
 <<dir_desc_panel_A2, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
-print(xtable(tab2, display=c("s", "s", "d", rep("f", 4))),
+print(xtable(tab2, display=c("s", "s", "d", rep("f", 5))),
       include.rownames=FALSE, only.contents=TRUE,
       format.args = list(big.mark = ","))
 @
