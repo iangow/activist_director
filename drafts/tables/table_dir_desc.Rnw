@@ -357,12 +357,11 @@ skill_summ_sim <-
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel A presents data on directors matched to Equilar.
+Panel A presents data on directors (matched to Equilar) with \textit{Activist directors} relating to activist directors in the first year on their respective boards.
 $N$ refers to the number of observations.
 \textit{Age} refers to mean age of directors.
 Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert}, and \textit{Ind. exp.} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, being designated a financial expert of the audit committee, and having served on another board in the same industry, respectively.
 Values for \textit{Other boards}, \textit{Board exp.}, \textit{Avg. tenure}, and \textit{Total tenure} refer to means of the number of other boards served at the time, the number of other boards served prior to appointment, the average number of years a director served in other boards, and the total number of years a director served in other boards.
-Panel A includes all directors, with \textit{Activist directors} relating to activist directors in the first year on their respective boards.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
 \textit{Tenure (adj.)} is estimated median tenure for directors accounting for censoring.
@@ -418,7 +417,7 @@ The difference between our activist director sample and the \citet{Adams:2018vf}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
 \multicolumn{5}{l}{Panel A: All activist directors}
 % \hline
-\\
+\\\\
 <<dir_desc_panel_C, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
@@ -445,7 +444,7 @@ The difference between affiliated and unaffiliated directors is reported in Colu
 \begin{tabularx}{\linewidth}{l*{6}{Y}}
 \multicolumn{6}{l}{Panel B: Affiliated versus unaffiliated activist directors}
 % \hline
-\\
+\\\\
 <<dir_desc_panel_D, cache=FALSE, results='asis'>>=
 # Note that display has to cover rownames as well (I set this to "s")
 print(xtable(skill_summ, display=c("s", "s", "f", "f", "f", "f", "f")),
