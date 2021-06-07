@@ -19,6 +19,7 @@ equilar_career <- tbl(pg, "equilar_career")
 equilar_type <- tbl(pg, "equilar_type")
 equilar_final <- tbl(pg, "equilar_final")
 outcome_controls <- tbl(pg, "outcome_controls")
+outcome_changes <- tbl(pg, "outcome_changes") %>% rename(period = datadate)
 
 company_financials <- tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials"))
 stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
@@ -52,6 +53,7 @@ dir.data <-
     inner_join(equilar_type, by = c("company_id", "executive_id")) %>%
     inner_join(equilar_final, by = c("company_id", "executive_id", "period")) %>%
     inner_join(control_data, by = c("period", "permno")) %>%
+    left_join(outcome_changes) %>%
     collect() %>%
     mutate(affiliated = factor(affiliated,
                                levels = c("non_activist", "affiliated", "unaffiliated")))
@@ -103,16 +105,16 @@ All regressions include industry and year fixed-effects and robust standard erro
 library(stargazer)
 stargazer(fm.t4.c1, fm.t4.c2, fm.t4.c3, fm.t4.c4,
           omit = c("Constant", "sic2", "year"),
-          column.labels =  c("$\\textrm{Other boards}_{t+1}$",
-                             "$\\textrm{Other boards}_{t+2}$",
+          column.labels =  c("$\\textrm{Other boards}_{t+2}$",
                              "$\\textrm{Other boards}_{t+3}$",
-                             "$\\textrm{Other boards}_{t+4}$"),
+                             "$\\textrm{Other boards}_{t+4}$",
+                             "$\\textrm{Other boards}_{t+5}$"),
           dep.var.caption = "",
           dep.var.labels.include = FALSE,
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
-          covariate.labels = c("$\\textrm{Other boards}_{t}$", "Activist director, affiliated",
-                               "Activist director, unaffiliated", "Age", "Female",
+          covariate.labels = c("$\\textrm{Other boards}_{t}$", "Affiliated director",
+                               "Unaffiliated director", "Age", "Female",
                                "Comp. committee", "Audit committee", "Analyst", "Inst", "Size-adj. returns",
                                "Market value", "Book-to-market", "Leverage", "Dividend", "ROA", "Sales growth"),
           se=list(fm.t4.c1.se[,2],
