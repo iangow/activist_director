@@ -473,7 +473,6 @@ rs <- dbDisconnect(pg)
 \caption{Capital structure and payouts}
 \label{table:fin}
 \begin{minipage}[t]{\columnwidth}
-% \begin{flushleft}
 {\small
 \textit{Cash} is calculated as the ratio of total cash and short-term
     investments to the book value of total assets.
@@ -484,7 +483,6 @@ rs <- dbDisconnect(pg)
 Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
-% \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 <<outs_t_cap_struct, dependson=c("outs_functions", "outs_other_data_step"), error=FALSE, results='asis'>>=

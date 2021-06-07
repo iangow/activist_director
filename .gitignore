@@ -14,3 +14,4 @@ drafts/*.tex
 # !activist_directors.pdf # Include the main document
 *.csv
 .httr-oauth
+cache
