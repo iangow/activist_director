@@ -19,8 +19,9 @@ We thank the Division of Research at Harvard Business School, University of Melb
 
 \singlespacing
 \begin{abstract}
-This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., those directors appointed in response to demands by activists.
-Using a sample of \Sexpr{num_events} activism events over the period of 2004--2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors who are generally younger with finance and accounting skills and less likely to be female than other new directors.
+This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., directors appointed in response to demands by activists.
+Using a sample of \Sexpr{num_events} activism events over the period 2004--2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors.
+We find that activist directors are younger, more likely to have finance and accounting skills, and less likely to be female than other new directors.
 We find that activists are more likely to gain board seats at those firms with weaker stock price performance or with lower payout ratio.
 Activists remain as shareholders longer when they have board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
 As in prior research, we find positive announcement-period returns of 3-4\% when a firm is targeted by activists and 2\% when an activist director is appointed, and about 2 percentage-point increase in return on assets over the subsequent one to five years.
