@@ -1,5 +1,5 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(echo=FALSE, message=FALSE, cache=TRUE)}
+\Sexpr{opts_chunk$set(echo=FALSE, message=FALSE, cache=FALSE)}
 
 <<rets_load_packages, include=FALSE, cache=FALSE>>=
 library(xtable)
@@ -37,6 +37,7 @@ out.table <- function(data, lhs, rhs, caption="Some returns",
                       label=FALSE, ff=TRUE, use.caption=TRUE) {
 
     lhsLabels <- function(text) {
+        text <- gsub("^ret.*raw.*$", "$R$", text, perl=TRUE)
         text <- gsub("^ret.*mkt.*$", "$R^{MKT}$", text, perl=TRUE)
         text <- gsub("^ret_appt_m12p0_sz*$", "$R^{SZ}_{(-12, 0)}$", text, perl=TRUE)
         text <- gsub("^ret_appt_m0p12_sz*$", "$R^{SZ}_{(0, +12)}$", text, perl=TRUE)
@@ -152,24 +153,24 @@ rhs <- "affiliated"
 
 <<rets_panel_a, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel A: Days $-1$ to $+1$ around announcement of activism."
-lhs.vars <- c("ret_d_annc", "ret_d_annc_mkt", "ret_d_annc_sz")
+lhs.vars <- c("ret_d_annc_raw", "ret_d_annc_mkt", "ret_d_annc_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=TRUE, ff=FALSE)
 @
 
 <<retss_panel_b, dependson=c("return_data_prep", "return_functions"), results='asis'>>=
 caption <- "Panel B: Days $-1$ to $+1$ around announcement of settlement."
-lhs.vars <- c("ret_d_any_sett", "ret_d_any_sett_mkt", "ret_d_any_sett_sz")
+lhs.vars <- c("ret_d_any_sett_raw", "ret_d_any_sett_mkt", "ret_d_any_sett_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 @
 
 <<rets_data_prep_appt, cache=TRUE, dependson="ret_data_step", results='asis'>>=
-reg.data <- subset(merged, !is.na(ret_d_appt & permno!=66800)) # Drop Greenburg-AIG event
+reg.data <- subset(merged, !is.na(ret_d_appt_raw & permno!=66800)) # Drop Greenburg-AIG event
 rhs <- "affiliated_appt"
 @
 
 <<rets_panel_c, dependson=c("return_data_prep_appt", "return_functions"), results='asis'>>=
 caption <- "Panel C: Days $-1$ to $+1$ around announcement of appointment."
-lhs.vars <- c("ret_d_appt", "ret_d_appt_mkt", "ret_d_appt_sz")
+lhs.vars <- c("ret_d_appt_raw", "ret_d_appt_mkt", "ret_d_appt_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 @
 
@@ -182,9 +183,7 @@ rm(reg.data)
 @
 \addtocounter{table}{1}
 
-
-
-<< Returns by Outcome Trial >>=
+<<returns_trial, eval=FALSE, include=FALSE>>=
 combineVars <- function(vars) {
             paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
         }
