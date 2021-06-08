@@ -24,10 +24,11 @@ Using a sample of \Sexpr{num_events} activism events over the period 2004--2016,
 We find that activist directors are younger, more likely to have finance and accounting skills, and less likely to be female than other new directors.
 We find that activists are more likely to gain board seats at those firms with weaker stock price performance or with lower payout ratio.
 Activists remain as shareholders longer when they have board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
-As in prior research, we find positive announcement-period returns of 3-4\% when a firm is targeted by activists and 2\% when an activist director is appointed, and about 2 percentage-point increase in return on assets over the subsequent one to five years.
+As in prior research, we find positive abnormal returns of 3--4\% upon announcement that a firm has been targeted by activists, 2\% abnormal returns when an activist director is appointed, and about 2 percentage-point increase in return on assets over the subsequent one-to-five years.
+
 We find that activist directors are associated with significant strategic and operational actions by firms.
 We show evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced investment.
-These estimated effects are especially greater for payout ratio and R\&D investment when activists obtain board representation, consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
+These estimated effects are greater for payout ratios and R\&D investment when activists obtain board representation, consistent with such representation being an important mechanism for bringing about the kinds of changes that activists often demand.
 \end{abstract}
 \doublespacing
 
