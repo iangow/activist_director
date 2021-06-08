@@ -147,44 +147,32 @@ prob_activist_demands <-
     mutate_at(c("year", "sic2"), as.factor)
 @
 
-\begin{table}[htb]
-\caption{Activist target selection}
-\label{tbl:selection}
-\begin{minipage}[t]{\columnwidth}
-% \begin{flushleft}
-  {\small
-    All regressions in this table include industry and year fixed effects and the following controls measured for the prior fiscal year-end:
-    \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
-    \textit{Institutional}, the proportion of the firms outstanding stock held by institutions;
-    \textit{Size-adj. return}, twelve-month size-adjusted returns calculated as raw
-            return over a year minus return for the size-matched decile provided by CRSP;
-    \textit{Market value}, the value of market capitalization;
-    \textit{Book-to-market}, market capitalization divided by the book value of common equity;
-    \textit{Leverage}, sum of long-term debt and current liabilities divided by sum of
-            long-term debt, current liabilities and the book value of common equity;
-    \textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA);
-    \textit{ROA}, EBITDA divided by the lagged total assets;
-    \textit{Sales growth}, Sales divided by lagged sales;
-    \textit{Num. directors}, the number of directors on the board;
-    \textit{Outside percent}, the percentage of outside directors;
-    \textit{Age}, the average age of directors on the board;
-    \textit{Tenure}, the average years of directorship on the board;
-    \textit{Staggered board}, indicator for staggered board.
-    All controls are winsorized at the $1\%$ and $99\%$ levels.
-    Values in parentheses are standard errors clustered by firm.
-    *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
- % \end{flushleft}
-  \end{minipage}
-\addtocounter{table}{-1}
-\end{table}
-
   \begin{table}[htb]
     \caption{Activist target selection}
         \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-Table presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with getting board seats (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists. Sample includes firm-years with activism only.
+Table presents logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
+Sample includes firm-years with activism only.
+All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (See Section 3.5 for definitions).
+%     \textit{Analyst}, the number of analyst forecasts for each firm-year (I/B/E/S);
+%     \textit{Institutional}, the proportion of the firms outstanding stock held by institutions;
+%     \textit{Size-adj. return}, twelve-month size-adjusted returns calculated as raw
+%             return over a year minus return for the size-matched decile provided by CRSP;
+%     \textit{Market value}, the value of market capitalization;
+%     \textit{Book-to-market}, market capitalization divided by the book value of common equity;
+%     \textit{Leverage}, sum of long-term debt and current liabilities divided by sum of
+%             long-term debt, current liabilities and the book value of common equity;
+%     \textit{Payout} the ratio of the sum of dividends and repurchases to EBITDA);
+%     \textit{ROA}, EBITDA divided by the lagged total assets;
+%     \textit{Sales growth}, Sales divided by lagged sales;
+%     \textit{Num. directors}, the number of directors on the board;
+%     \textit{Outside percent}, the percentage of outside directors;
+%     \textit{Age}, the average age of directors on the board;
+%     \textit{Tenure}, the average years of directorship on the board;
+%     \textit{Staggered board}, indicator for staggered board.
+    All controls are winsorized at the $1\%$ and $99\%$ levels.
+    Values in parentheses are standard errors clustered by firm.
   \newline}
 %  \end{flushleft}
   \end{minipage}
