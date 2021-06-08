@@ -195,93 +195,75 @@ ols.model <- function(data, lhs, rhs, cluster1) {
           return(list(fitted, coeftest(fitted,vcovHC)))
         }
 
+reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
+
 # block_merger_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*block_merger_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*block_merger_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*block_merger_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*block_merger_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*block_merger_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*block_merger_outcome -1")[2]
 
 # merger_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*merger_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*merger_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*merger_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*merger_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*merger_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*merger_outcome -1")[2]
 
 # divestiture_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*divestiture_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*divestiture_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*divestiture_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*divestiture_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*divestiture_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*divestiture_outcome -1")[2]
 
 # strategy_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*strategy_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*strategy_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*strategy_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*strategy_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*strategy_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*strategy_outcome -1")[2]
 
 # payout_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*payout_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*payout_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*payout_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*payout_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*payout_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*payout_outcome -1")[2]
 
 # divestiture_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*divestiture_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*divestiture_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*divestiture_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*divestiture_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*divestiture_outcome -1")[2]
-
-# reits_outcome Outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*reits_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*reits_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*reits_outcome -1")[2]
-ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*reits_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*divestiture_outcome -1")[2]
 
 # leverage_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*leverage_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*leverage_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*leverage_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*leverage_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*leverage_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*leverage_outcome -1")[2]
 
 # block_acquisition_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*block_acquisition_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*block_acquisition_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*block_acquisition_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*block_acquisition_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*block_acquisition_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*block_acquisition_outcome -1")[2]
 
 # add_indep_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*add_indep_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*add_indep_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*add_indep_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*add_indep_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*add_indep_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*add_indep_outcome -1")[2]
 
 # other_gov_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*other_gov_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*other_gov_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*other_gov_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*other_gov_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*other_gov_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*other_gov_outcome -1")[2]
 
 # compensation_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*compensation_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*compensation_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*compensation_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*compensation_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*compensation_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*compensation_outcome -1")[2]
 
 # remove_officer_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*remove_officer_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*remove_officer_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*remove_officer_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*remove_officer_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*remove_officer_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*remove_officer_outcome -1")[2]
 
 # remove_director_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*remove_director_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*remove_director_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*remove_director_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*remove_director_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*remove_director_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*remove_director_outcome -1")[2]
 
 # remove_defense_outcome
-ols.model(reg.data, "ret_d_annc_mkt", "affiliated*remove_defense_outcome")[2]
-ols.model(reg.data, "ret_d_any_sett_mkt", "affiliated*remove_defense_outcome")[2]
-ols.model(reg.data, "ret_d_appt_mkt", "affiliated*remove_defense_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m12p0_sz", "affiliated*remove_defense_outcome -1")[2]
 ols.model(reg.data, "ret_appt_m0p12_sz", "affiliated*remove_defense_outcome -1")[2]
+ols.model(reg.data, "ret_appt_m0p24_sz", "affiliated*remove_defense_outcome -1")[2]
 @
