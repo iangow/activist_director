@@ -27,9 +27,8 @@ events <-
 
 # Around Appointment Date
 rets <- get_event_cum_rets(events, pg, permno = "permno",
-                               event_date = "appointment_date",
-                               win_start = -1, win_end = 1,
-                               suffix = "_d_appt")
+                           event_date = "appointment_date",
+                           win_start = -1, win_end = 1, suffix = "_d_appt")
 merged <-
     rets %>%
     right_join(events, by = c("permno", "appointment_date"))
@@ -168,7 +167,8 @@ rs <- dbWriteTable(pg, "event_returns", event_returns,
                    overwrite=TRUE, row.names=FALSE)
 
 sql <- "ALTER TABLE event_returns OWNER TO activism;"
-rs <- dbExecute(pg, sql)
+rs <- dbExecute(pg, "ALTER TABLE event_returns OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE event_returns ALTER COLUMN campaign_ids TYPE int[] USING campaign_ids::int[]")
 
 sql <- paste("
              COMMENT ON TABLE event_returns IS

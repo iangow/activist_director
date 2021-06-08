@@ -18,7 +18,7 @@ pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 event_returns <- tbl(pg, "event_returns")
-demands <- tbl(pg, "demands") %>% mutate(campaign_ids=as.character(campaign_ids))
+demands <- tbl(pg, "demands")
 
 merged <-
     event_returns %>%
@@ -191,7 +191,7 @@ combineVars <- function(vars) {
 ols.model <- function(data, lhs, rhs, cluster1) {
           model <- paste0(lhs, " ~ ", combineVars(rhs))
           fitted <- lm(model, data=data, na.action="na.omit")
-          return(list(fitted, coeftest(fitted,vcovHC)))
+          return(list(fitted, coeftest(fitted, vcovHC)))
         }
 
 reg.data <- subset(merged, permno!=66800) # Drop Greenburg-AIG event
