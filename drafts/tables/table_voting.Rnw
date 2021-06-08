@@ -239,6 +239,7 @@ fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 \begin{landscape}
 \begin{table}[htb]
 \caption{Director elections}
+\label{tbl:dir_elections}
 \begin{minipage}[t]{\columnwidth}
 {\small
 This table presents results of regressions where the dependent variable is voting support for directors.

@@ -7,47 +7,49 @@
 Table \ref{tbl:dir_chars} provides descriptive statistics for our sample of directors.
 Because we focus our analysis on activist directors in their first year, the appropriate comparison groups comprise directors in their first year on their respective boards.
 Of the 594,248 observations (director-firm-years) in our sample, 56,450 relate to new directors where there was no activism targeting the firm in the year of appointment.
-The average age of these directors is 62.70, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are denoted as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management. See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
+The average age of these directors is 62.70, 14\% of them are female, 73\% are appointed to committees in their first year, and 16\% are designated as audit committee financial experts.\footnote{SEC rules require a company to disclose whether it has at least one ``audit committee financial expert'' serving on its audit committee, and if so, the name of the expert and whether the expert is independent of management. See \url{http://www.sec.gov/rules/final/33-8177.htm}.}
 Additionally, in our sample, 1,563 observations relate to new directors where there was activism targeting the firm in the year of appointment, but board seats were neither demanded by nor granted to activists.
-These directors share the same characteristics as other new directors; the average age of these directors is 61.12, 11\% of them are female, 74\% are appointed to committees in their first year, and 17\% are denoted as audit committee financial experts.
+These directors appear similar to other new directors; the average age of these directors is 61.12, 11\% of them are female, 74\% are appointed to committees in their first year, and 17\% are designated as audit committee financial experts.
 
-From our full sample of \Sexpr{dirs$all_dirs} activist directors hand-collected, we identify 1,092 of them on Equilar.
-One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and Equilar appears not to capture most such directors, as they often do not appear in the proxy statement (DEF 14A), which is the primary source for Equilar's data.
-We then divide these 1,092 activist directors into two groups and identify 642 \textit{unaffiliated} and 450 \textit{affiliated} directors.
+We can match we identify 1,092 of sample of \Sexpr{dirs$all_dirs} activist directors to Equilar.
+One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and therefore do not appear in any proxy statements (DEF 14A filings) for the target firms
+Such proxy filings are the primary source for Equilar's data.
 
-In general, unaffiliated directors are similar to other new directors on most dimensions except that there is a noticeably smaller number who are female ($0.06$ versus $0.14$).
-However, affiliated directors (i.e., employees or principals of members of the activist group) appear to be more different: they are younger (51 years of age) and rarely female (just \emph{1\%} of affiliated activist directors are women).
-While activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.37$), especially affiliated directors ($0.28$), than non-activism new directors ($0.41$).
+Of these 1,092 activist directors, 450 are \textit{affiliated} directors (i.e., employees or principals of members of the activist group) and 642 are \textit{unaffiliated}.
 
-41\% of unaffiliated directors had prior experience in a related industry which is higher than affiliated directors.
-Also, affiliated directors have served in more boards prior to appointment ($3.01$ versus $2.14$ boards), but their tenure was shorter on average ($2.58$ versus $5.34$ years) compared to other non-activism new directors.
+In general, unaffiliated activist directors are similar to other new directors on most dimensions except that there are noticeably fewer who are female ($0.06$ versus $0.14$).
+While unaffiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns).
+Unaffiliated directors had prior experience in a related industry in 41\% of cases, which is slightly higher than new directors in other categories.
+
+However, affiliated directors noticeably different: they are younger (51 years of age) and very rarely female (just \emph{1\%} of affiliated activist directors are women).
+Affiliated directors have served in more boards prior to appointment ($3.01$ versus $2.14$ boards for new directors absent activism), but their tenure on those other boards is shorter on average ($2.58$ versus $5.34$ years) compared to other non-activism new directors.
+While affiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.42$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.28$) than other new directors ($0.41$).
 
 Panel B of Table \ref{tbl:dir_chars} presents data on the tenure of activist directors.
-About $\Sexpr{prettyNum((378+243)/(973+650)*100, digits = 2)}\%$ of activist directors remain on their respective boards at the time of December 31, 2017.
-Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for 616 (626) days in median (i.e., they remained on the board for 1.7 years).
-% \footnote{These numbers give the mean tenure statistics \emph{without} accounting for censoring.}
-In many cases, their departure was associated with the company being acquired, going private, or going bankrupt.
-Affiliated and unaffiliated activist directors who remain on their respective boards as of December 31, 2017 have median tenures of 3.2 years.
+About $\Sexpr{prettyNum((378+243)/(973+650)*100, digits = 2)}\%$ of activist directors remain on their respective boards as of December 31, 2017.
+Affiliated (unaffiliated) directors who have left their respective boards, did so after being on the board for a median of 616 (626) days (about 1.7 years).
+In many cases, departure of activist directors was associated with the company being acquired, going private, or going bankrupt.
+Affiliated (unaffiliated) activist directors who remain on their respective boards as of December 31, 2017 have median tenure of 1,139 (1,178) days (about 3.2 years).
 
-Additionally, We compare skill sets of activist directors with other directors.
-Since a 2009 amendment to Regulation S-K, publicly listed companies in the U.S. have been required to describe the reasons for nominating directors \citep{Adams:2018vf}.
+Another dimension along which directors can be compared is  skill sets \citep{Adams:2018vf}.
+Since a 2009 amendment to Regulation S-K, publicly listed U.S. companies have been required to describe the reasons for nominating directors \citep{Adams:2018vf}.
 Using these data, \citet{Adams:2018vf} identify 20 different kinds of skills by directors and find that director skills are an important feature of firms' board composition and corporate governance.
-Following the approach of \citet{Adams:2018vf} and hand-collected data, we identified the skill set of each activist director.
-Panel A of Table \ref{tbl:dir_skills} presents the data.
-In general, activist directors have fewer skill sets compared to other directors; we find that the mean number of skill sets of activist directors is two while \citet{Adams:2018vf} find three skill sets per director in their sample.
-Also, activist director stand out with regard to the \textit{Finance and accounting} skill set.
-We find that 48\% of activist directors have the finance and accounting skill, which is significantly higher than the 34\% for directors in \citet{Adams:2018vf}.
-We also compared the numbers with the descriptive statistics from \citet{Adams:2018vf}, and the activist directors are less likely to have each skill across all categories other than \textit{Finance and accounting}.
+Following the approach of \citet{Adams:2018vf}, we hand-collected data and identified the skill set of each activist director.
 
-In Panel B of Table \ref{tbl:dir_skills}, we further examine the difference in skill sets between affiliated and unaffiliated directors as they may contribute different types of skills.
+Panel A of Table \ref{tbl:dir_skills} presents the data.
+In general, activist directors have fewer skill sets compared to other directors; we find that the mean number of skill sets of activist directors is $2.05$ while \citet{Adams:2018vf} find $3.07$ skill sets per director in their sample.
+Also, activist directors stand out with regard to the \textit{Finance and accounting} skill set.
+We find that 48\% of activist directors have the finance and accounting skill, which is significantly higher than the 34\% for directors in \citet{Adams:2018vf}.
+
+In Panel B of Table \ref{tbl:dir_skills}, we examine differences in skill sets between affiliated and unaffiliated directors.
 Affiliated directors are associated with a higher likelihood of having \textit{Finance and accounting} and \textit{Governance} skill sets, which is expected as these affiliated directors come from the activist hedge funds.
-On the other hand, unaffiliated directors are more likely to have \textit{International}, \textit{Manufacturing}, \textit{Marketing}, and \textit{Technology} skill sets, which consistent with thes directors bring specific industry or business experience to the targeted firms.
+On the other hand, unaffiliated directors are more likely to have \textit{International}, \textit{Manufacturing}, \textit{Marketing}, and \textit{Technology} skill sets, which consistent with these directors bringing specific industry or business experience to the targeted firms.
 Also, unaffiliated directors are more likely to have \textit{Leadership} or \textit{Outside executive} skill sets, as many of them are former or current executives.
 
 \subsection{Director elections: Voting outcomes}
-In this section, we examine whether activist directors are regarded differently by shareholders by looking at voting outcomes in director elections upon or following appointment.
+In this section, we examine whether activist directors are regarded differently by shareholders in director elections upon or following appointment.
 Voting in director elections provides a mechanism for shareholders to communicate their satisfaction or dissatisfaction with each director's performance.
-Table 4 provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
+Table \ref{tbl:dir_elections} provides results from OLS regressions where the dependent variable is \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics.
 To control for the various factors affecting shareholder support for directors at the time of the meeting, we include meeting fixed effects.
 Thus, this analysis compares voting outcomes for activist directors with those of other directors at the same firm who are up for election at the same shareholder meeting.
 Columns 1 and 2 provide results for each activist director's first election (excluding contested elections) while columns 3 and 4 (5 and 6) provide results for second (third) elections.
@@ -88,7 +90,8 @@ Because we use 13F filing data to determine when an activist acquires and dispos
 
 Another issue with measuring holding periods is that censoring is significant in our sample.
 Many of the activism campaigns in our sample are recent and the activist continues to hold stock at the time we measure the holding period.
-Thus, to estimate the association between activism category and holding period, we use censored median regression \citep{Portnoy:2003wp}. Table \ref{tbl:holdings} presents these results.
+Thus, to estimate the association between activism category and holding period, we use censored median regression \citep{Portnoy:2003wp}.
+Table \ref{tbl:holdings} presents these results.
 
 When there are activist directors affiliated with the activist hedge fund, we find a highly significant incremental holding period of 366 days (i.e. 1 year) from entry to exit and 582 days (i.e. 1.6 years) from announcement of activism to exit relative to activism without activist directors.\footnote{This is consistent with \textit{Affiliated director} having a shorter period from entry to announcement of activism.}
 However, we find a smaller difference with \textit{Unaffiliated director} cases.\footnote{This is potentially associated with \textit{Unaffiliated director} cases having a higher likelihood of the target firm being acquired; see Table \ref{tbl:div_acq}.}
@@ -113,21 +116,6 @@ This is likely because the activists have already achieved their goals, so they 
 \section{Activist target selection} \label{sect:selection}
 Prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book), and firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep*{Brav:2010gx}.
 We extend this analysis to our sample and examine what factors are specifically associated with activists seeking, or getting, board representation.
-
-% We first examine the circumstances in which firms find themselves as the targets of activists.
-% Panel A of Table \ref{tbl:selection} reports the results of logistic regressions where the dependent variables are indicators for activism.
-% The first column looks at the probability of being targeted for any kind of activism event, the second column examines the determinants of an activist making demands for board representation, and the third column examines the determinants of an activist getting representation on a firm's board.\footnote{Note that, in contrast to our other analyses, for the purpose of this table, our activism indicators are \emph{not} mutually exclusive. That is, \textit{Activism} includes cases in any of the categories \textit{Non-board activism}, \textit{Board demand}, and \textit{Activist director}, while \textit{Board demand} includes cases of \textit{Activist director}, as well as cases where the board demands are not successful.}
-% Focusing on Column 1 of Panel A, we find that book-to-market is positively associated with activism, consistent with prior research \citep{Brav:2008eu} that find activists targeting undervalued firms.
-% Also, we find that size-adjusted return is negatively associated with being targeted by activists, consistent with activists targeting poorly performing firms.
-% In addition, consistent with prior research, we find that smaller companies are more likely to be targeted.
-% However, the positive association between the proportion of directors who are independent (\textit{Outside percent}) and activism is more difficult to explain in the same way, as this measure is suggested by some to be a proxy for \emph{good} governance \citep{Bhagat:2008jc}.
-% One possible explanation is that a more independent board makes a firm more receptive to proposals from activists.
-%
-% Turning to Column 2 of Panel A of Table \ref{tbl:selection}, we see evidence that activists are more likely to target a firm with demands for board representation when a greater portion of the firm's shares are held by institutional investors, consistent with these investors being more open to supporting activists.
-% Smaller firms are also more likely to be the target for board-related activism. In addition, we find that the board size is associated with the likelihood of being asked for board representation, consistent with the number of directors being a proxy for poor governance and activists targeting firms with worse governance \citep{Yermack:1996wv}.
-%
-% In Column 3 of Panel A, we additionally find that activists are more likely to gain a board seat when the payout is lower, the institutional holding is higher, return is lower, the firm is smaller, the book-to-market ratio is higher, and the board size is bigger with a higher number of outside directors.
-% We examine whether these activist directors are more or less likely to be affiliated with activists in our next analysis in Panel B.
 
 First, given that a firm has been targeted by activists, what are the factors that are associated with the activists demanding board seats?
 Second, given that a firm has been targeted by activists, what factors are associated with the activist's demands being met with board appointments, either of affiliated or unaffiliated activist directors.
@@ -254,14 +242,6 @@ We also find negative associations between R\&D spending and activist directors 
 Note that the differences between these coefficients and that on \textit{Other activism} are weakly significant ($p < 0.10$) for both categories.
 Overall, the evidence is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
 However, it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, under-investment and a focus on the short term.
-
-%Based on the results on acquisitions, capital structure, and investments above, we conclude that the activist directors are more interested in increasing shareholder value through conducting internal changes in corporate policies; they influence the target companies to take out more debt, cut off R\&D and Capex spending, and push the firms into divestiture, rather than pushing the target firms into an external market and sell as the corporate raiders have done decades ago.
-%\footnote{We additionally examined whether having two or more activist directors would make a difference and find that CEO is more likely to leave, payout is more likely to increase, and R\&D expense is more likely to decrease following the appointment of two or more \textit{Affiliated directors}.}
-
-% While stock market reactions are useful for evaluating the impact of activists, they are not without issues.
-% First, we need to identify the time at which the market learned about the prospect of activist involvement.
-% Second, we need the market to estimate the impact of activism in an unbiased manner and impound this estimate into price promptly.
-% Finally, even if these difficulties are addressed, stock market reactions do not provide insight into \emph{how} activists affect corporate policy and firm value.
 
 \section{Operating and Market Performance} \label{sect:perf}
 In this section, we examine whether the changes brought about by activist directors have any indication of operating and market performance improvement.
