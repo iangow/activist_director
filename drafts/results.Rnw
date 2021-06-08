@@ -135,13 +135,13 @@ In this subsection, we describe the types of demands made by activists during th
 
 Panel A of Table \ref{tbl:demand} lists out the types of demand activists have raised during the activism campaigns. \footnote{These demands were collected and classified by the SharkWatch database.}
 We find that a demand for board representation is the most frequently asked; we find the demand in 1,296 activism campaigns.
-A demand for sale of the target firm is also very common as we see the demand in 671 cases, which is in line with Greenwood and Schor (2009).
+A demand for sale of the target firm is also very common as we see the demand in 671 cases, which is in line with results in \citet{Greenwood:2009kh}.
 A demand for strategic alternatives is the third most frequent demand, followed by a demand for increased payout.
 
-We also provide success rate for each type of activist demands in Column 3.
-Activists were most successful with the board representation demand, winning 63\% of the cases where they have requested for a board seat.
+We also provide data on the success rate for each type of activist demands in Column 3.
+Activists were most successful with board representation demands, winning seats in 63\% of the cases where they requested board seats.
 The related demands that were also highly successful are \textit{Add ind. dir.} and \textit{Remove director} at 46\% and 40\%, respectively.
-The demand for increased payout (\textit{Ptyout}) was also met by the target firms in more than 42\% of the times, which we will show again in section \ref{sect:outcomes}.
+The demand for increased payout (\textit{Payout}) was also met by the target firms more than 42\% of the time, which we will show again in section \ref{sect:outcomes}.
 The sale of the target (\textit{Merger}) demand is not as successful though they were still successful in pushing the target firm into a merger 23\% of the time.
 Some activists have also asked for an ESG-related demand, but none of them was identified to be successful, possibly suggesting that these demands might have been made more superficially by the activists.
 
@@ -243,7 +243,7 @@ Note that the differences between these coefficients and that on \textit{Other a
 Overall, the evidence is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
 However, it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, under-investment and a focus on the short term.
 
-\section{Operating and Market Performance} \label{sect:perf}
+\section{Operating and market performance} \label{sect:perf}
 In this section, we examine whether the changes brought about by activist directors have any indication of operating and market performance improvement.
 We first look at the operating performance, return on assets in particular.
 
