@@ -17,11 +17,11 @@ Such proxy filings are the primary source for Equilar's data.
 
 Of these 1,092 activist directors, 450 are \textit{affiliated} directors (i.e., employees or principals of members of the activist group) and 642 are \textit{unaffiliated}.
 
-In general, unaffiliated activist directors are similar to other new directors on most dimensions except that there are noticeably fewer who are female ($0.06$ versus $0.14$).
+In general, unaffiliated activist directors are similar to other new directors on most dimensions except that there are significantly fewer female directors ($0.06$ versus $0.14$, p-value < $0.01$).
 While unaffiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns).
 Unaffiliated directors had prior experience in a related industry in 41\% of cases, which is slightly higher than new directors in other categories.
 
-However, affiliated directors noticeably different: they are younger (51 years of age) and very rarely female (just \emph{1\%} of affiliated activist directors are women).
+However, affiliated directors are noticeably different: they are younger (51 years of age) and very rarely female (just \emph{1\%} of affiliated activist directors are women).
 Affiliated directors have served in more boards prior to appointment ($3.01$ versus $2.14$ boards for new directors absent activism), but their tenure on those other boards is shorter on average ($2.58$ versus $5.34$ years) compared to other non-activism new directors.
 While affiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.42$ versus $0.34$ for directors not associated with activism campaigns), they are less frequently added to the audit committee ($0.28$) than other new directors ($0.41$).
 
@@ -31,7 +31,7 @@ Affiliated (unaffiliated) directors who have left their respective boards, did s
 In many cases, departure of activist directors was associated with the company being acquired, going private, or going bankrupt.
 Affiliated (unaffiliated) activist directors who remain on their respective boards as of December 31, 2017 have median tenure of 1,139 (1,178) days (about 3.2 years).
 
-Another dimension along which directors can be compared is  skill sets \citep{Adams:2018vf}.
+Another dimension along which directors can be compared is skill sets \citep{Adams:2018vf}.
 Since a 2009 amendment to Regulation S-K, publicly listed U.S. companies have been required to describe the reasons for nominating directors \citep{Adams:2018vf}.
 Using these data, \citet{Adams:2018vf} identify 20 different kinds of skills by directors and find that director skills are an important feature of firms' board composition and corporate governance.
 Following the approach of \citet{Adams:2018vf}, we hand-collected data and identified the skill set of each activist director.
