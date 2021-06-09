@@ -5,6 +5,7 @@
 \subsection{Activism events}
 
 Our data on activism events come from FactSet's SharkWatch database, which contains information on shareholder activism events, primarily in the United States and generally involving hedge fund activists.
+One advantage of using SharkWatch instead of Schedule 13D disclosure is that the sample would include those activism events where the activists have less than 5\% ownership in the target firm (\citet{Bourveau:2017aa}).
 From SharkWatch, we collect information on all publicly disclosed activism events that commenced between January 1, 2004 and December 31, 2016 where the target firm is matched to CRSP, is incorporated in the United States, and is not an investment trust or mutual fund, and where the event is not a control contest involving another corporation.
 This provides us with \Sexpr{num_events} activism events.
 Note that our sample consists only of those events with no pending action and does not include activism events consisting only of shareholder proposals submitted under Rule 14a-8.
