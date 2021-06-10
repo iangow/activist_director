@@ -1,9 +1,210 @@
-\Sexpr{set_parent('activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
+\Sexpr{set_parent('../activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(echo=FALSE, warning=FALSE, cache=TRUE, message=FALSE)}
 
 \renewcommand{\thesection}{IA\arabic{section}} %% letter numbering
-\renewcommand{\thetable}{IA .\arabic{table}} %% letter.number table
+\renewcommand{\thetable}{IA.\arabic{table}} %% letter.number table
 
 \section{Online appendix}
-<<table_outcomes, child='tables/table_outcomes.Rnw'>>=
+
+<<IA_selection_libraries, cache=FALSE, include=FALSE>>=
+require(stargazer)
+library(DBI)
+library(dplyr, warn.conflicts = FALSE)
+library(xtable)
+library(tidyr)
 @
+
+<<IA_selection_functions, include=FALSE>>=
+# Functions to extract fitted models, etc. from list of lists
+# constructed by fit.model function below.
+source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
+
+getFitted <- function(list) {
+    temp <- list()
+    for (i in 1:length(list)) {
+        temp[[i]] <- list[[i]][[1]]
+    }
+    return(temp)
+}
+
+# Get standard errors
+getSEs <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,2]
+    }
+    return(temp)
+}
+
+# Get p-values
+getPs <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- a.list[[i]][[2]][,4]
+    }
+    return(temp)
+}
+
+# Get pseudo-R2s
+getPseudoR2s <- function(a.list) {
+    temp <- list()
+    for (i in 1:length(a.list)) {
+        temp[[i]] <- formatC(a.list[[i]][[3]], digits = 3, format = "f")
+    }
+    return(unlist(temp))
+}
+
+combineVars <- function(vars) {
+    paste(unlist(strsplit(vars, "\\s+")), collapse=" + ")
+}
+
+fit.model <- function(data, lhs, rhs, cluster1) {
+    model <- paste0(lhs, " ~ ", combineVars(rhs))
+    fitted <- glm(model, data=data, na.action="na.exclude", family="binomial")
+    fitted_constant <- glm(paste(lhs, "~ 1"), data = reg.data,
+                           na.action = "na.exclude",
+                           family = "binomial")
+    pseudoR2 <- 1- logLik(fitted)[[1]]/logLik(fitted_constant)[[1]]
+    fitted.cluster <- coeftest.cluster(data, fitted, cluster1 = cluster1)
+    # fitted.cluster <- sandwich::vcovCL(fitted, cluster1=cluster1)
+    return(list(fitted, fitted.cluster, pseudoR2))
+}
+@
+
+<<IA_selection_data, include=FALSE>>=
+# PostgreSQL Connection
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
+
+rs <- dbExecute(pg, "SET search_path TO activist_director")
+rs <- dbExecute(pg, "SET work_mem='3GB'")
+
+outcome_controls <- tbl(pg, "outcome_controls")
+activism_events <- tbl(pg, "activism_events")
+activist_demands <- tbl(pg, "demands")
+activist_director_skills <- tbl(pg, "activist_director_skills")
+
+link_table <-
+  activism_events %>%
+  select(campaign_ids) %>%
+  mutate(campaign_id = unnest(campaign_ids)) %>%
+  distinct() %>%
+  compute()
+
+skills <-
+  activist_director_skills %>%
+  inner_join(link_table, by = "campaign_id") %>%
+  select(-skillset_bio, -last_name, -first_name, -campaign_id, -num_skills) %>%
+  group_by(campaign_ids) %>%
+  summarize(across(-campaign_ids, bool_or)) %>%
+  compute()
+
+min_date <-
+    outcome_controls %>%
+    summarise(min(eff_announce_date, na.rm = TRUE)) %>%
+    pull()
+
+min_date_sql <- sql(paste0("'", min_date, "'::date - interval '1 year'"))
+
+prob_activist_director <-
+    outcome_controls %>%
+    mutate(category = coalesce(category, "_none"),
+           activism = coalesce(activism, FALSE),
+           activist_demand = coalesce(activist_demand, FALSE),
+           activist_director = coalesce(activist_director, FALSE),
+           affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
+           analyst = coalesce(analyst, 0),
+           inst = coalesce(inst, 0)) %>%
+    filter(datadate >= min_date_sql) %>%
+    collect()
+
+prob_activist_demands <-
+  outcome_controls %>%
+  left_join(activist_demands, by = "campaign_ids") %>%
+  mutate(category = coalesce(category, "_none"),
+         across(c(activism, activist_demand, activist_director),
+                ~ coalesce(., FALSE)),
+         affiliated_director = coalesce(num_affiliate_directors > 0, FALSE),
+         across(c(analyst, inst), ~ coalesce(., 0))) %>%
+  filter(datadate >= min_date_sql) %>%
+  collect()
+
+prob_activist_director_skills <-
+    activist_demands %>%
+    left_join(skills, by = "campaign_ids") %>%
+    distinct() %>%
+    collect()
+
+rs <- dbDisconnect(pg)
+
+win01 <- function(x, prob = 0.01, p_low = prob, p_high = 1 - prob) {
+  cuts <- quantile(x, probs = c(p_low, p_high), type = 2, na.rm = TRUE)
+  x[x < cuts[1]] <- cuts[1]
+  x[x > cuts[2]] <- cuts[2]
+  x
+}
+
+win_vars <- c("bv", "mv", "btm", "size_return", "size_return_m1", "leverage",
+                 "capex", "dividend", "roa", "sale_growth", "analyst", "inst")
+
+# Update Data - Winsorization
+prob_activist_director <-
+    prob_activist_director %>%
+    mutate(across(win_vars, win01)) %>%
+    mutate_at(c("year", "sic2"), as.factor)
+
+prob_activist_demands <-
+    prob_activist_demands %>%
+    mutate(across(win_vars, win01)) %>%
+    mutate_at(c("year", "sic2"), as.factor)
+@
+
+  \begin{table}[htb]
+    \caption{Activist target selection}
+            \begin{minipage}[t]{\columnwidth}
+%    \begin{flushleft}
+  {\small
+Panel A presents logit regression where the dependent variables are indicators for
+being targeted for activism in any category
+(\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
+being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
+Sample includes firm-years with and without activism.
+    \newline}
+%  \end{flushleft}
+  \end{minipage}
+\begin{tabularx}{5in}{l*{3}{Y}}
+% \multicolumn{3}{l}{Panel A: Activism, board demands and activist directors} \\
+<<IA_Table_1, dependson=c("IA_selection_functions", "IA_selection_data"), results='asis'>>=
+# Panel A
+rhs.1 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
+            num_directors outside_percent age tenure staggered_board sic2 year"
+
+reg.data <- as.data.frame(prob_activist_director)
+
+t3.pa <- list()
+t3.pa[[1]] <- fit.model(data = reg.data,
+                  lhs="activism", rhs=rhs.1, cluster1="permno")
+t3.pa[[2]] <- fit.model(data = reg.data,
+                  lhs="activist_demand", rhs=rhs.1, cluster1="permno")
+t3.pa[[3]] <- fit.model(data = reg.data,
+                  lhs="activist_director", rhs=rhs.1, cluster1="permno")
+
+stargazer(getFitted(t3.pa),
+        dep.var.labels = c("Activism",
+                            "Board demand",
+                            "Activist director"),
+        covariate.labels = c("Analyst", "Inst", "Size-adj. ret", "Market value", "Book-to-market",
+                              "Leverage", "Payout", "ROA", "Sales growth",
+                              "Num. directors", "Outside percent", "Age", "Tenure",
+                              "Staggered board"),
+        se=getSEs(t3.pa),
+        p= getPs(t3.pa),
+        omit=c("^sic", "^year", "^Constant"),
+       float=FALSE, align=TRUE, font.size="small",
+       keep.stat=c("n"), no.space=TRUE,
+       add.lines=list(c("Pseudo-$R^2$", getPseudoR2s(t3.pa))))
+
+rm(t3.pa)
+@
+\end{tabularx}
+\addtocounter{table}{-1}
+\end{table}

@@ -181,4 +181,6 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_returns, child='tables/table_returns.Rnw'>>=
 @
 
+<<online_appendix, child='online_appendix.Rnw'>>=
+@
 \end{document}
