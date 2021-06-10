@@ -1,0 +1,9 @@
+\Sexpr{set_parent('activist_directors.Rnw')}
+\Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
+
+\renewcommand{\thesection}{IA\arabic{section}} %% letter numbering
+\renewcommand{\thetable}{IA .\arabic{table}} %% letter.number table
+
+\section{Online appendix}
+<<table_outcomes, child='tables/table_outcomes.Rnw'>>=
+@

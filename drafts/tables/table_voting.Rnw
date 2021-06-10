@@ -4,6 +4,7 @@
 <<vote_packages, cache=FALSE, include=FALSE>>=
 library(DBI)
 library(dplyr, warn.conflicts = FALSE)
+library(stargazer)
 @
 
 <<vote_data, include=FALSE>>=
@@ -251,18 +252,18 @@ All columns include meeting fixed effects.
 \end{minipage}
 \begin{tabularx}{6.5in}{l*{3}{Y}}
 <<vote_output, dependson="vote_regs", results='asis'>>=
-library(stargazer)
 stargazer(fm_t0, fm_t0_iss,
           fm_t1, fm_t1_iss,
           fm_t2, fm_t2_iss,
           omit = c("Constant", "(meetingid|activist_director.*affiliated)"),
-          float=FALSE, align=TRUE, font.size="small",
-          keep.stat=c("n"), no.space=TRUE,
+          float = FALSE, align = TRUE, font.size = "small",
+          keep.stat=c("n"), no.space = TRUE,
+          digits = 2,
           dep.var.labels = c("$\\textit{Support}_{t}$", "$\\textit{Support}_{t+1}$",
                              "$\\textit{Support}_{t+2}$"),
           covariate.labels = c("Activist director, unaffiliated",
                                "Activist director, affiliated", "ISS for"),
-          se=list(fm_t0_se[ ,2], fm_t0_iss_se[ ,2],
+          se = list(fm_t0_se[ ,2], fm_t0_iss_se[ ,2],
                   fm_t1_se[ ,2], fm_t1_iss_se[ ,2],
                   fm_t2_se[ ,2], fm_t2_iss_se[ ,2]))
 @
