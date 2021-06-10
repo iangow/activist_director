@@ -148,13 +148,14 @@ The sale of the target demand (\textit{Merger}) is not as successful though they
 Some activists have made ESG-related demands, but none of them was identified to be successful.
 
 In Panel B of Table \ref{tbl:demand}, we examine which types of demands are associated with the demands for board seats and appointment of activist directors.
-There appear to be four types of demands associated with demand for board seats: \textit{Divestiture}, \textit{Removing Directors}, \textit{Removing Defenses}, \textit{Compensation}.
+There appear to be a few types of demands associated with demand for board seats: \textit{Acquisition}, \textit{Divestiture}, \textit{Removing Directors}, \textit{Removing Defenses}, \textit{Compensation}, and \textit{Other gov}.
 These are the types of demands in which directors can exert their influence as a board member and bring out the outcomes more effectively.
-In terms of actually getting a board seat, the compensation demand is associated with a higher likelihood of having an activist director.
+For example, they can exercise their influence as a board member to remove a takeover defense from the inside, so these demands are more likely to be associated with the demand for a board seat.
+In terms of actually getting on board, the compensation-related demand is associated with a higher likelihood of having an activist director as documented in Column 2.
 % However, the demands may not be directly associated with what activist directors do as we will further examine in section \ref{sect:outcomes}.
 
 \section{Activism outcomes} \label{sect:outcomes}
-In this section, we examine the impact of activists, especially activist directors, on a number of outcomes, with a focus on those that activists often seek to influence more directly, include matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
+In this section, we examine the impact of activists, especially activist directors, on a number of outcomes, with a focus on those that activists often seek to influence more directly, including matters related to mergers and acquisitions (including divestitures of businesses), CEO turnover and compensation, capital structure (including cash holdings and dividend payout), and investment policy.
 First, we study whether activist demands we have seen above are directly associated with change in firm outcomes.
 Second, we assess whether having an activist director is associated with a higher likelihood of activist demands being met.
 If the activists can push for the changes better that they initially wanted with board seats, we should see a significant coefficient for the interaction terms.

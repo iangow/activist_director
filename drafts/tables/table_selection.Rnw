@@ -218,7 +218,9 @@ rm(t3.pb)
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
-Multiple demands can be made for each activism event. Demand over Success reports the probability of activist demand being met by the boards successfully.
+SharkWatch classifies types of demand for each activism event and indicate whether the demand followed through for success (e.g., \textit{Return Cash via Dividends/Buybacks(Yes)}, \textit{Return Cash via Dividends/Buybacks(No)}).
+Multiple demands can be made for each activism event.
+Demand over Success reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -301,7 +303,15 @@ Sample includes firm-years with activism.
 reg.data <-
     prob_activist_demands %>%
     filter(activism) %>%
-    mutate(unaffiliated_director = affiliated == "unaffiliated")
+    mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
+    filter(strategy_demand | merger_demand |
+          block_merger_demand | acquisition_demand |
+          block_acquisition_demand | divestiture_demand |
+          payout_demand | leverage_demand |
+          reits_demand | esg_demand |
+          remove_director_demand |
+          remove_officer_demand | remove_defense_demand |
+          compensation_demand | other_gov_demand)
 
 rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
           num_directors outside_percent age tenure staggered_board sic2 year
