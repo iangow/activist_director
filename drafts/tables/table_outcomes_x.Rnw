@@ -26,6 +26,13 @@ fix_affiliated <- function(x) {
               TRUE ~ "_none")
 }
 
+fix_activist_director <- function(x) {
+    case_when(x == "affiliated" ~ "activist_director",
+              x %in% c("unaffiliated", "activist_director") ~ "activist_director",
+              x %in% c("activist_demand", "activism") ~ "z_other_activism",
+              TRUE ~ "_none")
+}
+
 controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
                   "num_directors outside_percent staggered_board log_at")
 controls <- unlist(strsplit(controls, "\\s+"))
@@ -214,6 +221,7 @@ reg.data <-
     collect() %>%
     mutate(across(ends_with("_demand"), ~ coalesce(., FALSE)),
            affiliated = fix_affiliated(affiliated),
+           activist_director = fix_activist_director(affiliated),
            across(all_of(controls), win01))
 
 rs <- dbDisconnect(pg)
@@ -453,10 +461,10 @@ rhs.1 <- c("affiliated*payout_demand", controls)
 rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - payout_demand")
 rhs.2 <- c("affiliated*leverage_demand", controls)
 rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - leverage_demand")
-rhs.3 <- c("affiliated*other_gov_demand", controls, "capex_cum")
-rhs.3 <- paste0(paste(rhs.3, collapse = " + "), " - other_gov_demand")
-rhs.4 <- c("affiliated*other_gov_demand", controls, "rnd_cum")
-rhs.4 <- paste0(paste(rhs.4, collapse = " + "), " - other_gov_demand")
+rhs.3 <- c("affiliated", controls, "capex_cum")
+rhs.3 <- paste0(paste(rhs.3, collapse = " + "))
+rhs.4 <- c("affiliated", controls, "rnd_cum")
+rhs.4 <- paste0(paste(rhs.4, collapse = " + "))
 
 t.pc[[1]] <- fit.model(data=reg.data, lhs="payout_p2", rhs=rhs.1, cluster1="permno")
 t.pc[[2]] <- fit.model(data=reg.data, lhs="leverage_p2", rhs=rhs.2, cluster1="permno")
@@ -478,10 +486,7 @@ stargazer(t.pc,
                                "Other activism $\\times$ Payout demand",
                                "Affiliated $\\times$ Leverage demand",
                                "Unaffiliated $\\times$ Leverage demand",
-                               "Other activism $\\times$ Leverage demand",
-                               "Affiliated $\\times$ Other demand",
-                               "Unaffiliated $\\times$ Other demand",
-                               "Other activism $\\times$ Other demand"),
+                               "Other activism $\\times$ Leverage demand"),
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
           add.lines=list(
