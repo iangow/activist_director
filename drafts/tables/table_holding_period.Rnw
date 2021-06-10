@@ -121,10 +121,10 @@ getCoefs <- function(model, ncols=3) {
         # Add stars to coefficients, put parentheses around SEs
         bind_rows(tibble(row_type = "coef",
                          variable = rownames(coefs)[i],
-                         value = paste0(formatC(coef, digits = 3, format="f"), stars)),
+                         value = paste0(formatC(coef, digits = 1, format="f"), stars)),
                   tibble(row_type = "se",
                          variable = rownames(coefs)[i],
-                         value = paste0("(", formatC(se, digits = 3, format="f"), ")")))
+                         value = paste0("(", formatC(se, digits = 1, format="f"), ")")))
     }
 
     # We have three coefficients we want to combine into a column and return
@@ -198,9 +198,9 @@ Panel A: Activist holding periods \\
 <<survival_panel1, dependson="make_panels", results='asis'>>=
 # Output the table
 print(xtable(panel1,
-             display=c("s", rep("f",(dim(panel1)[2])))),
-      include.rownames=FALSE, include.colnames=TRUE, only.contents=TRUE,
-      size="small", type="latex",
+             display = c("s", rep("s",(dim(panel1)[2])))),
+      include.rownames = FALSE, include.colnames = TRUE, only.contents = TRUE,
+      size = "small", type = "latex",
       sanitize.text.function=function(x) x,
       format.args = list(big.mark = ","))
 @
@@ -212,7 +212,7 @@ print(xtable(panel1,
 # Output the table
 print(xtable(panel2,
              display=c("s", rep("f",(dim(panel2)[2]))),
-             digits = 0),
+             digits = 1),
       include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
       size="small", type="latex",
       sanitize.text.function=function(x) x,
@@ -356,8 +356,8 @@ print(xtable(panel3,
 # Output the table
 print(xtable(panel4,
              display=c("s", rep("f",(dim(panel4)[2]))),
-             digits = 0),
-      include.rownames=TRUE,  include.colnames=TRUE, only.contents=TRUE,
+             digits = 1),
+      include.rownames=TRUE, include.colnames=TRUE, only.contents=TRUE,
       size="small", type="latex",
       sanitize.text.function=function(x) x,
       format.args = list(big.mark = ","),

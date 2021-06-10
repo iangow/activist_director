@@ -329,14 +329,14 @@ rs <- dbDisconnect(pg)
 \label{tbl:div_acq}
 \begin{minipage}[t]{\columnwidth}
 {\small
-Table presents regressions of outcome variables on firm-year level activism indicators.
+This table presents regressions of outcome variables on firm-year level activism indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
 \textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
 \textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
-Regressions include industry and year fixed effects and the following controls (Control variables are measured for the fiscal year-end of year $t$):
+Regressions include industry and year fixed effects and the following controls (measured for the fiscal year-end of year $t$):
 \textit{Total assets}, book value of total assets;
 \textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
-\textit{Institutional},  proportion of the firm's outstanding stock held by institutions;
+\textit{Institutional}, proportion of the firm's outstanding stock held by institutions;
 \textit{Size-adj. ret}, twelve-month size-adjusted returns;
 \textit{Market value}, the value of market capitalization;
 \textit{Book-to-market}, market capitalization divided by the book value of common equity;
@@ -517,7 +517,7 @@ Table presents regressions of variables on firm-year level activism categorical 
 \textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
-Controls are as described in Table \ref{tbl:div_acq}; coefficients omitted for space.
+Controls are as in Table \label{tbl:career}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 }
 %\end{flushleft}

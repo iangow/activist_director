@@ -93,7 +93,7 @@ fm.t4.c4.se <- coeftest.cluster(reg.data, fm.t4.c4, cluster1="company_id")
     \begin{minipage}[t]{\columnwidth}
     {\small
 The table presents results from OLS regressions where the dependent variable is $\textit{Other Boards}_{t+s}$, the number of directorships a director has with other firms in year $t+s$ (i.e., $s$ years after appointment to a new board).
-All variables are defined in Section 3.5.
+All variables are defined in Section \ref{sec:other_data}.
 All regressions include industry and year fixed-effects and robust standard errors (in parentheses) clustered at the firm level.
         \newline}
     \end{minipage}
