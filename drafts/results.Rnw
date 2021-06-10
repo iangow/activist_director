@@ -84,7 +84,7 @@ The two-year delay may stem from the limited ability of directors to add board s
 
 \section{Activist holding periods} \label{sect:holding}
 Next, we examine whether the length of time the activist holds the stock is associated with having an activist director.
-Many argue that activist shareholders are opportunists only investing for a short period of time and leave.
+Many argue that activist shareholders are opportunists only investing for a short period of time and leave \citep{Bebchuk:2013wi}.
 To provide tentative evidence on this point, we examine the actual holding periods of activists and how these change when activist directors are appointed.
 We examine three holding periods: \textit{Entry--Exit}, which runs from the first date on which the stock was held to the last date the stock was held; \textit{Annc--Exit}, which runs from the date on which activism was first announced (typically with a 13D filing) to exit; and \textit{Appt--exit}, which runs from the first appointment of an activist director through to the date of exit.\footnote{We measure the exit date as the record date of the first 13F filing in which the stock is no longer part of the activist's portfolio.}
 Because we use 13F filing data to determine when an activist acquires and disposes of stock and 13F filings are quarterly, our measures of holding period (expressed in days) have some measurement error.
