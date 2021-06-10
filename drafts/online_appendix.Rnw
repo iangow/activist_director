@@ -1,4 +1,4 @@
-\Sexpr{set_parent('../activist_directors.Rnw')}
+\Sexpr{set_parent('activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, warning=FALSE, cache=TRUE, message=FALSE)}
 
 \renewcommand{\thesection}{IA\arabic{section}} %% letter numbering
