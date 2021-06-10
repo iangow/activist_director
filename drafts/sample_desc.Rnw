@@ -23,14 +23,14 @@ Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated}
 Of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as a result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 For illustration, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn is clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives'' Edward Bleier and Strauss Zelnick, are unaffiliated.
 Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
-We find that most directors were appointed as a result of settlement: \Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed as a result of shareholder election.
+We find that most activist directors (\Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")}) were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed through shareholder elections.
 Note that we consider both explicit settlement cases with public settlement agreements and implicit settlement cases without any public agreement; of the 1,245 activist directors who were appointed following some kind of settlement, 941 activist directors were appointed following explicit settlement agreements and 304 activist directors were appointed without such explicit settlement agreement.
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}
 To identify activist holdings of the targeted firm stocks, we use data from WhaleWisdom, which provides comprehensive coverage of SEC Form 13F and 13F/A filings related to holdings in at quarter-ends from 2001 onward.\footnote{See \url{www.whalewisdom.com}.}
 These filings are required on a quarterly basis for investors having more than \$100 million in assets under management.
-We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our sample are associated with an activist that files on Form 13F.
+We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our sample are associated with activists that file on Form 13F.
 
 % To match with the WhaleWisdom data, we first collected CIKs for each activist fund.
 % There can be a number of affiliated funds for each activist and these affiliated funds can be associated with multiple CIKs.
@@ -38,17 +38,16 @@ We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our 
 % For example, 3G Capital Management and 3G Capital Partners Ltd have different names, but further research confirmed that 3G Capital Partners Ltd is affiliated with 3G Capital Management.
 
 \subsection{Director characteristics}
-Data on on 594,300 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
-The Equilar database comprises directors of nearly every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
+Data on 594,248 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
+The Equilar database covers directors of nearly every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
 For each director on a company's board, Equilar provides director-level information such as committee memberships, gender, age, etc.
 Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.
 
-\subsection{Other data}
-In Tables \ref{tbl:career}, \ref{tbl:selection}, and \ref{tbl:div_acq}--\ref{tbl:invest}, we use a number of controls drawn from several sources.
+\subsection{Other data} \label{sec:other_data}
+In our analysis, we use a number of controls drawn from several sources.
 We calculate \textit{Analyst}, the number of analyst forecasts for each firm-year using data from IBES.
 We derive the proportion of the firm's outstanding stock held by institutions (\textit{Institutional}) using data from WhaleWisdom.
-Data on stock market performance come from CRSP.
-Data on divestitures and acquisitions as used in Table \ref{tbl:div_acq} come from Capital IQ and CRSP.
+Data on stock market performance, such as \textit{Size-adj. returns}, come from CRSP.
 The following variables come from Compustat:
 \textit{Market value}, the value of market capitalization;
 \textit{Book-to-market}, market capitalization divided by the book value of common equity;
@@ -61,4 +60,5 @@ From Equilar, we get the following variables: \textit{Num. directors}, the numbe
 \textit{Age}, the average age of directors on the board;
 \textit{Tenure}, the average years of directorship on the board; and,
 \textit{Staggered board}, an indicator for a classified board.
+Data on divestitures and acquisitions as used in Table \ref{tbl:div_acq_x} come from Capital IQ and CRSP.
 % Note that all controls are winsorized at the $1\%$ and $99\%$ levels.
