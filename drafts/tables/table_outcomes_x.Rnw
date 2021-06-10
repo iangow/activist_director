@@ -28,8 +28,8 @@ fix_affiliated <- function(x) {
 
 fix_activist_director <- function(x) {
     case_when(x == "affiliated" ~ "activist_director",
-              x %in% c("unaffiliated", "activist_director") ~ "activist_director",
-              x %in% c("activist_demand", "activism") ~ "z_other_activism",
+              x %in% c("unaffiliated") ~ "activist_director",
+              x %in% c("z_other_activism") ~ "z_other_activism",
               TRUE ~ "_none")
 }
 
@@ -234,8 +234,8 @@ rs <- dbDisconnect(pg)
 {\small
 Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
-\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
 \textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
+\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
 Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:demand}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
@@ -246,16 +246,17 @@ Values in parentheses are standard errors clustered by firm.
 <<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
 t.pa <- list()
 rhs.1 <- c("activist_director*block_acquisition_demand", controls)
-rhs.1 <- paste0(paste(rhs.1, collapse = " + "))
+rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - block_acquisition_demand")
+
 t.pa[[1]] <- fit.model(data=reg.data, lhs="acquisition_p2", rhs=rhs.1, cluster1="permno")
 t.pa[[2]] <- fit.model(data=reg.data, lhs="divestiture_p2", rhs=rhs.1, cluster1="permno")
 
 rhs <- c("activist_director*divestiture_demand", controls)
-rhs <- paste0(paste(rhs, collapse = " + "))
+rhs <- paste0(paste(rhs, collapse = " + "), " - divestiture_demand")
 t.pa[[3]] <- fit.model(data=reg.data, lhs="divestiture_p2", rhs=rhs, cluster1="permno")
 
 rhs.2 <- c("activist_director*block_merger_demand", controls)
-rhs.2 <- paste0(paste(rhs.2, collapse = " + "))
+rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - block_merger_demand")
 t.pa[[4]] <- fit.model(data=reg.data, lhs="merger_p2", rhs=rhs.2, cluster1="permno")
 
 stargazer(t.pa,
@@ -264,16 +265,16 @@ stargazer(t.pa,
                             "Divestiture",
                             "Divestiture",
                             "Acquired"),
-          omit = c(controls),
+          omit = c(controls, "none"),
           covariate.labels = c(
                "Activist director",
-              "Block acquisition demand",
-              "Divestiture demand",
-              "Block merger demand",
+               "Other activism",
               "Activist director $\\times$ Block acquisition",
+               "Other activism $\\times$ Block acquisition",
               "Activist director $\\times$ Divestiture",
-              "Activist director $\\times$ Block merger"
-          ),
+              "Other activism $\\times$ Divestiture",
+              "Activist director $\\times$ Block merger",
+              "Other activism $\\times$ Block merger"),
           float=FALSE, align=TRUE, font.size="small",
           keep.stat=c("n"), no.space=TRUE,
           add.lines=list(
