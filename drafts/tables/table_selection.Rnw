@@ -224,7 +224,7 @@ Demand over Success reports the probability of activist demand being met by the 
   \newline}
 %  \end{flushleft}
   \end{minipage}
-    \begin{tabularx}{5in}{l*{3}{Y}}
+    \begin{tabularx}{7in}{l*{4}{Y}}
      \multicolumn{3}{l}{Panel A: Activist demands and success rates} \\
 <<Table_3_demand, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A

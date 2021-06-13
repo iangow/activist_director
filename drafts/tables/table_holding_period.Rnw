@@ -220,7 +220,6 @@ print(xtable(panel2,
       NA.string = "")
 @
 \end{tabular}
-\addtocounter{table}
 \end{table}
 
 \clearpage

@@ -455,10 +455,10 @@ col2 <- rbind(coefs["(Intercept)"],
 coefs <- summary3[[1]]$coefficients[, 1]
 col3 <- rbind(NA, NA,
               coefs["affiliatedaffiliated"],
-              coefs["affiliatedaffiliated"] +
+              coefs["affiliatedaffiliated"] + coefs["any_outcomeTRUE"] +
                 coefs["affiliatedaffiliated:any_outcomeTRUE"],
               coefs["affiliatedunaffiliated"],
-              coefs["affiliatedunaffiliated"] +
+              coefs["affiliatedunaffiliated"] + coefs["any_outcomeTRUE"] +
                 coefs["affiliatedunaffiliated:any_outcomeTRUE"])
 
 panel4 <- cbind(col1, col2, col3)
