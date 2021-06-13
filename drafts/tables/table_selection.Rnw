@@ -218,14 +218,15 @@ rm(t3.pb)
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
-SharkWatch classifies types of demand for each activism event and indicate whether the demand followed through for success (e.g., \textit{Return Cash via Dividends/Buybacks(Yes)}, \textit{Return Cash via Dividends/Buybacks(No)}).
+Definition describes how SharkWatch classifies types of demand for each activism.
 Multiple demands can be made for each activism event.
 Demand over Success reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
-    \begin{tabularx}{7in}{l*{4}{Y}}
-     \multicolumn{3}{l}{Panel A: Activist demands and success rates} \\
+    \begin{tabularx}{7in}{p{3.3cm} p{8cm} p{1.5cm} p{1.5cm} p{1.5cm}}
+     \multicolumn{4}{l}{Panel A: Activist demands and success rates} \\\\
+     \hline\hline
 <<Table_3_demand, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A
 # Subset on activism
