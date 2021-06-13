@@ -255,7 +255,7 @@ holding_period_by_demand <-
 
 demand_types <- c("acquisition", "block_acquisition", "divestiture", "payout",
                   "leverage", "remove_director", "add_indep", "remove_officer",
-                  "remove_defense", "compensation", "other_go")
+                  "remove_defense", "compensation", "other_gov")
 demand_type_regex <- paste0(demand_types, collapse = "|")
 outcome_regex <- paste0("(", demand_type_regex, ")_outcome")
 demand_regex <- paste0("(", demand_type_regex, ")_demand")
@@ -437,20 +437,20 @@ col1 <- rbind(coefs["(Intercept)"],
               coefs["(Intercept)"] + coefs["any_outcomeTRUE"],
               coefs["(Intercept)"] + coefs["affiliatedaffiliated"],
               coefs["(Intercept)"] + coefs["affiliatedaffiliated"] +
-                coefs["any_outcomeTRUE"],
+                  coefs["any_outcomeTRUE"] + coefs["affiliatedaffiliated:any_outcomeTRUE"],
               coefs["(Intercept)"] + coefs["affiliatedunaffiliated"],
               coefs["(Intercept)"] + coefs["affiliatedunaffiliated"] +
-                coefs["any_outcomeTRUE"])
+                  coefs["any_outcomeTRUE"] + coefs["affiliatedunaffiliated:any_outcomeTRUE"])
 
 coefs <- summary2[[1]]$coefficients[, 1]
 col2 <- rbind(coefs["(Intercept)"],
               coefs["(Intercept)"] + coefs["any_outcomeTRUE"],
               coefs["(Intercept)"] + coefs["affiliatedaffiliated"],
               coefs["(Intercept)"] + coefs["affiliatedaffiliated"] +
-                coefs["any_outcomeTRUE"],
+                  coefs["any_outcomeTRUE"] + coefs["affiliatedaffiliated:any_outcomeTRUE"],
               coefs["(Intercept)"] + coefs["affiliatedunaffiliated"],
               coefs["(Intercept)"] + coefs["affiliatedunaffiliated"] +
-                coefs["any_outcomeTRUE"])
+                  coefs["any_outcomeTRUE"] + coefs["affiliatedunaffiliated:any_outcomeTRUE"])
 
 coefs <- summary3[[1]]$coefficients[, 1]
 col3 <- rbind(NA, NA,
