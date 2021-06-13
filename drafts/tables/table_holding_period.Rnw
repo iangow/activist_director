@@ -54,7 +54,7 @@ holding_period_by_demand <-
 
 demand_types <- c("acquisition", "block_acquisition", "divestiture", "payout",
                   "leverage", "remove_director", "add_indep", "remove_officer",
-                  "remove_defense", "compensation", "other_go")
+                  "remove_defense", "compensation", "other_gov")
 demand_type_regex <- paste0(demand_types, collapse = "|")
 outcome_regex <- paste0("(", demand_type_regex, ")_outcome")
 demand_regex <- paste0("(", demand_type_regex, ")_demand")
@@ -220,7 +220,7 @@ print(xtable(panel2,
       NA.string = "")
 @
 \end{tabular}
-\addtocounter{table}{-1}
+\addtocounter{table}
 \end{table}
 
 \clearpage
