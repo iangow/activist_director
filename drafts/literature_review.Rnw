@@ -2,54 +2,74 @@
 
 \section{Institutional background and prior literature} \label{sect:lit_review}
 
-In this section, we provide some illustrative examples of activist engagements to illustrate wide variety of tactics and strategies employed by activists, types of demands made, and outcomes that are associated with activism.
-These examples show how seeking directorships in target firms is an important element of the activist approach.
+In this section, we provide some illustrative examples of activist engagements to illustrate the wide variety of tactics and strategies employed by activists, the types of demands made, and the outcomes that are associated with activism.
+These examples demonstrate that seeking directorships in target firms is an important element of the activists' approach.
 
 \subsection{Illustrative cases}
-In some cases, activists make pointed demands that yield swift reaction from the target firms. For example, on June 6, 2012, Becker Drapkin Management LP filed a 13D reporting a 5\% stake in Tuesday Morning Corporation. In a letter to the board, Becker Drapkin complained that the company's performance had suffered since Kathleen Mason became CEO in 2000, and that shareholder representation on the board was necessary to instill accountability. Later that same day, the company announced the departure of Kathleen Mason as president and CEO and that it had commenced a search for a new CEO. On June 26, 2012, Becker Drapkin disclosed that it was engaged in discussions with the company regarding board representation. On July 2, 2012, the company announced the  appointment of two representatives of Becker Drapkin to the board, that it would work with Becker Drapkin to add two additional independent directors, and Becker Drapkin agreed to standstill provisions lasting two years.\footnote{Material in this subsection draws primarily from synopses provided by SharkWatch.}
+In some cases, activists make pointed demands that yield swift reaction from the target firms.
+For example, on June 6, 2012, Becker Drapkin Management LP filed a 13D reporting a 5\% stake in Tuesday Morning Corporation.
+In a letter to the board, Becker Drapkin complained that the company's performance had suffered since Kathleen Mason became CEO in 2000, and that shareholder representation on the board was necessary to create accountability.
+Later that same day, the company announced the departure of Mason as president and CEO and the commencement of a search for a new CEO.
+On June 26, 2012, Becker Drapkin disclosed that it was engaged in discussions with the company regarding board representation.
+On July 2, 2012, the company announced the  appointment of two representatives of Becker Drapkin to the board, and reported that it would work with Becker Drapkin to add two additional independent directors, and Becker Drapkin agreed to standstill provisions lasting two years.\footnote{Material in this subsection draws primarily from synopses provided by SharkWatch.}
 
-In other cases, board demands emerge only after continued poor performance and resistance to the activist's demands. For example, on June 28, 2007, Barington Capital Group L.P. sent a letter to the Chairman and CEO of Dillard's Inc. requesting a meeting to discuss measures to achieve better financial performance and operational efficiency. After this request was declined, on August 30, 2007, Barington sent yet another letter to the board expressing disappointment with the company's poor operating performance and poor corporate governance. On January 29, 2008, Barington jointly filed a 13D with the Clinton Group and RJG Capital Management, LLC, asking for a review of executive pay and measures to improve performance and enhance corporate governance. The dissident group gave formal notice to the company of its intent to nominate directors for the upcoming election on March 19, 2008. On April 1, 2008, Dillard's settled with Barington and other dissidents and nominated two candidates proposed by the dissident group for election to the board of directors.
+In other cases, board demands emerge only after continued poor performance and resistance to the activists' demands.
+For example, on June 28, 2007, Barington Capital Group L.P. sent a letter to the chairman and CEO of Dillard's Inc. requesting a meeting to discuss measures to improve financial performance and operational efficiency.
+After this request was declined, on August 30, 2007, Barington sent yet another letter to the board expressing disappointment with the company's poor operating performance and poor corporate governance.
+On January 29, 2008, Barington jointly filed a 13D with the Clinton Group and RJG Capital Management, LLC, asking for a review of executive compensation and measures to boost performance and enhance corporate governance.
+The activist group gave formal notice to the company of its intent to nominate directors for the upcoming election on March 19, 2008.
+On April 1, 2008, Dillard's settled with Barington and other dissidents and nominated two candidates proposed by the activist group for election to the board of directors.
 
-Another example is Blockbuster Inc. which was the target of prominent activist Icahn Associates Corp. This event started on April 7, 2005, when Carl Icahn disclosed that he had requested Blockbuster extend the deadline for nominating directors for election at the company's 2005 annual meeting. The company rejected the request and on April 8, 2005, Icahn sent formal notice that he was nominating himself and two others for election to Blockbuster's board.
-In his communications with stockholders, Icahn criticized Blockbuster's compensation practices and management's business plan and stated that if elected his nominees would bring discipline to the ``spending spree.''
-Icahn also stated that he believed the company should put itself up for sale.
+Blockbuster Inc., which was the target of prominent activist group Icahn Associates Corp., provides yet another example.
+This event started on April 7, 2005, when Carl Icahn disclosed his request that Blockbuster extend the deadline for nominating directors for election at the company's 2005 annual meeting.
+The company rejected the request, and on April 8, 2005, Icahn sent formal notice that he was nominating himself and two others for election to Blockbuster's board.
+In his communications with stockholders, Icahn criticized Blockbuster's compensation practices and management's business plan, stating that, if elected, his nominees would bring discipline to what he called a ``spending spree.''
+Icahn also affirmed his belief that the company should put itself up for sale.
 At the annual meeting, Icahn won three board seats after receiving 63\% of the votes cast for himself and 68\% for his two other nominees.
 
-Following these illustrative examples we examine several outcomes in activist director companies. These include firm performance outcomes measured using stock returns and accounting performance; governance outcomes such as CEO turnover and CEO compensation; strategic outcomes such as divestitures and acquisitions; financial policy outcomes such as leverage and payouts; and investment policy decisions such as capital expenditures, research and development, and advertising. While we examine these outcomes in the context of activist directors, prior papers have examined some of these outcomes in the context of hedge fund activism in general. We discuss this research next.
+Building on these illustrative examples, we examine several outcomes in activist director companies. These include firm performance outcomes measured using stock returns and accounting performance; governance outcomes such as CEO turnover and CEO compensation; strategic outcomes such as divestitures and acquisitions; financial policy outcomes such as leverage and payouts; and investment policy decisions such as research and development and capital expenditures.
+While prior papers have examined some of these outcomes in the context of hedge fund activism in general, in what follows we examine these outcomes in the context of the appointment of activist directors specifically.
 
 \subsection{Causes and consequences of hedge fund activism}
 
-The phenomenon of shareholder activism that we examine is driven in large part by activist hedge funds over the last decade.\citet*{Brav:2008eu} identifies structural benefits enjoyed by hedge funds---such as fewer regulations and better incentives---that have allowed such funds to be more active in pursuing governance changes in companies than mutual fund or pension managers. Like prior research (e.g. \citet{Brav:2008eu}), the ultimate source for much of the data we use to identify activism events comes from 13D filings with the SEC. According to the SEC, ``when a person or group of persons acquires beneficial ownership of more than 5\% of a voting class of a company's equity securities registered under Section 12 of the Securities Exchange Act of 1934, they are required to file a Schedule 13D with the SEC.''\footnote{\url{https://www.sec.gov/answers/sched13.htm}, last updated 2012-12-05.} This filing should be made within 10 days of the trade date of the securities transaction triggering the requirement to file. If a shareholder has not ``acquired the securities with any purpose, or with the effect of, changing or influencing the control of the issuer,''  then a more abbreviated filing on Form 13G may be used.\footnote{\url{https://www.sec.gov/divisions/corpfin/guidance/reg13d-interp.htm}, last updated 2016-07-14. Also see SEC Rule 13d-1(c)(1).} As hedge fund activists when launching a campaign look to change or influence the target and quite often exceed the 5\% threshold, 13D filings are a typical concomitant of such campaigns.
+Over the last decade, the growing phenomenon of shareholder activism has been driven in large part by activist hedge funds.
+\citet*{Brav:2008eu} identify structural benefits enjoyed by hedge funds---such as fewer regulations and better incentives---that have allowed them to be more active than mutual funds or pension managers in pursuing governance changes in companies.
+As in prior studies (e.g. \citet{Brav:2008eu}), the ultimate source for much of the data we use to identify activism events comes from 13D filings with the SEC.
+According to the SEC, ``when a person or group of persons acquires beneficial ownership of more than 5\% of a voting class of a company's equity securities registered under Section 12 of the Securities Exchange Act of 1934, they are required to file a Schedule 13D with the SEC.''\footnote{\url{https://www.sec.gov/answers/sched13.htm}, last updated 2012-12-05.}
+This filing should be made within 10 days of the trade date of the securities transaction that triggered the requirement to file.
+If a shareholder has not ``acquired the securities with any purpose, or with the effect of, changing or influencing the control of the issuer,''  then a more abbreviated filing on Form 13G may be used.\footnote{\url{https://www.sec.gov/divisions/corpfin/guidance/reg13d-interp.htm}, last updated 2016-07-14. Also see SEC Rule 13d-1(c)(1).}
+As hedge fund activists when launching a campaign look to change or influence the target and quite often exceed the 5\% threshold, 13D filings are a typical component of such campaigns.
 
-In terms of firm characteristics that attract activist hedge fund attention, prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book), and firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep{Brav:2010gx}. This evidence motivates us to use firm-level covariates to control for factors causing firms to be targeted by activist investors.
-\citet{Bourveau:2017aa} also find that activists target firms with more opaque information environment and that managers can potentially use more voluntary disclosure to keep them away from activists.
+In terms of firm characteristics that attract the attention of activist hedge funds, prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (i.e., firms with low market-to-book ratios), and firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep{Brav:2010gx}.
+On the basis of this evidence, we use firm-level covariates to control for factors that makes firms more likely to be targeted by activist investors.
+\citet{Bourveau:2017aa} also find that activists target firms with more opaque information environments, suggesting that managers could potentially release more voluntary disclosures as a strategy to deter activists.
 \citet{Gantchev:2012wn} models activism as involving a sequence of decisions beginning with broad activist demands, followed by demands for board representation, then threatened, then actual, proxy contests.
-\citet{Gantchev:2012wn} estimates costs associated with these stages using a system of recursive logistic regressions and finds that such costs reduce activist returns by more than two-thirds, but net returns are not negative.
-Our paper complements \citet{Gantchev:2012wn} by providing evidence on the kinds of actions facilitated by escalation of activism to the level of obtaining board representation.
+\citet{Gantchev:2012wn} estimates costs associated with these stages using a system of recursive logistic regressions and finds that, while net returns are not negative, such costs reduce activist returns by more than two-thirds.
+Our paper complements \citet{Gantchev:2012wn} by providing evidence on the kinds of actions facilitated during the escalation of activism to the level of obtaining board representation.
 
-In terms of consequences, prior research \citep[see][]{Brav:2008eu,Klein:2009js,Greenwood:2009kh} finds a positive stock price reaction of about five percent to the announcement of activist campaigns, typically centered around the 13D announcement dates.
+In terms of consequences, prior research (\citet[e.g.,][]{Brav:2008eu,Klein:2009js,Greenwood:2009kh}) finds a positive stock price reaction of about five percent to the announcement of activist campaigns, typically centered around the 13D announcement dates.
 \citet{Klein:2009js} suggest that one source of shareholder gains is the transfer of wealth from debtholders to stockholders.
 This likely occurs because activists demand reduction in cash holdings and increase in leverage in target firms.
-\citet{Brav:2008eu} and \citet{Bebchuk:2013wi} also find that operating performance as measured by return on assets is higher in the three- to five-year period following the launch of activism.
-\citet{Greenwood:2009kh} find that the positive market reaction arises from cases where the activists are able to force the target firms to be sold following the activist campaign.
+\citet{Brav:2008eu} and \citet{Bebchuk:2013wi} also find that operating performance as measured by return on assets is higher in the three- to five-year period following the initiation of activism events.
+\citet{Greenwood:2009kh} find that the positive market reaction arises from cases where the activists are able to force the target firms to be sold following the activists' campaign.
 They find no significant market reaction at the 13D filing date for firms that are not acquired ex-post.\footnote{\citet{deHaan:2019aa} find neither positive nor negative long-term returns from hedge fund activism.}
 
-The mechanisms that drive performance improvements in firms that continue to be independent have received limited attention.
+The mechanisms that drive performance improvements in firms that remain independent have received limited attention.
 Using plant-level information from the US Census Bureau, \citet{Brav:2013te} find that the average target firm improves production efficiency in the three years after  activist engagement.
-Employees exhibit increase in labor productivity but a stagnation in wages.
-In related research, \citet{Brav:2014km} find that targets of hedge fund activism exhibit reduction in research and development spending but an increase in innovation output suggesting an improvement in innovation efficiency.
-Our paper complements this research by identifying a role for activist directors in the changes brought about by activism thereby identifying a mechanism by which activists carry out the changes they demand.
+Employees exhibit an increase in labor productivity but a stagnation in wages.
+In related research, \citet{Brav:2014km} find that targets of hedge fund activism experience a reduction in R\&D spending but an increase in innovation output, suggesting an improvement in innovation efficiency.
+Our paper complements this research by identifying the role of activist directors in the changes that often follow activism events, thereby identifying a mechanism by which activists carry out the changes they demand.
 
 \subsection{Activist directors}
 Few papers have focused on the phenomenon of activist directors.
-\citet*{Coffee:2018} hand-collect data from 475 settlement agreements entered into between 2000 and 2015 and involving appointment of activist directors.
+\citet*{Coffee:2018} hand-collect data from 475 settlement agreements entered into between 2000 and 2015 that include the appointment of activist directors.
 The focus of \citet{Coffee:2018} is on an apparent pattern of ``information leakage'' associated with activist directors.
-\citet{Coffee:2018} find that, after appointment of activist directors, ``the stock price of the target corporation begins to anticipate future public disclosures, moving up or down prior to \dots the eventual public disclosure.
+\citet{Coffee:2018} find that, after the appointment of activist directors, ``the stock price of the target corporation begins to anticipate future public disclosures, moving up or down prior to \dots the eventual public disclosure.
 Similarly, the bid-ask spread in the corporations' stock price widens.''
-Our paper draws on a larger sample of activist directors and focuses on the traits of activist directors, the circumstances in which activist directors seek or obtain board, and the effects on the firm itself.
-Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases with public settlement agreements, we also consider implicit settlement cases where there were board seats given to the activists without any public agreement.
+Our paper draws on a larger sample of activist directors and focuses on the traits of the activist directors themselves, the circumstances in which activist directors seek or obtain board representation, and the effects on the target firms.
+Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases with public settlement agreements, we also consider implicit settlement cases in which board seats were given to the activists without a public agreement.
 
-Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements whether or not an activist director is appointed.
-But \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including analysis of impact of activist directors on board size and analysis of shareholder support in subsequent director elections.
-Like us, \citet{Bebchuk:2017} examine the effect of activism on payout policy, being acquired, and operating performance, but with partitioning on settlements rather than activist directors.
-Our paper focuses on the characteristics and the role of a more comprehensive sample of activist directors and further examine their effects on activist investment, their own career consequences as well as their impact on firm outcomes.
+Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements irrespective of whether or not an activist director is appointed.
+However, \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including an analysis of the impact of activist directors on board size and of shareholder support in subsequent director elections.
+As in this study, \citet{Bebchuk:2017} examine the effect of activism on payout policy, acquisition, and operating performance, but organized according to settlements rather than activist directors.
+Our paper focuses on the characteristics and the roles of a more comprehensive sample of activist directors and further examines their effects on activist investment, the consequences for their own careers, as well as their impact on firm outcomes.
