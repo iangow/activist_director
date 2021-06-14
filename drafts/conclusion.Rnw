@@ -2,19 +2,19 @@
 
 \section{Conclusion} \label{sect:conc}
 
-In recent years, the phenomenon of hedge fund managers attempting to actively intervene in the governance of firms they invest in has gained prominence.
-These fund managers often layout an investment thesis regarding their target firms and vigorously engage with their targets to realize their thesis.
+Recent years have witnessed a considerable uptick in the phenomenon of hedge fund managers attempting to actively intervene in the governance of firms in which they have invested.
+These fund managers often lay out an investment thesis regarding their target firms and vigorously engage in different ways in order to realize their strategic plans.
 
-Instead of passively waiting for an investment hypothesis to validate itself (as most institutional fund managers do), activist hedge fund managers often demand seats on the board of their targets as a mechanism to effect change in investee firms and thereby actively control the outcome of their investment.
-While attaining directorship might not be the end goal, it is perhaps a mechanism that activists use to force companies to take their demands seriously.
-Given the importance that the demand for board positions has in the activist engagement strategy, we examine hedge fund activism thorough the lens of activist directors, i.e., cases where candidates supported by the activists become directors of the target companies.
+Instead of passively waiting for an investment hypothesis to validate itself (as most institutional fund managers do), activist hedge fund managers often demand seats on the boards of their targets as a mechanism to effect change in investee firms and thereby actively control the outcome of their investments.
+While attaining directorship may not be the end goal, it is theoretically a mechanism that activists use to force companies to take their demands seriously.
+Given the importance that the demand for board positions has in the activists' engagement strategies, we examine hedge fund activism thorough the lens of activist directors, i.e., cases where candidates supported by the activists become directors of the target companies.
 
-We identify 1,623 activist directors in our sample and they tend to be younger males with finance and accounting skills.
-We find that activists are more likely to gain these board seats at smaller firms and those with weaker stock price performance and higher institutional holdings.
+We identify 1,623 activist directors in our sample, and find that they tend to be younger males with finance and accounting skills.
+We find that activists are more likely to gain these board seats at smaller firms and at those with weaker stock price performance and higher institutional holdings.
 
-When activists have board seats, they remain as shareholders long enough to be considered long-term investors by conventional standards, with holding periods averaging three years.
-As in prior research, we find positive announcement-period returns of around 3--4\% when a firm is targeted by activists, including in cases where the activists ex-post gain board seats, and an increase of up to 3.2\% in return on assets over the subsequent five years.
-The long-term shareholding combined with positive stock-price and operating performance effects suggests that concerns often expressed about the short-termism of hedge fund activists may be less apparent in cases when activists become directors.
+When activists acquire board seats, they remain as shareholders long enough to be considered long-term investors by conventional standards, with holding periods averaging three years.
+As in prior research, we find positive announcement-period returns of around 3--4\% when a firm is targeted by activists, including in cases where the activists gain board seats ex-post, as well as an increase of up to 3.2\% in return on assets over the subsequent five years.
+Long-term shareholding combined with positive stock-price and operating performance effects suggests that concerns often expressed about the short-termism of hedge fund activists may be less apparent in cases when activists become directors.
 
 Activist directors appear to be associated with significant strategic and operational changes in target firms.
 We find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced capital expenditure and R\&D spending.
@@ -22,6 +22,6 @@ The estimated effects are greater when activists themselves obtain board represe
 
 Our results do not allow us to conclude that these actions themselves are value-enhancing even if they are concomitant with better operating performance and stock returns.
 Moreover, the data available to us do not permit causal inferences.
-Despite these limitations, the range of associations that we document suggest that gaining board positions is an important mechanism that allows hedge fund activists to have an impact in ways that line up with the demands that they make of companies.
+Despite these limitations, the range of associations that we document suggests that gaining board positions is an important mechanism that allows hedge fund activists to have an impact in ways that line up with the demands that they make of companies.
 
 \newpage
