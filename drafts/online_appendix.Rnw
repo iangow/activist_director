@@ -1,6 +1,8 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(echo=FALSE, warning=FALSE, cache=TRUE, message=FALSE)}
 
+\setcounter{table}{0}
+\setcounter{section}{0}
 \renewcommand{\thesection}{IA\arabic{section}} %% letter numbering
 \renewcommand{\thetable}{IA.\arabic{table}} %% letter.number table
 
@@ -206,7 +208,6 @@ stargazer(getFitted(t3.pa),
 rm(t3.pa)
 @
 \end{tabularx}
-\addtocounter{table}{-1}
 \end{table}
 
 <<IA_quantreg_libraries, cache=FALSE>>=
