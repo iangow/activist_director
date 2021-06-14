@@ -69,7 +69,7 @@ We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} directors who were ap
 We describe the characteristics of activist directors and find that they differ from new directors appointed at other firms.
 The differences are especially pronounced among those directors affiliated with activists.\footnote{\citet*{Gow:2014vf} show that activism is often associated with departure of incumbent directors.}
 About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed by the hedge fund activists; the rest (\Sexpr{dirs$unaffiliated}), while sponsored or supported by the activists, do not appear to be affiliated with them.
-Activist-affiliated directors (i.e., employees or principals of members of the activist group) are on average about 9 years younger than other activist directors, are much more likely to possess finance and accounting skills, and far less likely to be female than unaffiliated activist directors, who themselves are collectively more male than new directors in general.
+Activist-affiliated directors (i.e., employees or principals of members of the activist group) are on average about 9 years younger than other activist directors, are much more likely to possess finance and accounting skill sets, and far less likely to be female than unaffiliated activist directors, who themselves are collectively more male than new directors in general.
 Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly move into key board positions.
 % TODO "Less likely" sounds like we have a p-value, which we don't. Perhaps we should to do this.
 
