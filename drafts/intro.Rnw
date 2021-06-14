@@ -55,7 +55,7 @@ Given the lack of strong theoretical predictions on the reasons for activists to
 
 Our paper addresses a number of questions related to activist directors.
 First, we closely examine the characteristics of activist directors.
-How do they differ from other directors?
+Who are they and how are they different from other directors?
 How much support do they typically receive from shareholders and what is their future career consequence like?
 In addition, we investigate the circumstances surrounding the appointments of activist directors.
 When do activists seek board representation and under what conditions do they successfully obtain it?
@@ -78,13 +78,13 @@ These holding periods suggest that the activists with board representation might
 
 With regard to the next set of questions, we find, consistent with prior research, that activists tend to target firms with relatively poor recent stock performance as well as ``value'' firms, i.e., those with low market-to-book ratios.
 Conditional on being targeted by activists, we also find that activists are more likely to demand or acquire board representation when the firm has more institutional ownership, smaller market capitalization, worse stock market performance, and, in particular, lower dividend payout levels.
+Furthermore, we find that the types of demands the activist can exert an influence as a board member, such as divestiture, removal of executive officers, removal of defenses, and compensation-related demands, are associated with the likelihood of asking for a board seat as well as obtaining one.
 
 We then examine a number of possible consequences of the appointment of activist directors for the firms whose boards they join.
-In terms of underlying actions, we find evidence that activism is associated with an increased probability of divestiture, decreased acquisition activity, higher probability of being acquired, higher payout, reduced cash holding, higher CEO turnover, lower capital expenditure, and lower research and development expenses.
-We do not find evidence that activist directors are differentially associated with most of these outcomes in comparison to activism without board representation.
-However, relative to other activism events, we do find that activist-director events are associated with a \emph{lower} probability of the firm being acquired, perhaps because acquisitions occur relatively soon after activism, which is consistent with board representation not being necessary to advocate for such transactions.
-We also find that \emph{affiliated} activist directors are associated with higher payout levels, with an economically significant coefficient equal to nearly 15\% of EBITDA, and lower R\&D spending.
-This suggests that, when activists acquire board representation, their impact is \emph{not} primarily about the ``ability of activists to force target firms into a takeover''  as prior research has found for hedge fund activism more generally \citep[362]{Greenwood:2009kh}.
+In terms of underlying actions, we find evidence that the board representation by activist is generally associated with an increased probability of divestiture, decreased acquisition activity, higher CEO turnover, higher payout, higher leverage, lower capital expenditure, and lower research and development expenses.
+Especially, we find that \emph{affiliated} activist directors are associated with higher payout levels, with an economically significant coefficient equal to nearly 15\% of EBITDA, and lower R\&D spending.
+Also, when the activists' initial goals were to block mergers and acquisitions, induce divestiture, and increase payouts to shareholders, having an activist director helped those demands meet more successfully.
+In addition, relative to other activism events, we find that activist-director events are associated with a \emph{lower} probability of the firm being acquired, which suggests that, when activists acquire board representation, their impact is \emph{not} primarily about the ``ability of activists to force target firms into a takeover'' as prior research has found for hedge fund activism more generally \citep[362]{Greenwood:2009kh}.
 % This is consistent with board representation being an important mechanism for bringing about these kinds of changes.
 
 Lastly, we examine operating and market performance of the target firms following the appointment of an activist director.
