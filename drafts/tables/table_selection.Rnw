@@ -155,7 +155,7 @@ prob_activist_demands <-
 
   \begin{table}[htb]
     \caption{Activist target selection}
-    \label{tbl:demand}
+    \label{tbl:selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
 Table presents logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
@@ -215,6 +215,7 @@ rm(t3.pb)
 
   \begin{table}[htb]
     \caption{Activist demands and target selection}
+        \label{tbl:demand}
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
