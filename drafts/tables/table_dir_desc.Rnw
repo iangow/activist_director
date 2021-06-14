@@ -75,7 +75,8 @@ names(activist_director_stats) <- c("Category", "N", "Left board", "Tenure",
                                     "Still active", "Tenure")
 activist_director_stats <-cbind(activist_director_stats,
           tibble(`Tenure (adj.)`=cumsum(summary1[[1]]$coefficients[,1])))
-activist_director_stats[,1] <- c("Unffiliated directors","Affiliated directors")
+activist_director_stats[,1] <- c("Unaffiliated directors",
+                                 "Affiliated directors")
 
 all.dir.data <-
     equilar_w_activism %>%
@@ -179,30 +180,21 @@ rs <- dbDisconnect(pg)
 @
 
 <<dir_desc_table, dependson="dir_desc_sample", results='asis'>>=
-# All Director Sample - Table
-col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
-                             Audit comm., Fin. expert", ",\\s*"))
-sum.var.str <- "age female
-                any_committee comp_committee audit_committee
-                audit_committee_financial_expert"
-
-sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
-
 getTab <- function(cat, df) {
 
     means <-
         df %>%
-        group_by_at(cat) %>%
-        summarize_at(vars(sum.vars), function(x) mean(x, na.rm = TRUE))
+        group_by(across(all_of(cat))) %>%
+        summarize(across(sum.vars, ~ mean(., na.rm = TRUE)))
 
     count <-
         df %>%
-        group_by_at(cat) %>%
+        group_by(across(all_of(cat))) %>%
         count()
 
     df_new <-
         count %>%
-        inner_join(means) %>%
+        inner_join(means, by = cat) %>%
         ungroup()
 
     names(df_new) <- col.names
@@ -227,15 +219,19 @@ act_dir_data <-
     left_join(board_experience) %>%
     distinct()
 
-tab.1 <- getTab("all_directors", all_dir_data)
-# New director sample - table
-tab.2 <- getTab("category", new_dir_data) %>%
-    mutate(Category = as.character(Category))
-tab.3 <- getTab("activist_director.x", act_dir_data)
-tab.4 <-
-    getTab("affiliated_director.x", act_dir_data) %>%
-    arrange(desc(Category))
-tab <- bind_rows(tab.1, tab.2, tab.3, tab.4)
+col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
+                             Audit comm., Fin. expert", ",\\s*"))
+sum.var.str <- "age female
+                any_committee comp_committee audit_committee
+                audit_committee_financial_expert"
+sum.vars <- unlist(strsplit(sum.var.str, "\\s+"))
+
+tab <- bind_rows(getTab("all_directors", all_dir_data),
+                 getTab("category", new_dir_data) %>%
+                   mutate(Category = as.character(Category)),
+                 getTab("activist_director.x", act_dir_data),
+                 getTab("affiliated_director.x", act_dir_data) %>%
+                   arrange(desc(Category)))
 
 # Another Descriptive Table
 col.names <- unlist(strsplit("Category, N, Ind. exp., Board exp., Other boards, Avg. tenure, Total tenure", ",\\s*"))
@@ -249,7 +245,8 @@ tab2 <- bind_rows(getTab("all_directors", all_dir_data),
                   getTab("category", new_dir_data) %>%
                     mutate(Category = as.character(Category)),
                   getTab("activist_director.x", act_dir_data),
-                  getTab("affiliated_director.x", act_dir_data))
+                  getTab("affiliated_director.x", act_dir_data) %>%
+                   arrange(desc(Category)))
 @
 
 <<skill_summ, dependson="dir_desc_sample", results='asis'>>=
@@ -357,11 +354,13 @@ skill_summ_sim <-
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel A presents data on directors (matched to Equilar) with \textit{Activist directors} relating to activist directors in the first year on their respective boards.
+Panel A presents data on directors.
+Data on activist directors are restricted to those found on Equilar and relate to activist directors in the first year on their respective boards.
 $N$ refers to the number of observations.
-\textit{Age} refers to mean age of directors.
-Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert}, and \textit{Ind. exp.} are means of indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, being designated a financial expert of the audit committee, and having served on another board in the same industry, respectively.
-Values for \textit{Other boards}, \textit{Board exp.}, \textit{Avg. tenure}, and \textit{Total tenure} refer to means of the number of other boards served at the time, the number of other boards served prior to appointment, the average number of years a director served in other boards, and the total number of years a director served in other boards.
+The remaining variables are means of characteristics by director category.
+\textit{Age} is the director's age.
+Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert}, and \textit{Ind. exp.} are indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, being designated a financial expert of the audit committee, and having served on another board in the same industry, respectively.
+Values for \textit{Other boards} is the number of other boards served at the time of appointment, \textit{Board exp.} is the cumulative number of other boards served prior to appointment, \textit{Avg. tenure} is  the average number of years a director served on those other boards, and \textit{Total tenure} is the total number of years a director served in other boards, respectively.
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
 \textit{Tenure (adj.)} is estimated median tenure for directors accounting for censoring.
@@ -369,7 +368,7 @@ Panel B presents data on all activist directors (i.e., no requirement for Equila
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{8}{Y}}
-\multicolumn{8}{l}{Panel A: Director characteristics by activism classification}
+\multicolumn{8}{l}{Panel A: Director characteristics by director category}
 % \hline
 \\
 <<dir_desc_panel_A, cache=FALSE, results='asis'>>=
