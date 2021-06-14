@@ -97,7 +97,7 @@ When the activist directors are affiliated with the activist hedge fund, we find
 We find a smaller difference with \textit{Unaffiliated director} cases.\footnote{This is potentially associated with \textit{Unaffiliated director} cases having a higher likelihood of the target firm being acquired; see Table \ref{tbl:other_x}.}
 While the estimated median holding period for other activism events is 790 days (i.e., 2.2 years), the equivalent for \textit{Unaffiliated director} events is 882 days (i.e., 2.4 years) and that for \textit{Affiliated director} events is 1,156 days (i.e., 3.1 years).
 The results suggest that activists invest in the company for almost one year longer if there is an affiliated director on the board.
-From announcement to exit, \textit{Affiliated director} activists hold the stock for 1,002 days (i.e., 2.7 years) and for 744 days (i.e., 2.0 years) from the first appointment of an activist director.\footnote{We further examined whether activists successfully achieving their goals is associated with their holding period and do not find a statistically significant difference between the cases where the demands were met and those where they were not met. The results are presented as Table IA2 in online appendix.}
+From announcement to exit, \textit{Affiliated director} activists hold the stock for 1,002 days (i.e., 2.7 years) and for 744 days (i.e., 2.0 years) from the first appointment of an activist director.\footnote{We further examined whether activists successfully achieving their goals is associated with their holding period and do not find a statistically significant difference between the cases where the demands were met and those where they were not met. The results are presented as Table IA2 in the online appendix.}
 % It is possible that the holding period may get shortened when the activists achieve their goals.
 % In general, when affiliated directors are on board, the holding period for the activists is longer as we have shown above.
 % We additionally find that, however, when any outcome is achieved during the campaign, that extended holding period gets almost erased.
@@ -105,15 +105,17 @@ From announcement to exit, \textit{Affiliated director} activists hold the stock
 % This is likely because the activists have already achieved their goals, so they happily exit earlier.
 
 Some benchmarks will help put these statistics into perspective.
-\citet{Cremers:2013vt} explore the holding period of various kinds of investors.
-They examine four categories of investors (banks, pension funds, investment companies, and others) and find that pension funds have the longest duration at 2 years.
+\citet{Cremers:2013vt} explore the holding period of four kinds of investors (banks, pension funds, investment companies, and others) and find that pension funds have the longest duration at 2 years.
 They also examine the holdings of some institutional investors and provide only one example of an investor with a duration greater than three years, namely the well-known long-term investor, Berkshire Hathaway, which had a duration of between 3 and 4 years during our sample period.
 Another reference point is provided by the \citet{Beyer:2014niri} survey of investor relation professionals, who consider $2.8$ years the cutoff beyond which investors can be considered ``long-term''.
 These benchmarks suggest that activist investors are not necessarily short-term oriented and that the holding period of activists that acquire board representation have a relatively long investment horizon.
 
 \section{Activist target selection} \label{sect:selection}
 Prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book), as well as firms with sound operating cash flows but low sales growth, leverage and dividend payouts \citep*{Brav:2010gx}.
-We extend this analysis to our sample and examine what factors are specifically associated with activists seeking, or getting, board representation.\footnote{Untabulated results of logistic regressions where the dependent variables are indicators for activism are consistent with prior literature. We find that higher analyst following, higher institutional holding, poorer performance, smaller size, and higher book-to-market are associated with a higher likelihood of being targeted for activism. We use these variables as controls throughout our analyses. See online appendix Table IA1.}
+We extend this analysis to our sample and examine what factors are specifically associated with activists seeking, or getting, board representation.\footnote{Untabulated results of logistic regressions where the dependent variables are indicators for activism are consistent with prior literature.
+We find that higher analyst following, higher institutional holding, poorer performance, smaller size, and higher book-to-market are associated with a higher likelihood of being targeted for activism.
+We use these variables as controls throughout our analyses.
+See Table IA1 of the online appendix.}
 First, given that a firm has been targeted by activists, what factors make those activists more likely to demand board seats?
 Second, again given that a firm has been targeted by activists, what factors are associated with the activist's demands being met with the appointment of activist directors?
 
