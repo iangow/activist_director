@@ -15,7 +15,7 @@ We can match 1,092 of our sample of \Sexpr{prettyNum(dirs$all_dirs, big.mark = "
 One reason we do not match all directors to Equilar is that some activist directors leave within a year (e.g., if the firm is acquired) and therefore do not appear in any proxy statements (DEF 14A filings\footnote{Such proxy filings are the primary source for Equilar's data.}) of the target firms.
 Of these 1,092 activist directors matched, 450 are \textit{affiliated} directors (i.e., employees or principals of members of the activist group) and 642 are \textit{unaffiliated}.
 
-In general, unaffiliated activist directors are similar to other new directors across most dimensions, although they include significantly fewer female directors ($0.06$ versus $0.14$, p-value $<$ $0.01$).
+In general, unaffiliated activist directors are similar to other new directors across most dimensions, although they include significantly fewer female directors ($0.06$ versus $0.14$, $p < 0.01$).
 Unaffiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns).
 Unaffiliated directors also had prior experience in a related industry in 41\% of cases, which is slightly higher than new directors in other categories.
 
@@ -36,7 +36,7 @@ Following the approach of  \citet{Adams:2018vf}, which classifies director skill
 
 Panel A of Table \ref{tbl:dir_skills} presents summary statistics.
 In general, activist directors have fewer skill sets than other directors.
-We find that the mean number of skill sets for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skill sets per director in their sample (p-value for the difference $<$ $0.01$).
+We find that the mean number of skill sets for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skill sets per director in their sample ($p-value for the difference < 0.01$).
 In particular, activist directors stand out with regard to the \textit{Finance and accounting} skill set.
 We find that 48\% of activist directors have the finance and accounting skill set, which is significantly higher than the 34\% of directors found by \citet{Adams:2018vf}.
 
@@ -264,7 +264,7 @@ We find that the incremental effects are statistically indistinguishable from ze
 % An additional issue is that activist director appointments are plausibly endogenous with respect to firm performance even \emph{after} activism has commenced; continued poor performance may lead to appointment of one or more activist directors.
 % Notwithstanding these challenges, we find weakly significant results for affiliated directors in $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist intervention.
 When we compare operating performance in the two-to-five-year-period following activism, we find a greater change in \textit{ROA} for cases in which an affiliated director is appointed.
-For example, we observe a 2.4 percentage-point increase in returns in the three years following activism (p-value $<$ $0.05$), and a 3.2 percentage-point increase in the five years following activism (p-value $<$ $0.05$).
+For example, we observe a 2.4 percentage-point increase in returns in the three years following activism ($p < 0.05$), and a 3.2 percentage-point increase in the five years following activism ($p < 0.05$).
 This provides some evidence that, on average, the operating efficiency of the target firms improves following the appointment of an affiliated director.
 Having demonstrated the effect of activism on operating performance, we next turn to market performance.
 
