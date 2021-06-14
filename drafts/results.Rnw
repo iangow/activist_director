@@ -73,12 +73,12 @@ However, any ``taint'' that affiliated activist directors might experience more 
 Opportunities for future directorships are likely to follow from activism events on the part of their affiliated firm where board seats are also won.
 For these reasons, we examine affiliated and unaffiliated activist directors separately.
 
-Table \ref{tbl:career} provides results from OLS regressions where the dependent variables are the number of board seats in other companies between one ($\textit{Other boards}_{t+1}$) and four ($\textit{Other boards}_{t+4}$) years after activism.
-We find that in one and two years after appointment, affiliated directors have a higher number of other directorships (0.333 more in $t+3$, controlling for other factors).
+Table \ref{tbl:career} provides results from OLS regressions where the dependent variables are the number of board seats in other companies between one ($\textit{Other boards}_{t+2}$) and four ($\textit{Other boards}_{t+5}$) years after activism.
+We find that in two through five years after appointment, affiliated directors have a higher number of other directorships (e.g., 0.333 more in $t+3$, controlling for other factors).
 This can be largely attributed to hedge fund managers initiating more activist campaigns and, as a result, receiving more board seats.
-Additionally, we find that the unaffiliated directors also have 0.114 (0.136) more other directorships three (four) years after appointment than do other directors (see Columns 3 and 4).
+Additionally, we find that the unaffiliated directors also have 0.114 (0.136) more other directorships four (five) years after appointment than do other directors (see Columns 3 and 4).
 This appears consistent with unaffiliated activist directorships having positive career effects.
-The two-year delay may stem from the limited ability of directors to add board seats in the short run due to concerns about ``busy'' directors.
+The three-year delay may stem from the limited ability of directors to add board seats in the short run due to concerns about ``busy'' directors.
 
 \section{Activist holding periods} \label{sect:holding}
 Next, we examine whether the length of time that the activist holds the stock is associated with appointing an activist director.
