@@ -356,7 +356,7 @@ sw_aff_roa_ffe.f <- cbind(
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
-Table presents estimates of the impact of activism on return on assets over 5 years after the announcement of activism. The empirical approach follows that of \citet{Bebchuk:2013wi}.
+This table presents estimates of the impact of activism on return on assets over 5 years after the announcement of activism. The empirical approach follows that of \citet{Bebchuk:2013wi}.
 We regress return on assets on an indicator for an activism events ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
 We estimate three models. Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
 Models (A) and (B) add industry and firm fixed effects, respectively.

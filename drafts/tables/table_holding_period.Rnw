@@ -181,7 +181,7 @@ row.names(panel2) <- c("Other activism", "Affiliated director", "Unaffiliated di
 %  \begin{flushleft}
 \small
 \tabularnewline
-Panel A presents results of censored median regression analysis of holding period (days) on activism category.
+This table presents results of censored median regression analysis of holding period (days) on activism category.
 \textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
 \textit{Annc--exit} refers to the time between announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
@@ -189,7 +189,7 @@ Panel A presents results of censored median regression analysis of holding perio
 % \end{flushleft}
 \end{minipage}
 % Following was copied from .tex output from stargazer.
-Panel A: Activist holding periods \\
+% Panel A: Activist holding periods \\
 \\
 \begin{tabular}{lD{.}{.}{-1} D{.}{.}{-1} D{.}{.}{-1} c }
 

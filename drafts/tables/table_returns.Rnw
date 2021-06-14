@@ -127,7 +127,7 @@ out.table <- function(data, lhs, rhs, caption="Some returns",
     "\\begin{minipage}[t]{\\columnwidth}
     \\begin{flushleft}
     {
-     Table presents returns by category of activism where
+     This table presents returns by category of activism where
     $R$, $R^{MKT}$, $R^{SZ}$ denote
         raw, market-adjusted, and size-adjusted returns respectively.",
      if (ff) "$R^{FFV}$ ($R^{FFE}$) denotes value-weighted (equal-weighted) Fama-French three-factor adjusted returns." else "",

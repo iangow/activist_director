@@ -158,7 +158,7 @@ prob_activist_demands <-
     \label{tbl:selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Table presents logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
+This table presents logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
 Sample includes firm-years with activism only.
 All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section \ref{sec:other_data} for definitions).
     All controls are winsorized at the $1\%$ and $99\%$ levels.
@@ -219,9 +219,9 @@ rm(t3.pb)
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
-Definition describes how SharkWatch classifies types of demand for each activism.
+Description describes how SharkWatch classifies types of demand for each activism.
 Multiple demands can be made for each activism event.
-Demand over Success reports the probability of activist demand being met by the boards successfully.
+Success rate (\%) reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -253,7 +253,7 @@ success_summ <-
     mutate(category = gsub("_outcome", "", category))
 
 demand_labels <- tribble(
-  ~category, ~"Demand type", ~"Definition",
+  ~category, ~"Demand type", ~"Description",
   "board_seat", "Board seat", "Board Seats (activist group)",
   "merger", "Merger", "Seek Sale or Merger or Liquidation",
   "strategy", "Strategy", "Review Strategic Alternatives",
