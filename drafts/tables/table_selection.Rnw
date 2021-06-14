@@ -254,23 +254,23 @@ success_summ <-
 
 demand_labels <- tribble(
   ~category, ~"Demand type", ~"Description",
-  "board_seat", "Board seat", "Board Seats (activist group)",
-  "merger", "Merger", "Seek Sale or Merger or Liquidation",
-  "strategy", "Strategy", "Review Strategic Alternatives",
-  "payout", "Payout", "Return Cash via Dividends or Buybacks",
-  "other_gov", "Other gov.", "Other Governance Enhancements",
-  "divestiture", "Divestiture", "Breakup Company, Divest Assets or Divisions",
-  "compensation", "Compensation", "Compensation Related Enhancements",
-  "block_merger", "Block merger", "Block Merger or Agitate for Higher Price (Shareholder of Target)",
-  "remove_defense", "Remove defense", "Remove Takeover Defenses",
-  "acquisition", "Acquisition", "Potential Acquisition (Friendly and Unfriendly)",
-  "leverage", "Leverage", "Other Capital Structure Related, Increase Leverage, etc.",
-  "add_indep", "Add ind. dir.", "Add Independent Directors",
-  "remove_director", "Remove director", "Remove Director(s)",
-  "remove_officer", "Remove officer", "Remove Officer(s)",
-  "esg", "ESG", "Social or Environmental or Political Issues",
-  "block_acquisition", "Block acquisition", "Block Acquisition or Agitate for Lower Price (Shareholder of Acquirer)",
-  "reits", "REITs", "Separate Real Estate or Create REIT")
+  "board_seat", "Board seat", "Board seats (activist group)",
+  "merger", "Merger", "Seek sale or merger or liquidation",
+  "strategy", "Strategy", "Review strategic alternatives",
+  "payout", "Payout", "Return cash via dividends or buybacks",
+  "other_gov", "Other governance", "Other governance enhancements",
+  "divestiture", "Divestiture", "Breakup company, divest assets or divisions",
+  "compensation", "Compensation", "Compensation-related enhancements",
+  "block_merger", "Block merger", "Block merger or agitate for higher price (shareholder of target)",
+  "remove_defense", "Remove defense", "Remove takeover defenses",
+  "acquisition", "Acquisition", "Potential acquisition",
+  "leverage", "Leverage", "Other capital structure--related, increase leverage, etc.",
+  "add_indep", "Add ind. dir.", "Add independent directors",
+  "remove_director", "Remove director", "Remove director(s)",
+  "remove_officer", "Remove officer", "Remove officer(s)",
+  "esg", "ESG", "Social or environmental or political issues",
+  "block_acquisition", "Block acquisition", "Block acquisition or agitate for lower price (shareholder of acquirer)",
+  "reits", "REITs", "Separate real estate or create REIT")
 
 demand_labels %>%
   inner_join(demand_summ) %>%
