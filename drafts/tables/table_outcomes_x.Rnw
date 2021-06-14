@@ -229,14 +229,14 @@ rs <- dbDisconnect(pg)
 
 \begin{table}[htb]
 \caption{Activism outcomes by demand}
-\label{tbl:div_acq_x}
+\label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
 Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 \textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
 \textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
 \textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
-Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:demand}; coefficients omitted for space.
+Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -336,7 +336,7 @@ rs <- dbDisconnect(pg)
 
 \begin{table}[htb]
 \caption{Activism outcomes by demand}
-\label{tbl:other_x}
+% \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
@@ -345,7 +345,7 @@ $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year
 \textit{Leverage} is measured as the ratio of book value of debt to the sum of the book value of debt and equity.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
-Regressions include industry and year fixed effects and controls are as described in Table \ref{tbl:demand}; coefficients omitted for space.
+Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -438,6 +438,7 @@ rs <- dbDisconnect(pg)
 
 \begin{table}[htb]
 \caption{Activism outcomes by demand}
+% \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
@@ -446,7 +447,7 @@ $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year
 \textit{Leverage} is measured as the ratio of book value of debt to the sum of the book value of debt and equity.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
-Regressions include industry and year fixed effects and controls are as described in Table \label{tbl:demand}; coefficients omitted for space.
+Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
