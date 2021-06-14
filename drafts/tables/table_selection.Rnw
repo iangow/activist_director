@@ -292,7 +292,7 @@ demand_labels %>%
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated and unaffiliated directors getting board seats (\textit{Affiliated director}, Column 3, \textit{Unaffiliated director}, Column 4), conditional on the firm being targeted by activists.
-The control variables from Table \ref{tbl:demand} are included in all analyses.
+The control variables from Section \ref{sec:other_data} are included in all analyses.
 Sample includes firm-years with activism.
   \newline}
 %  \end{flushleft}
