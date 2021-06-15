@@ -158,7 +158,7 @@ prob_demands <-
     \label{tbl:selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-This table presents logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
+This table presents results from logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
 Sample includes firm-years with activism only.
 All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section \ref{sec:other_data} for definitions).
     All controls are winsorized at the $1\%$ and $99\%$ levels.
@@ -218,20 +218,19 @@ rm(t3.pb)
         \label{tbl:demand}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
+Panel A describes the types of demand activists have made as classified by FactSet SharkWatch.
 Description is how SharkWatch describes each type of demand.
 Multiple demands can be made for each activism event.
-Success (\%) reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
-      \begin{tabularx}{\linewidth}{p{3.3cm}
+      \begin{tabularx}{\linewidth}{
+       >{\raggedright\arraybackslash}p{3cm}%
           >{\raggedright\arraybackslash}p{8cm}%
-          >{\raggedleft\arraybackslash}p{1.5cm}%
-          >{\raggedleft\arraybackslash}p{1.5cm}%
-          >{\raggedleft\arraybackslash}p{1.5cm}%
+          >{\raggedleft\arraybackslash}p{3cm}%
+          >{\raggedleft\arraybackslash}p{0.5cm}%
         }
-     \multicolumn{4}{l}{Panel A: Activist demands and success rates} \\\\
+     \multicolumn{4}{l}{Panel A: Activist demand types} \\\\
      \hline\hline
 <<Table_3_demand, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A
@@ -278,13 +277,10 @@ demand_labels <- tribble(
   "reits", "REITs", "Separate real estate or create REIT")
 
 demand_labels %>%
-  inner_join(demand_summ) %>%
-  inner_join(success_summ) %>%
-  mutate("Success rate (%)" = Successes/Demands*100) %>%
+  inner_join(demand_summ, by = "category") %>%
   select(-category) %>%
-  xtable(display=c("s", "s", "s", "d", "d", "f")) %>%
-  print(include.rownames = FALSE, only.contents = TRUE,
-        format.args = list(big.mark = ","))
+  xtable(display=c("s", "s", "s", "d")) %>%
+  print(include.rownames = FALSE, only.contents = TRUE)
 @
 \end{tabularx}
 \addtocounter{table}{-1}
@@ -296,14 +292,14 @@ demand_labels %>%
     \caption{Activist demands and target selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel B presents logit regression where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated and unaffiliated directors getting board seats (\textit{Affiliated director}, Column 3, \textit{Unaffiliated director}, Column 4), conditional on the firm being targeted by activists.
+Panel B presents results from logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated and unaffiliated directors getting board seats (\textit{Affiliated director}, Column 3, \textit{Unaffiliated director}, Column 4), conditional on the firm being targeted by activists.
 The control variables from Section \ref{sec:other_data} are included in all analyses.
 Sample includes firm-years with activism.
   \newline}
 %  \end{flushleft}
   \end{minipage}
     \begin{tabularx}{5in}{l*{3}{Y}}
-     \multicolumn{3}{l}{Panel B: Activism, activist demands, and activist directors} \\
+     \multicolumn{3}{l}{Panel B: Activist demands and activist directors} \\
 <<Table_3_panelA3, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel C
 # Subset on activism
@@ -322,14 +318,13 @@ reg.data <-
 
 rhs.2 <- "analyst inst size_return mv btm leverage dividend roa sale_growth
           num_directors outside_percent age tenure staggered_board sic2 year
-          strategy_demand merger_demand
-          block_merger_demand acquisition_demand
-          block_acquisition_demand divestiture_demand
-          payout_demand leverage_demand
-          reits_demand esg_demand
+          merger_demand strategy_demand payout_demand other_gov_demand
+          divestiture_demand compensation_demand
+          block_merger_demand remove_defense_demand
+          acquisition_demand  leverage_demand
           remove_director_demand
-          remove_officer_demand remove_defense_demand
-          compensation_demand other_gov_demand"
+          remove_officer_demand
+           esg_demand block_acquisition_demand reits_demand"
 
 t3.pc <- list()
 t3.pc[[1]] <- fit.model(data=subset(reg.data, activism),
@@ -354,20 +349,20 @@ stargazer(getFitted(t3.pc),
           "remove_director_demand",
           "remove_officer_demand", "remove_defense_demand",
           "compensation_demand", "other_gov_demand"),
-        covariate.labels = c("Strategy",
-                             "Merger",
-                             "Block merger",
-                             "Acquisition",
-                             "Block acquisition",
-                             "Divestiture",
+        covariate.labels = c("Merger",
+                             "Strategy",
                              "Payout",
+                             "Other govern.",
+                             "Divestiture",
+                             "Compensation",
+                             "Block merger",
+                             "Remove defense",
+                             "Acquisition",
                              "Leverage",
-                             "REITs",
                              "Remove director",
                              "Remove officer",
-                             "Remove defense",
-                             "Compensation",
-                             "Other govern."),
+                             "Block acquisition",
+                             "REITs"),
         se=getSEs(t3.pc),
         p=getPs(t3.pc),
        float=FALSE, align=TRUE, font.size="small",
@@ -383,3 +378,38 @@ rm(t3.pc)
 \end{tabularx}
 \end{table}
 
+\newpage
+
+  \begin{table}[htb]
+    \caption{Activist outcomes by demand}
+        \label{tbl:demand_success}
+        \begin{minipage}[t]{\columnwidth}
+  {\small
+Panel A presents success rates by type of demand as determined by FactSet SharkWatch.
+Multiple demands can be made for each activism event.
+Success rate (\%) reports the probability of activist demand being met by the boards successfully.
+  \newline}
+%  \end{flushleft}
+  \end{minipage}
+      \begin{tabularx}{\linewidth}{p{5cm}
+          >{\raggedleft\arraybackslash}p{2cm}%
+          >{\raggedleft\arraybackslash}p{2cm}%
+          >{\raggedleft\arraybackslash}p{3cm}%
+        }
+     \multicolumn{4}{l}{Panel A: Activist demands and success rates} \\\\
+     \hline\hline
+<<Table_3_demand_b, dependson=c("selection_functions", "selection_data"), results='asis'>>=
+# Panel A
+# Subset on activism
+demand_labels %>%
+  inner_join(demand_summ, by = "category") %>%
+  inner_join(success_summ, by = "category") %>%
+  mutate("Success rate (%)" = Successes/Demands*100) %>%
+  select(-category, -Description) %>%
+  xtable(display=c("s", "s", "d", "d", "f")) %>%
+  print(include.rownames = FALSE, only.contents = TRUE,
+        format.args = list(big.mark = ","))
+@
+\end{tabularx}
+\addtocounter{table}{-1}
+\end{table}

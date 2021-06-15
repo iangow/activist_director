@@ -242,7 +242,7 @@ Values in parentheses are standard errors clustered by firm.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel A: Acquisitions and divestitures and activist demands} \\
+\multicolumn{3}{l}{Panel B: Acquisitions and divestitures and activist demands} \\
 <<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
 t.pa <- list()
 rhs.1 <- c("activist_director*block_acquisition_demand", controls)
@@ -287,7 +287,7 @@ rm(t.pa)
 \end{table}
 
 \newpage
-% Panel B - CEO turnover and compensation
+% Panel C - CEO turnover and compensation
 <<outs_x_ceo_data, dependson="outs_x_winsorize">>=
 
 # Get data from PostgreSQL
@@ -349,7 +349,7 @@ Values in parentheses are standard errors clustered by firm.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel B: CEO turnover and compensation by activist demand} \\
+\multicolumn{3}{l}{Panel C: CEO turnover and compensation by activist demand} \\
 <<outs_x_t_ceo, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
 t.pb <- list()
 
@@ -369,8 +369,8 @@ stargazer(
     omit = c(controls, "ceo_comp", "ceo_turnover",
              "^affiliated_none"),
     dep.var.labels.include = FALSE,
-    column.labels = c("CEO Exit",
-                       "CEO Comp"),
+    column.labels = c("CEO exit",
+                       "CEO comp"),
     covariate.labels = c(
         "Affiliated director",
         "Unaffiliated director",
@@ -448,7 +448,7 @@ Values in parentheses are standard errors clustered by firm.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel C: Other outcomes by activist demand} \\
+\multicolumn{3}{l}{Panel D: Other outcomes by activist demand} \\
 <<outs_x_t_lev_and_pay, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
 t.pc <- list()
 
