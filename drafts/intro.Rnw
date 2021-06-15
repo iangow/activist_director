@@ -9,7 +9,7 @@ Determinants and consequences
 % \subtitle{Preliminary draft}
 }
 
-\author{Ian D. Gow\thanks{Ian D. Gow is at the University of Melbourne, Sa-Pyung Sean Shin is at Singapore Management University, and Suraj Srinivasan is at Harvard Business School.
+\author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (sshin@smu.edu.sg) is at Singapore Management University, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
 We thank the Division of Research at Harvard Business School, University of Melbourne, and Singapore Management University for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
