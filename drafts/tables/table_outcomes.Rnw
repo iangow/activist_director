@@ -74,7 +74,8 @@ convertToLines <- function(ftable) {
 
 stargazer.mod <- function(model.set, col.labels, row.labels, omits, ftable=NULL) {
     stargazer(model.set,
-              dep.var.labels=col.labels,
+              dep.var.labels.include = FALSE,
+              column.labels=col.labels,
               covariate.labels=row.labels,
               align=TRUE, float=FALSE, no.space=TRUE,
               omit=c("^sic", "^year", "^Constant", omits),
@@ -325,8 +326,9 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Divestitures and acquisitions}
-\label{tbl:div_acq}
+\caption{Activism outcomes}
+% \label{tbl:div_acq}
+\label{tbl:other}
 \begin{minipage}[t]{\columnwidth}
 {\small
 This table presents regressions of outcome variables on firm-year level activism indicators.
@@ -351,9 +353,10 @@ Regressions include industry and year fixed effects and the following controls (
 \textit{Staggered board}, indicator for staggered board.
 All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
+\multicolumn{3}{l}{Panel A: Acquisitions and divestitures} \\
 <<outs_t_div_and_acq, dependson=c("outs_functions", "outs_div_acq_data"), results='asis'>>=
 lhs.vars <- list("acquisition_p2", "merger_p2", "divestiture_p2")
 
@@ -368,6 +371,7 @@ stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
 rm(t6.pa)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
 
 % Panel B - CEO turnover and compensation
@@ -393,25 +397,24 @@ reg.data <-
 rs <- dbDisconnect(pg)
 @
 
+% \begin{center}
 \newpage
-
-\begin{center}
 \begin{table}[htb]
-\caption{CEO turnover and compensation}
-\label{tbl:ceo}
+\caption{Activism outcomes}
+% \label{tbl:ceo}
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
-This table presents regressions of variables on firm-year level activism categorical variables.
+This table presents regressions of outcome variables on firm-year level activism indicators.
 $\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
 $\textrm{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
 Controls are as described in Section 3.5; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 % \end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
+\multicolumn{3}{l}{Panel B: CEO turnover and compensation} \\
 <<outs_ceo_turnover, dependson=c("outs_functions", "outs_ceo_data_step"), results='asis'>>=
 lhs.vars <- list("ceo_turnover", "ceo_comp")
 # rhs <- paste("activist_director*remove_officer_demand year sic2", controls)
@@ -427,8 +430,9 @@ stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
-\end{center}
+% \end{center}
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
 
@@ -470,8 +474,8 @@ rs <- dbDisconnect(pg)
 % Financing and investment
 \newpage
 \begin{table}[htb]
-\caption{Capital structure and payouts}
-\label{table:fin}
+\caption{Activism outcomes}
+% \label{table:fin}
 \begin{minipage}[t]{\columnwidth}
 {\small
 \textit{Cash} is calculated as the ratio of total cash and short-term
@@ -482,9 +486,10 @@ rs <- dbDisconnect(pg)
     EBITDA for the two years after year $t$.
 Controls are as described in Section 3.5; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
+\multicolumn{3}{l}{Panel C: Capital structure and payouts} \\
 <<outs_t_cap_struct, dependson=c("outs_functions", "outs_other_data_step"), error=FALSE, results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("cash", "leverage", "payout")
@@ -502,27 +507,27 @@ stargazer.mod(t6.pd, col.labels, row.labels, omits, summ)
 rm(t6.pd)
 @
 \end{tabularx}
+\addtocounter{table}{-1}
 \end{table}
-\newpage
 
 \newpage
 \begin{table}[htb]
-\caption{Investment}
-\label{tbl:invest}
+\caption{Activism outcomes}
+% \label{tbl:invest}
 \begin{minipage}[t]{\columnwidth}
 %\begin{flushleft}
 {\small
-This table presents regressions of variables on firm-year level activism categorical variables.
+This table presents regressions of outcome variables on firm-year level activism indicators.
 % \textit{Tax rate} is measured as the ratio of total tax expense for two years after announcement of activism to the pre-tax income during the same period.
 \textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
 Controls are described in Section 3.5; coefficients omitted for space.
-Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-}
+Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 %\end{flushleft}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
+\multicolumn{3}{l}{Panel D: Investment} \\
 <<outs_t_inv, dependson=c("outs_functions", "outs_other_data_step"), results='asis'>>=
 # Export tables to spreadsheet
 lhs.vars <- list("capex_cum", "rnd_cum", "adv_cum")
