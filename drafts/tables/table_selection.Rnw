@@ -75,7 +75,7 @@ rs <- dbExecute(pg, "SET work_mem='3GB'")
 
 outcome_controls <- tbl(pg, "outcome_controls")
 activism_events <- tbl(pg, "activism_events")
-activist_demands <- tbl(pg, "demands")
+demands <- tbl(pg, "demands")
 activist_director_skills <- tbl(pg, "activist_director_skills")
 
 link_table <-
@@ -112,9 +112,9 @@ prob_activist_director <-
     filter(datadate >= min_date_sql) %>%
     collect()
 
-prob_activist_demands <-
+prob_demands <-
   outcome_controls %>%
-  left_join(activist_demands, by = "campaign_ids") %>%
+  left_join(demands, by = "campaign_ids") %>%
   mutate(category = coalesce(category, "_none"),
          across(c(activism, activist_demand, activist_director),
                 ~ coalesce(., FALSE)),
@@ -124,7 +124,7 @@ prob_activist_demands <-
   collect()
 
 prob_activist_director_skills <-
-    activist_demands %>%
+    demands %>%
     left_join(skills, by = "campaign_ids") %>%
     distinct() %>%
     collect()
@@ -147,8 +147,8 @@ prob_activist_director <-
     mutate(across(win_vars, win01)) %>%
     mutate_at(c("year", "sic2"), as.factor)
 
-prob_activist_demands <-
-    prob_activist_demands %>%
+prob_demands <-
+    prob_demands %>%
     mutate(across(win_vars, win01)) %>%
     mutate_at(c("year", "sic2"), as.factor)
 @
@@ -219,20 +219,25 @@ rm(t3.pb)
         \begin{minipage}[t]{\columnwidth}
   {\small
 Panel A presents the types of demand activists have made for 1,689 events (source: FactSet SharkWatch).
-Description describes how SharkWatch classifies types of demand for each activism.
+Description is how SharkWatch describes each type of demand.
 Multiple demands can be made for each activism event.
-Success rate (\%) reports the probability of activist demand being met by the boards successfully.
+Success (\%) reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}
-    \begin{tabularx}{7in}{p{3.3cm} p{8cm} p{1.5cm} p{1.5cm} p{1.5cm}}
+      \begin{tabularx}{\linewidth}{p{3.3cm}
+          >{\raggedright\arraybackslash}p{8cm}%
+          >{\raggedleft\arraybackslash}p{1.5cm}%
+          >{\raggedleft\arraybackslash}p{1.5cm}%
+          >{\raggedleft\arraybackslash}p{1.5cm}%
+        }
      \multicolumn{4}{l}{Panel A: Activist demands and success rates} \\\\
      \hline\hline
 <<Table_3_demand, dependson=c("selection_functions", "selection_data"), results='asis'>>=
 # Panel A
 # Subset on activism
 reg.data <-
-    prob_activist_demands %>%
+    prob_demands %>%
     filter(activism) %>%
     mutate(unaffiliated_director = affiliated == "unaffiliated")
 
@@ -258,7 +263,7 @@ demand_labels <- tribble(
   "merger", "Merger", "Seek sale or merger or liquidation",
   "strategy", "Strategy", "Review strategic alternatives",
   "payout", "Payout", "Return cash via dividends or buybacks",
-  "other_gov", "Other governance", "Other governance enhancements",
+  "other_gov", "Other govern.", "Other governance enhancements",
   "divestiture", "Divestiture", "Breakup company, divest assets or divisions",
   "compensation", "Compensation", "Compensation-related enhancements",
   "block_merger", "Block merger", "Block merger or agitate for higher price (shareholder of target)",
@@ -303,7 +308,7 @@ Sample includes firm-years with activism.
 # Panel C
 # Subset on activism
 reg.data <-
-    prob_activist_demands %>%
+    prob_demands %>%
     filter(activism) %>%
     mutate(unaffiliated_director = affiliated == "unaffiliated") %>%
     filter(strategy_demand | merger_demand |
@@ -362,7 +367,7 @@ stargazer(getFitted(t3.pc),
                              "Remove officer",
                              "Remove defense",
                              "Compensation",
-                             "Other gov"),
+                             "Other govern."),
         se=getSEs(t3.pc),
         p=getPs(t3.pc),
        float=FALSE, align=TRUE, font.size="small",
