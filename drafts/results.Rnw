@@ -241,42 +241,42 @@ Specifically, we regress total CEO compensation in year $t+2$ ($\textit{CEO pay}
 We do not find significant associations between CEO compensation and any of the activism indicators or any of the interactions between activism and compensation-related demands.
 This may be consistent with activists being unable to limit CEO compensation, but it is also consistent with activists having an effect not on the level of compensation, but with its relation with firm performance.
 
-\subsection{Capital structure, payout, and investments} \label{sect:financing}
-Among the most common demands activists make are requests for firms to increase leverage, dividends, or share buybacks.
-In Table \ref{tbl:other_x} Panel C, we examine the association between activism and leverage (\textit{Leverage}, measured as the ratio of book value of debt to the sum of the book value of debt and equity) and shareholder payout (\textit{Payout}, measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$).
+\subsection{Capital structure, payout, and investment} \label{sect:financing}
+Among the most common demands activists make are for firms to increase cash distributions to shareholders, either as dividends or share buybacks, which FactSet captures as a \textit{Payout demand}, or to increase leverage (\textit{Leverage demand}).
+In the first column of Table \ref{tbl:other_x} Panel C, we examine the association between activism, payout demands, and shareholder payout (\textit{Payout}), measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
+First, we find that having an affiliated director is associated with a 12 percentage-point increase in the payout ratio ($p < 0.01$).
+The coefficient on \textit{Unaffiliated director} is significantly different from those on \textit{Unaffiliated director} and \textit{Other activism}.
+
+In contrast, we find that it is the  terms interacting \textit{Unaffiliated director} and \textit{Other activism} with \textit{Payout demand} that are statistically significant.
+For example, a demand for increased payout and having an affiliated director at the target firm is associated with a 34.5 percentage-point increase in the payout ratio in the two years following activism. %TODO: We need an F-test if we're going to talk about the sum of two coefficients.
+This is interesting in light of our finding in Table \ref{tbl:selection}, that lower payout is associated with a higher likelihood of appointment of an \textit{Affiliated director}.
+This is consistent with activists seeking to reduce payout even absent explicit payout demands, and with appointment of affiliated directors being effective in achieving that goal.
+However, payout demands may be more important when the activist has no representation (\textit{Other activism}) or the activist director is not an employee or principal of the activist group (\textit{Unaffiliated director}).
+
+In the second column of Table \ref{tbl:other_x} Panel C, we examine the association between activism, leverage-related demands, and leverage (\textit{Leverage}), measured as the ratio of book value of debt to the sum of the book value of debt and equity,
+While we find a positive and weakly significant coefficient for \textit{Affiliated director} (coef. $0.039$, $p < 0.10$),
+we do not find any significant association between the demand for increased leverage or the appointment of activist directors and the changes in leverage following activism.
+
 A number of activism events involve activist investors seeking the reduction of excess expenditures.
-Hence, we also examine the association between activism and two areas of spending commonly regarded as investment, capital expenditures (CapEx) and research and development (R\&D), which we measure using the following proxies:
-\textit{CapEx}, measured as the ratio of capital expenditure for two years after an announcement of activism to the lagged book value of total assets;
-\textit{R\&D}, measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
-We regress these four outcome variables on their year-$t$ values to control for the baseline levels as well as industry and year dummies, and the controls used in other regressions (see section \ref{sect:desc_stats}).
+Hence, we examine the association between activism and two areas of spending commonly regarded as investment, capital expenditures and research and development (R\&D).
+We measure capital expenditure (\textit{CapEx}), as the ratio of capital expenditure over the two years after the announcement of activism to the lagged book value of total assets;
+We measure R\&D (\textit{R\&D}) as the ratio of total R\&D expenditure over the two years after the announcement of activism to the lagged book value of total assets.
+While activists demands frequently flag excessive investment, none of the FactSet demand categories maps neatly to these demands.
+So the final two columns of Table \ref{tbl:other_x} Panel C, we do not include any demand indicators.
+We regress \textit{CapEx} and \textit{R\&D} their year-$t$ values to control for the baseline levels,  industry and year indicators, and the controls used in other regressions (see section \ref{sect:desc_stats}).
 
-Results are presented in Table \ref{tbl:other_x} Panel C.
-First, we find that having an affiliated director is associated with an additional 12.0 percentage-point increase in the payout ratio ($p < 0.01$).
-Here, the differences in the coefficients from \textit{Unaffiliated director} and \textit{Other activism} are positive and significant.
-While we do not find a significant interaction effect between the affiliated activist dummy and the demand for increased payout, this still shows the strong effect of having an activist director on payout changes at the target firms.
-For example, asking for increased payout and having an affiliated director at the target firm is associated with a 34.5 percentage-point increase in the payout ratio in the two years following activism.
-It is interesting to note that the lower level of payout was associated with a higher likelihood of gaining a board seat for activists, especially an \textit{Affiliated director}.
-We can infer that one of the most important implicit agenda items of the activist directors might be to increase payouts to shareholders, which include the hedge fund activists themselves.
-Additionally, we find positive and significant coefficients for the demand for increased payout and the other two types of activism.
-This shows that the demand for increased payout is generally associated with higher payout ratio in the two years following activism.
-
-For leverage, we find a positive and weakly significant coefficient for \textit{Affiliated director} (coef. $0.039$, $p < 0.10$).
-However, we do not find any significant associations between the demand for increased leverage or the appointment of activist directors and the changes in leverage following activism.
-
-In Columns 3 and 4 of Table \ref{tbl:other_x} Panel C, we turn our attention to \textit{CapEx} and \textit{R\&D}.
-We cannot identify specific demands made by activists due to limitations of the data; therefore, we generally look at the impact of activism in relation to the existence of an activist director(s).
 In Column 3, we find that having an \textit{Affiliated director} is negatively associated with capital expenditure in the two years following activism.
-The coefficient of $-0.009$ ($p < 0.05$) suggests that the capital expenditure decreases by 0.9 percentage points in two years.
+The coefficient of $-0.009$ ($p < 0.05$) suggests that the capital expenditure decreases by 0.9 percentage points over the two years after activism.
 We also find negative associations between R\&D spending and activist directors (coefs. $-0.007$ and $-0.009$ for \textit{Affiliated director} and \textit{Unaffiliated director}, respectively).
 Note that the differences between these coefficients and that on \textit{Other activism} are weakly significant ($p < 0.10$) for both categories.
-Overall, the evidence is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
-However, it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, underinvestment and short termism.
+Overall, the evidence is consistent with activist directors having a role in reducing certain kinds of investment.
+However, it is unclear whether this reflects curtailment of excessive investments or, as critics of activists have suggested, underinvestment and short-termism.
 
 \section{Operating and market performance} \label{sect:perf}
-In this section, we examine whether the changes brought about by activist directors have any indication of operating and market performance improvement.
-We first look at the operating performance, focusing on return on assets.
+In this section, we examine whether the changes brought about by activist directors have any implications for firm performance.
 
 \subsection{Return on assets} \label{sect:roa}
+We first look at the operating performance, focusing on return on assets.
 Our empirical approach follows that of \citet{Bebchuk:2013wi}, which in turn is based on the approach of \citet{Brav:2008eu}.
 We measure operating performance as return on assets calculated as EBITDA (Compustat item \texttt{oibdp}) divided by lagged total assets (\texttt{at}).
 For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$.

@@ -62,5 +62,5 @@ From Equilar, we derive the following variables:
 \textit{Age}, the average age of directors on the board;
 \textit{Tenure}, the average years of directorship on the board; and
 \textit{Staggered board}, an indicator for a classified board.
-Data on divestitures and acquisitions as used in Table \ref{tbl:div_acq_x} come from Capital IQ and CRSP.
+Data on divestitures and acquisitions as used in Table \ref{tbl:other_x} come from Capital IQ and CRSP.
 % Note that all controls are winsorized at the $1\%$ and $99\%$ levels.
