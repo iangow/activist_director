@@ -169,7 +169,7 @@ rs <- dbExecute(pg, "ALTER TABLE demands OWNER TO activism")
 
 sql <- paste("
   COMMENT ON TABLE demands IS
-             'CREATED USING create_activist_demands.R ON ",
+             'CREATED USING create_demands.R ON ",
              format(Sys.time(), "%Y-%m-%d %X %Z"), "';", sep="")
 rs <- dbExecute(pg, paste(sql, collapse="\n"))
 
