@@ -78,12 +78,13 @@ These holding periods suggest that the activists with board representation might
 
 With regard to the next set of questions, we find, consistent with prior research, that activists tend to target firms with relatively poor recent stock performance as well as ``value'' firms, i.e., those with low market-to-book ratios.
 Conditional on being targeted by activists, we also find that activists are more likely to demand or acquire board representation when the firm has more institutional ownership, smaller market capitalization, worse stock market performance, and, in particular, lower dividend payout levels.
-Furthermore, we find that the types of demands the activist can exert an influence as a board member, such as divestiture, removal of executive officers, removal of defenses, and compensation-related demands, are associated with the likelihood of asking for a board seat as well as obtaining one.
+Furthermore, we find that the types of demands the activist can exert an influence as a board member, such as divestiture, removal of defenses, and compensation-related demands, are associated with the likelihood of asking for a board seat as well as obtaining one.
 
 We then examine a number of possible consequences of the appointment of activist directors for the firms whose boards they join.
 In terms of underlying actions, we find evidence that the board representation by activist is generally associated with an increased probability of divestiture, decreased acquisition activity, higher CEO turnover, higher payout, higher leverage, lower capital expenditure, and lower research and development expenses.
 Especially, we find that \emph{affiliated} activist directors are associated with higher payout levels, with an economically significant coefficient equal to nearly 15\% of EBITDA, and lower R\&D spending.
 Also, when the activists' initial goals were to block mergers and acquisitions, induce divestiture, and increase payouts to shareholders, having an activist director helped those demands meet more successfully.
+% For example, we find a negative and significant coefficient for the interaction between the Block merger demand and the Activist director indicators, which is consistent with activist directors playing a significant role in achieving this specific demand.
 In addition, relative to other activism events, we find that activist-director events are associated with a \emph{lower} probability of the firm being acquired, which suggests that, when activists acquire board representation, their impact is \emph{not} primarily about the ``ability of activists to force target firms into a takeover'' as prior research has found for hedge fund activism more generally \citep[362]{Greenwood:2009kh}.
 % This is consistent with board representation being an important mechanism for bringing about these kinds of changes.
 
