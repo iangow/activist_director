@@ -32,7 +32,7 @@ Affiliated (unaffiliated) activist directors who remained on their respective bo
 Another dimension along which directors can be compared is skill sets \citep{Adams:2018vf}.
 Since Regulation S-K was amended in 2009, publicly listed companies in the U.S. have been required to describe the reasons for nominating directors \citep{Adams:2018vf}.
 Using these data, \citet{Adams:2018vf} find that director skills are an important feature of firms' board composition and corporate governance.
-Following the approach of  \citet{Adams:2018vf}, which classifies director skill sets into 20 categories, we hand-collected data and identified the skill set of each activist director.
+Following the approach of  \citet{Adams:2018vf}, which classifies director skill sets into 20 categories, we hand-collected data and identified the skill set of each activist director.\footnote{While it would be even better to examine whether the activist directors bring a unique skill set to the board, due to data collection costs, we did not collect data on director skill sets for non-activist directors. Instead, we used skill sets reported in \citet{Adams:2018vf} as the basis for comparison.}
 
 Panel A of Table \ref{tbl:dir_skills} presents summary statistics.
 In general, activist directors have fewer skill sets than other directors.
