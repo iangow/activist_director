@@ -95,7 +95,7 @@ We also find evidence of differential effects when \emph{activist-affiliated} di
 For market returns, consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement ranging from $3.0\%$ to $3.9\%$.
 We also find a positive market reaction at the appointment of activist directors, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement of $2.0\%$ for affiliated directors and $1.5\%$ for unaffiliated directors.
 
-The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism.
+The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism, with a focus on the role of activist directors in that phenomenon.
 Given the potentially greater influence that activists may have when they get in the boardrooms, our paper aims to deepen our knowledge of the effects of hedge fund activism by focusing on such cases.
 Overall, we find that activist directors are associated with significant strategic and operational actions by firms.
 While the observational data available to us do not permit causal inferences unequivocally, the associations we document appear consistent with the claim that hedge fund activists and activist directors have a notable impact.
