@@ -163,9 +163,6 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 <<table_voting, child='tables/table_voting.Rnw'>>=
 @
 
-<<table_career, child='tables/table_career.Rnw'>>=
-@
-
 <<table_holding_period, child='tables/table_holding_period.Rnw'>>=
 @
 

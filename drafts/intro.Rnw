@@ -9,8 +9,8 @@ Determinants and consequences
 % \subtitle{Preliminary draft}
 }
 
-\author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (sshin@smu.edu.sg) is at Singapore Management University, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
-We thank the Division of Research at Harvard Business School, University of Melbourne, and Singapore Management University for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+\author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
+We thank the Division of Research at Harvard Business School, University of Melbourne, and National University of Singapore for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
 % \affil{Preliminary draft}
@@ -55,8 +55,7 @@ Given the lack of strong theoretical predictions on the reasons for activists to
 
 Our paper addresses a number of questions related to activist directors.
 First, we closely examine the characteristics of activist directors.
-Who are they and how are they different from other directors?
-How much support do they typically receive from shareholders and what is their future career consequence like?
+Who are they and how are they different from other directors, and how much support do they typically receive from shareholders?
 In addition, we investigate the circumstances surrounding the appointments of activist directors.
 When do activists seek board representation and under what conditions do they successfully obtain it?
 Finally, we explore the impact that an activist director has on the board.
@@ -103,7 +102,7 @@ While the observational data available to us do not permit causal inferences une
 
 However, even if we were to offer a concrete causal interpretation, it is unclear whether all of these effects are beneficial to shareholders.
 For instance, while our evidence is consistent with activist directors playing a significant role in curbing expenditures on capital (CapEx) and research and development (R\&D), it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, underinvestment with a focus on the short term.
-However, the relatively long-term holding periods in cases where activists become directors, positive stock market effects, and long-term operating performance improvements seem inconsistent with the idea that activist directors are problematically short-termist.
+However, the relatively long-term holding periods in cases where activists become directors, positive stock market effects, and long-term operating performance improvements seem inconsistent with the idea that activist directors are problematically short-termists.
 
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.

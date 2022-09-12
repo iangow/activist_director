@@ -15,10 +15,31 @@ Activist directors: Determinants and consequences
 \author{Ian D. Gow \and Sa-Pyung Sean Shin \and Suraj Srinivasan}
 
 \maketitle
+
 <<table_ia_selection, child='tables/table_ia_selection.Rnw'>>=
 @
 
 <<table_ia_holding_periods, child='tables/table_ia_holding_periods.Rnw'>>=
+@
+
+\newpage
+\section{Career outcomes} \label{sect:career}
+In this section, we examine the career outcomes of activist directors following their appointments.
+It is possible that those directors appointed or recruited by activist hedge funds may have different career outcomes from other directors.
+For example, in the case of unaffiliated activist directors, their experience as a board member might lead to more directorships in other companies in the future.
+On the other hand, being associated with activism may ``taint'' a director and lead to fewer subsequent directorships.
+However, any ``taint'' that affiliated activist directors might experience more plausibly stems from being directly affiliated with the activist firm than from being an activist director.
+Opportunities for future directorships are likely to follow from activism events on the part of their affiliated firm where board seats are also won.
+For these reasons, we examine affiliated and unaffiliated activist directors separately.
+
+Table \ref{tbl:career} provides results from OLS regressions where the dependent variables are the number of board seats in other companies between two ($\textit{Other boards}_{t+2}$) and five ($\textit{Other boards}_{t+5}$) years after activism.
+We find that in two through five years after appointment, affiliated directors have a higher number of other directorships (e.g., 0.333 more in $t+3$, controlling for other factors).
+This can be largely attributed to hedge fund managers initiating more activist campaigns and, as a result, receiving more board seats.
+Additionally, we find that the unaffiliated directors also have 0.114 (0.136) more other directorships four (five) years after appointment than do other directors (see Columns 3 and 4).
+This appears consistent with unaffiliated activist directorships having positive career effects.
+The three-year delay may stem from the limited ability of directors to add board seats in the short run due to concerns about ``busy'' directors.
+
+<<table_ia_career, child='tables/table_career.Rnw'>>=
 @
 
 <<table_outcomes, child='tables/table_outcomes.Rnw'>>=

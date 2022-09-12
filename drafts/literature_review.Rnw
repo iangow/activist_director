@@ -70,6 +70,10 @@ Our paper draws on a larger sample of activist directors and focuses on the trai
 Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases with public settlement agreements, we also consider implicit settlement cases in which board seats were given to the activists without a public agreement.
 
 Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements irrespective of whether or not an activist director is appointed.
-However, \citet{Bebchuk:2017} also conduct analyses focused on activist directors, including an analysis of the impact of activist directors on board size and of shareholder support in subsequent director elections.
+\citet{Bebchuk:2017} conduct analyses focused on activist directors, including an analysis of the impact of activist directors on board size and of shareholder support in subsequent director elections.
 As in this study, \citet{Bebchuk:2017} examine the effect of activism on payout policy, acquisition, and operating performance, but organized according to settlements rather than activist directors.
-Our paper focuses on the characteristics and the roles of a more comprehensive sample of activist directors and further examines their effects on activist investment, the consequences for their own careers, as well as their impact on firm outcomes.
+This paper focuses explicitly on activist directors instead of activist settlements.
+While most activist directors are nominated or appointed to the board as a result of settlements, we also find activist directors elected via proxy fights when activists do not reach settlements with the management.
+Also, we provide more comprehensive and more detailed description of the directors placed by the activists to understand the characteristics of whom they want for board re-composition.
+In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
+Lastly, we describe how the existence of an activist director is associated with the types of outcomes activists want to achieve compared to their initial public demands.
