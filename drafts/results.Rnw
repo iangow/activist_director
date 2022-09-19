@@ -19,7 +19,7 @@ In general, unaffiliated activist directors are similar to other new directors a
 Unaffiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.41$ versus $0.34$ for directors not associated with activism campaigns).
 Unaffiliated directors also had prior experience in a related industry in 41\% of cases, which is slightly higher than new directors in other categories.
 
-Affiliated directors, however, are noticeably different: they are younger (51 years of age) and even more rarely female (just 1\% of affiliated activist directors are women versus $14\% of new directors are female without activism).
+Affiliated directors, however, are noticeably different: they are younger (51 years of age) and even more rarely female (just 1\% of affiliated activist directors are women versus 14\% of new directors are female without activism).
 Affiliated directors have served on more boards prior to appointment ($3.01$ versus $2.14$ boards for new directors absent activism), but their tenure on those other boards is shorter by a half on average ($2.58$ versus $5.34$ years).
 While affiliated activist directors appear more likely to become members of the compensation committee in their first year of service ($0.42$ versus $0.34$ for directors not associated with activism), they are less frequently added to the audit committee ($0.29$) in comparison to other new directors ($0.41$).
 

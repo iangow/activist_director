@@ -356,12 +356,17 @@ sw_aff_roa_ffe.f <- cbind(
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
-This table presents estimates of the impact of activism on return on assets over 5 years after the announcement of activism. The empirical approach follows that of \citet{Bebchuk:2013wi}.
-We regress return on assets on an indicator for an activism events ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
-We estimate three models. Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, and firm age, and indicators for activism.
+This table presents estimates of the impact of activism on return on assets over five years after the announcement of activism.
+The empirical approach follows that of \citet{Bebchuk:2013wi}.
+We regress the return on assets on an indicator for activism events ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
+We estimate three models: (A), (B), and (C).
+Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, firm age, and indicators for activism.
 Models (A) and (B) add industry and firm fixed effects, respectively.
 Model (C) also adds firm fixed effects, as well as indicators for affiliated and unaffiliated activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
-The quantities presented in the table represent estimates of the impact of activism and activist directors, and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$. Numbers in parentheses are heteroskedasticity-robust standard errors. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+The numbers presented in the table represent estimates of the impact of activism and activist directors and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
+The number of observations for each activism indicator is reported at the end of the table.
+The numbers in parentheses are heteroskedasticity-robust standard errors.
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
 % \end{flushleft}
 \end{minipage}

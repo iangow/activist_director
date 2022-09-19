@@ -90,7 +90,7 @@ skills <-
   inner_join(link_table, by = "campaign_id") %>%
   select(-skillset_bio, -last_name, -first_name, -campaign_id, -num_skills) %>%
   group_by(campaign_ids) %>%
-  summarize(across(-campaign_ids, bool_or)) %>%
+  summarize(across(1:technology, bool_or)) %>%
   compute()
 
 min_date <-
@@ -158,11 +158,11 @@ prob_demands <-
     \label{tbl:selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-This table presents results from logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), activist directors not affiliated with activist (\textit{Unaffiliated director}, Column 3), and activist-affiliated directors getting board seats (\textit{Affiliated director}, Column 4).
-Sample includes firm-years with activism only.
+This tablepresents results from logit regressions where the dependent variables are indicators for activists demanding a board seat (\textit{Board demand}, Column 1), activists getting a board seat (\textit{Activist director}, Column 2), activists getting a board seat where the director is not affiliated with the activist (\textit{Unaffiliated director}, Column 3), and activists getting a board seat where the director is affiliated with the activist (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
 All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section \ref{sec:other_data} for definitions).
-    All controls are winsorized at the $1\%$ and $99\%$ levels.
-    Values in parentheses are standard errors clustered by firm.
+All controls are winsorized at the $1\%$ and $99\%$ levels.
+The sample includes only firm-years with activism.
+Values in parentheses are standard errors clustered by firm.  \newline}
   \newline}
   \end{minipage}
     \begin{tabularx}{6.5in}{l*{3}{Y}}
@@ -218,8 +218,9 @@ rm(t3.pb)
         \label{tbl:demand}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel A describes the types of demand activists have made as classified by FactSet SharkWatch.
-Description is how SharkWatch describes each type of demand.
+Panel A describes the types of demands activists have made, classified by FactSet SharkWatch.
+Description refers to how SharkWatch describes the types of demand.
+Demands reports the number of activism events for each type of demand during the sample period.
 Multiple demands can be made for each activism event.
   \newline}
 %  \end{flushleft}
@@ -292,9 +293,11 @@ demand_labels %>%
     \caption{Activist demands and target selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel B presents results from logit regressions where the dependent variables are indicators for activist demanding board seats (\textit{Board demand}, Column 1), activists getting board seats (\textit{Activist director}, Column 2), and activist-affiliated and unaffiliated directors getting board seats (\textit{Affiliated director}, Column 3, \textit{Unaffiliated director}, Column 4), conditional on the firm being targeted by activists.
-The control variables from Section \ref{sec:other_data} are included in all analyses.
-Sample includes firm-years with activism.
+Panel B presents results from logit regressions where the dependent variables are indicators for activists demanding a board seat (\textit{Board demand}, Column 1), activists getting a board seat (\textit{Activist director}, Column 2), activists getting a board seat where the director is not affiliated with the activist (\textit{Unaffiliated director}, Column 3), and activists getting a board seat where the director is affiliated with the activist (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
+All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section \ref{sec:other_data} for definitions).
+All controls are winsorized at the $1\%$ and $99\%$ levels.
+The sample includes only firm-years with activism.
+Values in parentheses are standard errors clustered by firm.  \newline}
   \newline}
 %  \end{flushleft}
   \end{minipage}
@@ -385,9 +388,11 @@ rm(t3.pc)
         \label{tbl:demand_success}
         \begin{minipage}[t]{\columnwidth}
   {\small
-Panel A presents success rates by type of demand as determined by FactSet SharkWatch.
+Panel A presents success rates by type of demand determined by FactSet SharkWatch.
+Demands reports the number of activism events for each type of demand during the sample period.
+Successes reports the number of activism events for each type of demand being met by the boards successfully.
+Success rate (\%) reports the probability of activist demand being met by the boards successfully (Successes divided by Demands).
 Multiple demands can be made for each activism event.
-Success rate (\%) reports the probability of activist demand being met by the boards successfully.
   \newline}
 %  \end{flushleft}
   \end{minipage}

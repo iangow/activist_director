@@ -232,11 +232,11 @@ rs <- dbDisconnect(pg)
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
-Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-\textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
-\textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
-\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
-Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+This panel presents results from regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+\textit{Acquisition} indicates the firm completed acquisitions within two years following the announcement of activism in year $t$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years following the announcement of activism in year $t$.
+\textit{Acquired} indicates delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) within two years following the announcement of activism in year $t$.
+Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -338,12 +338,10 @@ rs <- dbDisconnect(pg)
 \caption{Activism outcomes by demand}
 \begin{minipage}[t]{\columnwidth}
 {\small
-Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-$\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
-\textit{Leverage} is measured as the ratio of book value of debt to the sum of the book value of debt and equity.
-\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
-\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
-Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+This panel presents results from regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+$\textrm{CEO exit}_{(t, t+2)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+2$.
+$\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation in the two years following the announcement of activism in year $t$.
+Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -437,12 +435,13 @@ rs <- dbDisconnect(pg)
 \caption{Activism outcomes by demand}
 \begin{minipage}[t]{\columnwidth}
 {\small
-Table presents regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-$\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
-\textit{Leverage} is measured as the ratio of book value of debt to the sum of the book value of debt and equity.
-\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
-\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
-Regressions include industry and year fixed effects and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+This panel presents results from regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years following the announcement of activism in year $t$.
+\textit{Leverage} is measured as the ratio of the book value of debt to the sum of the book value of debt and equity.
+\textit{Capex} is measured as the ratio of total capital expenditure for two years following the announcement of activism to the lagged book value of total assets.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for two years following the announcement of activism to the lagged book value of total assets.
+Due to the unavailability of data for demands for \textit{Capex} and \textit{R\&D}, there are no interaction variables between activism indicators and related activist demand indicators for \textit{Capex} and \textit{R\&D}.
+Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
