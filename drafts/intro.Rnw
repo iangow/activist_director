@@ -19,14 +19,14 @@ We thank the Division of Research at Harvard Business School, University of Melb
 
 \singlespacing
 \begin{abstract}
-This paper examines the determinants and consequences of hedge fund activism with a focus on activist directors, i.e., directors appointed in response to activists' demands.
+This paper examines the determinants and consequences of hedge fund activism, focusing on activist directors, i.e., directors appointed in response to activists' demands.
 Using a sample of \Sexpr{num_events} activism events between 2004 and 2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors.
-Relative to other newly appointed directors, these activist directors are younger, more likely to have finance and accounting skills, and less likely to be female. % Not contributing to the diversity of board.
+Relative to other newly appointed directors, these activist directors are younger, more likely to have finance and accounting skills, and less likely to be female. % Not contributing to the diversity of the board.
 Activists remain as shareholders longer when they have board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
-We find that the likelihood of acquiring board representation is associated with weaker market performance or with lower payout ratio.
-Following the appointment of activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced investment.
-These estimated effects are significantly greater for payout ratios and R\&D investment compared to other forms of activism, consistent with the notion that such representation is an important mechanism for bringing about the kinds of changes that activists often demand.
-Lastly, we find positive abnormal returns of 2\% when an activist director is appointed, and about 2 percentage-point increase in return on assets over the subsequent one to five years.
+We find that the likelihood of acquiring board representation is associated with weaker market performance or with a lower payout ratio.
+Following the appointment of the activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced investment.
+These estimated effects are significantly greater for payout ratios and R\&D investment than other forms of activism, consistent with the notion that such representation is an important mechanism for bringing about the changes that activists often demand.
+Lastly, we find positive abnormal returns of 2\% when an activist director is appointed and about a 2\%-point increase in return on assets over the subsequent one to five years.
 \end{abstract}
 \doublespacing
 
@@ -97,6 +97,9 @@ We also find a positive market reaction to the appointment of activist directors
 
 The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism, focusing on the role of activist directors in that phenomenon.
 Given the potentially greater influence that activists may have when they get into the boardrooms, our paper aims to deepen our knowledge of the effects of hedge fund activism by focusing on such cases.
+In addition, with the New SEC Universal Proxy Card Rules, listing both company and activist nominees off a single proxy card, activists are expected to have an easier time nominating their directors and more like to see more activist directors on board (Whoriskey and Golenbock, 2022).
+Thus, it has become even more important to understand who these directors are and what their roles are, which we describe in this paper.
+
 Overall, we find that activist directors are associated with significant strategic and operational actions by firms.
 While the observational data available to us do not permit causal inferences unequivocally, the associations we document appear consistent with the claim that hedge fund activists and activist directors have a notable impact.
 
