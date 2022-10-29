@@ -185,12 +185,13 @@ We regress these indicators on industry and year dummies as well as the followin
 
 Table \ref{tbl:other_x} Panel A presents the results.
 Examining the first column, the estimated coefficients on \textit{Activist director} and \textit{Other activism} are $-0.065$ and $-0.039$, respectively, suggesting that activism and activist directors are associated with fewer acquisitions even absent explicit demands for firms to curtail activism.
-Furthermore, the interaction effect between the demand to block acquisition and the activist director indicator (\textit{Activist director \times Block acquisition}) is negative and significant.\footnote{We combined the \textit{Affiliated director} and \textit{Unaffiliated director} indicators for this analysis due to a limited number of observations with demands such as \emph{Block merger}.}
-The coefficient for the interaction term, \textit{Activist director \times Block acquisition}, suggests that the combination of an activist director and a demand to block a proposed acquisition is associated with a 67.5 percentage-point lower likelihood of an acquisition within two years following activism.
+Furthermore, the interaction effect between the demand to block acquisition and the activist director indicator (\textit{Activist director} $\times$ \textit{Block acquisition}) is negative and significant.\footnote{We combined the \textit{Affiliated director} and \textit{Unaffiliated director} indicators for this analysis due to a limited number of observations with demands such as \emph{Block merger}.}
+The coefficient for the interaction term, \textit{Activist director} $\times$ \textit{Block acquisition}, suggests that the combination of an activist director and a demand to block a proposed acquisition is associated with a 67.5 percentage-point lower likelihood of an acquisition within two years following activism.
 This is consistent with activist directors playing an important role in activists achieving their stated goal of preventing acquisitions by the firm they have targeted for activism.\footnote{Note that there is no separate main effect for the demands because demands are only present when there is some form of activism.}
 
 Additionally, divestitures are generally positively associated with activism whether or not an activist director is appointed (coefs. $0.094$ and $0.64$ for \textit{Activist director} and \textit{Other activism}, respectively).
 The coefficient for the interaction term between \textit{Activist director} and \textit{Block acquisition demand} suggests that having an activist director with a demand to block acquisition is associated with a 52.7 percentage-point higher likelihood of seeing a divestiture within two years following activism.
+Considering the average rate of divestiture is 20.4\% for all firms, the likelihood of divestiture is 2.5 times higher for these firms.
 While the demand to curtail acquisitions and divestitures are clearly not equivalent, divestitures are in some ways the opposite of acquisitions, and the result is consistent with such a demand being associated with a generally increased focus on capital discipline when activist directors are appointed.
 
 The third column examines the links between demands for divestitures and divestitures by target firms directly.
@@ -246,7 +247,7 @@ We measure capital expenditure (\textit{CapEx}) as the ratio of capital expendit
 We measure R\&D (\textit{R\&D}) as the ratio of total R\&D expenditure over the two years after the announcement of activism to the lagged book value of total assets.
 While activists demand frequently flag excessive investment, none of the FactSet demand categories maps neatly to these demands.
 So in the final two columns of Table \ref{tbl:other_x} Panel C, we do not include any demand indicators.
-We regress \textit{CapEx} and \textit{R\&D} their year-$t$ values to control for the baseline levels,  industry and year indicators, and the controls used in other regressions (see section \ref{sect:desc_stats}).
+We regress \textit{CapEx} and \textit{R\&D} their year-$t$ values to control for the baseline levels, industry and year indicators, and the controls used in other regressions (see section \ref{sect:desc_stats}).
 
 In Column 3, we find that having an \textit{Affiliated director} is negatively associated with capital expenditure in the two years following activism.
 The coefficient of $-0.009$ ($p < 0.05$) suggests that the capital expenditure decreases by 0.9 percentage points over the two years following activism.

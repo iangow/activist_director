@@ -163,7 +163,7 @@ All regressions include industry and year fixed effects and controls measured fo
 All controls are winsorized at the $1\%$ and $99\%$ levels.
 The sample includes only firm-years with activism.
 Values in parentheses are standard errors clustered by firm.  \newline}
-  \newline}
+  \newline
   \end{minipage}
     \begin{tabularx}{6.5in}{l*{3}{Y}}
 <<Table_3_panelA2, dependson=c("selection_functions", "selection_data"), results='asis'>>=
@@ -298,7 +298,7 @@ All regressions include industry and year fixed effects and controls measured fo
 All controls are winsorized at the $1\%$ and $99\%$ levels.
 The sample includes only firm-years with activism.
 Values in parentheses are standard errors clustered by firm.  \newline}
-  \newline}
+  \newline
 %  \end{flushleft}
   \end{minipage}
     \begin{tabularx}{5in}{l*{3}{Y}}
