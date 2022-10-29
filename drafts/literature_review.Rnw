@@ -72,8 +72,4 @@ Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases
 Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements irrespective of whether or not an activist director is appointed.
 \citet{Bebchuk:2017} conduct analyses focused on activist directors, including an analysis of the impact of activist directors on board size and of shareholder support in subsequent director elections.
 As in this study, \citet{Bebchuk:2017} examine the effect of activism on payout policy, acquisition, and operating performance, but organized according to settlements rather than activist directors.
-This paper focuses explicitly on activist directors instead of activist settlements.
-While most activist directors are nominated or appointed to the board as a result of settlements, we also find activist directors elected via proxy fights when activists do not reach settlements with the management.
-Also, we provide a more comprehensive and detailed description of the directors placed by the activists to understand the characteristics of whom they want for board re-composition.
-In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
-Lastly, we describe how the existence of an activist director is associated with the types of outcomes activists want to achieve compared to their initial public demands.
+Our paper focuses on the characteristics and the roles of a more comprehensive sample of activist directors and further examines their effects on activist investment and their impacts on firm outcomes.

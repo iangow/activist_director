@@ -13,9 +13,6 @@ Determinants and consequences
 We thank the Division of Research at Harvard Business School, University of Melbourne, and National University of Singapore for financial support and participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the 2017 AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
-% \affil{Preliminary draft}
-% This code gets the comment associated with the activist_director.activism_events
-% table. If it has changed, R knows to update the data.
 
 \singlespacing
 \begin{abstract}
@@ -95,17 +92,26 @@ We also find evidence of differential effects when \emph{activist-affiliated} di
 For market returns, consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement ranging from $3.0\%$ to $3.9\%$.
 We also find a positive market reaction to the appointment of activist directors, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement of $2.0\%$ for affiliated directors and $1.5\%$ for unaffiliated directors.
 
-The primary goal of our paper is to contribute to the understanding of the increasingly important phenomenon of hedge fund activism, focusing on the role of activist directors in that phenomenon.
-Given the potentially greater influence that activists may have when they get into the boardrooms, our paper aims to deepen our knowledge of the effects of hedge fund activism by focusing on such cases.
-In addition, with the New SEC Universal Proxy Card Rules, listing both company and activist nominees off a single proxy card, activists are expected to have an easier time nominating their directors and more like to see more activist directors on board (Whoriskey and Golenbock, 2022).
-Thus, it has become even more important to understand who these directors are and what their roles are, which we describe in this paper.
-
 Overall, we find that activist directors are associated with significant strategic and operational actions by firms.
 While the observational data available to us do not permit causal inferences unequivocally, the associations we document appear consistent with the claim that hedge fund activists and activist directors have a notable impact.
 
 However, even if we were to offer a concrete causal interpretation, it is unclear whether all of these effects are beneficial to shareholders.
 For instance, while our evidence is consistent with activist directors playing a significant role in curbing expenditures on capital (CapEx) and research and development (R\&D), it is unclear whether this reflects curtailment of excessive investments or, as critics of activists might suggest, underinvestment with a focus on the short term.
 However, the relatively long-term holding periods in cases where activists become directors, positive stock market effects, and long-term operating performance improvements seem inconsistent with the idea that activist directors are problematically short-termists.
+
+Our paper contributes to the understanding of the increasingly important phenomenon of hedge fund activism, focusing on the role of activist directors in that phenomenon.
+More specifically, we identify the role of activist directors in the changes that often follow activism events, thereby identifying a mechanism by which activists carry out the changes they demand.
+
+Unlike Bebchuk et al. (2020), out paper focuses explicitly on activist directors instead of activist settlements.
+While most activist directors are nominated or appointed to the board as a result of settlements, we also find activist directors elected via proxy fights when activists do not reach settlements with the management.
+Also, we provide a more comprehensive and more detailed description of the directors placed by the activists to understand the characteristics of whom they want for board re-composition.
+In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
+Lastly, we describe how the existence of an activist director is associated with the types of outcomes activists want to achieve compared to their initial public demands.
+
+In November 2021, SEC adopted the new Universal Proxy Card Rules, which allows both company and activist nominees to be listed off a single proxy card.
+With the new rules, activists are expected to have an easier time nominating their directors, and we are more likely to see more activist directors getting on board (Whoriskey and Golenbock, 2022).
+Given the potentially more significant influence that activists and shareholders may have when they get into the boardrooms, it has become even more critical to understand who these directors are and what their roles are.
+Our paper deepens our knowledge of the effects of having such directors on board.
 
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
