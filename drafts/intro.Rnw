@@ -102,7 +102,7 @@ However, the relatively long-term holding periods in cases where activists becom
 Our paper contributes to the understanding of the increasingly important phenomenon of hedge fund activism, focusing on the role of activist directors in that phenomenon.
 More specifically, we identify the role of activist directors in the changes that often follow activism events, thereby identifying a mechanism by which activists carry out the changes they demand.
 
-Unlike Bebchuk et al. (2020), out paper focuses explicitly on activist directors instead of activist settlements.
+Unlike Bebchuk et al. (2020), our paper focuses explicitly on activist directors instead of activist settlements.
 While most activist directors are nominated or appointed to the board as a result of settlements, we also find activist directors elected via proxy fights when activists do not reach settlements with the management.
 Also, we provide a more comprehensive and more detailed description of the directors placed by the activists to understand the characteristics of whom they want for board re-composition.
 In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
