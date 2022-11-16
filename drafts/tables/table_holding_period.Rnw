@@ -78,18 +78,18 @@ surv <- with(survival_data,
 
 #### Exit since Entry
 quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ affiliated,
-                 tau=0.5,
-                 data=survival_data,
-                 na.action="na.omit",
-                 method="Portnoy")
+                 taus = 0.5,
+                 data = survival_data,
+                 na.action = "na.omit",
+                 method = "Portnoy")
 summary1 <- summary(quantreg1, taus = 0.5)
 
 #### Exit since Announcement
 quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ affiliated,
-                 taus=0.5,
-                 data=survival_data,
-                 na.action="na.omit",
-                 method="Portnoy")
+                 taus = 0.5,
+                 data = survival_data,
+                 na.action = "na.omit",
+                 method = "Portnoy")
 summary2 <- summary(quantreg2, taus = 0.5)
 
 #### Exit since Appointment
