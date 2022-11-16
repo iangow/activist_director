@@ -48,7 +48,7 @@ library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 
 getComment <- function(table, schema) {
-    pg <- dbConnect(RPostgreSQL::PostgreSQL())
+    pg <- dbConnect(RPostgres::Postgres())
 
     sql = sprintf("
         SELECT description
