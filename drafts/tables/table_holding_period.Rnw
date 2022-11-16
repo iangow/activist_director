@@ -82,7 +82,7 @@ quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ 
                  data=survival_data,
                  na.action="na.omit",
                  method="Portnoy")
-summary1 <- summary(quantreg1, taus = c(0.5, 0.75))
+summary1 <- summary(quantreg1, taus = 0.5)
 
 #### Exit since Announcement
 quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ affiliated,
@@ -90,7 +90,7 @@ quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='rig
                  data=survival_data,
                  na.action="na.omit",
                  method="Portnoy")
-summary2 <- summary(quantreg2, taus = c(0.5, 0.75))
+summary2 <- summary(quantreg2, taus = 0.5)
 
 #### Exit since Appointment
 quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ affiliated - 1,
@@ -98,7 +98,7 @@ quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type
                  taus = 0.5,
                  na.action = "na.omit",
                  method = "Portnoy")
-summary3 <- summary(quantreg3, taus = c(0.5, 0.75))
+summary3 <- summary(quantreg3, taus = 0.5)
 @
 
 <<get_coeffs, include=FALSE>>=
