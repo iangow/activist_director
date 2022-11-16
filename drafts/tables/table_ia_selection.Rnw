@@ -90,7 +90,7 @@ skills <-
   inner_join(link_table, by = "campaign_id") %>%
   select(-skillset_bio, -last_name, -first_name, -campaign_id, -num_skills) %>%
   group_by(campaign_ids) %>%
-  summarize(across(-campaign_ids, bool_or)) %>%
+  summarize(across(c(1:21), bool_or)) %>%
   compute()
 
 min_date <-
