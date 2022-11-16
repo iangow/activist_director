@@ -14,30 +14,14 @@ rs <- dbExecute(pg, "SET work_mem = '3GB'")
 rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
 
 permnos <- tbl(pg, "permnos")
-risk.vavoteresults <- tbl(pg, "vavoteresults")
-risk.issrec <- tbl(pg, "issrec")
 activist_directors <- tbl(pg, "activist_directors")
-
-vavoteresults <-
-    risk.vavoteresults %>%
-    left_join(risk.issrec) %>%
-    mutate(itemonagendaid = as.integer(itemonagendaid)) %>%
-    filter(issagendaitemid %in% c('S0299', 'M0299', 'M0201', 'S0201', 'M0225'),
-           itemdesc %~% '^Elect',
-           voteresult != 'Withdrawn',
-           !(agendageneraldesc %ilike% '%inactive%'),
-           !(votedfor %in% c(0L,1L) |
-                 greatest(votedagainst, votedabstain, votedwithheld) %in% c(0L, 1L))) %>%
-    mutate(last_name = sql("(extract_name(itemdesc)).last_name"),
-           first_name = sql("(extract_name(itemdesc)).first_name"),
-           issrec = issrec == "For") %>%
-    compute()
+dirvoteresults  <- tbl(pg, "dirvoteresults")
 
 # When there are multiple items (i.e., in contested elections), we need to
 # aggregate votes by ballotitem number to get all votes cast for the
 # competing directors
 multiple_items <-
-    vavoteresults %>%
+    dirvoteresults %>%
     filter(issagendaitemid %in% c('M0299','S0299')) %>%
     group_by(companyid, meetingid, ballotitemnumber) %>%
     summarise(votes_cast = sum(votedfor + votedagainst + votedabstain, na.rm = TRUE),
@@ -51,7 +35,7 @@ multiple_items <-
 # want to just take the one number in these cases. Otherwise, I think
 # we should include for, against, withheld, and abstain in the denominator.
 single_items <-
-    vavoteresults %>%
+    dirvoteresults %>%
     anti_join(multiple_items) %>%
     mutate(votes_cast = votedfor +
                if_else(!is.na(votedwithheld) && votedwithheld==votedagainst,
@@ -73,7 +57,7 @@ votes_cast <-
 
 # Calculate vote_pct
 director_votes <-
-    vavoteresults %>%
+    dirvoteresults %>%
     inner_join(votes_cast, by = c("companyid", "meetingid", "ballotitemnumber")) %>%
     mutate(vote_pct = if_else(votes_cast > 0, votedfor/votes_cast, NA_real_)) %>%
     select(itemonagendaid, last_name, first_name,
