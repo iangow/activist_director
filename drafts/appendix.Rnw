@@ -1,36 +1,46 @@
 \Sexpr{set_parent('activist_directors.Rnw')}
 
-\section{Description of Variables} \label{Appendix:A}
-			\footnotesize This table defines accounting and financial variables used in our analyses. The construction of variables based on ownership data obtained from the Korea Fair Trade Commission Business Group Portal (\url{https://www.egroup.go.kr/egps/wi/stat/spo/psitnCmpnyStockHoldList.do}) is described in Section 2. Data on related-party transactions are obtained from the Korean Listed Companies Association. Data on analysts' earnings estimates are obtained from IBES. All financial data are obtained from the Thomson Reuters Datastream database: Datastream variable codes are specified in brackets in the Computation column. \textit{Forward} variables refer to one-year-ahead value; \textit{Lagged} variables refer to prior-year value. \\
-
-	\begin{table}[!htp]
-		%\caption{\\Description of Variables}
-			\footnotesize
-			\\
-			\begin{tabular}{p{3.5cm} p{5cm} p{6.5cm}}
-			\hline\hline
-				Variable &	Description & Computation \\
-				\hline
-				    &&\\
-                \textit{Cash-to-assets} & Ratio of cash and short-term investments to total assets & Cash \& Short-Term Investments [WC02001] / Total Assets [WC02999] \\
-                \\
-                \textit{Debt-to-CF} & Ratio of long-term debt to cash flows & Long-Term Debt [WC03251]) / (Net Income [WC01551] + Depreciation [WC01148]) \\
-                \\
-                \textit{Log leverage} & Natural logarithm of the ratio of long-term debt to total assets & ln(1 + Long Term Debt [WC03251] / Total Assets [WC02999]) \\
-                \\
-                \textit{Log market-cap} & Natural logarithm of market capitalization & ln(Market Value [MV])\\
-                \\
-                \textit{Q} &	Tobin's Q  & (Total Assets [WC02999] + Market Value [MV] - Common Equity [WC03501]) / Total Assets [WC02999] \\
-                \\
-                \textit{Returns} &	Net stock returns measured over the 12 months prior to fiscal end & (Return Index at time t [$RI_{t}$] / Return Index at time (t-1) [$RI_{t-365}$]) - 1 \\
-    			\\
-                \textit{ROA} &	Return on assets & Operating Income [WC01250] / Lagged Total Assets [WC02999] \\
-    			\\
-    			\textit{RPT to assets} & Ratio of income from related party transactions to lagged total assets & RPT Income / Lagged Total Assets [WC02999]\\
-                \\
-                \textit{RPT to sales} & Ratio of income from related party transactions to lagged sales & RPT Income / Lagged Sales [WC01001] \\
-                \\
-                \textit{SUE} & Standardized unexpected earnings & (Actual earnings [actual] - Median analyst forecast estimate [medest]) / Price \\
-			\hline\hline
-			\end{tabular}
-	\end{table}
+\begin{table}[htb]
+  \caption{Variable definitions}
+  \label{tbl:var_defs}
+\small
+\begin{tabular}{p{3.2cm} p{13cm}}
+\textbf{Variable} & \textbf{Definition} \\
+\bottomrule
+\emph{Activism} & Indicator for the year in which activism was announced \\
+\emph{Non-board activism} & Non-board-related activism events \\
+\emph{Board demand} & Activism events where activists demanded, but did not win, board seats \\
+\emph{Activist director} & Activism events where activists got one or more board seats \\
+\emph{Other activism} & Activism events where activists did not get any board seats \\
+\emph{Affiliated} & Activist director is an employee or principal of a member of the activist group \\
+\emph{Unaffiliated} & Activist director is neither employee nor principal of a member of the activist group \\
+\emph{Elected} & Activist director was elected through a shareholder vote \\
+\emph{Settled} & Activist director was nominated or appointed to the board without a shareholder vote \\
+\emph{Age} & Director's age (\emph{Equilar}) \\
+\emph{Female} & Director is female \\
+\emph{Committee} & Director is a member of at least one board committee \\
+\emph{Comp comm.} & Director is a member of the compensation committee \\
+\emph{Audit comm.} & Director is a member of the audit committee \\
+\emph{Fin. expert} & Director is designated as a financial expert of the audit committee \\
+\emph{Ind. exp.} & Director has served on another board in the same industry \\
+\emph{Board exp.} & Cumulative number of other boards prior to appointment \\
+\emph{Other boards} & Number of other boards at the time of appointment \\
+\emph{Avg. tenure} & Average number of years a director served on other boards \\
+\emph{Total tenure} & Total number of years a director served on other boards \\
+\emph{Support\textsubscript{t}} & Percentage of votes for the director (\emph{ISS Voting Analytics}) \\
+\emph{Acquisition} & Indicator for whether the firm completed any acquisitions in the two years after a given fiscal year \\
+\emph{Divestiture} & Indicator for whether the firm divested significant assets in the two years after a given fiscal year \\
+\emph{Acquired} & Indicator for whether the firm was acquired in the two years after a given fiscal year \\
+\emph{CEO exit\textsubscript{$(t,t+k)$}} & Change in CEO between the end of year $t$ and the end of year $t + k$ \\
+\emph{CEO comp\textsubscript{$t$}} & Total CEO compensation in year $t$ \\
+\emph{Payout\textsubscript{$t$}} & Ratio of total dividends and share repurchases to EBITDA for the two years after year $t$ \\
+\emph{Leverage\textsubscript{$t$}} & Ratio of book value of debt to the sum of the book value of debt and equity in year $t$ \\
+\emph{Capex\textsubscript{$t$}} & Ratio of total capital expenditure to lagged total assets in year $t$ \\
+\emph{R\&D\textsubscript{$t$}} & Ratio of total R\&D expenditure to lagged total assets in year $t$ \\
+\emph{ROA} & Return on assets calculated as the EBITDA divided by lagged total assets \\
+\emph{R} & Raw returns since announcement, settlement, or appointment \\
+\emph{R\textsuperscript{MKT}} & Market-adjusted returns since announcement, settlement, or appointment \\
+\emph{R\textsuperscript{SZ}} & Size-adjusted returns since announcement, settlement, or appointment \\
+\bottomrule
+\end{tabular}
+\end{table}

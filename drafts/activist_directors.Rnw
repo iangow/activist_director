@@ -154,6 +154,9 @@ perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
 \bibliography{papers}
 
 \newpage
+<<var_defs, child='appendix.Rnw'>>=
+@
+
 <<table_desc, child='tables/table_desc.Rnw'>>=
 @
 
