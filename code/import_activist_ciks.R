@@ -25,7 +25,7 @@ activist_names <-
 # Push data to PostgreSQL ----
 pg <- dbConnect(RPostgres::Postgres())
 
-dbExecute(pg, "SET search_path TO factset")
+dbExecute(pg, "SET search_path TO activist_director")
 
 rs <- dbWriteTable(pg, "activist_names",
                    activist_names, overwrite=TRUE, row.names=FALSE)
@@ -59,8 +59,8 @@ rs <- dbExecute(pg, "
 
 rs <- dbExecute(pg, "DROP TABLE IF EXISTS activist_ciks_temp")
 
-rs <- dbExecute(pg, "ALTER TABLE activist_ciks OWNER TO factset")
-rs <- dbExecute(pg, "ALTER TABLE activist_names OWNER TO factset")
+rs <- dbExecute(pg, "ALTER TABLE activist_ciks OWNER TO activism")
+rs <- dbExecute(pg, "ALTER TABLE activist_names OWNER TO activism")
 rs <- dbExecute(pg, "VACUUM activist_ciks")
 
 sql <- paste("COMMENT ON TABLE activist_names IS

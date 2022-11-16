@@ -17,7 +17,7 @@ temp <- dbGetQuery(pg, "
 
     by_cik AS (
         SELECT cik, array_agg(DISTINCT activist_name) AS activist_names
-        FROM factset.activist_ciks
+        FROM activist_director.activist_ciks
         GROUP BY cik),
 
     activist_cik_arrays AS (
