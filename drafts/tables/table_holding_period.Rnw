@@ -2,9 +2,9 @@
 %%          Activist holding periods                %%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(echo=FALSE, cache=TRUE, message=FALSE)}
+\Sexpr{opts_chunk$set(echo=FALSE, message=FALSE)}
 
-<<holdings_updated, include=FALSE>>=
+<<holdings_updated, include=FALSE, warning=FALSE>>=
 if(exists("holdings.updated")) opts_chunk$set(cache.extra=holdings.updated)
 @
 
@@ -16,7 +16,7 @@ library(dplyr, warn.conflicts = FALSE)
 library(xtable)
 @
 
-<<quantreg_data_step, include=FALSE, warning=FALSE>>=
+<<quantreg_data_step, include=FALSE, warning=FALSE, cache=TRUE>>=
 pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")
@@ -71,7 +71,7 @@ survival_data_by_demand <-
 rs <- dbDisconnect(pg)
 @
 
-<<quantreg_analysis, dependson="quantreg_data_step", include=FALSE>>=
+<<quantreg_analysis, dependson="quantreg_data_step", include=FALSE, warning=FALSE, cache=TRUE>>=
 # data ready
 surv <- with(survival_data,
              Surv(as.numeric(exit_date - entry_date), exit, type='right'))
@@ -82,7 +82,7 @@ quantreg1 <- crq(Surv(as.numeric(exit_date - entry_date), exit, type='right') ~ 
                  data = survival_data,
                  na.action = "na.omit",
                  method = "Portnoy")
-summary1 <- summary(quantreg1, taus = 0.5)
+summary1 <- summary(quantreg1, taus = c(0.5, 0.5001))
 
 #### Exit since Announcement
 quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='right') ~ affiliated,
@@ -90,7 +90,7 @@ quantreg2 <- crq(Surv(as.numeric(exit_date - eff_announce_date), exit, type='rig
                  data = survival_data,
                  na.action = "na.omit",
                  method = "Portnoy")
-summary2 <- summary(quantreg2, taus = 0.5)
+summary2 <- summary(quantreg2, taus = c(0.5, 0.5001))
 
 #### Exit since Appointment
 quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type='right') ~ affiliated - 1,
@@ -98,10 +98,10 @@ quantreg3 <- crq(Surv(as.numeric(exit_date - first_appointment_date), exit, type
                  taus = 0.5,
                  na.action = "na.omit",
                  method = "Portnoy")
-summary3 <- summary(quantreg3, taus = 0.5)
+summary3 <- summary(quantreg3, taus = c(0.5, 0.5001))
 @
 
-<<get_coeffs, include=FALSE>>=
+<<get_coeffs, include=FALSE, cache=TRUE>>=
 getCoefs <- function(model, ncols=3) {
 
     coefs <- model[[1]][["coefficients"]]
@@ -132,7 +132,7 @@ getCoefs <- function(model, ncols=3) {
 }
 @
 
-<<make_panels, dependson="quantreg_analysis", include=FALSE>>=
+<<make_panels, dependson=c("quantreg_analysis", "get_coeffs"), cache=TRUE, warning=FALSE, include=FALSE>>=
 # Get coefficients for each column
 col1 <- getCoefs(summary1)
 col2 <- getCoefs(summary2)
