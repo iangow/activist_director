@@ -10,6 +10,10 @@ From SharkWatch, we collect information on all publicly disclosed activism event
 These parameters yield \Sexpr{num_events} activism events.
 Note that our sample consists only of those events with no pending action and does not include activism events consisting only of shareholder proposals submitted under Rule 14a-8.
 
+For each activism event, we measure the effective announcement date using various sources, including SharkWatch and relevant SEC filings, as the earliest date on which the activism became clearly known to the market.
+Because many of our empirical analyses use data reported in fiscal periods, we denote the fiscal year in which the effective announcement date occurs as year $t + 1$ and consider the previous fiscal year (year $t$) as the year prior to activism.
+Year $t$ serves as reference year in many of our empirical analyses.
+
 Table \ref{tbl:act_events} provides details of the number of activism events over our sample period.
 We divide the \Sexpr{num_events} activism events into three mutually exclusive categories: \textit{Activist director} events in which activists won board representation (\Sexpr{act_dir} events), \textit{Board demand} events in which activists sought, but did not win, board seats (\Sexpr{brd_dmd} events), and \textit{Non-board activism} events in which activists targeted the firm, but board representation was neither sought nor obtained (\Sexpr{act_only} events).
 We can see from the sample descriptive statistics that more than 45\% of our activism samples involved some kind of demand for board representation and that the activists ended up with at least one board seat in almost 60\% of cases.
