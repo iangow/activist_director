@@ -11,7 +11,7 @@
 \emph{Non-board activism} & Non-board-related activism events \\
 \emph{Board demand} & Activism events where activists demanded, but did not win, board seats \\
 \emph{Activist director} & Activism events where activists got one or more board seats \\
-\emph{Other activism} & Activism events where activists did not get any board seats \\
+\emph{Other activism} & Activism events where activists did not get any board seats. That is, \emph{Other activism} events comprise \emph{Non-board activism} and \emph{Board demand} events \\
 \emph{Affiliated} & Activist director is an employee or principal of a member of the activist group \\
 \emph{Unaffiliated} & Activist director is neither employee nor principal of a member of the activist group \\
 \emph{Elected} & Activist director was elected through a shareholder vote \\
@@ -27,7 +27,7 @@
 \emph{Other boards} & Number of other boards at the time of appointment \\
 \emph{Avg. tenure} & Average number of years a director served on other boards \\
 \emph{Total tenure} & Total number of years a director served on other boards \\
-\emph{Support\textsubscript{t}} & Percentage of votes for the director (\emph{ISS Voting Analytics}) \\
+\emph{Support\textsubscript{t}} & Percentage of votes for the director in year $t$ (\emph{ISS Voting Analytics}) \\
 \emph{Acquisition} & Indicator for whether the firm completed any acquisitions in the two years after a given fiscal year \\
 \emph{Divestiture} & Indicator for whether the firm divested significant assets in the two years after a given fiscal year \\
 \emph{Acquired} & Indicator for whether the firm was acquired in the two years after a given fiscal year \\

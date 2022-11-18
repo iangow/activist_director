@@ -98,9 +98,10 @@ compustat <-
            mv = if_else(prcc_f * csho > 0, log(prcc_f * csho), NA),
            roa = if_else(lag(at)  > 0,  oibdp/lag(at), NA),
            tobins_q = if_else(ceq > 0 & prcc_f * csho > 0 & dlc + dltt >= 0,
-                            (prcc_f * csho + dlc + dltt) / (ceq + dlc + dltt), NA)) %>%
-    select(gvkey, fyear, datadate, log_at, log_sale, bv, log_sale, mv, roa, tobins_q) %>%
-    # arrange(gvkey, .by_group = FALSE) %>%
+                                (prcc_f * csho + dlc + dltt) /
+                                (ceq + dlc + dltt), NA)) %>%
+    select(gvkey, fyear, datadate, log_at, log_sale,
+           bv, log_sale, mv, roa, tobins_q) %>%
     ungroup() %>%
     compute()
 
@@ -245,7 +246,8 @@ getCoefs <- function(table) {
 
 
         # Add stars to coefficients, put parentheses around SEs
-        return(rbind(coef=paste0(formatC(coef, digits = 3, format="f"), stars(p)),
+        return(rbind(coef=paste0(formatC(coef, digits = 3, format="f"),
+                                 stars(p)),
                      se=paste0("(",formatC(se, digits=3, format="f"),")")))
     }
 
@@ -261,8 +263,9 @@ getCoefs <- function(table) {
 
 
 # ROA regression
-sw_roa <- lm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
-                    + mv + age + factor(fyear) + factor(sic3),
+sw_roa <- lm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 +
+                   year_p1 + year_p2 + year_p3 + year_p4 + year_p5 +
+                   mv + age + factor(fyear) + factor(sic3),
              data=sw, na.action="na.omit")
 sw_roa.se <- coeftest.cluster(sw, sw_roa)
 sw_roa.cov <- coeftest.cluster(sw, sw_roa, ret="cov")
@@ -279,8 +282,9 @@ sw_roa.f <- rbind(
     linearHypothesis(sw_roa, "year_p5 - year_p0", vcov.=sw_roa.cov)[4][2,])
 
 # Firm-Fixed Effects
-sw_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
-                        + mv + age,
+sw_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 +
+                        year_p1 + year_p2 + year_p3 + year_p4 + year_p5 +
+                        mv + age,
                 data=sw, index=c("permno", "fyear"), model="within")
 sw_roa_ffe.se <- coeftest.cluster(sw, sw_roa_ffe)
 sw_roa_ffe.cov <- coeftest.cluster(sw, sw_roa_ffe, ret="cov")
@@ -297,10 +301,15 @@ sw_roa_ffe.f <- rbind(
     linearHypothesis(sw_roa_ffe, "year_p5 - year_p0", vcov.=sw_roa_ffe.cov)[4][2,])
 
 # Affiliated director incremental effect
-sw_aff_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 + year_p2 + year_p3 + year_p4 + year_p5
-                            + year_aff_m3 + year_aff_m2 + year_aff_m1 + year_aff_p0 + year_aff_p1 + year_aff_p2 + year_aff_p3 + year_aff_p4 + year_aff_p5
-                            + year_naff_m3 + year_naff_m2 + year_naff_m1 + year_naff_p0 + year_naff_p1 + year_naff_p2 + year_naff_p3 + year_naff_p4 + year_naff_p5
-                            + mv + age,
+sw_aff_roa_ffe <- plm(roa ~ year_m3 + year_m2 + year_m1 + year_p0 + year_p1 +
+                            year_p2 + year_p3 + year_p4 + year_p5 +
+                            year_aff_m3 + year_aff_m2 + year_aff_m1 +
+                            year_aff_p0 + year_aff_p1 + year_aff_p2 +
+                            year_aff_p3 + year_aff_p4 + year_aff_p5 +
+                            year_naff_m3 + year_naff_m2 + year_naff_m1 +
+                            year_naff_p0 + year_naff_p1 + year_naff_p2 +
+                            year_naff_p3 + year_naff_p4 + year_naff_p5 +
+                            mv + age,
                     data=sw, index=c("permno", "fyear"), model="within")
 sw_aff_roa_ffe.se <- coeftest.cluster(sw, sw_aff_roa_ffe)
 sw_aff_roa_ffe.cov <- coeftest.cluster(sw, sw_aff_roa_ffe, ret="cov")
@@ -358,11 +367,11 @@ sw_aff_roa_ffe.f <- cbind(
 {\small
 This table presents estimates of the impact of activism on return on assets over five years after the announcement of activism.
 The empirical approach follows that of \citet{Bebchuk:2013wi}.
-We regress the return on assets on an indicator for activism events ranging from three years prior ($\textit{Activism}_{t-3}$) to five years subsequent ($\textit{Activism}_{t+5}$).
+We regress the return on assets on an indicator for activism events ($\textit{Activism}_s$), where $s$ ranges from $t - 3$ to $t + 5$ and year $t + 1$ is defined as the year in which activism was announced.
 We estimate three models: (A), (B), and (C).
 Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, firm age, and indicators for activism.
 Models (A) and (B) add industry and firm fixed effects, respectively.
-Model (C) also adds firm fixed effects, as well as indicators for affiliated and unaffiliated activist director appointments in years ranging from three years prior ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
+Model (C) adds firm fixed effects and indicators for activism events involving appointment of affiliated and unaffiliated activist directors ($\textit{Affiliated director}_{s}$ and $\textit{Unaffiliated director}_{s}$, respectively)  where $s$ ranges from $t - 3$ to $t + 5$ and year $t + 1$ is defined as the year in which activism was announced.
 The numbers presented in the table represent estimates of the impact of activism and activist directors and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
 The number of observations for each activism indicator is reported at the end of the table.
 The numbers in parentheses are heteroskedasticity-robust standard errors.

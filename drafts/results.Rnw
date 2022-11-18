@@ -265,13 +265,13 @@ We look at two different performance measures: Return on assets for operating pe
 We first look at the operating performance, focusing on return on assets.
 Our empirical approach follows that of \citet{Bebchuk:2013wi}, which in turn is based on the approach of \citet{Brav:2008eu}.
 We measure operating performance as return on assets calculated as EBITDA (Compustat item \texttt{oibdp}) divided by lagged total assets (\texttt{at}).
-For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$.
-For example, for an activism campaign that began in 2017, $\textit{Activist}_{t-3}$ takes the value $1$ for $t=2014$ for the target firm.
+For each firm-year $t$, we construct indicators for activism in year $t + s$ where $s \in \{-3, \dots, +5\}$ and year $t + 1$ is defined as the year in which activism was announced.
+For example, for an activism campaign that began in 2017, we have $t+1 = 2017$ and $\textit{Activist}_{t-3}$ takes the value $1$ for $t=2013$ for the target firm.
 
 We estimate three models.
 Following \citet{Bebchuk:2013wi}, all models include year fixed effects, market value, firm age, and indicators for activism.
 Also, following \citet{Bebchuk:2013wi}, models (A) and (B) add industry and firm fixed effects, respectively.
-To examine a possible \emph{incremental} effect of an activist acquiring board representation, model (C) refines model (B) by including indicators for activist director appointments in the period ranging from three years prior to the activism ($\textit{Affiliated director}_{t-3}$ and $\textit{Unaffiliated director}_{t-3}$) to five years subsequent ($\textit{Affiliated director}_{t+5}$ and $\textit{Unaffiliated director}_{t+5}$).
+To examine a possible \emph{incremental} effect of an activist acquiring board representation, model (C) refines model (B) by including indicators for activist director appointments ($\textit{Affiliated director}_{s}$ and $\textit{Unaffiliated director}_{s}$, respectively), where $s$ ranges from $t - 3$ to $t + 5$ and year $t + 1$ is defined as the year in which activism was announced.\footnote{Using the date of appointment of activist directors is problematic, as activist directors can be appointed later in activism campaigns, making it difficult to distinguish changes in performance due to activist directors from those due to other actions of the activists.}
 
 Table \ref{tbl:roa} presents our results.
 The numbers in the table represent estimates of the impact of activism and activist directors and are calculated as the difference between the estimated coefficients on the respective activism indicators for years $t+s$ and $t$, where $s \in \{1, \dots, 5\}$.
@@ -280,12 +280,9 @@ These effects are economically significant, with the five-year increase in \text
 
 In model (C), we look at the incremental effect of having an activist director on the board.
 We find that the incremental effects are statistically indistinguishable from zero in the presence of unaffiliated directors as can be seen with insignificant coefficients in Columns 5.
-% If an incremental effect does exist, our failure to detect it statistically may be attributed to multicollinearity between our activism indicators (in many cases, the activist director is appointed in the same year that the activist campaign commences) and a lack of power stemming from a smaller number of observations.
-% An additional issue is that activist director appointments are plausibly endogenous with respect to firm performance even \emph{after} activism has commenced; continued poor performance may lead to appointment of one or more activist directors.
-% Notwithstanding these challenges, we find weakly significant results for affiliated directors in $\textit{ROA}_{t+3} - \textit{ROA}_{t}$ and $\textit{ROA}_{t+4} - \textit{ROA}_{t}$, suggesting higher long-term operating performance with affiliated directors on board beyond the baseline effect of activist intervention.
 However, when we compare operating performance in the two-to-five-year period following activism, we find a greater change in \textit{ROA} for cases in which an affiliated director is appointed.
-For example, in Column 4, we observe a 2.4 percentage-point increase in returns in the three years following activism ($p < 0.05$), and a 3.2 percentage-point increase in the five years following activism ($p < 0.05$).
-This provides evidence that, on average, the target firms' operating efficiency improves after an affiliated director's appointment, which might be related to what we discussed in the previous section on activism impact, such as the potential curtailment of excessive spending, etc.
+For example, in Column 4, we observe a 2.6 percentage-point increase in returns in the three years following activism ($p < 0.05$), and a 3.1 percentage-point increase in the five years following activism ($p < 0.05$).
+This provides evidence that, on average, a target firm's operating efficiency improves after an affiliated director's appointment, which might be related to actions discussed in the previous section, such as the curtailment of excessive spending, etc.
 Having demonstrated the effect of activism on operating performance, we next turn to market performance.
 
 \subsection{Stock returns} \label{sect:returns}
