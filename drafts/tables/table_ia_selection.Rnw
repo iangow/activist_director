@@ -158,12 +158,11 @@ prob_activist_demands <-
             \begin{minipage}[t]{\columnwidth}
 %    \begin{flushleft}
   {\small
-This table presents logit regressions where the dependent variable in each case is an indicator for
-being targeted for a type of activism
-(\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1),
-being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
-Sample includes firm-years with and without activism.
-    \newline}
+This table presents logit regressions where the dependent variable in each case is an indicator for being targeted for a type of activism (\textit{Non-board activism}, \textit{Board demand}, or \textit{Activist director}, column 1), being the target of an activist demanding or getting board seats (\textit{Board demand}, Column 2), and activists getting board seats (\textit{Activist director}, Column 3).
+All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section 3 for definitions).
+The sample includes only firm-years with activism.
+Values in parentheses are standard errors clustered by firm.
+\newline}
 %  \end{flushleft}
   \end{minipage}
 \begin{tabularx}{5in}{l*{3}{Y}}

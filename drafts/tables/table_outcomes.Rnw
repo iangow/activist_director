@@ -331,29 +331,14 @@ rs <- dbDisconnect(pg)
 \label{tbl:other}
 \begin{minipage}[t]{\columnwidth}
 {\small
-This table presents regressions of outcome variables on firm-year level activism indicators.
-\textit{Acquisition} indicates the firm completed acquisitions within two years after year $t$.
-\textit{Acquired} indicates delisting within two years of year $t$ with CRSP delisting code $\textrm{dlstcd} \in [200, 399]$.
-\textit{Divestiture} indicates the firm completed divestitures and spinoffs within two years of year $t$.
-Regressions include industry and year fixed effects and the following controls (measured for the fiscal year-end of year $t$):
-\textit{Total assets}, book value of total assets;
-\textit{Analyst}, number of analyst forecasts for each firm-year (I/B/E/S);
-\textit{Institutional}, proportion of the firm's outstanding stock held by institutions;
-\textit{Size-adj. ret}, twelve-month size-adjusted returns;
-\textit{Market value}, the value of market capitalization;
-\textit{Book-to-market}, market capitalization divided by the book value of common equity;
-\textit{Leverage}, ratio of debt to debt plus book value of common equity;
-\textit{Payout} the ratio of the sum of dividends and repurchases divided to EBITDA;
-\textit{ROA}, EBITDA divided by the lagged total assets;
-\textit{Sales growth}, sales divided by lagged sales;
-\textit{Num. directors}, the number of directors on the board;
-\textit{Outside percent}, the percentage of outside directors;
-\textit{Age}, the average age of directors;
-\textit{Tenure}, the average tenure of directors;
-\textit{Staggered board}, indicator for staggered board.
-All controls and $\textit{CEO comp}$ are winsorized at the $1\%$ and $99\%$ levels.
+This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators.
+\textit{Acquisition} indicates the firm completed acquisitions in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
+\textit{Acquired} indicates delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
+Regressions include industry and year fixed effects, and controls are as described in Section 3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+\newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{4}{Y}}
 \multicolumn{3}{l}{Panel A: Acquisitions and divestitures} \\
@@ -405,13 +390,13 @@ rs <- dbDisconnect(pg)
 \begin{minipage}[t]{\columnwidth}
 % \begin{flushleft}
 {\small
-This table presents regressions of outcome variables on firm-year level activism indicators.
-$\textrm{CEO exit}_{(t, t+k)}$ indicates a change in CEO between the end of year $t$ and the end of year $t+k$.
-$\textrm{CEO comp}_{t+2}$ is log of total CEO compensation in year $t+2$.
-Controls are as described in Section 3.5; coefficients omitted for space.
+This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators.
+$\textrm{CEO exit}_{(t+1,t+2)}$ indicates a change in CEO in year $t+1$ or $t+2$, where activism was announced in year $t+1$.
+$\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation for the year following the announcement of activism (year $t+2$).
+Regressions include industry and year fixed effects, and controls are as described in Section 3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
-% \end{flushleft}
+*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+\newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{3}{Y}}
 \multicolumn{3}{l}{Panel B: CEO turnover and compensation} \\
@@ -478,13 +463,14 @@ rs <- dbDisconnect(pg)
 % \label{table:fin}
 \begin{minipage}[t]{\columnwidth}
 {\small
+This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators.
 \textit{Cash} is calculated as the ratio of total cash and short-term
     investments to the book value of total assets.
 \textit{Leverage} is measured as the ratio of book value of debt to the
     sum of the book value of debt and equity.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to
     EBITDA for the two years after year $t$.
-Controls are as described in Section 3.5; coefficients omitted for space.
+Regressions include industry and year fixed effects, and controls are as described in Section 3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 \end{minipage}
