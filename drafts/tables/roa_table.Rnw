@@ -42,7 +42,8 @@ founding_year <-
 
 act_events <-
     activism_events %>%
-    mutate(fyear = fiscal_year(eff_announce_date)) %>%
+    mutate(fyear = if_else(month(eff_announce_date) <= 5, year(eff_announce_date) - 1,
+                           year(eff_announce_date))) %>%
     mutate(fyear = as.integer(fyear) + 1L) %>%
     select(permno, fyear) %>%
     distinct() %>%
@@ -52,7 +53,8 @@ act_events <-
 activist_director_events <-
     activism_events %>%
     filter(!is.na(first_appointment_date)) %>%
-    mutate(fyear = fiscal_year(eff_announce_date)) %>%
+    mutate(fyear = if_else(month(eff_announce_date) <= 5, year(eff_announce_date) - 1,
+                           year(eff_announce_date))) %>%
     mutate(fyear = as.integer(fyear) + 1L) %>%
     select(permno, fyear) %>%
     distinct() %>%
@@ -62,7 +64,8 @@ activist_director_events <-
 affiliated_director_events <-
     activism_events %>%
     filter(affiliated=='affiliated') %>%
-    mutate(fyear = fiscal_year(eff_announce_date)) %>%
+    mutate(fyear = if_else(month(eff_announce_date) <= 5, year(eff_announce_date) - 1,
+                           year(eff_announce_date))) %>%
     mutate(fyear = as.integer(fyear) + 1L) %>%
     select(permno, fyear) %>%
     distinct() %>%
