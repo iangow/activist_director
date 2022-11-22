@@ -108,10 +108,11 @@ Also, we provide a more comprehensive and more detailed description of the direc
 In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
 Lastly, we describe how the existence of an activist director is associated with the types of outcomes activists want to achieve compared to their initial public demands.
 
-In November 2021, SEC adopted the new Universal Proxy Card Rules, which allows both company and activist nominees to be listed off a single proxy card.
+The phenomenon studied in our paper is likely to continue to be relevant.
+The SEC voted on November 17, 2021, to adopt final rules requiring the use at a shareholder meeting of a single proxy card that includes all diretor nominees presented for election.
 With the new rules, activists are expected to have an easier time nominating their directors, and we are more likely to see more activist directors getting on board (Whoriskey and Golenbock, 2022).
 Given the potentially more significant influence that activists and shareholders may have when they get into the boardrooms, it has become even more critical to understand who these directors are and what their roles are.
-Our paper deepens our knowledge of the effects of having such directors on board.
+
 
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
