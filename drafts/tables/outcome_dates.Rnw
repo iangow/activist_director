@@ -7,44 +7,11 @@
 library(stargazer)
 library(DBI)
 library(dplyr)
-library(lfe)
 @
 
-<<outs_x_winsorize>>=
-# Winsorize selected variables in a data frame
-win01 <- function(x, prob = 0.01, p_low = prob, p_high = 1 - prob) {
-  cuts <- quantile(x, probs = c(p_low, p_high), type = 2, na.rm = TRUE)
-  x[x < cuts[1]] <- cuts[1]
-  x[x > cuts[2]] <- cuts[2]
-  x
-}
-
-fix_affiliated <- function(x) {
-    case_when(x == "affiliated" ~ "affiliated",
-              x %in% c("unaffiliated", "activist_director") ~ "unaffiliated",
-              x %in% c("activist_demand", "activism") ~ "z_other_activism",
-              TRUE ~ "_none")
-}
-
-fix_activist_director <- function(x) {
-    case_when(x == "affiliated" ~ "activist_director",
-              x %in% c("unaffiliated") ~ "activist_director",
-              x %in% c("z_other_activism") ~ "z_other_activism",
-              TRUE ~ "_none")
-}
-
-controls <- paste("analyst inst size_return mv btm leverage payout roa sale_growth",
-                  "num_directors outside_percent staggered_board log_at")
-controls <- unlist(strsplit(controls, "\\s+"))
-
-fit.model <- function(data, lhs, rhs, cluster1) {
-    model <- paste0(lhs, " ~ ", rhs, " | year + sic2 | 0 | ", cluster1)
-    felm(formula(model), data = data)
-}
-@
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
-<<outs_x_div_acq_data, dependson="outs_x_winsorize">>=
+<<outs_x_div_acq_data>>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
