@@ -57,8 +57,6 @@ delisting <-
            failure = between(dlstcd, 520L, 599L)) %>%
     select(-dlstcd)
 
-
-
 permno_link <-
     ccmxpf_linktable %>%
     filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
@@ -125,34 +123,91 @@ acquisition_linked <-
     mutate(year = date_part('year', announcedate)) %>%
     compute()
 
-appointment_dates %>%
+firm_years <-
+    outcome_controls %>%
+    select(permno, datadate, fyear)
+
+appointment_cases <- firm_years %>%
+    left_join(appointment_dates) %>%
+    filter(between(appointment_date, sql("datadate - interval '364 days'"), datadate)) %>%
+    select(permno, datadate, fyear, appointment_date, campaign_ids)
+
+announcement_cases <- firm_years %>%
+    left_join(appointment_dates) %>%
+    filter(between(eff_announce_date, sql("datadate - interval '364 days'"), datadate)) %>%
+    select(permno, datadate, fyear, eff_announce_date, appointment_date)
+
+# Merger cases
+announcement_cases %>%
     left_join(delisting, by = "permno") %>%
-    mutate(pre_delist = delist && between(dlstdt, eff_announce_date, appointment_date),
-           post_delist = delist && between(dlstdt, appointment_date,
-                                           sql("eff_announce_date + interval '3 years'"))) %>%
+    mutate(pre_merger_p2 = merger && between(dlstdt, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_merger_p2 = merger && between(dlstdt, appointment_date, sql("eff_announce_date + interval '2 years'")),
+           pre_merger_p3 = merger && between(dlstdt, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_merger_p3 = merger && between(dlstdt, appointment_date, sql("eff_announce_date + interval '3 years'"))) %>%
+    group_by(permno, datadate) %>%
+    summarize(pre_merger_p2 = bool_or(pre_merger_p2),
+              post_merger_p2 = bool_or(post_merger_p2),
+              pre_merger_p3 = bool_or(pre_merger_p3),
+              post_merger_p3 = bool_or(post_merger_p3),
+              .groups = "drop") %>%
     summarize(across(matches("^(pre|post)_"), ~ sum(as.integer(.))))
 
-appointment_dates %>%
+# Spinoff cases
+announcement_cases %>%
     left_join(spinoff_linked, by = "permno") %>%
-    mutate(pre_spin = between(announcedate, eff_announce_date, appointment_date),
-           post_spin = between(announcedate, appointment_date,
-                                           sql("eff_announce_date + interval '3 years'"))) %>%
-    summarize(across(matches("^(pre|post)_"), ~ sum(as.integer(.))))
+    mutate(spinoff_p2 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
+           spinoff_p3 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
+           pre_spinoff_p2 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_spinoff_p2 = between(announcedate, appointment_date, sql("eff_announce_date + interval '2 years'")),
+           pre_spinoff_p3 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_spinoff_p3 = between(announcedate, appointment_date, sql("eff_announce_date + interval '3 years'"))) %>%
+    group_by(permno, datadate) %>%
+    summarize(spinoff_p2 = bool_or(spinoff_p2),
+              pre_spinoff_p2 = bool_or(pre_spinoff_p2),
+              post_spinoff_p2 = bool_or(post_spinoff_p2),
+              spinoff_p3 = bool_or(spinoff_p3),
+              pre_spinoff_p3 = bool_or(pre_spinoff_p3),
+              post_spinoff_p3 = bool_or(post_spinoff_p3),
+              .groups = "drop") %>%
+    summarize(across(matches("^(pre|post|spinoff)_"), ~ sum(as.integer(.))))
 
-appointment_dates %>%
+# Divestiture cases
+announcement_cases %>%
     left_join(divestiture_linked, by = "permno") %>%
-    mutate(pre_divest = between(announcedate, eff_announce_date, appointment_date),
-           post_divest = between(announcedate, appointment_date,
-                                           sql("eff_announce_date + interval '3 years'"))) %>%
-    summarize(across(matches("^(pre|post)_"), ~ sum(as.integer(.))))
+    mutate(divest_p2 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
+           divest_p3 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
+           pre_divest_p2 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_divest_p2 = between(announcedate, appointment_date, sql("eff_announce_date + interval '2 years'")),
+           pre_divest_p3 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_divest_p3 = between(announcedate, appointment_date, sql("eff_announce_date + interval '3 years'"))) %>%
+    group_by(permno, datadate) %>%
+    summarize(divest_p2 = bool_or(divest_p2),
+              pre_divest_p2 = bool_or(pre_divest_p2),
+              post_divest_p2 = bool_or(post_divest_p2),
+              divest_p3 = bool_or(divest_p3),
+              pre_divest_p3 = bool_or(pre_divest_p3),
+              post_divest_p3 = bool_or(post_divest_p3),
+              .groups = "drop") %>%
+    summarize(across(matches("^(pre|post|divest)_"), ~ sum(as.integer(.))))
 
-appointment_dates %>%
+# Acquisition cases
+announcement_cases %>%
     left_join(acquisition_linked, by = "permno") %>%
-    mutate(pre_acq = between(announcedate, eff_announce_date, appointment_date),
-           post_acq = between(announcedate, appointment_date,
-                                           sql("eff_announce_date + interval '3 years'"))) %>%
-    summarize(across(matches("^(pre|post)_"), ~ sum(as.integer(.))))
-
+    mutate(acq_p2 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
+           acq_p3 = between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
+           pre_acq_p2 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_acq_p2 = between(announcedate, appointment_date, sql("eff_announce_date + interval '2 years'")),
+           pre_acq_p3 = between(announcedate, eff_announce_date, sql("appointment_date - interval '2 days'")),
+           post_acq_p3 = between(announcedate, appointment_date, sql("eff_announce_date + interval '3 years'"))) %>%
+    group_by(permno, datadate) %>%
+    summarize(acq_p2 = bool_or(acq_p2),
+              pre_acq_p2 = bool_or(pre_acq_p2),
+              post_acq_p2 = bool_or(post_acq_p2),
+              acq_p3 = bool_or(acq_p3),
+              pre_acq_p3 = bool_or(pre_acq_p3),
+              post_acq_p3 = bool_or(post_acq_p3),
+              .groups = "drop") %>%
+    summarize(across(matches("^(pre|post|acq)_"), ~ sum(as.integer(.))))
 
 rs <- dbDisconnect(pg)
 @
