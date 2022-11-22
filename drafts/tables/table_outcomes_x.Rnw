@@ -52,12 +52,27 @@ pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
 
+activism_events <- tbl(pg, "activism_events")
+activist_directors <- tbl(pg, "activist_directors")
 outcome_controls <- tbl(pg, "outcome_controls")
 dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
 wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
 ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
 dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
 activist_demands <- tbl(pg, "demands")
+
+appointment_dates <-
+    activist_directors %>%
+    select(campaign_id, appointment_date)  %>%
+    inner_join(activism_events, by = "campaign_id") %>%
+    group_by(campaign_ids, eff_announce_date) %>%
+    summarize(appointment_date = min(appointment_date, na.rm = TRUE),
+              .groups = "drop") %>%
+    inner_join(outcome_controls, by = c("campaign_ids", "eff_announce_date")) %>%
+    select(campaign_ids, eff_announce_date, appointment_date, permno) %>%
+    compute()
+
+outcome_controls
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -76,6 +91,14 @@ delisting <-
            merger = between(dlstcd, 200L, 399L),
            failure = between(dlstcd, 520L, 599L)) %>%
     select(-dlstcd)
+
+appointment_dates %>%
+    left_join(delisting, by = "permno") %>%
+    mutate(delist_pre = delist && between(dlstdt, eff_announce_date, appointment_date),
+           delist_post = delist && between(dlstdt, appointment_date,
+                                           sql("eff_announce_date + interval '3 years'"))) %>%
+    summarize(delist_post = sum(as.integer(delist_post)),
+              delist_pre = sum(as.integer(delist_pre)))
 
 permno_link <-
     ccmxpf_linktable %>%
@@ -217,7 +240,7 @@ reg.data <-
     inner_join(acquisition_count, by = c("permno", "datadate")) %>%
     inner_join(spinoff_count, by = c("permno", "datadate")) %>%
     inner_join(delisting_data, by = c("permno", "datadate")) %>%
-    left_join(activist_demands) %>%
+    left_join(activist_demands, by = "campaign_ids") %>%
     collect() %>%
     mutate(across(ends_with("_demand"), ~ coalesce(., FALSE)),
            affiliated = fix_affiliated(affiliated),
