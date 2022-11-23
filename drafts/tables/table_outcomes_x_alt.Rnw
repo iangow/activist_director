@@ -65,9 +65,14 @@ outcome_controls_mod <-
            default_p3 = if_else(firm_exists_p3, FALSE, NA),
            default_num_p2 = if_else(firm_exists_p2, 0L, NA),
            default_num_p3 = if_else(firm_exists_p3, 0L, NA),
-           datadate_p2 = sql("datadate + interval '2 years'"),
-           datadate_p3 = sql("datadate + interval '3 years'")) %>%
-    select(permno, eff_announce_date, first_appointment_date, matches("^(datadate|default_|firm_exists_)"))
+           eff_announce_date = coalesce(datadate,
+                                        first_appointment_date,
+                                        eff_announce_date,
+                                        datadate),
+           eff_announce_date_p2 = sql("eff_announce_date + interval '2 years'"),
+           eff_announce_date_p3 = sql("eff_announce_date + interval '3 years'")) %>%
+    select(permno, first_appointment_date,
+           matches("^(datadate|default_|firm_exists_|eff_announce_date)"))
 
 delisting <-
     dsedelist %>%
@@ -146,12 +151,10 @@ acquisition_linked <-
 divestiture_count <-
     outcome_controls_mod %>%
     left_join(divestiture_linked, by = "permno") %>%
-    mutate(divest_p2 = if_else(!is.na(first_appointment_date), between(announcedate, first_appointment_date, sql("first_appointment_date + interval '2 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
-                                                     between(announcedate, datadate, datadate_p2))),
-           divest_p3 = if_else(!is.na(first_appointment_date),between(announcedate, first_appointment_date, sql("first_appointment_date + interval '3 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
-                                                     between(announcedate, datadate, datadate_p3)))) %>%
+    mutate(divest_p2 = between(announcedate, eff_announce_date,
+                               eff_announce_date_p2),
+           divest_p3 = between(announcedate, eff_announce_date,
+                               eff_announce_date_p3)) %>%
     group_by(permno, datadate) %>%
     summarize(num_divestiture_p2 =
                   sum(as.integer(coalesce(divest_p2, FALSE)),
@@ -167,12 +170,10 @@ divestiture_count <-
 acquisition_count <-
     outcome_controls_mod %>%
     left_join(acquisition_linked,  by = "permno") %>%
-    mutate(acquisition_p2 = if_else(!is.na(first_appointment_date), between(announcedate, first_appointment_date, sql("first_appointment_date + interval '2 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
-                                                     between(announcedate, datadate, datadate_p2))),
-           acquisition_p3 = if_else(!is.na(first_appointment_date),between(announcedate, first_appointment_date, sql("first_appointment_date + interval '3 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
-                                                     between(announcedate, datadate, datadate_p3)))) %>%
+    mutate(acquisition_p2 = between(announcedate, eff_announce_date,
+                                    eff_announce_date_p2),
+           acquisition_p3 = between(announcedate, eff_announce_date,
+                                    eff_announce_date_p3)) %>%
     group_by(permno, datadate) %>%
     summarize(num_acquisition_p2 =
                   sum(as.integer(coalesce(acquisition_p2, FALSE)),
@@ -188,12 +189,10 @@ acquisition_count <-
 spinoff_count <-
     outcome_controls_mod %>%
     left_join(spinoff_linked, by = "permno") %>%
-    mutate(spinoff_p2 = if_else(!is.na(first_appointment_date), between(announcedate, first_appointment_date, sql("first_appointment_date + interval '2 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '2 years'")),
-                                                     between(announcedate, datadate, datadate_p2))),
-           spinoff_p3 = if_else(!is.na(first_appointment_date),between(announcedate, first_appointment_date, sql("first_appointment_date + interval '3 years'")),
-                                      if_else(!is.na(eff_announce_date), between(announcedate, eff_announce_date, sql("eff_announce_date + interval '3 years'")),
-                                                     between(announcedate, datadate, datadate_p3)))) %>%
+    mutate(spinoff_p2 = between(announcedate, eff_announce_date,
+                                eff_announce_date_p2),
+           spinoff_p3 = between(announcedate, eff_announce_date,
+                                eff_announce_date_p3)) %>%
     group_by(permno, datadate) %>%
     summarize(num_spinoff_p2 =
                   sum(as.integer(coalesce(spinoff_p2, FALSE)),
@@ -207,12 +206,12 @@ spinoff_count <-
 delisting_data <-
     outcome_controls_mod %>%
     left_join(delisting, by = "permno") %>%
-    mutate(delist_p2 = delist & between(dlstdt, datadate, datadate_p2),
-           delist_p3 = delist & between(dlstdt, datadate, datadate_p3),
-           merger_p2 = merger & between(dlstdt, datadate, datadate_p2),
-           merger_p3 = merger & between(dlstdt, datadate, datadate_p3),
-           failure_p2 = failure & between(dlstdt, datadate, datadate_p2),
-           failure_p3 = failure & between(dlstdt, datadate, datadate_p3)) %>%
+    mutate(delist_p2 = delist & between(dlstdt, eff_announce_date, eff_announce_date_p2),
+           delist_p3 = delist & between(dlstdt, eff_announce_date, eff_announce_date_p3),
+           merger_p2 = merger & between(dlstdt, eff_announce_date, eff_announce_date_p2),
+           merger_p3 = merger & between(dlstdt, eff_announce_date, eff_announce_date_p3),
+           failure_p2 = failure & between(dlstdt, eff_announce_date, eff_announce_date_p2),
+           failure_p3 = failure & between(dlstdt, eff_announce_date, eff_announce_date_p3)) %>%
     group_by(permno, datadate) %>%
     summarize(delist_p2 = bool_or(delist_p2),
               delist_p3 = bool_or(delist_p3),
