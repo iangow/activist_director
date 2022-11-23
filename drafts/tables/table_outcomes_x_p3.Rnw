@@ -235,9 +235,9 @@ rs <- dbDisconnect(pg)
 \begin{minipage}[t]{\columnwidth}
 {\small
 This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-\textit{Acquisition} indicates the firm completed acquisitions in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
-\textit{Divestiture} indicates the firm completed divestitures and spinoffs in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
-\textit{Acquired} indicates delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
+\textit{Acquisition} indicates the firm completed acquisitions in years $t+2$ and $t+3$, where activism was announced in year $t+1$.
+\textit{Divestiture} indicates the firm completed divestitures and spinoffs in years $t+2$ and $t+3$, where activism was announced in year $t+1$.
+\textit{Acquired} indicates delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in years $t+2$ and $t+3$, where activism was announced in year $t+1$.
 Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
@@ -315,66 +315,66 @@ reg.data.ceo <-
 rs <- dbDisconnect(pg)
 @
 
-\begin{table}[htb]
-\caption{Activism outcomes by demand}
-\begin{minipage}[t]{\columnwidth}
-{\small
-This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-$\textrm{CEO exit}_{(t+1,t+2)}$ indicates a change in CEO in year $t+1$ or $t+2$, where activism was announced in year $t+1$.
-$\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation for the year following the announcement of activism (year $t+2$).
-Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
-Values in parentheses are standard errors clustered by firm.
-*** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
-\newline}
-\end{minipage}
-\begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel C: CEO turnover and compensation by activist demand} \\
-<<outs_x_t_ceo, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
-t.pb <- list()
-
-# CEO Turnover
-rhs.1 <- c("affiliated*remove_officer_demand", controls, "ceo_turnover")
-rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - remove_officer_demand")
-rhs.2 <- c("affiliated*compensation_demand", controls, "ceo_comp")
-rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - compensation_demand")
-
-t.pb[[1]] <- fit.model(data = reg.data.ceo, lhs = "ceo_turnover_p3",
-                       rhs = rhs.1, cluster1 = "permno")
-t.pb[[2]] <- fit.model(data = reg.data.ceo, lhs = "ceo_comp_p3",
-                       rhs = rhs.2, cluster1 = "permno")
-
-stargazer(
-    t.pb,
-    omit = c(controls, "ceo_comp", "ceo_turnover",
-             "^affiliated_none"),
-    dep.var.labels.include = FALSE,
-    column.labels = c("$\\textrm{CEO exit}_{(t+1,t+3)}$",
-                       "$\\textrm{CEO comp}_{(t+3)}$"),
-    covariate.labels = c(
-        "Affiliated director",
-        "Unaffiliated director",
-        "Other activism",
-        "Affiliated director $\\times$ Remove demand",
-        "Unaffiliated director $\\times$ Remove demand",
-        "Other activism $\\times$ Remove demand",
-        "Affiliated director $\\times$ Comp demand",
-        "Unaffiliated director $\\times$ Comp demand",
-        "Other activism $\\times$ Comp demand"
-    ),
-    float = FALSE,
-    align = TRUE,
-    font.size = "small",
-    keep.stat = c("n"),
-    no.space = TRUE,
-    add.lines = list(c(
-        "Controls", "\\textrm{Yes}", "\\textrm{Yes}"
-    ))
-)
-rm(t.pb)
-@
-\end{tabularx}
-\addtocounter{table}{-1}
-\end{table}
+% \begin{table}[htb]
+% \caption{Activism outcomes by demand}
+% \begin{minipage}[t]{\columnwidth}
+% {\small
+% This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+% $\textrm{CEO exit}_{(t+1,t+2)}$ indicates a change in CEO in year $t+1$ or $t+2$, where activism was announced in year $t+1$.
+% $\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation for the year following the announcement of activism (year $t+2$).
+% Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+% Values in parentheses are standard errors clustered by firm.
+% *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
+% \newline}
+% \end{minipage}
+% \begin{tabularx}{\linewidth}{l*{5}{Y}}
+% \multicolumn{3}{l}{Panel C: CEO turnover and compensation by activist demand} \\
+% <<outs_x_t_ceo, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
+% t.pb <- list()
+%
+% # CEO Turnover
+% rhs.1 <- c("affiliated*remove_officer_demand", controls, "ceo_turnover")
+% rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - remove_officer_demand")
+% rhs.2 <- c("affiliated*compensation_demand", controls, "ceo_comp")
+% rhs.2 <- paste0(paste(rhs.2, collapse = " + "), " - compensation_demand")
+%
+% t.pb[[1]] <- fit.model(data = reg.data.ceo, lhs = "ceo_turnover_p3",
+%                        rhs = rhs.1, cluster1 = "permno")
+% t.pb[[2]] <- fit.model(data = reg.data.ceo, lhs = "ceo_comp_p3",
+%                        rhs = rhs.2, cluster1 = "permno")
+%
+% stargazer(
+%     t.pb,
+%     omit = c(controls, "ceo_comp", "ceo_turnover",
+%              "^affiliated_none"),
+%     dep.var.labels.include = FALSE,
+%     column.labels = c("$\\textrm{CEO exit}_{(t+1,t+3)}$",
+%                        "$\\textrm{CEO comp}_{(t+3)}$"),
+%     covariate.labels = c(
+%         "Affiliated director",
+%         "Unaffiliated director",
+%         "Other activism",
+%         "Affiliated director $\\times$ Remove demand",
+%         "Unaffiliated director $\\times$ Remove demand",
+%         "Other activism $\\times$ Remove demand",
+%         "Affiliated director $\\times$ Comp demand",
+%         "Unaffiliated director $\\times$ Comp demand",
+%         "Other activism $\\times$ Comp demand"
+%     ),
+%     float = FALSE,
+%     align = TRUE,
+%     font.size = "small",
+%     keep.stat = c("n"),
+%     no.space = TRUE,
+%     add.lines = list(c(
+%         "Controls", "\\textrm{Yes}", "\\textrm{Yes}"
+%     ))
+% )
+% rm(t.pb)
+% @
+% \end{tabularx}
+% \addtocounter{table}{-1}
+% \end{table}
 
 
 \newpage
@@ -417,12 +417,12 @@ rs <- dbDisconnect(pg)
 \begin{minipage}[t]{\columnwidth}
 {\small
 This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years following the announcement of activism in year $t+1$.
-\textit{Leverage} is measured as the ratio of the book value of debt to the sum of the book value of debt and equity in the year following the announcement of activism in year $t+1$.
-\textit{Capex} is measured as the ratio of total capital expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
-\textit{R\&D} is measured as the ratio of total R\&D expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
+\textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the three years following the announcement of activism in year $t+1$.
+\textit{Leverage} is measured as the ratio of the book value of debt to the sum of the book value of debt and equity in the two years following the announcement of activism in year $t+1$.
+\textit{Capex} is measured as the ratio of total capital expenditure for the three years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
+\textit{R\&D} is measured as the ratio of total R\&D expenditure for the three years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 Due to the unavailability of data for demands for \textit{Capex} and \textit{R\&D}, there are no interaction variables between activism indicators and related activist demand indicators for \textit{Capex} and \textit{R\&D}.
-Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+Regressions include the lagged dependent variable (by the year $t+1$), industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
