@@ -422,7 +422,7 @@ This panel presents results from OLS regressions of outcome variables on firm-ye
 \textit{Capex} is measured as the ratio of total capital expenditure for the three years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for the three years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 Due to the unavailability of data for demands for \textit{Capex} and \textit{R\&D}, there are no interaction variables between activism indicators and related activist demand indicators for \textit{Capex} and \textit{R\&D}.
-Regressions include the lagged dependent variable (by the year $t+1$), industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+Regressions include the lagged dependent variable (by the year $t+1$), industry and year fixed effects, and controls are as described in Section 3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}

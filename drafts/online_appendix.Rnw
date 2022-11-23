@@ -28,7 +28,7 @@ In Column 3 of Table IA.1, we additionally find that activists are more likely t
 % \section{Activist holding periods by demand \& success} \label{sect:holding_demand_success}
 
 \section{Activism outcomes}
-In this section, we examine the impact of activists, especially activist directors, on a number of outcomes, with a focus on outcomes that activists commonly seek. Unlike in the main draft, we do not consider the effects of activist demands.
+In this section, we examine the impact of activists, especially that of activist directors, on a number of outcomes, with a focus on outcomes that activists commonly seek. Unlike in the main draft, we do not consider the effects of activist demands.
 
 \subsection{Divestiture and acquisitions}
 Table IA.2 presents these results. Examining the first column, we see the two categories of activism, Unaffiliated director and Other activism, are associated with a lower probability of acquisitions (coefs. -0.100 and -0.039, respectively). While the coefficients for Affiliated director and Unaffiliated director are greater in magnitude, they are not statistically distinguishable from that on Other activism. On the other hand, looking at the second column, only activism not involving activist directors is associated with a higher likelihood of being acquired (coef. on Other activism of 0.128) (the differences in the activism coefficients are statistically significant at the 1\% level). Finally, divestitures are positively associated with activism whether or not there is an activist director appointment (coefs. 0.062 to 0.125). Overall, we find that having an activist director, whether affiliated or unaffiliated, is associated with a higher likelihood of cutting down acquisition activities and increasing divestitures, while other activism events result in a higher likelihood of selling the business entirely.
@@ -41,6 +41,14 @@ We find that having an activist director is not significantly associated with re
 
 \subsection{Investment}
 In this last section, we examine the association between activism and three areas of spending commonly regarded as an investment: capital expenditures, research and development (R\&D), and advertising. Results are presented in Table IA.2 Panel D. We find a negative association between Affiliated director and CapEx. We also find negative associations between R\&D spending and activist directors (coefs. -0.007 and -0.009 for Affiliated director and Unaffiliated director, respectively). The differences between these coefficients and that for Other activism are weakly significant (p $<$ 0.10) for both categories. In the case of advertising spending, we do not find significant associations for either Affiliated director or Unaffiliated director. Overall, the evidence in Table IA.2 Panel D is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
+
+\section{Alternative specification for activism outcomes}
+In this section, we replicate the analysis in Section 9 of the main draft, using an alternative specification for the window we observe the events of interest.
+The inherent difficulty with the analysis in Section 9 is that we cannot observe the effective announcement date of activism events or the appointment date of activist directors for the control sample, which was not a target of shareholder activists.
+When we observe events during the year of the activism announcement and the year after, as we do in Section 9, we may even capture those events that happened before the activism announcement or the activist director's appointment.
+With the alternative specification, where we use the appointment date of the activist director for the activist director sample, and the announcement date of activism for the other activism sample as the starting date of the window, we do not include such events that precede the announcement or the appointment.
+However, a caveat is that the event window is not entirely aligned with the control sample.
+Table IA.3 shows that the results with this alternative specification are consistent with the original results.
 
 \section{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointments.
@@ -65,7 +73,11 @@ The three-year delay may stem from the limited ability of directors to add board
 % <<table_ia_holding_periods, child='tables/table_ia_holding_periods.Rnw'>>=
 % @
 %
+
 <<table_ia_outcomes, child='tables/table_outcomes.Rnw'>>=
+@
+
+<<table_outcomes_x_alt, child='tables/table_outcomes_x_alt.Rnw'>>=
 @
 
 <<table_ia_career, child='tables/table_career.Rnw'>>=

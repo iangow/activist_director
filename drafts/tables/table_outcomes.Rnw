@@ -508,7 +508,7 @@ This table presents regressions of outcome variables on firm-year level activism
 \textit{CapEx} is measured as the ratio of capital expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for two years after announcement of activism to the lagged book value of total assets.
 \textit{Advertising} is measured as the ratio of advertising expenditure for two years after announcement of activism to the lagged book value of total assets.
-Controls are described in Section 3.5; coefficients omitted for space.
+Controls are described in Section 3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm. *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.\\}
 %\end{flushleft}
 \end{minipage}

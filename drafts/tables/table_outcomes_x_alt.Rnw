@@ -241,7 +241,7 @@ rs <- dbDisconnect(pg)
 
 \begin{landscape}
 \begin{table}[htb]
-\caption{Activism outcomes by demand}
+\caption{Activism outcomes by demand: Alternative specification}
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
