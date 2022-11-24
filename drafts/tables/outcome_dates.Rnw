@@ -127,12 +127,14 @@ firm_years <-
     outcome_controls %>%
     select(permno, datadate, fyear)
 
-appointment_cases <- firm_years %>%
+appointment_cases <-
+    firm_years %>%
     left_join(appointment_dates) %>%
     filter(between(appointment_date, sql("datadate - interval '364 days'"), datadate)) %>%
     select(permno, datadate, fyear, appointment_date, campaign_ids)
 
-announcement_cases <- firm_years %>%
+announcement_cases <-
+    firm_years %>%
     left_join(appointment_dates) %>%
     filter(between(eff_announce_date, sql("datadate - interval '364 days'"), datadate)) %>%
     select(permno, datadate, fyear, eff_announce_date, appointment_date)
