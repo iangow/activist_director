@@ -36,7 +36,7 @@ Following the approach of \citet{Adams:2018vf}, which classifies director skill 
 
 Panel A of Table \ref{tbl:dir_skills} presents summary statistics.
 In general, activist directors have fewer skill sets than other directors.
-We find that the mean number of skill sets for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skill sets per director in their sample ($p-value for the difference < 0.01$).
+We find that the mean number of skill sets for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skill sets per director in their sample ($p-value$ for the difference $<$ $0.01$).
 In particular, activist directors stand out with regard to the \textit{Finance and accounting} skill set.
 We find that 48\% of activist directors have the finance and accounting skill set, which is significantly higher than the 34\% of directors found by \citet{Adams:2018vf}.
 
