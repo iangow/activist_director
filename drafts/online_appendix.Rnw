@@ -42,11 +42,18 @@ We find that having an activist director is not significantly associated with re
 \subsection{Investment}
 In this last section, we examine the association between activism and three areas of spending commonly regarded as an investment: capital expenditures, research and development (R\&D), and advertising. Results are presented in Table IA.2 Panel D. We find a negative association between Affiliated director and CapEx. We also find negative associations between R\&D spending and activist directors (coefs. -0.007 and -0.009 for Affiliated director and Unaffiliated director, respectively). The differences between these coefficients and that for Other activism are weakly significant (p $<$ 0.10) for both categories. In the case of advertising spending, we do not find significant associations for either Affiliated director or Unaffiliated director. Overall, the evidence in Table IA.2 Panel D is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
 
-\section{Alternative specification for activism outcomes}
-In this section, we replicate the analysis in Section 9 of the main draft, using an alternative specification for the window we observe the events of interest.
-The inherent difficulty with the analysis in Section 9 is that we cannot observe the effective announcement date of activism events or the appointment date of activist directors for the control sample, which was not a target of shareholder activists.
-When we observe events during the year of the activism announcement and the year after, as we do in Section 9, we may even capture those events that happened before the activism announcement or the activist director's appointment.
-With the alternative specification, where we use the appointment date of the activist director for the activist director sample, and the announcement date of activism for the other activism sample as the starting date of the window, we do not include such events that precede the announcement or the appointment.
+\section{Alternative analysis of activism outcomes}
+In this section, we replicate the analysis in Section 9 of the main draft, but using an alternative specification for the event windows.
+
+Most of our analyses in the paper identify year $t$ as an activism year if activism is announced in year $t +1$.
+In Section 9, we further classify activism events as \textit{Activist director} (\textit{Other activism}) events is there is an activist director (no activist director) appointed to the board during the activism event.
+
+In Section 9, we analyze the association between certain outcomes, activist demands, and activism events.
+For example, in Panel B of Table 10, we look at acquisitions, divestitures, and target firms being acquired as a function of activism events and relevant activist demands.
+However, this analysis does not exploit the precise timing of, say, activist director appointments relative to divestitures; a divestiture that occurs during years $t+1$ and $t+2$ is coded the same whether it occurs before an activist director appointment or after such an appointment.
+
+In an attempt to account for the timing of outcomes relative to activist director appointments or announcement of activism, we conduct an alternative analysis in which we consider the two-year window starting with the first appointment of activism directors (for \textit{Activist director} events) or the first announcement of activism (for \textit{Other activism} events).
+
 However, a caveat is that the event window is not entirely aligned with the control sample.
 Table IA.3 shows that the results with this alternative specification are consistent with the original results.
 
