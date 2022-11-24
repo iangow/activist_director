@@ -234,11 +234,11 @@ rs <- dbDisconnect(pg)
 \begin{landscape}
 \begin{table}[htb]
 \caption{Activism outcomes by demand: Alternative specification}
-\label{tbl:other_x}
+\label{tbl:other_x_alt}
 \begin{minipage}[t]{\columnwidth}
 {\small
 This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-\textit{Acquisition} (\textit{Divestiture}, or \textit{Acquired}) indicates the firm completed acquisitions (divestitures and spinoffs, or delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in the two years following either (i) the first appointment of an activist director for \textit{Activist director} cases announced in year $t + 1$, (ii) the announcement of activism for the \textit{Other activism} cases in  year $t + 1$, or (iii) the start of fiscal year $t + 1$ in cases without activsm.
+\textit{Acquisition} (\textit{Divestiture}, or \textit{Acquired}) indicates the firm completed acquisitions (divestitures and spinoffs, or delisting (CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in the two years following either (i) the first appointment of an activist director for \textit{Activist director} cases announced in year $t + 1$, (ii) the announcement of activism for the \textit{Other activism} cases in  year $t + 1$, or (iii) the start of fiscal year $t + 1$ in cases without activism.
 Regressions include the lagged dependent variable, industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.

@@ -50,12 +50,23 @@ In Section 7, we further classify activism events as \textit{Activist director} 
 
 In Section 7, we analyze the association between certain outcomes, activist demands, and activism events.
 For example, in Panel B of Table 10, we look at acquisitions, divestitures, and target firms being acquired as a function of activism events and relevant activist demands.
-However, this analysis does not exploit the precise timing of, say, activist director appointments relative to divestitures; a divestiture that occurs during years $t+1$ and $t+2$ is coded the same whether it occurs before an activist director appointment or after such an appointment.
+However, this analysis does not exploit the precise timing of, say, activist director appointments relative to divestitures.
+For example, a divestiture that occurs during years $t+1$ and $t+2$ is coded the same whether it occurs before an activist director appointment or after such an appointment.
 
-In an attempt to account for the timing of outcomes relative to activist director appointments or announcement of activism, we conduct an alternative analysis in which we consider the two-year window starting with the first appointment of activism directors (for \textit{Activist director} events) or the first announcement of activism (for \textit{Other activism} events).
+In an attempt to account for the timing of outcomes relative to activist director appointments or announcement of activism, we conduct an alternative analysis in which we instead start the two-year window with the first appointment of activism directors (for \textit{Activist director} events) or the first announcement of activism (for \textit{Other activism} events).
+We restrict analyses to outcomes which have a meaningful event date, such as acquisitions and divestiture, excluding outcomes such as dividends and CEO compensation that are measured over a period and thus difficult to place precisely before or after events such as appointment of activist directors.
 
-However, a caveat is that the event window is not entirely aligned with the control sample.
-Table IA.3 shows that the results with this alternative specification are consistent with the original results.
+Table \ref{tbl:other_x_alt} presents results of this alternative analysis.
+Most of the results are consistent with those in the analysis reported in the paper, consistent with the appointment of activist directors or activism accounting for the associations observed there.
+
+There are two significant differences.
+First, the sign on \textit{Activist director $\times$ Block acquisition} in the regression with acquisitions as the outcome flips from negative to positive ($0.383$, $p$-value $< 0.01$), suggesting that the negative association between activist directors when a "block acquisition" demand is made is driven by a reduction in acquisitions \emph{before} appointment of activist directors, but that once activist directors are appointed, acquisition activity increases (perhaps due to acquisition of different firms).
+Second, the positive coefficient on \textit{Activist director $\times$ Divestiture} in the regression with divestitures as the outcome is larger and statistically significant, consistent with an increase in divestitures after appointment of activist directors when divestitures have been demanded by activists.
+
+We have not replaced Panel B of Table 10 in the paper with the analysis in Table \ref{tbl:other_x_alt} for a number of reasons.
+First, the event periods for activism events in the analysis in Table \ref{tbl:other_x_alt} is not consistent with that for non-activism events.
+Second, the approach used in Panel B of Table 10 is consistent with other analyses in the paper, including those in other parts of Table 10.
+Notwithstanding these limitations, we believe that the results reported in Table \ref{tbl:other_x_alt} provide support for the results presented in Table 10.
 
 \section{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointments.
