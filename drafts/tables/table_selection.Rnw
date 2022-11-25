@@ -158,7 +158,7 @@ prob_demands <-
     \label{tbl:selection}
         \begin{minipage}[t]{\columnwidth}
   {\small
-This tablepresents results from logit regressions where the dependent variables are indicators for activists demanding a board seat (\textit{Board demand}, Column 1), activists getting a board seat (\textit{Activist director}, Column 2), activists getting a board seat where the director is not affiliated with the activist (\textit{Unaffiliated director}, Column 3), and activists getting a board seat where the director is affiliated with the activist (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
+This table presents results from logit regressions where the dependent variables are indicators for activists demanding a board seat (\textit{Board demand}, Column 1), activists getting a board seat (\textit{Activist director}, Column 2), activists getting a board seat where the director is not affiliated with the activist (\textit{Unaffiliated director}, Column 3), and activists getting a board seat where the director is affiliated with the activist (\textit{Affiliated director}, Column 4), conditional on the firm being targeted by activists.
 All regressions include industry and year fixed effects and controls measured for the prior fiscal year-end (see Section \ref{sec:other_data} for definitions).
 All controls are winsorized at the $1\%$ and $99\%$ levels.
 The sample includes only firm-years with activism.
