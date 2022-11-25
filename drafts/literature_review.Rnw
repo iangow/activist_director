@@ -33,8 +33,8 @@ While prior papers have examined some of these outcomes in the context of hedge 
 \subsection{Causes and consequences of hedge fund activism}
 
 Over the last decade, the growing phenomenon of shareholder activism has largely been driven by activist hedge funds.
-\citet*{Brav:2008eu} identify structural benefits enjoyed by hedge funds---such as fewer regulations and better incentives---that have allowed them to be more active than mutual funds or pension managers in pursuing governance changes in companies.
-As in prior studies (e.g., \citet{Brav:2008eu}), the ultimate source for much of the data we use to identify activism events comes from 13D filings with the SEC.
+\citet{Brav:2008eu} identify structural benefits enjoyed by hedge funds---such as fewer regulations and better incentives---that have allowed them to be more active than mutual funds or pension managers in pursuing governance changes in companies.
+As with studies like \cite{Brav:2008eu}, the ultimate source for much of the data we use to identify activism events is 13D filings with the SEC.
 According to the SEC, ``when a person or group of persons acquires beneficial ownership of more than 5\% of a voting class of a company's equity securities registered under Section 12 of the Securities Exchange Act of 1934, they are required to file a Schedule 13D with the SEC.''\footnote{\url{https://www.sec.gov/answers/sched13.htm}, last updated 2012-12-05.}
 This filing should be made within 10 days of the trade date of the securities transaction that triggered the requirement to file.
 If a shareholder has not ``acquired the securities with any purpose, or with the effect of, changing or influencing the control of the issuer,''  then a more abbreviated filing on Form 13G may be used.\footnote{\url{https://www.sec.gov/divisions/corpfin/guidance/reg13d-interp.htm}, last updated 2016-07-14. Also, see SEC Rule 13d-1(c)(1).}
@@ -47,7 +47,7 @@ Based on this evidence, we use firm-level covariates to control for factors that
 \citet{Gantchev:2012wn} estimates costs associated with these stages using a system of recursive logistic regressions and finds that, while net returns are not negative, such costs reduce activist returns by more than two-thirds.
 Our paper complements \citet{Gantchev:2012wn} by providing evidence on the kinds of actions facilitated during the escalation of activism to the level of obtaining board representation.
 
-In terms of consequences, prior research (\citet[e.g.,][]{Brav:2008eu,Klein:2009js,Greenwood:2009kh}) finds a positive stock price reaction of about five percent to the announcement of activist campaigns, typically centered around the 13D announcement dates.
+In terms of consequences, prior research \citep[e.g.,][]{Brav:2008eu,Klein:2009js,Greenwood:2009kh} finds a positive stock price reaction of about five percent to the announcement of activist campaigns, typically centered around the 13D announcement dates.
 \citet{Klein:2009js} suggest that one source of shareholder gains is the transfer of wealth from debtholders to stockholders.
 This likely occurs because activists demand a reduction in cash holdings and an increase in leverage in target firms.
 \citet{Brav:2008eu} and \citet{Bebchuk:2013wi} also find that operating performance as measured by return on assets is higher in the three- to five-year period following the initiation of activism events.
@@ -62,14 +62,15 @@ Our paper complements this research by identifying the role of activist director
 
 \subsection{Activist directors}
 Few papers have focused on the phenomenon of activist directors.
-\citet*{Coffee:2018} hand-collect data from 475 settlement agreements entered into between 2000 and 2015 that include the appointment of activist directors.
+\citet{Coffee:2018} hand-collect data from 475 settlement agreements entered into between 2000 and 2015 that include the appointment of activist directors.
 The focus of \citet{Coffee:2018} is on an apparent pattern of ``information leakage'' associated with activist directors.
 \citet{Coffee:2018} find that, after the appointment of activist directors, ``the stock price of the target corporation begins to anticipate future public disclosures, moving up or down prior to \dots the eventual public disclosure.
 Similarly, the bid-ask spread in the corporations' stock price widens.''
 Our paper draws on a larger sample of activist directors and focuses on the traits of the activist directors themselves, the circumstances in which activist directors seek or obtain board representation, and the effects on the target firms.
 Additionally, while \citet{Coffee:2018} focuses on the explicit settlement cases with public settlement agreements, we also consider implicit settlement cases in which board seats were given to the activists without a public agreement.
 
-Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements irrespective of whether or not an activist director is appointed.
-\citet{Bebchuk:2017} conduct analyses focused on activist directors, including an analysis of the impact of activist directors on board size and of shareholder support in subsequent director elections.
-As in this study, \citet{Bebchuk:2017} examine the effect of activism on payout policy, acquisition, and operating performance, but organized according to settlements rather than activist directors.
-Our paper focuses on the characteristics and the roles of a more comprehensive sample of activist directors and further examines their effects on activist investment and their impacts on firm outcomes.
+Like \citet{Coffee:2018}, \citet{Bebchuk:2017} focus on settlement agreements entered into by firms and activists.
+As in this study, \citet{Bebchuk:2017} examine the effect of activism on outcomes such as payout policy, acquisitions, and operating performance, but focus on settlement agreements rather than activist directors.
+As settlement agreements often entail the appointment of activist directors, the setting of \citet{Bebchuk:2017} has significant overlap with that of this paper.
+Indeed, some analyses of \citet{Bebchuk:2017} focus on associations between  activist directors and outcomes such as board size and shareholder support in director elections.
+Because we include activist directors appointed without settlement agreements and our sample period is more recent, our paper benefits from a larger sample of activist directors (1,623 activist directors versus 634 in \citet{Bebchuk:2017})

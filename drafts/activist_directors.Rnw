@@ -131,7 +131,7 @@ filers <-
     collect()
 
 num_13f <- formatC(filers$num_13f, big.mark = ",")
-perc_13f <- formatC(100*filers$perc_13f, format="f", digits=2)
+perc_13f <- formatC(100*filers$perc_13f, format = "f", digits = 2)
 @
 \Sexpr{opts_chunk$set(cache.extra=NULL)}
 

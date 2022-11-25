@@ -100,19 +100,19 @@ For instance, while our evidence is consistent with activist directors playing a
 However, the relatively long-term holding periods in cases where activists become directors, positive stock market effects, and long-term operating performance improvements seem inconsistent with the idea that activist directors are problematically short-termists.
 
 Our paper contributes to the understanding of the increasingly important phenomenon of hedge fund activism, focusing on the role of activist directors in that phenomenon.
-More specifically, we identify the role of activist directors in the changes that often follow activism events, thereby identifying a mechanism by which activists carry out the changes they demand.
+More specifically, we study the role of activist directors in the changes that often follow activism events, thereby identifying a mechanism by which activists carry out the changes at targeted firms.
 
-Unlike Bebchuk et al. (2020), our paper focuses explicitly on activist directors instead of activist settlements.
-While most activist directors are nominated or appointed to the board as a result of settlements, we also find activist directors elected via proxy fights when activists do not reach settlements with the management.
-Also, we provide a more comprehensive and more detailed description of the directors placed by the activists to understand the characteristics of whom they want for board re-composition.
-In addition, we document the effects of having an activist director(s) on a change in activist investment strategy, including its holding period and its ability to promote changes inside the target firm.
-Lastly, we describe how the existence of an activist director is associated with the types of outcomes activists want to achieve compared to their initial public demands.
+The paper closest to this one is \citet{Bebchuk:2017}, which studies  settlement agreements between activists and target firms.
+There is significant overlap in the settings of \citet{Bebchuk:2017} and this paper, as most activist directors are nominated or appointed to the board as a result of settlement agreements.
+
+Nonetheless, because our sample period is more recent and studies activist directors appointed outside settlement agreements and proxy fights, our paper offers a deeper study of the phenomenon of activist directors.
+For instance, our sample covers 1,623 activist directors compared to 634 activist directors in \citet{Bebchuk:2017}.
+Reflecting our difference in focus, we study in more detail various characteristics of activist directors, including demographics and skill sets.
+In addition, we study the interaction of activist directors with activist investment strategies and activist demands.
 
 The phenomenon studied in our paper is likely to continue to be relevant.
-The SEC voted on November 17, 2021, to adopt final rules requiring the use at a shareholder meeting of a single proxy card that includes all diretor nominees presented for election.
-With the new rules, activists are expected to have an easier time nominating their directors, and we are more likely to see more activist directors getting on board (Whoriskey and Golenbock, 2022).
-Given the potentially more significant influence that activists and shareholders may have when they get into the boardrooms, it has become even more critical to understand who these directors are and what their roles are.
-
+The SEC voted on November 17, 2021, to adopt final rules requiring the use  of a single proxy card for all director nominees presented for election at a shareholder meeting.
+The new rules are expected to make it easier for activists to nominate  directors, likely resulting in more activist directors.
 
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
