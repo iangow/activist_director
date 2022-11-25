@@ -42,31 +42,29 @@ We find that having an activist director is not significantly associated with re
 \subsection{Investment}
 In this last section, we examine the association between activism and three areas of spending commonly regarded as an investment: capital expenditures, research and development (R\&D), and advertising. Results are presented in Table IA.2 Panel D. We find a negative association between Affiliated director and CapEx. We also find negative associations between R\&D spending and activist directors (coefs. -0.007 and -0.009 for Affiliated director and Unaffiliated director, respectively). The differences between these coefficients and that for Other activism are weakly significant (p $<$ 0.10) for both categories. In the case of advertising spending, we do not find significant associations for either Affiliated director or Unaffiliated director. Overall, the evidence in Table IA.2 Panel D is consistent with activist directors having a role in curbing expenditures on capital investment and research and development (R\&D).
 
-\section{Alternative analysis of activism outcomes}
-In this section, we replicate the analysis in Section 7 of the main draft, but using an alternative specification for the event windows.
+\section{Alternative specification of the outcomes analysis}
+In this section, we replicate the analysis in Section 7 of the main draft using an alternative specification for the event windows.
 
-Most of our analyses in the paper identify year $t$ as an activism year if activism is announced in year $t +1$.
-In Section 7, we further classify activism events as \textit{Activist director} (\textit{Other activism}) events is there is an activist director (no activist director) appointed to the board during the activism event.
-
-In Section 7, we analyze the association between certain outcomes, activist demands, and activism events.
+Section 7 analyzes the association between specific outcomes, activist demands, and activism events.
 For example, in Panel B of Table 10, we look at acquisitions, divestitures, and target firms being acquired as a function of activism events and relevant activist demands.
-However, this analysis does not exploit the precise timing of, say, activist director appointments relative to divestitures.
+However, this analysis does not exploit the precise timing of, say, activist director appointments relative to divestitures.\footnote{Note that most of our analyses in the paper identify year $t$ as the pre-activism year if activism is announced in year $t+1$ and we use control variables from year $t$ to control for firm characteristics before the announcement of activism.}
 For example, a divestiture that occurs during years $t+1$ and $t+2$ is coded the same whether it occurs before an activist director appointment or after such an appointment.
 
-In an attempt to account for the timing of outcomes relative to activist director appointments or announcement of activism, we conduct an alternative analysis in which we instead start the two-year window with the first appointment of activism directors (for \textit{Activist director} events) or the first announcement of activism (for \textit{Other activism} events).
-We restrict analyses to outcomes which have a meaningful event date, such as acquisitions and divestiture, excluding outcomes such as dividends and CEO compensation that are measured over a period and thus difficult to place precisely before or after events such as appointment of activist directors.
+In an attempt to account for the timing of outcomes relative to activist director appointments or announcements of activism, we conduct an alternative analysis in which we start the two-year window with the first appointment of activist directors (for \textit{Activist director} events) or the first announcement of activism (for \textit{Other activism} events) instead.
+We restrict analyses to outcomes that have a meaningful event date, such as acquisitions and divestiture, excluding outcomes such as dividends and CEO compensation that are measured over a period and thus difficult to place precisely before or after events such as the appointment of activist directors.
 
-Table \ref{tbl:other_x_alt} presents results of this alternative analysis.
+Table \ref{tbl:other_x_alt} presents the results of this alternative analysis.
 Most of the results are consistent with those in the analysis reported in the paper, consistent with the appointment of activist directors or activism accounting for the associations observed there.
 
 There are two significant differences.
-First, the sign on \textit{Activist director $\times$ Block acquisition} in the regression with acquisitions as the outcome flips from negative to positive ($0.383$, $p$-value $< 0.01$), suggesting that the negative association between activist directors when a "block acquisition" demand is made is driven by a reduction in acquisitions \emph{before} appointment of activist directors, but that once activist directors are appointed, acquisition activity increases (perhaps due to acquisition of different firms).
-Second, the positive coefficient on \textit{Activist director $\times$ Divestiture} in the regression with divestitures as the outcome is larger and statistically significant, consistent with an increase in divestitures after appointment of activist directors when divestitures have been demanded by activists.
+First, the sign on \textit{Activist director $\times$ Block acquisition} in the regression with acquisitions as the outcome flips from negative to positive ($0.383$, $p$-value $< 0.01$), suggesting that the negative association between activist directors when a "block acquisition" demand is made is driven by a reduction in acquisitions \emph{before} the appointment of activist directors, but that once activist directors are appointed, acquisition activity increases.
+This is perhaps due to the acquisition of different firms suggested by activist directors.
+Second, the positive coefficient on \textit{Activist director $\times$ Divestiture} in the regression with divestitures as the outcome is larger and statistically significant, consistent with an increase in divestitures after the appointment of activist directors when divestitures have been demanded by activists.
 
 We have not replaced Panel B of Table 10 in the paper with the analysis in Table \ref{tbl:other_x_alt} for a number of reasons.
-First, the event periods for activism events in the analysis in Table \ref{tbl:other_x_alt} is not consistent with that for non-activism events.
+First, the event periods for activism events in the analysis in Table \ref{tbl:other_x_alt} are not consistent with those for non-activism events.
 Second, the approach used in Panel B of Table 10 is consistent with other analyses in the paper, including those in other parts of Table 10.
-Notwithstanding these limitations, we believe that the results reported in Table \ref{tbl:other_x_alt} provide support for the results presented in Table 10.
+Notwithstanding these limitations, we believe the results reported in Table \ref{tbl:other_x_alt} support the results presented in Table 10.
 
 \section{Career outcomes} \label{sect:career}
 In this section, we examine the career outcomes of activist directors following their appointments.
