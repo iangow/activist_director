@@ -5,35 +5,36 @@
 \subsection{Activism events}
 
 Our data on activism events come from FactSet's SharkWatch database, which contains information on shareholder activism events, primarily in the United States and generally involving hedge fund activists.
-One advantage of using SharkWatch instead of Schedule 13D disclosures is that the sample includes those activism events where the activists have less than 5\% ownership in the target firm \citep{Bourveau:2017aa}.
+One advantage of using SharkWatch instead of Schedule 13D disclosures is that it allows us to include events where the activists have less than 5\% ownership in the target firm \citep{Bourveau:2017aa}.
 From SharkWatch, we collect information on all publicly disclosed activism events that commenced between January 1, 2004 and December 31, 2016 where the target firm is matched to CRSP, is incorporated in the United States, is neither an investment trust nor mutual fund, and where the event is not a control contest involving another corporation.
-These parameters yield \Sexpr{num_events} activism events.
-Note that our sample consists only of those events with no pending action and does not include activism events consisting only of shareholder proposals submitted under Rule 14a-8.
+These parameters yield a sample of \Sexpr{num_events} activism events.
+Note that our sample only includes events with no pending action and excludes activism events consisting only of shareholder proposals submitted under Rule 14a-8.
 
-For each activism event, we measure the effective announcement date using various sources, including SharkWatch and relevant SEC filings, as the earliest date on which the activism became clearly known to the market.
-Because many of our empirical analyses use data reported in fiscal periods, we denote the fiscal year in which the effective announcement date occurs as year $t + 1$ and consider the previous fiscal year (year $t$) as the year prior to activism.
-Year $t$ serves as reference year in many of our empirical analyses.
+For each activism event, we measure the effective announcement date as the earliest date on which the activism became clearly known to the market, using various sources such as SharkWatch and relevant SEC filings.
+Since many of our empirical analyses use data reported in fiscal periods, we denote the fiscal year in which the effective announcement date occurs as year $t + 1$ and consider the previous fiscal year (year $t$) as the year prior to activism.
+Year $t$ serves as the reference year in many of our empirical analyses.
 
-Table \ref{tbl:act_events} provides details of the number of activism events over our sample period.
-We divide the \Sexpr{num_events} activism events into three mutually exclusive categories: \textit{Activist director} events in which activists won board representation (\Sexpr{act_dir} events), \textit{Board demand} events in which activists sought, but did not win, board seats (\Sexpr{brd_dmd} events), and \textit{Non-board activism} events in which activists targeted the firm, but board representation was neither sought nor obtained (\Sexpr{act_only} events).
+Table \ref{tbl:act_events} provides the number of activism events over our sample period.
+We divide the \Sexpr{num_events} activism events into three mutually exclusive categories: \textit{Activist director} events, in which activists won board representation (\Sexpr{act_dir} events), \textit{Board demand} events, in which activists sought, but did not win, board seats (\Sexpr{brd_dmd} events), and \textit{Non-board activism} events, in which activists targeted the firm, but board representation was neither sought nor obtained (\Sexpr{act_only} events).
 We can see from the sample descriptive statistics that more than 45\% of our activism samples involved some kind of demand for board representation and that the activists ended up with at least one board seat in almost 60\% of cases.
 
 \subsection{Activist directors}
-For each activism event in which SharkWatch indicated that the activists obtained board representation, we used proxy statements (DEF 14A) and current report filings (Form 8-K, Item 5.02) to collect the names of the directors who were appointed as a result of the activist campaign.
+For each activism event where SharkWatch indicated that the activists obtained board representation, we used proxy statements (DEF 14A) and current report filings (Form 8-K, Item 5.02) to collect the names of the directors who were appointed as a result of the activist campaign.
 We also collected their appointment dates and basic biographical details.
 We then examined subsequent SEC filings up to December 31, 2017 to determine whether each director subsequently left the board and, if so, when.
-We sort these activist directors into two categories: the \textit{Affiliated} category comprises directors that we identified as employees or principals of members of the activist group, while the \textit{Unaffiliated} category includes the remaining activist directors, who tend to be industry experts.
+
+We sort these activist directors into two groups: the \textit{Affiliated} category comprises directors that we identified as employees or principals of members of the activist group, while the \textit{Unaffiliated} category includes the remaining activist directors, who tend to be industry experts.
 For example, in the Blockbuster case discussed in Section \ref{sect:lit_review}, Carl Icahn was clearly an affiliated director, while the other two nominees, ``veteran entertainment industry executives,'' Edward Bleier and Strauss Zelnick, were unaffiliated.
-Table \ref{tbl:act_dirs} provides the yearly distribution of \textit{Affiliated} and \textit{Unaffiliated} directors.
-In our sample of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as a result of activism campaigns in our sample, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
+Table \ref{tbl:act_dirs} shows the yearly distribution of \textit{Affiliated} and \textit{Unaffiliated} directors in our sample.
+In our sample of \Sexpr{prettyNum(dirs$all_dirs, big.mark = ",")} activist directors appointed as a result of activism campaigns, \Sexpr{prettyNum(dirs$affiliated, big.mark = ",")} are \textit{Affiliated} and \Sexpr{dirs$unaffiliated} are \textit{Unaffiliated}.
 
 Table \ref{tbl:act_dirs} also provides data on the manner in which directors were appointed.
-We find that most activist directors (\Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")}) were appointed following some kind of settlement with the incumbent board while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were appointed through shareholder elections.
-Note that we consider both explicit settlement cases with public settlement agreements and implicit settlement cases without any public agreements; of the 1,245 activist directors who were appointed following some kind of settlement, 941 activist directors were appointed following explicit settlement agreements and 304 were appointed under implicit settlement agreements.
+We find that most activist directors (\Sexpr{prettyNum(dirs$settled, big.mark=",")} of the \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")}) were appointed following some kind of settlement with the incumbent board, while only \Sexpr{prettyNum(dirs$elected, big.mark=",")} were elected by shareholders.
+Note that we consider both explicit settlement cases with public settlement agreements and implicit settlement cases without any public agreements; of the 1,245 activist directors who were appointed following a settlement, 941 were appointed through explicit settlement agreements and 304 were appointed under implicit settlement agreements.
 % Additionally, the number of directors getting on the board as the result of shareholder votes appears to be declining in our sample period.
 
 \subsection{Activist holdings}
-To identify activist holdings of the targeted firm stocks, we use data from WhaleWisdom, which provides comprehensive coverage of SEC Form 13F and 13F/A filings related to holdings at quarter-ends from 2001 onward.\footnote{See \url{www.whalewisdom.com}.}
+To identify activist holdings of the targeted firm's stocks, we use data from WhaleWisdom, which provides comprehensive coverage of SEC Form 13F and 13F/A filings related to holdings at quarter-ends from 2001 onward.\footnote{See \url{www.whalewisdom.com}.}
 These filings are required on a quarterly basis for investors having more than \$100 million in assets under management.
 We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our sample are associated with activists that file on Form 13F.
 
@@ -49,7 +50,7 @@ For each director on a company's board, Equilar provides director-level informat
 Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.
 
 \subsection{Other data} \label{sec:other_data}
-In our analysis, we use a number of controls drawn from several sources.
+In our analysis, we use a number of control variables drawn from various sources.
 We calculate \textit{Analyst}, the number of analyst forecasts for each firm-year using data from IBES.
 We derive the proportion of the firm's outstanding stock held by institutions (\textit{Institutional}) using data from WhaleWisdom.
 Data on stock market performance, such as size-adjusted returns (\textit{Size-adj. returns}), come from CRSP.
