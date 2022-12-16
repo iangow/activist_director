@@ -16,13 +16,13 @@ We thank the Division of Research at Harvard Business School, University of Melb
 
 \singlespacing
 \begin{abstract}
-This paper examines the determinants and consequences of hedge fund activism, focusing on activist directors, i.e., directors appointed in response to activists' demands.
-Using a sample of \Sexpr{num_events} activism events between 2004 and 2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors.
-Relative to other newly appointed directors, these activist directors are younger, more likely to have finance and accounting skills, and less likely to be female. % Not contributing to the diversity of the board.
+This paper examines the determinants and consequences of hedge fund activism, focusing on activist directors, i.e., directors appointed in response to activist demands.
+Using a sample of \Sexpr{num_events} activism events from 2004 to 2016, we identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} activist directors.
+Compared to other newly appointed directors, these activist directors tend to be younger, more likely to have finance and accounting skills, and less likely to be female. % Not contributing to the diversity of the board.
 Activists remain as shareholders longer when they have board seats, with holding periods consistent with conventional notions of ``long-term'' institutional investors.
-We find that the likelihood of acquiring board representation is associated with weaker market performance or with a lower payout ratio.
-Following the appointment of the activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, greater leverage, higher payout, and reduced investment.
-These estimated effects are significantly greater for payout ratios and R\&D investment than other forms of activism, consistent with the notion that such representation is an important mechanism for bringing about the changes that activists often demand.
+We find that the likelihood of acquiring board representation is associated with weaker market performance or lower payout ratios.
+Following the appointment of an activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, increased leverage, higher payouts, and reduced investment.
+These estimated effects are significantly pronounced for payout ratios and R\&D investment than other forms of activism, consistent with the notion that board representation is an important mechanism for activists to achieve their desired changes.
 Lastly, we find positive abnormal returns of 2\% when an activist director is appointed and about a 2\%-point increase in return on assets over the subsequent one to five years.
 \end{abstract}
 \doublespacing
