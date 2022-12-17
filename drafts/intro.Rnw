@@ -109,13 +109,13 @@ However, our study differs in several key ways.
 First, our sample period is more recent, allowing us to capture the most up-to-date trends and insights.
 Second, our study includes a broader range of activist directors, including those appointed outside of settlement agreements.
 For instance, our sample covers 1,623 activist directors compared to 634 activist directors in \citet{Bebchuk:2017}.
-This allows us to offer a more comprehensive and in-depth analysis of the role of activist directors in the broader context of hedge fund activism.
+This allows us to offer a more comprehensive and in-depth analysis of the role of activist directors.
 Third, we delve more deeply into the characteristics of activist directors, including their demographics and skill sets.
 In addition, we study the interaction of activist directors with activist investment strategies and activist demands.
 
 The topic of our paper is particularly relevant in light of recent developments.
-In November 2021, the SEC voted to adopt new rules requiring the use of a single proxy card for director elections, which are set to take effect in August 2022.
-These changes are expected to make it easier for activists to nominate directors, which could lead to an increase in the number of activist directors in the future.
+In November 2021, the SEC voted to adopt new rules requiring the use of a single proxy card for director elections from August 2022.
+These new rules are expected to make it easier for activists directors join boards outside of settlement agreements, and seem likely to lead to activist directors continuing to be an important phenomenon in the governance of public US firms.
 
 The rest of the paper proceeds as follows.
 Section \ref{sect:lit_review} describes features of shareholder activism campaigns and related literature.
