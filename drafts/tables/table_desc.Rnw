@@ -64,11 +64,11 @@ rs <- dbDisconnect(pg)
   \begin{minipage}[t]{\columnwidth}
 %  \begin{flushleft}
 {\small
-This table presents the number of activism events by year.
+This table presents the number of shareholder activism events by year.
 \textit{Activism} refers to activism events in any of the following three mutually exclusive categories.
-\textit{Non-board activism} refers to non-board-related activism events.
+\textit{Non-board activism} refers to activism events that do not involve board-related demands.
 \textit{Board demand} refers to activism events where activists demanded,
-                      but did not win, board seats.
+                      but did not receive, board seats.
 \textit{Activist director} refers to activism events where activists were granted one or more board seats.
 \newline}
 % \end{flushleft}
@@ -99,7 +99,7 @@ print(xtable(subset(table.firms, Year == "Total"),
 %  \begin{flushleft}
 {\small
 This table presents the numbers of activist directors by year.
-\textit{Activist directors} are directors who were appointed to the board in response to demands by activists.
+\textit{Activist directors} are directors who were appointed to the board in response to demands made by activists.
 \textit{Affiliated} (\textit{Unaffiliated}) indicates activist directors who are (are not) employees or principals of a member of the activist group.
 \textit{Elected} indicates activist directors who were elected by shareholders through a shareholder vote.
 \textit{Settled} indicates activist directors who were appointed to the board by settlement without a shareholder vote.

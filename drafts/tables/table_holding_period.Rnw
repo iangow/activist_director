@@ -181,8 +181,8 @@ row.names(panel2) <- c("Other activism", "Affiliated director", "Unaffiliated di
 %  \begin{flushleft}
 \small
 \tabularnewline
-This table presents the results of censored median regression analysis of the holding period (days) on the activism category.
-\textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist where the target stock is listed in the activist's portfolio through to the record date of the first filing where it is not (exit date)
+This table presents the results of a censored median regression analysis examining the holding period (in days) of activist groups in target firms, categorized by the type of activism.
+\textit{Entry--exit} refers to the time (in days) between the record date of the first filing by the activist in which the target firm's stock is listed in their portfolio and the record date of the first filing in which it is not (exit date)
 \textit{Annc--exit} refers to the time between the announcement of activism and the exit date.
 \textit{Appt--exit} refers to the time between the first activist director appointment and the exit date.
 \newline

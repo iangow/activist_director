@@ -354,17 +354,18 @@ skill_summ_sim <-
 \tabularnewline
 {\small
 This table presents descriptive statistics for directors.
-Panel A presents data on directors.
-Data on activist directors are restricted to those found on Equilar and relate to activist directors in the first year on their respective boards.
+Panel A presents data on all directors.
+Data on activist directors is restricted to those found on Equilar and relate to activist directors in the first year on their respective board.
 $N$ refers to the number of observations.
 The remaining variables are means of characteristics by director category.
 \textit{Age} is the director's age.
 Values for \textit{Female}, \textit{Comm.}, \textit{Comp comm.}, \textit{Audit comm.}, \textit{Fin. expert}, and \textit{Ind. exp.} are indicator variables for being female, being a member of at least one board committee, being a member of the compensation committee, being a member of the audit committee, being designated a financial expert of the audit committee, and having served on another board in the same industry, respectively.
 Values for \textit{Board exp.} is the cumulative number of other boards served prior to appointment, \textit{Other boards} is the number of other boards served at the time of appointment, \textit{Avg. tenure} is the average number of years a director served on those other boards, and \textit{Total tenure} is the total number of years a director served on other boards, respectively.
+
 Panel B presents data on all activist directors (i.e., no requirement for Equilar match).
 \textit{Left board} (\textit{Still active}) is the number of directors who have left (remained with) the board by \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}.
 \textit{Tenure} is median tenure in days (censored for directors still active on \Sexpr{format(as.Date(censor_date), "%B %d, %Y")}).
-\textit{Tenure (adj.)} is estimated median tenure for directors accounting for censoring.
+\textit{Tenure (adj.)} is estimated median tenure for directors, accounting for censoring.
 \newline}
 % \end{flushleft}
 \end{minipage}
@@ -408,8 +409,8 @@ print(xtable(activist_director_stats,
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents data on director skill sets.
-Panel A presents data on activist director skill sets with the percentage of activist directors with the \textit{skill} in Column 1 (\textit{Activist director}) and the percentage of directors with the \textit{skill} using data from \citet{Adams:2018vf} in Column 2 (\textit{Adams et al. (2018)}).
+This table presents data on the skill sets of directors.
+Panel A presents data on the skill sets of activist director with the percentage of activist directors with a particular \textit{skill} in Column 1 (\textit{Activist director}) and the percentage of directors with a particular \textit{skill}, using data from \citet{Adams:2018vf} in Column 2 (\textit{Adams et al. (2018)}).
 The difference between our activist director sample and the \citet{Adams:2018vf} sample is reported in Column 3 (\textit{Diff.}) and its $p$-value is reported in Column 4 (\textit{$p$-value}).
 \newline}
 % \end{flushleft}
@@ -435,8 +436,8 @@ print(xtable(skill_summ_sim, display=c("s", "s", "f", "f", "f", "f")),
 %  \begin{flushleft}
 \tabularnewline
 {\small
-This table presents data on director skill sets.
-Panel B presents data on activist director skill sets for affiliated and unaffiliated directors. Column 1 (\textit{Activist director}) refers to the percentage of activist directors with the \textit{skill}, Column 2 (\textit{Affiliated}) refers to the percentage of directors affiliated with an activist with the \textit{skill}, and Column 3 (\textit{Unaffiliated}) refers to the percentage of activist directors with no affiliation to an activist with the \textit{skill}.
+This table presents data on the skill sets of directors.
+Panel B presents data on the skill sets of affiliated and unaffiliated directors separately. Column 1 (\textit{Activist director}) refers to the percentage of activist directors with a particular \textit{skill}, Column 2 (\textit{Affiliated}) refers to the percentage of directors affiliated with an activist with a particular \textit{skill}, and Column 3 (\textit{Unaffiliated}) refers to the percentage of activist directors not affiliated with an activist with a particular \textit{skill}.
 The difference between affiliated and unaffiliated directors is reported in Column 4 (\textit{Diff.}) and  its $p$-value is reported in Column 5 (\textit{$p$-value}).
 \newline}
 % \end{flushleft}
