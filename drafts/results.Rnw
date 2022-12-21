@@ -35,10 +35,10 @@ Using these data, \citet{Adams:2018vf} found that director skills are an importa
 Following the approach of \citet{Adams:2018vf}, who classified director skill sets into 20 categories, we hand-collected data and identified the skill set of each activist director.\footnote{While it would have been better to examine whether activist directors bring unique skill sets to the board, we were unable to collect data on the skill sets of non-activist directors due to the high cost of data collection. Instead, we used skill sets reported in \citet{Adams:2018vf} as a basis for comparison.}
 
 Panel A of Table \ref{tbl:dir_skills} presents summary statistics.
-In general, activist directors have fewer skill sets than other directors.
-We find that the mean number of skill sets for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skill sets per director in their sample ($p-value$ for the difference $<$ $0.01$).
-In particular, activist directors stand out with regard to the \textit{Finance and accounting} skill set.
-We find that 48\% of activist directors have the finance and accounting skill set, which is significantly higher than the 34\% of directors found by \citet{Adams:2018vf}.
+In general, activist directors have fewer skills than other directors.
+We find that the mean number of skills for activist directors is $2.05$; by comparison, \citet{Adams:2018vf} report $3.07$ skills per director in their sample ($p-value$ for the difference $<$ $0.01$).
+In particular, activist directors stand out with regard to the \textit{Finance and accounting} skill.
+We find that 48\% of activist directors have the finance and accounting skill, which is significantly higher than the 34\% of directors found by \citet{Adams:2018vf}.
 
 In Panel B of Table \ref{tbl:dir_skills}, we examine differences in skill sets between affiliated and unaffiliated directors.
 As expected, affiliated directors are associated with a higher likelihood of having skills of \textit{Finance and accounting} and \textit{Governance}. This is likely due to their association with activist hedge funds and their previous experience as activist directors on other boards.
@@ -54,11 +54,11 @@ To control for other factors that may affect shareholder support for directors a
 Therefore, this analysis compares voting outcomes of activist directors to those of other directors at the same firm who were up for election at the same shareholder meeting.
 Columns 1 and 2 provide results for each activist director's first election (excluding contested elections), while Columns 3 and 4 (5 and 6) provide results for their second (third) election.
 
-The results in Column 1 indicate that activist directors receive significantly higher shareholder support than other directors: $3.26$ ($3.00$) percentage points higher for unaffiliated (affiliated) activist directors.
+The results in Column 1 indicate that activist directors receive significantly higher shareholder support than other directors: $3.54$ ($3.50$) percentage points higher for unaffiliated (affiliated) activist directors.
 These apparent effects are non-trivial: the interquartile range of voting support in our sample is $7.24\%$ and the within-meeting standard deviation is $6.77\%$.
 Because ISS recommendations are known to influence shareholder votes, we include an indicator for a favorable ISS recommendation for each director in the regression reported in Column 2.
-The estimated coefficient of $16.61\%$ for \textit{ISS for} confirms that ISS recommendations have a significant impact on election outcomes.
-However, even controlling for ISS recommendations, we find that there is greater shareholder support for both unaffiliated and affiliated directors: $2.36$ ($2.10$) percentage points higher for unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly co-determined with the vote outcomes. As such, the inclusion of the ISS indicator may provide a conservative estimate of shareholder support for activist directors.}
+The estimated coefficient of $17.84\%$ for \textit{ISS for} confirms that ISS recommendations have a significant impact on election outcomes.
+However, even controlling for ISS recommendations, we find that there is greater shareholder support for both unaffiliated and affiliated directors: $2.49$ ($2.25$) percentage points higher for unaffiliated (affiliated) activist directors.\footnote{ISS policies explicitly reflect the preferences of institutional investor clients, so ISS recommendations are plausibly co-determined with the vote outcomes. As such, the inclusion of the ISS indicator may provide a conservative estimate of shareholder support for activist directors.}
 
 However, the higher shareholder support for activist directors tends to be short-lived; shareholders appear to view activist directors in the same way as other directors in subsequent elections.
 As can be seen from the insignificant coefficients for both unaffiliated and affiliated directors, shareholder support for activist directors is not statistically different from that for other directors one (Columns 3 and 4) and two (Columns 5 and 6) elections after activism.
@@ -69,6 +69,7 @@ Next, we examine whether the length of time that activist investors hold a stock
 There is a common perception that activist shareholders are opportunists who only invest for a short period and then sell their holdings \citep{Bebchuk:2013wi}.
 To provide tentative evidence on this point, we examine the actual holding periods of activists, focusing on how they change when activist directors are appointed.
 We consider three holding periods: \textit{Entry--Exit}, which covers the period from the first date on which the stock was held to the last date it was held; \textit{Annc--Exit}, which covers the period from the date on which activism was first announced (typically with a 13D filing) to the exit date; and \textit{Appt--exit}, which covers the period from the first appointment of an activist director through to the exit date.\footnote{We define the entry date as the record date of the first continuous date of the 13F filing in which the stock is part of the activist's portfolio. We define the exit date as the record date of the first 13F filing in which the stock is no longer part of the activist's portfolio.}
+
 However, there are inherent challenges in this type of analysis.
 Since the 13F filing data we use to determine when an activist acquires and disposes of stock are only available quarterly, our measures of holding periods (expressed in days) may have some measurement errors.
 
@@ -182,7 +183,7 @@ The third outcome we consider is \textit{Acquired}, an indicator for whether the
 We use a regression analysis to study the relationship between these outcomes and the presence of an activist director, controlling for industry and year effects as well as a number of other factors (as described in Section \ref{sec:other_data}): \textit{Analyst}, \textit{Institutional}, \textit{Market value}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Outside percent}, \textit{Age}, \textit{Tenure}, and \textit{Staggered board}.
 
 Table \ref{tbl:other_x} Panel B presents the results.
-Examining the first column, the estimated coefficients on \textit{Activist director} and \textit{Other activism} are $-0.065$ and $-0.039$, respectively, suggesting that activism and activist directors are associated with fewer acquisitions, even in the absence of explicit demands for firms to curtail acquisitions.
+Examining the first column, the estimated coefficients on \textit{Activist director} and \textit{Other activism} are $-0.064$ and $-0.039$, respectively, suggesting that activism and activist directors are associated with fewer acquisitions, even in the absence of explicit demands for firms to curtail acquisitions.
 Furthermore, the interaction effect between the demand to block acquisition and the activist director indicator (\textit{Activist director} $\times$ \textit{Block acquisition}) is negative and significant.\footnote{We combined the \textit{Affiliated director} and \textit{Unaffiliated director} indicators for this analysis due to a limited number of observations with demands such as \emph{Block merger}.}
 The coefficient for the interaction term, \textit{Activist director} $\times$ \textit{Block acquisition}, suggests that the combination of an activist director and a demand to block a proposed acquisition is associated with a 67.5 percentage-point lower likelihood of an acquisition within two years following activism.
 This is consistent with activist directors playing a crucial role in helping activists achieving their stated goal of preventing acquisitions by the firms they target.\footnote{Note that there is no separate main effect for the demands because demands are only present when there is some form of activism.}
@@ -193,7 +194,7 @@ Considering that the average rate of divestiture is 20.4\% for all firms, the li
 While the demand to curtail acquisitions and divestitures are clearly not equivalent, divestitures are in some ways the opposite of acquisitions, and the result is consistent with such a demand being associated with a generally increased focus on capital discipline when activist directors are appointed.
 
 The third column examines the relationship between demands for divestitures and actual divestitures by target firms.
-Again, we find that activism and activist directors are generally associated with divestitures (coefs. of $0.045$ and $0.081$ for \textit{Activist director} and \textit{Other activism}, respectively).
+Again, we find that activism and activist directors are generally associated with divestitures (coefs. of $0.081$ and $0.045$ for \textit{Activist director} and \textit{Other activism}, respectively).
 However, we do not see evidence of an interaction effect between demands for divestitures and activist directors and divestiture outcomes.
 In fact, it is the interaction between \textit{Other activism} and divestiture demands that is statistically significant (coef. $0.168$).
 
@@ -228,7 +229,7 @@ The coefficients for activism indicators are all negative in direction, but not 
 This may suggest that activists and activist directors are unable to limit CEO compensation.
 However, it is also possible that they have an effect on the relationship between CEO pay and firm performance, rather than the level of compensation itself.
 
-\subsection{Capital structure, payout, and investment} \label{sect:financing}
+\subsection{Payout, capital structure, and investment} \label{sect:financing}
 Activists often demand that firms increase their cash distributions to shareholders, either through dividends or share buybacks, which FactSet captures as a \textit{Payout demand}.
 Another common demand is for firms to increase leverage (\textit{Leverage demand}).
 
