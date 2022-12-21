@@ -228,8 +228,10 @@ fm_t2_iss_se <- coeftest.cluster(reg.data, fm_t2_iss, cluster1="companyid")
 \begin{minipage}[t]{\columnwidth}
 {\small
 This table presents the results of regressions analyzing voting support for directors at shareholder meetings where activist directors were up for election.
+\textit{Support} is the percentage of votes for the director based on data from ISS Voting Analytics.
 The sample includes all directors considered at such meetings and excludes contested elections, where vote support is split between incumbents and challengers.
 Periods $t$, $t+1$, and $t+2$ refer to the first, second, and third elections, respectively, for an activist director upon or after appointment.
+Columns 1 and 2 present results for each activist director’s first election, while Columns 3 and 4 (5 and 6) present results for their second (third) election.
 All columns include meeting fixed effects.
     \newline}
 \end{minipage}
