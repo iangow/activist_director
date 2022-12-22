@@ -24,7 +24,7 @@ We find that the likelihood of acquiring board representation is associated with
 Following the appointment of an activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, increased leverage, higher payouts, and reduced investment.
 These estimated effects are significantly pronounced for payout ratios and R\&D investment than other forms of activism, consistent with the notion that board representation is an important mechanism for activists to achieve their desired changes.
 Using data on activists stated demands, we find evidence consistent with activist directors helping those demands to be met.
-Lastly, we find positive abnormal returns of 1\% when an activist director is appointed and up to 1 3.2\%-point increase in return on assets over the subsequent five years.
+Lastly, we find positive abnormal returns of 1\% when an activist director is appointed and up to 3.2\%-point increase in return on assets over the subsequent five years.
 \end{abstract}
 \doublespacing
 
