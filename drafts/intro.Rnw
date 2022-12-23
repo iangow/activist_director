@@ -10,7 +10,7 @@ Determinants and consequences
 }
 
 \author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
-We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as the two anonymous reviewers, participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
 
@@ -23,8 +23,8 @@ Activists remain as shareholders longer when they have board seats, with holding
 We find that the likelihood of acquiring board representation is associated with weaker market performance or lower payout ratios.
 Following the appointment of an activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, increased leverage, higher payouts, and reduced investment.
 These estimated effects are significantly pronounced for payout ratios and R\&D investment than other forms of activism, consistent with the notion that board representation is an important mechanism for activists to achieve their desired changes.
-Using data on activists stated demands, we find evidence consistent with activist directors helping those demands to be met.
-Lastly, we find positive abnormal returns of 1\% when an activist director is appointed and up to 3.2\%-point increase in return on assets over the subsequent five years.
+Using data on activists' stated demands, we find evidence consistent with activist directors helping those demands to be met.
+Finally, we find positive abnormal returns of 1\% when an activist director is appointed and up to 3.2\%-point increase in return on assets over the subsequent five years.
 \end{abstract}
 \doublespacing
 
@@ -64,9 +64,10 @@ How do these effects compare to those of other forms of activism, especially whe
 Our sample of \Sexpr{num_events} activism events comprises all activism events targeting US companies from 2004 to 2016.\footnote{We additionally require that the target firm is matched to CRSP, is not an investment trust or mutual fund, and that the event is not a control contest involving another corporation.}
 In each case, we code whether the activists made demands for board representation and whether they obtained seats on the board.
 We identify \Sexpr{prettyNum(dirs$all_dirs, big.mark=",")} directors who were appointed to the board either through proxy fights or settlements.
+About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed by the hedge fund activists, while the remaining (\Sexpr{dirs$unaffiliated}), sponsored or supported by the activists, do not appear to be affiliated with them.
+
 We describe the characteristics of activist directors and find that they differ from new directors appointed at other firms.
 The greatest differences are observed among those affiliated with the activist.\footnote{\citet*{Gow:2014vf} show that activism is often associated with the departure of incumbent directors.}
-About \Sexpr{percent_aff} percent (\Sexpr{dirs$affiliated} of \Sexpr{dirs$all_dirs}) of activist directors are directly employed by the hedge fund activists, while the remaining (\Sexpr{dirs$unaffiliated}), sponsored or supported by the activists, do not appear to be affiliated with them.
 Activist-affiliated directors (i.e., employees or principals of members of the activist group) are on average about 9 years younger than other activist directors, are much more likely to possess finance and accounting skills, and are far less likely to be female than unaffiliated activist directors, who themselves are collectively more male than new directors in general.
 Activist directors are appointed to key committees just as often as other new directors, suggesting that they quickly assume important roles on the board.
 These activist directors also tend to receive more support in their initial elections compared to other incoming directors, suggesting the high expectations of shareholders when they first join the board.

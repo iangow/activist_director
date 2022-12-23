@@ -48,6 +48,7 @@ Furthermore, unaffiliated directors are more likely to have \textit{Leadership} 
 \subsection{Director elections: Voting outcomes}
 In this section, we examine whether activist directors are perceived differently by shareholders in director elections upon or following their appointment.
 Shareholder voting in director elections provides a mechanism for shareholders to express their satisfaction or dissatisfaction about each director's performance.
+
 Table \ref{tbl:dir_elections} presents the results of OLS regressions that examine the relationship between \textit{Support}, the percentage of votes for the director based on data from ISS Voting Analytics, and activism status.
 Our sample comprises shareholder meetings where activist directors were up for election and includes all directors considered at such meetings.
 To control for other factors that may affect shareholder support for directors at the time of the meeting, we include meeting fixed effects in the regressions.
@@ -96,6 +97,7 @@ Another reference point is provided by the \citet{Beyer:2014niri} survey of inve
 These benchmarks suggest that activist investors are not necessarily short-term oriented and that activists who acquire board representation have a relatively long investment horizon.
 
 \section{Activist target selection} \label{sect:selection}
+\subsection{Firm characteristics and target selection}
 Prior research suggests that hedge fund activists typically target smaller firms, value-oriented firms (low market-to-book ratios), as well as firms with sound operating cash flows but low sales growth, leverage, and dividend payouts \citep*{Brav:2010gx}.
 We extend this analysis to our sample and examine what factors are specifically associated with activists seeking, or obtaining, board representation.\footnote{Untabulated results from logistic regressions with dependent variables as indicators for activism are consistent with prior literature.
 We find that higher analyst following, higher institutional holding, poorer performance, smaller size, and higher book-to-market ratios are associated with a higher likelihood of being targeted for activism.
@@ -138,7 +140,7 @@ In this section, we examine the impact of activists, using two approaches to mea
 
 \subsection{Demand success rates}
 
-The first measure of impact that we consider is the success rate of activist demands.
+The first measure of impact we consider is the success rate of the activist demands discussed in the previous section.
 We use data provided by FactSet SharkWatch to measure the success of activist demands in achieving their goals.
 The results of our analysis are reported in Panel A of Table \ref{tbl:demand_success}.
 
@@ -175,7 +177,6 @@ The first set of demands we consider are demands related to mergers, acquisition
 %As a counterexample, it is not clear what measurable outcome is associated with a demand to "consider strategic alternatives"
 As exemplified in the discussion in Section \ref{sect:lit_review}, one major concern raised by activists is excessive spending on acquisitions by target firms.
 Thus, the first outcome we consider is \textit{Acquisition}, an indicator for whether the firm completed any acquisitions in the two years following activism.
-
 Activists also often urge firms to divest businesses, so our second outcome is \textit{Divestiture}, an indicator for whether the firm divested significant assets in the two years following activism.
 The third outcome we consider is \textit{Acquired}, an indicator for whether the firm was acquired in the two years following activism.
 \citet{Greenwood:2009kh} suggest that announcement returns associated with activism ``are largely explained by the ability of activists to force target firms into a takeover.''
