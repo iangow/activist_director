@@ -47,7 +47,7 @@ We find that \Sexpr{num_13f} (\Sexpr{perc_13f}\%) of the activism events in our 
 Data on 594,248 director-firm-years come from Equilar.\footnote{Equilar is an \href{http://www.Equilar.com}{executive compensation and corporate governance} data firm.}
 The Equilar database covers directors of nearly every company that files both an annual report and an annual proxy statement (SEC Forms 10-K and DEF 14A, respectively).
 For each director on a company's board, Equilar provides director-level information such as committee memberships, gender, age, etc.
-Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors.
+Panel A of Table \ref{tbl:dir_chars} presents director characteristics for each classification of directors, which we discuss in the following section.
 
 \subsection{Other data} \label{sec:other_data}
 In our analysis, we use a number of control variables drawn from various sources.
