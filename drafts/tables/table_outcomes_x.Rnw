@@ -237,7 +237,7 @@ This panel presents the results from OLS regressions of outcome variables on fir
 \textit{Acquisition} indicates whether the firm completed acquisitions in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
 \textit{Divestiture} indicates whether the firm completed divestitures and spinoffs in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
 \textit{Acquired} indicates whether the firm was delisted (as indicated by the CRSP delisting code $\textrm{dlstcd} \in [200, 399]$) in years $t+1$ and $t+2$, where activism was announced in year $t+1$.
-All regressions include industry and year fixed effects and controls, measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
+All regressions include industry and year fixed effects and controls (\textit{Analyst}, \textit{Inst}, \textit{Size-adj. ret}, \textit{Market value}, \textit{Total assets}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Num. directors}, \textit{Outside percent}, and \textit{Staggered board}), measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -343,7 +343,7 @@ rs <- dbDisconnect(pg)
 This panel presents the results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 $\textrm{CEO exit}_{(t+1,t+2)}$ indicates whether there was a change in CEO in year $t+1$ or $t+2$, where activism was announced in year $t+1$.
 $\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation for the year following the announcement of activism (year $t+2$).
-All regressions include industry and year fixed effects and controls, measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
+All regressions include industry and year fixed effects and controls (\textit{Analyst}, \textit{Inst}, \textit{Size-adj. ret}, \textit{Market value}, \textit{Total assets}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Num. directors}, \textit{Outside percent}, and \textit{Staggered board}), measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
@@ -443,7 +443,7 @@ This panel presents the results from OLS regressions of outcome variables on fir
 \textit{Capex} is measured as the ratio of total capital expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 Due to the unavailability of data on activist demands for \textit{Capex} and \textit{R\&D}, there are no interaction variables between activism indicators and related activist demand indicators for \textit{Capex} and \textit{R\&D}.
-All regressions include industry and year fixed effects and controls, measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
+All regressions include industry and year fixed effects and controls (\textit{Analyst}, \textit{Inst}, \textit{Size-adj. ret}, \textit{Market value}, \textit{Total assets}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Num. directors}, \textit{Outside percent}, and \textit{Staggered board}), measured as of the previous fiscal year-end $t$, as described in Section \ref{sec:other_data}; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}

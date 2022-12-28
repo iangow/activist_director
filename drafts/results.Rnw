@@ -182,7 +182,7 @@ Activists also often urge firms to divest businesses, so our second outcome is \
 The third outcome we consider is \textit{Acquired}, an indicator for whether the firm was acquired in the two years following activism.
 \citet{Greenwood:2009kh} suggest that announcement returns associated with activism ``are largely explained by the ability of activists to force target firms into a takeover.''
 
-We use a regression analysis to study the relationship between these outcomes and the presence of an activist director, controlling for industry and year effects as well as a number of other factors (as described in Section \ref{sec:other_data}): \textit{Analyst}, \textit{Institutional}, \textit{Size-adj. ret}, \textit{Market value}, \textit{Total assets}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Num. directors}, \textit{Outside percent}, and \textit{Staggered board}.
+We use a regression analysis to study the relationship between these outcomes and the presence of an activist director, controlling for industry and year effects as well as a number of other factors (as described in Section \ref{sec:other_data}): \textit{Analyst}, \textit{Inst}, \textit{Size-adj. ret}, \textit{Market value}, \textit{Total assets}, \textit{Book-to-market}, \textit{Leverage}, \textit{Payout}, \textit{ROA}, \textit{Sales growth}, \textit{Num. directors}, \textit{Outside percent}, and \textit{Staggered board}.
 
 Table \ref{tbl:other_x} Panel B presents the results.
 Examining the first column, the estimated coefficients on \textit{Activist director} and \textit{Other activism} are $-0.064$ and $-0.039$, respectively, suggesting that activism and activist directors are associated with fewer acquisitions, even in the absence of explicit demands for firms to curtail acquisitions.
@@ -224,7 +224,7 @@ This suggests that the removal of the CEO may be associated with activism in gen
 The next set of demands we consider relates to CEO compensation.
 While such demands often relate to the magnitude of compensation (e.g., according to FactSet data, Relational Investors ``said it was unhappy about high compensation for CEO [of Occidental Petroleum] Ray Irani''), other demands for firms relate to ``properly align executive compensation with shareholder value creation'' (Relational Investors with respect to SPX), which may not entail lower CEO compensation.
 Because the link between CEO compensation and firm performance is difficult to measure, we focus on the level of compensation notwithstanding this discussion.
-Specifically, we regress total CEO compensation in year $t+2$ ($\textit{CEO comp}_{t+2}$), on indicators for each category of activism, lagged pay ($\textit{CEO comp}_{t}$), industry and year indicators, as well as the controls used in other regressions (see Section \ref{sect:desc_stats}).
+Specifically, we regress total CEO compensation in year $t+2$ ($\textit{CEO comp}_{t+2}$), on indicators for each category of activism, lagged pay ($\textit{CEO comp}_{t}$), industry and year indicators, as well as the controls used in Section \ref{sect:div_acq}.
 
 Despite activist demands often related to CEO compensation, we do not find significant associations between CEO pay and activism indicators or interactions between activism and compensation-related demands.
 The coefficients for activism indicators are all negative in direction, but not significant.
@@ -259,7 +259,7 @@ We measure R\&D (\textit{R\&D}) in the same way, using the ratio of total R\&D e
 
 While activists often target excessive investment as an area for improvement, none of the FactSet demand categories neatly map to these demands.
 Therefore, in the final two columns of Table \ref{tbl:other_x} Panel D, we do not include any demand indicators.
-Instead, we regress \textit{CapEx} and \textit{R\&D} on activism categories, their year-$t$ values to control for the baseline levels, industry and year indicators, and the controls used in other regressions (see section \ref{sect:desc_stats}).
+Instead, we regress \textit{CapEx} and \textit{R\&D} on activism categories, their year-$t$ values to control for the baseline levels, industry and year indicators, and the controls used in Section \ref{sect:div_acq}.
 
 In Column 3, we find that having an \textit{Affiliated director} is negatively associated with capital expenditure in the two years following activism.
 The coefficient of $-0.009$ ($p < 0.05$) suggests that the capital expenditure decreases by 0.9 percentage points over the two years following activism.
