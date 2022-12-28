@@ -28,15 +28,15 @@
 \emph{Avg. tenure} & Average number of years a director served on other boards \\
 \emph{Total tenure} & Total number of years a director served on other boards \\
 \emph{Support\textsubscript{t}} & Percentage of votes for the director in year $t$ (\emph{ISS Voting Analytics}) \\
-\emph{Acquisition} & Indicator for whether the firm completed any acquisitions in the two years after a given fiscal year \\
-\emph{Divestiture} & Indicator for whether the firm divested significant assets in the two years after a given fiscal year \\
-\emph{Acquired} & Indicator for whether the firm was acquired in the two years after a given fiscal year \\
-\emph{CEO exit\textsubscript{$(t,t+k)$}} & Change in CEO between the end of year $t$ and the end of year $t + k$ \\
-\emph{CEO comp\textsubscript{$t$}} & Total CEO compensation in year $t$ \\
-\emph{Payout\textsubscript{$t$}} & Ratio of total dividends and share repurchases to EBITDA for the two years after year $t$ \\
-\emph{Leverage\textsubscript{$t$}} & Ratio of book value of debt to the sum of the book value of debt and equity in year $t$ \\
-\emph{Capex\textsubscript{$t$}} & Ratio of total capital expenditure to lagged total assets in year $t$ \\
-\emph{R\&D\textsubscript{$t$}} & Ratio of total R\&D expenditure to lagged total assets in year $t$ \\
+\emph{Acquisition\textsubscript{$(t+1,t+2)$}} & Indicator for whether the firm completed any acquisitions in years $t+1$ and $t+2$, where activism (if any) was announced in year $t+1$ \\
+\emph{Divestiture\textsubscript{$(t+1,t+2)$}} & Indicator for whether the firm divested significant assets in years $t+1$ and $t+2$, where activism (if any) was announced in year $t+1$ \\
+\emph{Acquired\textsubscript{$(t+1,t+2)$}} & Indicator for whether the firm was acquired in years $t+1$ and $t+2$, where activism (if any) was announced in year $t+1$ \\
+\emph{CEO exit\textsubscript{$(t+1,t+2)$}} & Indicator for whether there was a change in CEO in year $t+1$ or $t+2$, where activism (if any) was announced in year $t+1$ \\
+\emph{CEO comp\textsubscript{$(t+2)$}} & Total CEO compensation for the year following the announcement of activism \\
+\emph{Payout\textsubscript{$(t+1,t+2)$}} & Ratio of total dividends and share repurchases to EBITDA for the two years following the announcement of activism in year $t+1$ \\
+\emph{Leverage\textsubscript{$(t+2)$}} & Ratio of the book value of debt to the sum of the book value of debt and equity in the year following the announcement of activism in year $t+1$ \\
+\emph{Capex\textsubscript{$(t+1,t+2)$}} & Ratio of total capital expenditure for the two years following the announcement of activism in year $t+1$ to the lagged total assets in year $t$ \\
+\emph{R\&D\textsubscript{$(t+1,t+2)$}} & Ratio of total R\&D expenditure for the two years following the announcement of activism in year $t+1$ to the lagged total assets in year $t$ \\
 \emph{ROA} & Return on assets calculated as the EBITDA divided by lagged total assets \\
 \emph{R} & Raw returns since announcement, settlement, or appointment \\
 \emph{R\textsuperscript{MKT}} & Market-adjusted returns since announcement, settlement, or appointment \\
