@@ -18,7 +18,7 @@ We find evidence of increased divestiture, decreased acquisition activity, highe
 The estimated effects are greater when activists themselves obtain board representation, particularly with increases in payout and reduction in R\&D spending, consistent with board representation being an important mechanism for bringing about the kinds of changes that activists often demand.
 
 As in prior research, we provide evidence of positive announcement-period returns of around 3--4\% when a firm is targeted by activists, including in cases where the activists gain board seats ex-post.
-There is also an increase of up to 3.2\% in return on assets over the following five years.
+There is also an increase of up to 3.2\% in return on assets over the following five years with the appointment of an activist-affiliated director.
 Long-term shareholding combined with positive operating and market performance suggests that concerns often expressed about the short-termism of hedge fund activists may be less apparent in cases when activists become directors.
 
 Our results do not allow us to definitely conclude that the actions of activist hedge funds are value-enhancing, even if they are concomitant with better operating performance and stock returns.

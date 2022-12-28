@@ -9,8 +9,8 @@ Determinants and consequences
 % \subtitle{Preliminary draft}
 }
 
-\author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
-We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as the two anonymous reviewers, participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+% \author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
+% We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as the two anonymous reviewers, participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
 
@@ -23,7 +23,7 @@ Activists remain as shareholders longer when they have board representation, wit
 We find that the likelihood of acquiring board representation is associated with weaker market performance or lower payout ratios.
 Following the appointment of an activist director, we find evidence of increased divestiture, decreased acquisition activity, higher CEO turnover, increased leverage, higher payouts, and reduced investment.
 Our analysis of data on activists' stated demands also shows that activist directors are effective in helping activists achieve their goals, consistent with the notion that board representation is an important mechanism for activists to bring about desired changes.
-Finally, we find positive abnormal returns of 1\% when an activist director is appointed and up to 3.2\%-point increase in return on assets over the subsequent five years.
+Finally, we find positive abnormal returns of 1\% when an activist director is appointed and a 3.2\%-point increase in return on assets over the subsequent five years with an activist-affiliated director.
 \end{abstract}
 \doublespacing
 
@@ -89,7 +89,7 @@ In the final analysis, we examine the target firms' operating and market perform
 We find that operating performance improves after activism, with a return on assets increase of more than $1.8$ percentage points over a five-year period after the announcement.
 We also observe differential effects when \emph{activist-affiliated} directors are appointed, with an additional $1.5\%$ through $3.2\%$ percentage-point increase in return on assets two to five years after the announcement, respectively.
 In terms of market returns, consistent with prior research, we find significant risk-adjusted returns around the announcement of activism, with market-adjusted returns from $-1$ to $+1$ trading days around the announcement ranging from $3.0\%$ to $3.7\%$.
-We also find a positive market reaction to the appointment of activist directors, with size-adjusted returns from $-1$ to $+1$ trading days around the announcement of $1.1\%$ for affiliated directors and $1.0\%$ for unaffiliated directors.
+We also find a positive market reaction to the appointment of activist directors, with market-adjusted returns from $-1$ to $+1$ trading days around the announcement of $1.1\%$ for affiliated directors and $1.0\%$ for unaffiliated directors.
 
 Overall, our research shows that activist directors are associated with significant strategic and operational actions by firms.
 While the available data does not allow us to make causal inferences unequivocally, the associations we document seem to support the idea that hedge fund activists and activist directors have a notable impact.
