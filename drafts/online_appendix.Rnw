@@ -12,7 +12,6 @@ Activist directors: Determinants and consequences
 \\[18pt]
 }
 
-\author{Ian D. Gow \and Sa-Pyung Sean Shin \and Suraj Srinivasan}
 
 \maketitle
 
@@ -29,7 +28,7 @@ However, the positive association between the proportion of independent director
 One potential explanation is that a more independent board makes a firm more receptive to proposals from activists.
 
 Turning to Column 2 of Table IA.1, we find that activists are more likely to target firms with demands for board representation when a larger proportion of the firm's shares are held by institutional investors, consistent with these investors being more open to supporting activists.
-Smaller firms are also more likely to be targeted for board-related activism.
+Smaller firms and firms with poor market performance are also more likely to be targeted for board-related activism.
 Additionally, we observe that the size of the board is associated with the likelihood of being asked for board representation, consistent with a larger number of directors being a proxy for poor governance and activists targeting firms with poorer governance (Yermack 1996).
 
 In Column 3 of Table IA.1, we observe that activists are more likely to obtain a board seat when the payout is lower, the institutional holding is higher, the return is lower, the firm is smaller, the book-to-market ratio is higher, and the board size is larger with a higher number of outside directors.
@@ -69,8 +68,8 @@ Overall, the findings suggest that affiliated activist directors are particularl
 In this last section, we examine the association between activism and three areas of spending commonly regarded as investments: capital expenditures (CapEx), research and development (R\&D), and advertising.
 The results are presented in Table IA.2 Panel D.
 We find a negative association between \textit{Affiliated director} and \textit{CapEx}.
-We also find negative associations between R\&D spending and activist directors (coefs. -0.007 and -0.009 for Affiliated director and Unaffiliated director, respectively).
-The differences between these coefficients and that for {Other activism} are weakly significant (p $<$ 0.10) for both categories.
+We also find negative associations between R\&D spending and activist directors (coefs. -0.007 and -0.009 for \textit{Affiliated director} and \textit{Unaffiliated director}, respectively).
+The differences between these coefficients and that for \textit{Other activism} are weakly significant (p $<$ 0.10) for both categories.
 In contrast, the results do not show significant associations between advertising spending and \textit{Affiliated director} or \textit{Unaffiliated director}.
 Overall, the evidence in Table IA.2 Panel D suggest that activist directors may play a role in curbing expenditures on capital investment and research and development (R\&D).
 

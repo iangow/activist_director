@@ -349,7 +349,9 @@ t6.pa <- lapply(lhs.vars, get.model, data=reg.data, use.controls=TRUE)
 summ <- make.fTest.table(t6.pa)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism")
 # row.labels <- NULL
-col.labels <- c("Acquisition", "Acquired", "Divestiture")
+col.labels <- c("$\\textrm{Acquisition}_{(t+1,t+2)}$",
+                "$\\textrm{Divestiture}_{(t+1,t+2)}$",
+                "$\\textrm{Acquired}_{(t+1,t+2)}$")
 names(summ) <- col.labels
 stargazer.mod(t6.pa, col.labels, row.labels, omits, summ)
 # Free up some memory
@@ -406,9 +408,9 @@ lhs.vars <- list("ceo_turnover", "ceo_comp")
 
 t6.pb <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.controls=TRUE)
 summ <- make.fTest.table(t6.pb)
-col.labels <- c("$\\textrm{CEO exit}_{(t, t+2)}$", "$\\textrm{CEO comp}_{t+2}$")
+col.labels <- c("$\\textrm{CEO exit}_{(t+1,t+2)}$", "$\\textrm{CEO comp}_{(t+2)}$")
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
-                "$\\textrm{CEO exit}_{(t-1, t)}$", "$\\textrm{CEO comp}_{t}$")
+                "$\\textrm{CEO exit}_{(t)}$", "$\\textrm{CEO comp}_{t}$")
 # row.labels <- NULL
 names(summ) <- col.labels
 stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
@@ -485,7 +487,9 @@ t6.pd <- lapply(lhs.vars, get.model, data=reg.data, include.lag=TRUE, use.contro
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                "$\\textrm{Dep. var.}_{t}$")
 # row.labels <- NULL
-col.labels <- c("Cash", "Leverage", "Payout")
+col.labels <- c("$\\textrm{Cash}_{(t+2)}$",
+                "$\\textrm{Leverage}_{(t+2)}$",
+                "$\\textrm{Payout}_{(t+1,t+2)}$")
 summ <- make.fTest.table(t6.pd)
 names(summ) <- col.labels
 stargazer.mod(t6.pd, col.labels, row.labels, omits, summ)
@@ -524,9 +528,9 @@ summ <- make.fTest.table(t6.pf)
 row.labels <- c("Affiliated director", "Unaffiliated director", "Other activism",
                "$\\textrm{Dep. var.}_{t}$")
 # row.labels <- NULL
-col.labels <- c("$\\textrm{CapEx}$",
-                "$\\textrm{R\\&D}$",
-                "$\\textrm{Advertising}$")
+col.labels <- c("$\\textrm{CapEx}_{(t+1,t+2)}$",
+                "$\\textrm{R\\&D}_{(t+1,t+2)}$",
+                "$\\textrm{Advertising}_{(t+1,t+2)}$")
 names(summ) <- col.labels
 
 stargazer.mod(t6.pf, col.labels, row.labels, omits, summ)
