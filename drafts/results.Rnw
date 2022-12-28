@@ -191,7 +191,7 @@ This is consistent with activist directors playing a crucial role in helping act
 
 Additionally, divestitures are generally positively associated with activism, whether or not an activist director is appointed (coefs. $0.094$ and $0.64$ for \textit{Activist director} and \textit{Other activism}, respectively).
 The coefficient for the interaction term between \textit{Activist director} and \textit{Block acquisition demand} suggests that having an activist director with a demand to block acquisition is associated with a 52.6 percentage-point higher likelihood of seeing a divestiture within two years following activism.
-Considering that the average rate of divestiture is 20.4\% for all firms, the likelihood of divestiture is 2.5 times higher for these firms with an activist director and a demand to block acquisitions.
+Considering that the average rate of divestiture for all firms in our sample is 26.8\%, the likelihood of divestiture is almost twice as high for these firms with an activist director and a demand to block acquisitions.
 While the demand to curtail acquisitions and divestitures are clearly not equivalent, divestitures are in some ways the opposite of acquisitions, and the result is consistent with such a demand being associated with a generally increased focus on capital discipline when activist directors are appointed.
 
 The third column examines the relationship between demands for divestitures and actual divestitures by target firms.
@@ -204,7 +204,7 @@ In this analysis, we see that activism not involving activist directors is assoc
 This is broadly consistent with the finding by \citet{Greenwood:2009kh} that most of the returns on hedge fund activism come from pushing target companies into mergers, but it suggests that activist directors are not a significant mechanism for achieving this outcome.
 
 Instead, when activists actually seek to \emph{block} mergers, we find evidence suggesting that activist directors may play a more significant role.
-Specifically, we find a negative coefficient on \textit{Activist director} $\times$ \textit{Block merger} (coef. $-0.084$).\footnote{On the other hand, we find the coefficient on \textit{Other activism} $\times$ \textit{Block merger} is positive, which we interpret as consistent with the \textit{Block merger} demand being made precisely when a firm being acquired is more likely.}
+Specifically, we find a negative coefficient on \textit{Activist director} $\times$ \textit{Block merger} (coef. $-0.084$), which erases the average merger rate of 7.2\%.\footnote{On the other hand, we find the coefficient on \textit{Other activism} $\times$ \textit{Block merger} is positive, which we interpret as consistent with the \textit{Block merger} demand being made precisely when a firm being acquired is more likely.}
 This suggests that the presence of an activist director is associated with a reduced likelihood of a firm being acquired when activists seek to prevent such ``undesirable''  mergers.
 
 Overall, our analysis indicates that the presence of an activist director is associated with reduced acquisition activity and increased divestitures when such demands are made by activists, and with a reduced likelihood of a firm being acquired when activists seek to prevent such mergers.
@@ -235,8 +235,8 @@ Activists often demand that firms increase their cash distributions to sharehold
 Another common demand is for firms to increase leverage (\textit{Leverage demand}).
 
 In the first column of Table \ref{tbl:other_x} Panel D, we examine the association between activism, payout demands, and shareholder payout (\textit{Payout}), measured as the ratio of total dividends and share repurchases to EBITDA for the two years after year $t$.
-First, we find that having an affiliated director is associated with a 12 percentage-point increase in the payout ratio ($p < 0.01$).
-The coefficient on \textit{Affiliated director} is significantly different from those on \textit{Unaffiliated director} and \textit{Other activism}, which suggests that the appointment of an affiliated director is effective in increasing payout.
+First, we find that having an affiliated director is associated with a 12-percentage point increase in payout from year $t$ to year $t+2$ ($p < 0.01$), which is an almost 64\% increase over the median payout of 18.8\% for all firms.
+Also, the coefficient on \textit{Affiliated director} is significantly different from those on \textit{Unaffiliated director} and \textit{Other activism}, suggesting that the appointment of an affiliated director is effective in increasing payout.
 
 In contrast, we find that the interaction terms between \textit{Unaffiliated director} and \textit{Other activism} with \textit{Payout demand} are statistically significant.
 For example, a demand for increased payout and having an affiliated director at the target firm is associated with a 34.5 percentage-point increase in the payout ratio in the two years following activism. %TODO: We need an F-test if we're going to talk about the sum of two coefficients.
