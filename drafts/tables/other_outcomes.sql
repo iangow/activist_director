@@ -85,7 +85,7 @@ compustat_w_lags AS (
         p2 AS (PARTITION BY gvkey ORDER BY datadate
                 ROWS BETWEEN 1 FOLLOWING AND 2 FOLLOWING),
         p3 AS (PARTITION BY gvkey ORDER BY datadate
-                ROWS BETWEEN 1 FOLLOWING AND 3 FOLLOWING))
+                ROWS BETWEEN 2 FOLLOWING AND 3 FOLLOWING))
 
 SELECT gvkey, datadate,
     CASE WHEN at > 0 THEN xrd/at END AS rnd_cum,

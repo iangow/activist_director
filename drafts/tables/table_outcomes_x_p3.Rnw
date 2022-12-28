@@ -449,10 +449,10 @@ t.pc[[4]] <- fit.model(data=reg.data, lhs="rnd_cum_p3", rhs=rhs.4, cluster1="per
 
 stargazer(t.pc,
           dep.var.labels.include = FALSE,
-          column.labels = c("$\\textrm{Payout}_{(t+1,t+3)}$",
+          column.labels = c("$\\textrm{Payout}_{(t+2,t+3)}$",
                             "$\\textrm{Leverage}_{(t+3)}$",
-                             "$\\textrm{Capex}_{(t+1,t+3)}$",
-                            "$\\textrm{R\\&D}_{(t+1,t+3)}$"),
+                             "$\\textrm{Capex}_{(t+2,t+3)}$",
+                            "$\\textrm{R\\&D}_{(t+2,t+3)}$"),
           omit = c(paste0("^", controls), "^affiliated_none", "rnd_cum", "capex_cum"),
           covariate.labels = c("Affiliated director",
                                "Unaffiliated director",
