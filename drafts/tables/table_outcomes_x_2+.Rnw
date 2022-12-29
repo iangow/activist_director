@@ -1,7 +1,7 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
 \Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
 
-<<outs_x_load_libraries, cache=FALSE, include=FALSE>>=
+<<outs_2+_load_libraries, cache=FALSE, include=FALSE>>=
 # Yihui Xie recommends _not_ caching the loading of packages used
 # by several chunks.
 library(stargazer)
@@ -10,7 +10,7 @@ library(dplyr)
 library(lfe)
 @
 
-<<outs_x_winsorize>>=
+<<outs_2+_winsorize>>=
 # Winsorize selected variables in a data frame
 win01 <- function(x, prob = 0.01, p_low = prob, p_high = 1 - prob) {
   cuts <- quantile(x, probs = c(p_low, p_high), type = 2, na.rm = TRUE)
@@ -44,7 +44,7 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
-<<outs_x_div_acq_data, dependson="outs_x_winsorize">>=
+<<outs_2+_div_acq_data, dependson="outs_2+_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -229,19 +229,20 @@ rs <- dbDisconnect(pg)
 
 \begin{landscape}
 \begin{table}[htb]
-\caption{Activism outcomes by demand}
+\caption{Activism outcomes by demand: 1 vs. 2+ activist directors}
 \label{tbl:other_x}
 \begin{minipage}[t]{\columnwidth}
 {\small
-This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
-Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+This panel follows Table 10 Panel B, but with separate indicators for 1 and 2+ activist directors.
+It presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+Regressions include industry and year fixed effects, and controls are as described in Section 7.3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel B: Acquisitions and divestitures and activist demands} \\
-<<outs_x_t_div_and_acq, dependson=c("outs_x_functions", "outs_x_div_acq_data"), results='asis'>>=
+\multicolumn{3}{l}{Panel A: Acquisitions and divestitures and activist demands} \\
+<<outs_2+_t_div_and_acq, dependson=c("outs_2+_functions", "outs_2+_div_acq_data"), results='asis'>>=
 t.pa <- list()
 rhs.1 <- c("two_plus*block_acquisition_demand", controls)
 rhs.1 <- paste0(paste(rhs.1, collapse = " + "), " - block_acquisition_demand")
@@ -290,7 +291,7 @@ rm(t.pa)
 
 \newpage
 % Panel C - CEO turnover and compensation
-<<outs_x_ceo_data, dependson="outs_x_winsorize">>=
+<<outs_2+_ceo_data, dependson="outs_2+_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -337,20 +338,21 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Activism outcomes by demand}
+\caption{Activism outcomes by demand: 1 vs. 2+ activist directors}
 \begin{minipage}[t]{\columnwidth}
 {\small
-This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+This panel follows Table 10 Panel C, but with separate indicators for 1 and 2+ activist directors.
+It presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 $\textrm{CEO exit}_{(t+1,t+2)}$ indicates a change in CEO in year $t+1$ or $t+2$, where activism was announced in year $t+1$.
 $\textrm{CEO comp}_{t+2}$ is measured as the CEO compensation for the year following the announcement of activism (year $t+2$).
-Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+Regressions include industry and year fixed effects, and controls are as described in Section 7.3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel C: CEO turnover and compensation by activist demand} \\
-<<outs_x_t_ceo, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
+\multicolumn{3}{l}{Panel B: CEO turnover and compensation by activist demand} \\
+<<outs_2+_t_ceo, dependson=c("outs_2+_functions", "outs_2+_lev_pay_data"), results='asis'>>=
 t.pb <- list()
 
 # CEO Turnover
@@ -400,7 +402,7 @@ rm(t.pb)
 
 \newpage
 % Panel C - Leverage and Payouts
-<<outs_x_lev_pay_data, dependson="outs_x_winsorize">>=
+<<outs_2+_lev_pay_data, dependson="outs_2+_winsorize">>=
 
 # Get data from PostgreSQL
 pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
@@ -434,23 +436,24 @@ rs <- dbDisconnect(pg)
 @
 
 \begin{table}[htb]
-\caption{Activism outcomes by demand}
+\caption{Activism outcomes by demand: 1 vs. 2+ activist directors}
 \begin{minipage}[t]{\columnwidth}
 {\small
-This panel presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
+This panel follows Table 10 Panel D, but with separate indicators for 1 and 2+ activist directors.
+It presents results from OLS regressions of outcome variables on firm-year level activism indicators interacted with related activist demand indicators.
 \textit{Payout} is measured as the ratio of total dividends and share repurchases to EBITDA for the two years following the announcement of activism in year $t+1$.
 \textit{Leverage} is measured as the ratio of the book value of debt to the sum of the book value of debt and equity in the year following the announcement of activism in year $t+1$.
 \textit{Capex} is measured as the ratio of total capital expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 \textit{R\&D} is measured as the ratio of total R\&D expenditure for the two years following the announcement of activism in year $t+1$ to the lagged book value of total assets.
 Due to the unavailability of data for demands for \textit{Capex} and \textit{R\&D}, there are no interaction variables between activism indicators and related activist demand indicators for \textit{Capex} and \textit{R\&D}.
-Regressions include industry and year fixed effects, and controls are as described in Section \ref{sec:other_data}; coefficients omitted for space.
+Regressions include industry and year fixed effects, and controls are as described in Section 7.3; coefficients omitted for space.
 Values in parentheses are standard errors clustered by firm.
 *** (**, *) indicates significance at the 1\% (5\%, 10\%) level.
 \newline}
 \end{minipage}
 \begin{tabularx}{\linewidth}{l*{5}{Y}}
-\multicolumn{3}{l}{Panel D: Other outcomes by activist demand} \\
-<<outs_x_t_lev_and_pay, dependson=c("outs_x_functions", "outs_x_lev_pay_data"), results='asis'>>=
+\multicolumn{3}{l}{Panel C: Other outcomes by activist demand} \\
+<<outs_2+_t_lev_and_pay, dependson=c("outs_2+_functions", "outs_2+_lev_pay_data"), results='asis'>>=
 t.pc <- list()
 
 # Leverage, Payout, and R&D
