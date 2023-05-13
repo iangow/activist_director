@@ -348,8 +348,6 @@ stargazer.mod(t6.pb, col.labels, row.labels, omits, summ)
 \end{table}
 % \end{center}
 
-\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('other_outcomes.sql'))}
-
 <<outs_other_data_step, dependson="outs_winsorize">>=
 
 # Get data from PostgreSQL
@@ -358,9 +356,8 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='5GB'")
 
 outcome_controls <- tbl(pg, "outcome_controls")
+outcomes <- tbl(pg, "other_outcomes")
 activist_director_years <- tbl(pg, "activist_director_years")
-outcomes <-
-    tbl(pg, sql(paste0(readLines("other_outcomes.sql"), collapse="\n")))
 activist_demands <- tbl(pg, "demands")
 
 # Winsorize changes
