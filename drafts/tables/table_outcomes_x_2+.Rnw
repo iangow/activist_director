@@ -53,11 +53,12 @@ rs <- dbExecute(pg, "SET search_path TO activist_director")
 rs <- dbExecute(pg, "SET work_mem='3GB'")
 
 outcome_controls <- tbl(pg, "outcome_controls")
-dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
-wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
-ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
-dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
 activist_demands <- tbl(pg, "demands")
+delisting <- tbl(pg, "delisting")
+spinoff_linked <- tbl(pg, "spinoff_linked")
+spinoff_crsp <- tbl(pg, "spinoff_crsp")
+divestiture_linked <- tbl(pg, "divestiture_linked")
+acquisition_linked <- tbl(pg, "acquisition_linked")
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -68,148 +69,6 @@ outcome_controls_mod <-
            datadate_p2 = sql("datadate + interval '2 years'"),
            datadate_p3 = sql("datadate + interval '3 years'")) %>%
     select(permno, matches("^(datadate|default_|firm_exists_)"))
-
-delisting <-
-    dsedelist %>%
-    select(permno, dlstdt, dlstcd) %>%
-    mutate(delist = dlstcd > 100L,
-           merger = between(dlstcd, 200L, 399L),
-           failure = between(dlstcd, 520L, 599L)) %>%
-    select(-dlstcd)
-
-permno_link <-
-    ccmxpf_linktable %>%
-    filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
-    rename(permno = lpermno) %>%
-    select(gvkey, permno, linkdt, linkenddt)
-
-spinoff <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 137L,
-           keydevtoobjectroletypeid == 4L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-spinoff_linked <-
-    spinoff %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
-    compute()
-
-spinoff_crsp <-
-    dsedist %>%
-    mutate(year = date_part('year', rcrddt),
-           crsp_date = greatest(dclrdt, exdt, rcrddt, paydt)) %>%
-    rename(new_permno = acperm) %>%
-    full_join(spinoff_linked, by = c("permno", "year")) %>%
-    mutate(date = coalesce(crsp_date, announcedate)) %>%
-    select(permno, new_permno, date)
-
-divestiture <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 81L,
-           keydevtoobjectroletypeid == 4L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-divestiture_linked <-
-    divestiture %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
-    compute()
-
-acquisition <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 81L,
-           keydevtoobjectroletypeid == 3L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-acquisition_linked <-
-    acquisition %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
-    compute()
-
-divestiture_count <-
-    outcome_controls_mod %>%
-    left_join(divestiture_linked, by = "permno") %>%
-    mutate(divest_p2 = between(announcedate, datadate, datadate_p2),
-           divest_p3 = between(announcedate, datadate, datadate_p3)) %>%
-    group_by(permno, datadate) %>%
-    summarize(num_divestiture_p2 =
-                  sum(as.integer(coalesce(divest_p2, FALSE)),
-                      na.rm = TRUE),
-              num_divestiture_p3 =
-                  sum(as.integer(coalesce(divest_p3, FALSE)),
-                      na.rm = TRUE),
-              .groups = "drop") %>%
-    mutate(divestiture_p2 = num_divestiture_p2 > 0,
-           divestiture_p3 = num_divestiture_p3 > 0) %>%
-    compute()
-
-acquisition_count <-
-    outcome_controls_mod %>%
-    left_join(acquisition_linked,  by = "permno") %>%
-    mutate(acquisition_p2 = between(announcedate, datadate, datadate_p2),
-           acquisition_p3 = between(announcedate, datadate, datadate_p3)) %>%
-    group_by(permno, datadate) %>%
-    summarize(num_acquisition_p2 =
-                  sum(as.integer(coalesce(acquisition_p2, FALSE)),
-                      na.rm = TRUE),
-              num_acquisition_p3 =
-                  sum(as.integer(coalesce(acquisition_p3, FALSE)),
-                      na.rm = TRUE),
-              .groups = "drop") %>%
-    mutate(acquisition_p2 = num_acquisition_p2 > 0,
-           acquisition_p3 = num_acquisition_p3 > 0) %>%
-    compute()
-
-spinoff_count <-
-    outcome_controls_mod %>%
-    left_join(spinoff_linked, by = "permno") %>%
-    mutate(spinoff_p2 = between(announcedate, datadate, datadate_p2),
-           spinoff_p3 = between(announcedate, datadate, datadate_p3)) %>%
-    group_by(permno, datadate) %>%
-    summarize(num_spinoff_p2 =
-                  sum(as.integer(coalesce(spinoff_p2, FALSE)),
-                      na.rm = TRUE),
-              num_spinoff_p3 =
-                  sum(as.integer(coalesce(spinoff_p3, FALSE)),
-                      na.rm = TRUE),
-              .groups = "drop") %>%
-    compute()
-
-delisting_data <-
-    outcome_controls_mod %>%
-    left_join(delisting, by = "permno") %>%
-    mutate(delist_p2 = delist & between(dlstdt, datadate, datadate_p2),
-           delist_p3 = delist & between(dlstdt, datadate, datadate_p3),
-           merger_p2 = merger & between(dlstdt, datadate, datadate_p2),
-           merger_p3 = merger & between(dlstdt, datadate, datadate_p3),
-           failure_p2 = failure & between(dlstdt, datadate, datadate_p2),
-           failure_p3 = failure & between(dlstdt, datadate, datadate_p3)) %>%
-    group_by(permno, datadate) %>%
-    summarize(delist_p2 = bool_or(delist_p2),
-              delist_p3 = bool_or(delist_p3),
-              merger_p2 = bool_or(merger_p2),
-              merger_p3 = bool_or(merger_p3),
-              failure_p2 = bool_or(failure_p2),
-              failure_p3 = bool_or(failure_p3),
-              .groups = "drop") %>%
-    compute()
 
 reg.data <-
     outcome_controls %>%
