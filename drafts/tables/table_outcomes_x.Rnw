@@ -336,7 +336,7 @@ rs <- dbExecute(pg, "SET work_mem='5GB'")
 
 activist_director_years <- tbl(pg, "activist_director_years")
 outcome_controls <- tbl(pg, "outcome_controls")
-outcomes <- tbl(pg, "other_outcomes.sql")
+outcomes <- tbl(pg, "other_outcomes")
 activist_demands <- tbl(pg, "demands")
 
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
