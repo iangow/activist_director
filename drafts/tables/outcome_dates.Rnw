@@ -9,8 +9,6 @@ library(DBI)
 library(dplyr)
 @
 
-
-\Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
 <<outs_x_div_acq_data>>=
 
 # Get data from PostgreSQL
@@ -22,22 +20,11 @@ rs <- dbExecute(pg, "SET work_mem='3GB'")
 activism_events <- tbl(pg, "activism_events")
 activist_directors <- tbl(pg, "activist_directors")
 outcome_controls <- tbl(pg, "outcome_controls")
-dsedelist <- tbl(pg, sql("SELECT * FROM crsp.dsedelist"))
-wrds_keydev <- tbl(pg, sql("SELECT * FROM ciq.wrds_keydev"))
-ccmxpf_linktable <- tbl(pg, sql("SELECT * FROM crsp.ccmxpf_linktable"))
-dsedist <- tbl(pg, sql("SELECT * FROM crsp.dsedist"))
 activist_demands <- tbl(pg, "demands")
-
-appointment_dates <-
-    activist_directors %>%
-    select(campaign_id, appointment_date)  %>%
-    inner_join(activism_events, by = "campaign_id") %>%
-    group_by(campaign_ids, eff_announce_date) %>%
-    summarize(appointment_date = min(appointment_date, na.rm = TRUE),
-              .groups = "drop") %>%
-    inner_join(outcome_controls, by = c("campaign_ids", "eff_announce_date")) %>%
-    select(campaign_ids, eff_announce_date, appointment_date, permno) %>%
-    compute()
+delisting <- tbl(pg, "delisting")
+spinoff_linked <- tbl(pg, "spinoff_linked")
+acquisition_linked <- tbl(pg, "acquisition_linked")
+divestiture_linked <- tbl(pg, "divestiture_linked")
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -49,78 +36,15 @@ outcome_controls_mod <-
            datadate_p3 = sql("datadate + interval '3 years'")) %>%
     select(permno, matches("^(datadate|default_|firm_exists_)"))
 
-delisting <-
-    dsedelist %>%
-    select(permno, dlstdt, dlstcd) %>%
-    mutate(delist = dlstcd > 100L,
-           merger = between(dlstcd, 200L, 399L),
-           failure = between(dlstcd, 520L, 599L)) %>%
-    select(-dlstcd)
-
-permno_link <-
-    ccmxpf_linktable %>%
-    filter(usedflag=='1', linkprim %in% c('C', 'P')) %>%
-    rename(permno = lpermno) %>%
-    select(gvkey, permno, linkdt, linkenddt)
-
-spinoff <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 137L,
-           keydevtoobjectroletypeid == 4L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-spinoff_linked <-
-    spinoff %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
-    compute()
-
-spinoff_crsp <-
-    dsedist %>%
-    mutate(year = date_part('year', rcrddt),
-           crsp_date = greatest(dclrdt, exdt, rcrddt, paydt)) %>%
-    rename(new_permno = acperm) %>%
-    full_join(spinoff_linked, by = c("permno", "year")) %>%
-    mutate(date = coalesce(crsp_date, announcedate)) %>%
-    select(permno, new_permno, date)
-
-divestiture <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 81L,
-           keydevtoobjectroletypeid == 4L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-divestiture_linked <-
-    divestiture %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
-    compute()
-
-acquisition <-
-    wrds_keydev %>%
-     filter(keydeveventtypeid == 81L,
-           keydevtoobjectroletypeid == 3L,
-           !is.na(gvkey)) %>%
-    select(gvkey, announcedate) %>%
-    compute()
-
-acquisition_linked <-
-    acquisition %>%
-    inner_join(permno_link, by = "gvkey") %>%
-    filter(announcedate >= linkdt,
-           announcedate <= linkenddt | is.na(linkenddt)) %>%
-    select(permno, announcedate) %>%
-    mutate(year = date_part('year', announcedate)) %>%
+appointment_dates <-
+    activist_directors %>%
+    select(campaign_id, appointment_date)  %>%
+    inner_join(activism_events, by = "campaign_id") %>%
+    group_by(campaign_ids, eff_announce_date) %>%
+    summarize(appointment_date = min(appointment_date, na.rm = TRUE),
+              .groups = "drop") %>%
+    inner_join(outcome_controls, by = c("campaign_ids", "eff_announce_date")) %>%
+    select(campaign_ids, eff_announce_date, appointment_date, permno) %>%
     compute()
 
 firm_years <-
@@ -209,7 +133,8 @@ announcement_cases %>%
               pre_acq_p3 = bool_or(pre_acq_p3),
               post_acq_p3 = bool_or(post_acq_p3),
               .groups = "drop") %>%
-    summarize(across(matches("^(pre|post|acq)_"), ~ sum(as.integer(.))))
+    summarize(across(matches("^(pre|post|acq)_"), ~ sum(as.integer(.)))) %>%
+    collect()
 
 rs <- dbDisconnect(pg)
 @
