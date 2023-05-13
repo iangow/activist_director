@@ -25,8 +25,7 @@ multiple_items <-
     filter(issagendaitemid %in% c('M0299','S0299')) %>%
     group_by(companyid, meetingid, ballotitemnumber) %>%
     summarise(votes_cast = sum(votedfor + votedagainst + votedabstain, na.rm = TRUE),
-              num_items = n_distinct(itemdesc),
-              .groups = "drop") %>%
+              num_items = n_distinct(itemdesc)) %>%
     filter(num_items > 1) %>%
     select(-num_items) %>%
     compute()
@@ -51,8 +50,7 @@ single_items <-
 votes_cast <-
     multiple_items %>%
     union_all(single_items) %>%
-    left_join(multiple_items %>% mutate(contested = TRUE),
-              join_by(companyid, meetingid, ballotitemnumber)) %>%
+    left_join(multiple_items %>% mutate(contested = TRUE)) %>%
     mutate(contested = coalesce(contested, FALSE)) %>%
     ungroup() %>%
     compute()
