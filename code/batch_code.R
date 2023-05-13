@@ -56,3 +56,7 @@ source('code/create_activism_events_equilar.R', echo=TRUE)
 source('code/create_outcome_controls.R', echo=TRUE)
 source('code/create_ceo_outcomes.R', echo=TRUE)
 source('code/create_activist_director_years.R', echo=TRUE)
+
+source('code/create_dirvoteresults.R', echo=TRUE)
+source('code/create_roa_data.R', echo=TRUE)
+source('code/create_events_linked.R', echo=TRUE)
