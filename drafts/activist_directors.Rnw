@@ -76,7 +76,7 @@ holdings.updated <- getComment("activist_holdings", "activist_director")
 \Sexpr{opts_chunk$set(cache.extra=events.updated)}
 <<sample_stats, cache=TRUE, include=FALSE>>=
 # PostgreSQL Connection
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
 dbExecute(pg, "SET search_path TO activist_director")
 

@@ -1,6 +1,6 @@
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
 chart_data <- dbGetQuery(pg, "
 WITH num_directors AS (
