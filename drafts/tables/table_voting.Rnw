@@ -11,7 +11,7 @@ library(stargazer)
 # Get data from database ----
 pg <- dbConnect(RPostgres::Postgres())
 rs <- dbExecute(pg, "SET work_mem = '3GB'")
-rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 permnos <- tbl(pg, "permnos")
 activist_directors <- tbl(pg, "activist_directors")
