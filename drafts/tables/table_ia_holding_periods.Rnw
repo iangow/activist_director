@@ -13,7 +13,7 @@ library(xtable)
 pg <- dbConnect(RPostgres::Postgres())
 
 rs <- dbExecute(pg, "SET work_mem = '5GB'")
-rs <- dbExecute(pg, "SET search_path TO activist_director, public")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 activist_holdings <- tbl(pg, "activist_holdings")
 activism_events <- tbl(pg, "activism_events")
