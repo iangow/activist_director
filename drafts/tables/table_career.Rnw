@@ -11,25 +11,15 @@ library(psych)
 # Functions
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 
-pg <- dbConnect(RPostgreSQL::PostgreSQL())
+pg <- dbConnect(RPostgres::Postgres())
 
-rs <- dbExecute(pg, "SET search_path TO activist_director, public")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
 equilar_career <- tbl(pg, "equilar_career")
 equilar_type <- tbl(pg, "equilar_type")
 equilar_final <- tbl(pg, "equilar_final")
 outcome_controls <- tbl(pg, "outcome_controls")
 outcome_changes <- tbl(pg, "outcome_changes") %>% rename(period = datadate)
-
-company_financials <- tbl(pg, sql("SELECT * FROM equilar_hbs.company_financials"))
-stocknames <- tbl(pg, sql("SELECT * FROM crsp.stocknames"))
-
-link_table <-
-    company_financials %>%
-    mutate(ncusip = substr(cusip, 1L, 8L)) %>%
-    inner_join(stocknames, by="ncusip") %>%
-    select(company_id, permno) %>%
-    distinct()
 
 outsider_status <-
     equilar_final %>%
