@@ -9,8 +9,8 @@ Determinants and consequences
 % \subtitle{Preliminary draft}
 }
 
-% \author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
-% We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as the two anonymous reviewers, participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
+\author{Ian D. Gow\thanks{Ian D. Gow (ian.gow@unimelb.edu.au) is at the University of Melbourne, Sa-Pyung Sean Shin (s.shin@nus.edu.sg) is at National University of Singapore, and Suraj Srinivasan (ssrinivasan@hbs.edu) is at Harvard Business School.
+We thank the Division of Research at Harvard Business School, the University of Melbourne, and the National University of Singapore for financial support, as well as the two anonymous reviewers, participants in the HBS Accounting and Management brown bag seminar, the HBS IMO conference, the Kellogg Accounting Research conference, and the AAA Annual Meeting for helpful suggestions.} \and Sa-Pyung Sean Shin\footnotemark[1] \and Suraj Srinivasan\footnotemark[1]}
 
 \maketitle
 
