@@ -5,11 +5,11 @@ library(stargazer)
 # Get data from database ----
 pg <- dbConnect(RPostgres::Postgres())
 rs <- dbExecute(pg, "SET work_mem = '3GB'")
-rs <- dbExecute(pg, "SET search_path TO activist_director, risk")
+rs <- dbExecute(pg, "SET search_path TO activist_director")
 
-risk.vavoteresults <- tbl(pg, "vavoteresults")
-risk.issrec <- tbl(pg, "issrec")
-director_names <- tbl(pg, "director_names")
+risk.vavoteresults <- tbl(pg, in_schema("risk", "vavoteresults"))
+risk.issrec <- tbl(pg,  in_schema("risk", "issrec"))
+director_names <- tbl(pg, in_schema("risk", "director_names"))
 
 issrec <-
     risk.issrec %>%
