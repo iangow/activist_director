@@ -48,7 +48,7 @@ library(dplyr, warn.conflicts = FALSE)
 library(DBI)
 
 getComment <- function(table, schema) {
-    pg <- dbConnect(RPostgres::Postgres())
+    pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
     sql = sprintf("
         SELECT description
@@ -76,7 +76,7 @@ holdings.updated <- getComment("activist_holdings", "activist_director")
 \Sexpr{opts_chunk$set(cache.extra=events.updated)}
 <<sample_stats, cache=TRUE, include=FALSE>>=
 # PostgreSQL Connection
-pg <- dbConnect(RPostgres::Postgres())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 dbExecute(pg, "SET search_path TO activist_director")
 
