@@ -14,7 +14,7 @@ library(xtable)
 @
 
 <<table_desc_data, results='asis'>>=
-pg <- dbConnect(RPostgres::Postgres())
+pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
 
 rs <- dbExecute(pg, "SET search_path TO activist_director")
 activism_events <- tbl(pg, "activism_events")

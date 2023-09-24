@@ -1,10 +1,14 @@
 \Sexpr{set_parent('../activist_directors.Rnw')}
-\Sexpr{opts_chunk$set(cache=TRUE, warning=FALSE, echo=FALSE, message=FALSE)}
+\Sexpr{opts_chunk$set(cache=FALSE, warning=FALSE, echo=FALSE, message=FALSE)}
 
 <<vote_packages, cache=FALSE, include=FALSE>>=
 library(DBI)
 library(dplyr, warn.conflicts = FALSE)
 library(stargazer)
+library(lubridate)
+library(psych)
+library(car)
+library(doBy)
 @
 
 <<vote_data, include=FALSE>>=
@@ -25,7 +29,7 @@ multiple_items <-
     filter(issagendaitemid %in% c('M0299','S0299')) %>%
     group_by(companyid, meetingid, ballotitemnumber) %>%
     summarise(votes_cast = sum(votedfor + votedagainst + votedabstain, na.rm = TRUE),
-              num_items = n_distinct(itemdesc)) %>%
+              num_items = n_distinct(itemdesc), .groups = "drop") %>%
     filter(num_items > 1) %>%
     select(-num_items) %>%
     compute()
@@ -50,7 +54,8 @@ single_items <-
 votes_cast <-
     multiple_items %>%
     union_all(single_items) %>%
-    left_join(multiple_items %>% mutate(contested = TRUE)) %>%
+    left_join(multiple_items %>% mutate(contested = TRUE),
+              by = join_by(companyid, meetingid, ballotitemnumber, votes_cast)) %>%
     mutate(contested = coalesce(contested, FALSE)) %>%
     ungroup() %>%
     compute()
@@ -116,21 +121,27 @@ match_a <-
     match_init3 %>%
     union_all(
         match_init2 %>%
-            anti_join(match_init3)) %>%
+            anti_join(match_init3,
+                      by = join_by(campaign_id, appointment_date, last_name,
+                                   first_name, itemonagendaid))) %>%
     compute()
 
 va_match <-
     match_a %>%
     union_all(
         match_init1 %>%
-            anti_join(match_a)) %>%
+            anti_join(match_a,
+                      by = join_by(campaign_id, appointment_date, last_name,
+                                   first_name, itemonagendaid))) %>%
     compute()
 
 ad_vote_data <-
     activist_directors %>%
     select(campaign_id, first_name, last_name, appointment_date, independent) %>%
-    inner_join(va_match) %>%
-    inner_join(director_votes) %>%
+    inner_join(va_match,
+               join_by(campaign_id, first_name, last_name, appointment_date)) %>%
+    inner_join(director_votes,
+               by = join_by(first_name, last_name, itemonagendaid)) %>%
     filter(meetingdate > sql("appointment_date - interval '1 week'")) %>%
     group_by(campaign_id, first_name, last_name, appointment_date) %>%
     arrange(meetingdate) %>%
@@ -146,8 +157,6 @@ rs <- dbDisconnect(pg)
 @
 
 <<vote_func, include=FALSE>>=
-library(lubridate)
-
 get_reg_data <- function(vote_number) {
 
     ad_data <-
@@ -159,8 +168,8 @@ get_reg_data <- function(vote_number) {
 
     other_dirs <-
         director_votes %>%
-        anti_join(ad_data, by="itemonagendaid") %>%
-        semi_join(ad_data, by="meetingid") %>%
+        anti_join(ad_data, by = "itemonagendaid") %>%
+        semi_join(ad_data, by = "meetingid") %>%
         mutate(appointment_date = as.Date(NA))
 
     reg_data <-
@@ -177,9 +186,6 @@ get_reg_data <- function(vote_number) {
 
 <<vote_regs, dependson=c("vote_data", "vote_func"), include=FALSE>>=
 # Functions
-library(psych)
-library(car)
-library(doBy)
 source("https://raw.githubusercontent.com/iangow/acct_data/master/code/cluster2.R")
 
 ### Regression Analyses----
