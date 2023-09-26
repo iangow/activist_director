@@ -1,23 +1,45 @@
-# Activist directors #
+# Activist directors
 
 [Here](https://www.dropbox.com/s/4933xka2vtf1fkm/activist_directors.pdf?dl=0) is PDF of the current draft in Dropbox.
 
+## Install required software
 
-## Quick LaTeX Guide for Suraj 
-- Percent signs (%) mark comments. To get a percent sign, escape it by putting a backslash in front.
-- & is another special character in LaTeX. Use \& to get &.
-- No need to "Compile PDF", but you may do so.
-- Note that each part of the document is in a separate file (so we can edit in parallel).
-- You may want to "allow pop-ups" for this site, as the compiled PDF will be shown as one.
-- If you go to activist_directors.Rnw and "Compile PDF", the full document will be produced.
-- Citations are automatic with the correct key. If you want to add cite, just add them in the normal way and I will fill them in.
-- You may see "failed" messages and bold question marks where cites are meant to be. Don't worry, these should disappear when we compile the full document.
-- Perhaps flag cites that you add with %%%% on the line before or on the same line after the cite.
-- LaTeX doesn't pay attention to multiple spaces. Also adjacent lines get collapsed into single paragraphs.
-- Insert a blank line between lines that are part of two separate paragraphs.
-- \section, \subsection, and \subsubsection have the obvious meanings.
-- Note that there is a file papers.bib in the list of files to the right that this pulls bibliographic information
-from.
+Assuming that you have the ability to install software, setting up your computer so that you can compile the paper in this repository is straightforward and takes just a few minutes.
+We list the required steps below and also provide a video demonstrating some of these steps [here](https://www.youtube.com/watch?v=xRY6Y8qXUJ8).
+
+1. Download and install R.
+R is available for all major platforms (Windows, Linux, and MacOS) [here](https://cloud.r-project.org).
+
+2. Download and install RStudio. 
+An open-source version of RStudio is available [here](https://www.rstudio.com/products/rstudio/download/#download).
+
+3. Install required packages from [CRAN](https://cran.r-project.org).
+CRAN stands for "Comprehensive R Archive Network" and is the official repository for **packages** (also known as **libraries**) made available for R.
+  In this course, we will make use of a number of R packages.
+  These can be installed easily by running the following code in RStudio.^[You can copy and paste the code into the "Console" in RStudio.]
+
+```{r}
+install.packages(c("DBI", "duckdb", "base", "car", "doBy", "lfe", "lmtest",
+                   "plm", "psych", "quantreg", "sandwich", "stargazer", 
+                   "survival", "texreg", "tidyverse", "tinytex", "xtable", "zoo"))
+```
+
+4. Install required LaTeX packages.
+
+```{r}
+tinytex::tlmgr_install(c("harvard", "mathpazo", "courier","psnfss",
+                         "hyperref" ,"natbib", "palatino", "paralist",
+                         "parskip", "titlesec", "setspace", "pdflscape"))
+```
+
+5. Download this repository.
+
+6. Open this repository in RStudio.
+This will means opening the file `activist_director.Rproj` in RStudio.
+
+7. Open the file `drafts/activist_directors.Rnw`.
+
+8. Click "Compile PDF" in RStudio.
 
 ## Data
 
