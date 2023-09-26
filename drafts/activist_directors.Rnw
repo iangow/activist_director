@@ -46,14 +46,8 @@
 <<check_pg, cache=FALSE, include=FALSE>>=
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
-library(digest)
-
-events.updated <- digest(file("data/activism_events.parquet"))
-holdings.updated <- digest(file("data/activist_holdings.parquet"))
 @
 
-% This code gets statistics to refer to in the document.
-\Sexpr{opts_chunk$set(cache.extra=events.updated)}
 <<sample_stats, cache=TRUE, include=FALSE>>=
 db <- dbConnect(duckdb::duckdb())
 
