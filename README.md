@@ -1,6 +1,6 @@
 # Activist directors
 
-[Here](https://www.dropbox.com/s/4933xka2vtf1fkm/activist_directors.pdf?dl=0) is PDF of the current draft in Dropbox.
+This repository provides the code, data, and software instructions needed to compile the paper [Activist directors: determinants and consequences.](https://doi.org/10.1007/s11142-023-09767-8).
 
 ## Install required software
 
