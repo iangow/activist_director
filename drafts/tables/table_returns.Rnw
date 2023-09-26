@@ -13,12 +13,11 @@ library(DBI)
 
 <<rets_data_step, include=FALSE>>==
 ## PostgreSQL Connection
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
+db <- dbConnect(duckdb::duckdb())
 
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-
-event_returns <- tbl(pg, "event_returns")
-demands <- tbl(pg, "demands")
+# Get data from activist director tables ----
+event_returns <- tbl(db, "read_parquet('../data/event_returns.parquet')")
+demands <- tbl(db, "read_parquet('../data/demands.parquet')")
 
 merged <-
     event_returns %>%
@@ -26,8 +25,6 @@ merged <-
     collect() %>%
     mutate(affiliated = as.factor(affiliated),
            affiliated_appt = as.factor(affiliated))
-
-rs <- dbDisconnect(pg)
 @
 
 <<rets_functions, include=FALSE, message=FALSE>>=
@@ -180,6 +177,7 @@ lhs.vars <- c("ret_appt_m12p0_sz", "ret_appt_m0p12_sz", "ret_appt_m0p24_sz")
               #"ret_appt_m12_annc_sz", "ret_appt_annc_appt_sz")
 out.table(reg.data, lhs.vars, rhs=rhs, caption, label=FALSE, ff=FALSE)
 rm(reg.data)
+dbDisconnect(db, shutdown = TRUE)
 @
 \addtocounter{table}{1}
 

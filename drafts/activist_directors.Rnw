@@ -46,43 +46,21 @@
 <<check_pg, cache=FALSE, include=FALSE>>=
 library(dplyr, warn.conflicts = FALSE)
 library(DBI)
+library(digest)
 
-getComment <- function(table, schema) {
-    pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-
-    sql = sprintf("
-        SELECT description
-        FROM pg_description
-        JOIN pg_class
-        ON pg_description.objoid = pg_class.oid
-        JOIN pg_namespace
-        ON pg_class.relnamespace = pg_namespace.oid
-        WHERE relname = '%s' AND nspname='%s'", table, schema)
-
-    res <-
-        dbGetQuery(pg, sql) %>%
-        dplyr::select(description) %>%
-        dplyr::pull()
-
-    dbDisconnect(pg)
-    return(res)
-}
-
-events.updated <- getComment("activism_events", "activist_director")
-holdings.updated <- getComment("activist_holdings", "activist_director")
+events.updated <- digest(file("data/activism_events.parquet"))
+holdings.updated <- digest(file("data/activist_holdings.parquet"))
 @
 
 % This code gets statistics to refer to in the document.
 \Sexpr{opts_chunk$set(cache.extra=events.updated)}
 <<sample_stats, cache=TRUE, include=FALSE>>=
-# PostgreSQL Connection
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
+db <- dbConnect(duckdb::duckdb())
 
-dbExecute(pg, "SET search_path TO activist_director")
-
-activism_events <- tbl(pg, "activism_events")
-activist_directors <- tbl(pg, "activist_directors")
-activist_ciks <- tbl(pg, "activist_ciks")
+# Get data from activist director tables ----
+activism_events <- tbl(db, "read_parquet('data/activism_events.parquet')")
+activist_directors <- tbl(db, "read_parquet('data/activist_directors.parquet')")
+activist_ciks <- tbl(db, "read_parquet('data/activist_ciks.parquet')")
 
 events <-
     activism_events %>%
@@ -132,6 +110,7 @@ filers <-
 
 num_13f <- formatC(filers$num_13f, big.mark = ",")
 perc_13f <- formatC(100*filers$perc_13f, format = "f", digits = 2)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @
 \Sexpr{opts_chunk$set(cache.extra=NULL)}
 

@@ -13,13 +13,12 @@ library(doBy)
 
 <<vote_data, include=FALSE>>=
 # Get data from database ----
-pg <- dbConnect(RPostgres::Postgres())
-rs <- dbExecute(pg, "SET work_mem = '3GB'")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
+db <- dbConnect(duckdb::duckdb())
 
-permnos <- tbl(pg, "permnos")
-activist_directors <- tbl(pg, "activist_directors")
-dirvoteresults  <- tbl(pg, "dirvoteresults")
+# Get data from activist director tables ----
+permnos <- tbl(db, "read_parquet('../data/permnos.parquet')")
+activist_directors <- tbl(db, "read_parquet('../data/activist_directors.parquet')")
+dirvoteresults <- tbl(db, "read_parquet('../data/dirvoteresults.parquet')")
 
 # When there are multiple items (i.e., in contested elections), we need to
 # aggregate votes by ballotitem number to get all votes cast for the
@@ -153,7 +152,7 @@ director_votes <- collect(director_votes)
 va_match <- collect(va_match)
 ad_vote_data <- collect(ad_vote_data)
 
-rs <- dbDisconnect(pg)
+dbDisconnect(db, shutdown = TRUE)
 @
 
 <<vote_func, include=FALSE>>=

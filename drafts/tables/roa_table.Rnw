@@ -20,12 +20,10 @@ library(dplyr, warn.conflicts = FALSE)
 
 <<roa_data_step>>=
 # PostgreSQL Connection
-pg <- dbConnect(RPostgres::Postgres())
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-rs <- dbExecute(pg, "SET work_mem = '8GB'")
+db <- dbConnect(duckdb::duckdb())
 
 # Get data from activist director tables ----
-roa_data <- tbl(pg, "roa_data") %>% collect()
+roa_data <- tbl(db, "read_parquet('../data/roa_data.parquet')")
 @
 
 %
@@ -217,6 +215,7 @@ print(xtable(getCoefs(sw_f), digit=3,
 <<roa_n_table, dependson=c("roa_est", "roa_make_rows"), results='asis'>>=
 # Observations
 fix_names <- function(df) {
+    df <- collect(df)
     colnames(df) = c("all", "Affiliated director", "Unaffiliated director")
     df
 }
@@ -279,6 +278,7 @@ print(xtable(sw_n,
       include.rownames=TRUE,  include.colnames=TRUE, only.contents = TRUE,
       size="small", type="latex", sanitize.text.function = function(x) {x},
       format.args = list(big.mark = ","))
+dbDisconnect(db, shutdown = TRUE)
 @
 \end{tabularx}
 \end{table}

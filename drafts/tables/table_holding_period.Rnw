@@ -17,14 +17,12 @@ library(xtable)
 @
 
 <<quantreg_data_step, include=FALSE, warning=FALSE, cache=TRUE>>=
-pg <- dbConnect(RPostgres::Postgres())
+db <- dbConnect(duckdb::duckdb())
 
-rs <- dbExecute(pg, "SET work_mem = '5GB'")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-
-activist_holdings <- tbl(pg, "activist_holdings")
-activism_events <- tbl(pg, "activism_events")
-activist_demands <- tbl(pg, "demands")
+# Get data from activist director tables ----
+activist_holdings <- tbl(db, "read_parquet('../data/activist_holdings.parquet')")
+activism_events <- tbl(db, "read_parquet('../data/activism_events.parquet')")
+activist_demands <- tbl(db, "read_parquet('../data/demands.parquet')")
 
 activist_exit <-
     activist_holdings %>%
@@ -68,7 +66,7 @@ survival_data_by_demand <-
     mutate(any_outcome = any(c_across(matches(outcome_regex))),
            any_demand = any(c_across(matches(demand_regex))))
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @
 
 <<quantreg_analysis, dependson="quantreg_data_step", include=FALSE, warning=FALSE, cache=TRUE>>=

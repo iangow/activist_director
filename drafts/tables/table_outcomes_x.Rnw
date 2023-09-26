@@ -44,21 +44,17 @@ fit.model <- function(data, lhs, rhs, cluster1) {
 @
 
 \Sexpr{opts_chunk$set(cache.extra = tools::md5sum('outcome_div_acq.sql'))}
-<<outs_x_div_acq_data, dependson="outs_x_winsorize">>=
+<<outs_x_div_acq_data1, dependson="outs_x_winsorize">>=
+db <- dbConnect(duckdb::duckdb())
 
-# Get data from PostgreSQL
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-rs <- dbExecute(pg, "SET work_mem='3GB'")
-
-outcome_controls <- tbl(pg, "outcome_controls")
-activist_demands <- tbl(pg, "demands")
-delisting <- tbl(pg, "delisting")
-spinoff_linked <- tbl(pg, "spinoff_linked")
-spinoff_crsp <- tbl(pg, "spinoff_crsp")
-divestiture_linked <- tbl(pg, "divestiture_linked")
-acquisition_linked <- tbl(pg, "acquisition_linked")
+# Get data from activist director tables ----
+outcome_controls <- tbl(db, "read_parquet('../data/outcome_controls.parquet')")
+activist_demands <- tbl(db, "read_parquet('../data/demands.parquet')")
+delisting <- tbl(db, "read_parquet('../data/delisting.parquet')")
+spinoff_linked <- tbl(db, "read_parquet('../data/spinoff_linked.parquet')")
+spinoff_crsp <- tbl(db, "read_parquet('../data/spinoff_crsp.parquet')")
+divestiture_linked <- tbl(db, "read_parquet('../data/divestiture_linked.parquet')")
+acquisition_linked <- tbl(db, "read_parquet('../data/acquisition_linked.parquet')")
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -151,7 +147,7 @@ reg.data <-
            activist_director = fix_activist_director(affiliated),
            across(all_of(controls), win01))
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @
 
 \begin{landscape}
@@ -220,12 +216,12 @@ rm(t.pa)
 <<outs_x_ceo_data, dependson="outs_x_winsorize">>=
 
 # Get data from PostgreSQL
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-rs <- dbExecute(pg, "SET work_mem='5GB'")
+<<outs_x_div_acq_data, dependson="outs_x_winsorize">>=
+db <- dbConnect(duckdb::duckdb())
 
-ceo_outcomes <- tbl(pg, "ceo_outcomes")
-activist_demands <- tbl(pg, "demands")
+# Get data from activist director tables ----
+ceo_outcomes <- tbl(db, "read_parquet('../data/ceo_outcomes.parquet')")
+activist_demands <- tbl(db, "read_parquet('../data/demands.parquet')")
 
 winsor.vars <- c(controls, "ceo_comp", "ceo_comp_p2")
 
@@ -238,9 +234,9 @@ reg.data.ceo <-
            affiliated = fix_affiliated(affiliated),
            across(all_of(winsor.vars), win01))
 
-activist_director_years <- tbl(pg, "activist_director_years")
-outcome_controls <- tbl(pg, "outcome_controls")
-outcomes <- tbl(pg, "other_outcomes")
+activist_director_years <- tbl(db, "read_parquet('../data/activist_director_years.parquet')")
+outcome_controls <- tbl(db, "read_parquet('../data/outcome_controls.parquet')")
+outcomes <- tbl(db, "read_parquet('../data/other_outcomes.parquet')")
 
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
 
@@ -260,7 +256,7 @@ reg.data <-
            affiliated = fix_affiliated(affiliated),
            across(all_of(winsor.vars), win01))
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @
 
 \begin{table}[htb]
@@ -328,16 +324,13 @@ rm(t.pb)
 \newpage
 % Panel C - Leverage and Payouts
 <<outs_x_lev_pay_data, dependson="outs_x_winsorize">>=
+db <- dbConnect(duckdb::duckdb())
 
-# Get data from PostgreSQL
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-rs <- dbExecute(pg, "SET work_mem='5GB'")
-
-activist_director_years <- tbl(pg, "activist_director_years")
-outcome_controls <- tbl(pg, "outcome_controls")
-outcomes <- tbl(pg, "other_outcomes")
-activist_demands <- tbl(pg, "demands")
+# Get data from activist director tables ----
+activist_director_years <- tbl(db, "read_parquet('../data/activist_director_years.parquet')")
+outcome_controls <- tbl(db, "read_parquet('../data/outcome_controls.parquet')")
+outcomes <- tbl(db, "read_parquet('../data/other_outcomes.parquet')")
+activist_demands <- tbl(db, "read_parquet('../data/demands.parquet')")
 
 lhs.vars <- c("cash", "leverage", "payout", "capex_cum", "rnd_cum", "adv_cum")
 
@@ -357,7 +350,7 @@ reg.data <-
            affiliated = fix_affiliated(affiliated),
            across(any_of(winsor.vars), win01))
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @
 
 \begin{table}[htb]

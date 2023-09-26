@@ -10,21 +10,17 @@ library(dplyr)
 @
 
 <<outs_x_div_acq_data>>=
+db <- dbConnect(duckdb::duckdb())
 
-# Get data from PostgreSQL
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-rs <- dbExecute(pg, "SET work_mem='3GB'")
-
-activism_events <- tbl(pg, "activism_events")
-activist_directors <- tbl(pg, "activist_directors")
-outcome_controls <- tbl(pg, "outcome_controls")
-activist_demands <- tbl(pg, "demands")
-delisting <- tbl(pg, "delisting")
-spinoff_linked <- tbl(pg, "spinoff_linked")
-acquisition_linked <- tbl(pg, "acquisition_linked")
-divestiture_linked <- tbl(pg, "divestiture_linked")
+# Get data from activist director tables ----
+activism_events <- tbl(db, "read_parquet('../data/activism_events.parquet')")
+activist_directors <- tbl(db, "read_parquet('../data/activist_directors.parquet')")
+outcome_controls <- tbl(db, "read_parquet('../data/outcome_controls.parquet')")
+activist_demands <- tbl(db, "read_parquet('../data/demands.parquet')")
+delisting <- tbl(db, "read_parquet('../data/delisting.parquet')")
+spinoff_linked <- tbl(db, "read_parquet('../data/spinoff_linked.parquet')")
+divestiture_linked <- tbl(db, "read_parquet('../data/divestiture_linked.parquet')")
+acquisition_linked <- tbl(db, "read_parquet('../data/acquisition_linked.parquet')")
 
 outcome_controls_mod <-
     outcome_controls %>%
@@ -136,5 +132,5 @@ announcement_cases %>%
     summarize(across(matches("^(pre|post|acq)_"), ~ sum(as.integer(.)))) %>%
     collect()
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 @

@@ -12,16 +12,15 @@ library(zoo)
 
 \begin{landscape}
 <<dir_desc_sample, message=FALSE, echo=FALSE, results='asis'>>=
-# PostgreSQL connection #
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
+db <- dbConnect(duckdb::duckdb())
 
-activist_directors <- tbl(pg, "activist_directors")
-activism_events <- tbl(pg, "activism_events")
-equilar_w_activism <- tbl(pg, "equilar_w_activism")
-ind_exp <- tbl(pg, "ind_exp") %>% collect()
-equilar_final <- tbl(pg, "equilar_final")
-equilar_career <- tbl(pg, "equilar_career")
+# Get data from activist director tables ----
+activist_directors <- tbl(db, "read_parquet('../data/activist_directors.parquet')")
+activism_events <- tbl(db, "read_parquet('../data/activism_events.parquet')")
+equilar_w_activism <- tbl(db, "read_parquet('../data/equilar_w_activism.parquet')")
+ind_exp <- tbl(db, "read_parquet('../data/ind_exp.parquet')")
+equilar_final <- tbl(db, "read_parquet('../data/equilar_final.parquet')")
+equilar_career <- tbl(db, "read_parquet('../data/equilar_career.parquet')")
 
 censor_date <- "2017-12-31"
 
@@ -37,7 +36,7 @@ activist_dir_data <-
            left_board  = as.integer(!is.na(retirement_date)),
            tenure = retirement_date - appointment_date,
            exit = retirement_date > censor_date | is.na(retirement_date),
-           retirement_date = coalesce(retirement_date, censor_date),
+           retirement_date = coalesce(retirement_date, as.Date(censor_date)),
            tenure_censored = retirement_date - appointment_date) %>%
     mutate(activist_affiliate = !independent) %>%
     compute()
@@ -176,7 +175,9 @@ board_experience <-
     select(-period) %>%
     collect()
 
-rs <- dbDisconnect(pg)
+ind_exp <- collect(ind_exp)
+
+dbDisconnect(db, shutdown = TRUE)
 @
 
 <<dir_desc_table, dependson="dir_desc_sample", results='asis'>>=
@@ -216,7 +217,7 @@ new_dir_data <-
 act_dir_data <-
     act.dir.data %>%
     left_join(ind_exp, by = c("executive_id", "company_id")) %>%
-    left_join(board_experience) %>%
+    left_join(distinct(board_experience), join_by(executive_id, company_id)) %>%
     distinct()
 
 col.names <- unlist(strsplit("Category, N, Age, Female, Comm., Comp comm.,
@@ -250,14 +251,14 @@ tab2 <- bind_rows(getTab("all_directors", all_dir_data),
 @
 
 <<skill_summ, dependson="dir_desc_sample", results='asis'>>=
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
-rs <- dbExecute(pg, "SET search_path TO activist_director")
+db <- dbConnect(duckdb::duckdb())
 
+# Get data from activist director tables ----
 activist_director_skills <-
-  tbl(pg, "activist_director_skills") %>%
+  tbl(db, "read_parquet('../data/activist_director_skills.parquet')") %>%
   collect()
 
-rs <- dbDisconnect(pg)
+rs <- dbDisconnect(db, shutdown = TRUE)
 
 # Director skill sets
 skill_summ_raw <-

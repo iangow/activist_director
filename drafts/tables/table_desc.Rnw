@@ -14,11 +14,12 @@ library(xtable)
 @
 
 <<table_desc_data, results='asis'>>=
-pg <- dbConnect(RPostgres::Postgres(), bigint = "integer")
+db <- dbConnect(duckdb::duckdb())
 
-rs <- dbExecute(pg, "SET search_path TO activist_director")
-activism_events <- tbl(pg, "activism_events")
-activist_directors <- tbl(pg, "activist_directors")
+# Get data from activist director tables ----
+activism_events <- tbl(db, "read_parquet('../data/activism_events.parquet')")
+activist_directors <- tbl(db, "read_parquet('../data/activist_directors.parquet')")
+
 
 raw_data <-
     activism_events %>%
@@ -53,7 +54,7 @@ summ.dirs <-
     arrange(year) %>%
     collect()
 
-rs <- dbDisconnect(pg)
+dbDisconnect(db, shutdown = TRUE)
 @
 \Sexpr{opts_chunk$set(cache.extra=NULL)}
 
