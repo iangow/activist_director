@@ -18,15 +18,16 @@ CRAN stands for "Comprehensive R Archive Network" and is the official repository
   In this course, we will make use of a number of R packages.
   These can be installed easily by running the following code in RStudio.^[You can copy and paste the code into the "Console" in RStudio.]
 
-```{r}
+```r
 install.packages(c("DBI", "duckdb", "base", "car", "doBy", "lfe", "lmtest",
                    "plm", "psych", "quantreg", "sandwich", "stargazer", 
                    "survival", "texreg", "tidyverse", "tinytex", "xtable", "zoo"))
 ```
 
-4. Install required LaTeX packages.
+4. Install LaTeX and required packages.
 
-```{r}
+```r
+tinytex::install_tinytex()
 tinytex::tlmgr_install(c("harvard", "mathpazo", "courier","psnfss",
                          "hyperref" ,"natbib", "palatino", "paralist",
                          "parskip", "titlesec", "setspace", "pdflscape"))
