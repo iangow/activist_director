@@ -50,5 +50,5 @@ This will means opening the file `activist_director.Rproj` in RStudio.
 - [`missing_permnos`](https://docs.google.com/spreadsheets/d/1yGJtmSLy1hGT4Od1whGJB9SbghCEfpwjkrbsSwqMpAY/edit#gid=0)
 - [`key_dates`](https://docs.google.com/spreadsheets/d/1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk/edit#gid=1796687034)
 
-[^1]: You can copy and paste the code into the "Console" in RStudio.]
+[^1]: You can copy and paste the code into the "Console" in RStudio.
 
