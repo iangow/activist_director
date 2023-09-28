@@ -15,8 +15,8 @@ An open-source version of RStudio is available [here](https://www.rstudio.com/pr
 
 3. Install required packages from [CRAN](https://cran.r-project.org).
 CRAN stands for "Comprehensive R Archive Network" and is the official repository for **packages** (also known as **libraries**) made available for R.
-  In this course, we will make use of a number of R packages.
-  These can be installed easily by running the following code in RStudio.^[You can copy and paste the code into the "Console" in RStudio.]
+  In this paper, we make use of a number of R packages.
+  These can be installed easily by running the following code in RStudio.[^1]
 
 ```r
 install.packages(c("DBI", "duckdb", "base", "car", "doBy", "lfe", "lmtest",
@@ -49,3 +49,6 @@ This will means opening the file `activist_director.Rproj` in RStudio.
 - [Activist directors](https://docs.google.com/spreadsheets/d/1zHSKIAx4LKURXav-k06D7T3p3St0VjFa8RXvAFJnUfI/edit#gid=271850810)
 - [`missing_permnos`](https://docs.google.com/spreadsheets/d/1yGJtmSLy1hGT4Od1whGJB9SbghCEfpwjkrbsSwqMpAY/edit#gid=0)
 - [`key_dates`](https://docs.google.com/spreadsheets/d/1s8-xvFxQZd6lMrxfVqbPTwUB_NQtvdxCO-s6QCIYvNk/edit#gid=1796687034)
+
+[^1]: You can copy and paste the code into the "Console" in RStudio.]
+
